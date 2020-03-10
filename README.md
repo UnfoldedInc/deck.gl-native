@@ -43,3 +43,18 @@ Notes:
 ```
 
 Notes: See `vcpkg` install above.
+
+## Build
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_VCPKG>/scripts/buildsystems/vcpkg.cmake ..
+make
+```
+
+## Test
+
+```
+ctest
+```

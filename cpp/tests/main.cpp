@@ -18,9 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
+//#include <gtest/gtest.h>
+
+#include "main.h"
 
 int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+    //  ::testing::InitGoogleTest(&argc, argv);
+    //  return RUN_ALL_TESTS();
+    hello();
+    return 0;
 }

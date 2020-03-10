@@ -1,0 +1,66 @@
+# Inspired by https://github.com/uber/h3/blob/master/.travis.yml
+# and https://github.com/google/s2geometry/blob/master/.travis.yml
+
+language: c
+
+os: linux
+dist: bionic
+
+compiler:
+  - gcc
+  - clang
+
+matrix:
+  include:
+      # Check that clang-format doesn't detect some files are not formatted.
+    # - name: "Formatting check"
+    #   compiler: clang
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - llvm-toolchain-trusty-5.0
+    #       packages:
+    #         - clang-format-5.0
+    #   script: make format && git diff --exit-code
+    # - name: "Valgrind test"
+    #   compiler: gcc
+    #   addons:
+    #     apt:
+    #       packages:
+    #         - valgrind
+    #   before_script:
+    #     - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake .
+    #   script:
+    #     - make
+    #     - CTEST_OUTPUT_ON_FAILURE=1 make test
+    - name: "Mac OSX (Xcode 10)"
+      os: osx
+      osx_image: xcode10.1
+
+install:
+  # Install vcpkg and dependencies
+  - pushd $HOME
+  - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
+  - cd vcpkg
+  - git checkout .
+  - git pull
+  - ./bootstrap-vcpkg.sh
+  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
+  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
+  - ./vcpkg install jsoncpp gtest --recurse
+  - rm -rf buildtrees
+  - popd
+
+cache:
+  directories:
+    - ${HOME}/vcpkg
+
+before_script:
+  # Build out of source
+  - mkdir build
+  - cd build
+  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake ..
+
+script:
+  - make
+  - CTEST_OUTPUT_ON_FAILURE=1 make test
