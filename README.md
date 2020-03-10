@@ -43,3 +43,18 @@ Notes:
 ```
 
 Notes: See `vcpkg` install above.
+
+## Build
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+## Test
+
+```
+ctest
+```
