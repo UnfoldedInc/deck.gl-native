@@ -5,10 +5,10 @@ import log from '../utils/log';
 
 export default class LayersPass extends Pass {
   render(props) {
-    const gl = this.gl;
+    const gl = this->gl;
 
     setParameters(gl, {framebuffer: props.target});
-    return this._drawLayers(props);
+    return this->_drawLayers(props);
   }
 
   // PRIVATE
@@ -16,7 +16,7 @@ export default class LayersPass extends Pass {
   _drawLayers(props) {
     const {viewports, views, onViewportActive, clearCanvas = true} = props;
 
-    const gl = this.gl;
+    const gl = this->gl;
     if (clearCanvas) {
       clearGLCanvas(gl);
     }
@@ -38,7 +38,7 @@ export default class LayersPass extends Pass {
       for (const subViewport of subViewports) {
         props.viewport = subViewport;
 
-        const stats = this._drawLayersInViewport(gl, props);
+        const stats = this->_drawLayersInViewport(gl, props);
         renderStats.push(stats);
       }
     }
@@ -81,7 +81,7 @@ export default class LayersPass extends Pass {
     for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
       const layer = layers[layerIndex];
       // Check if we should draw layer
-      const shouldDrawLayer = this._shouldDrawLayer(layer, viewport, pass, layerFilter);
+      const shouldDrawLayer = this->_shouldDrawLayer(layer, viewport, pass, layerFilter);
 
       // Calculate stats
       if (shouldDrawLayer && layer.props.pickable) {
@@ -95,8 +95,8 @@ export default class LayersPass extends Pass {
       if (shouldDrawLayer) {
         renderStatus.visibleCount++;
 
-        const _moduleParameters = this._getModuleParameters(layer, effects, pass, moduleParameters);
-        const layerParameters = this.getLayerParameters(layer, layerIndex);
+        const _moduleParameters = this->_getModuleParameters(layer, effects, pass, moduleParameters);
+        const layerParameters = this->getLayerParameters(layer, layerIndex);
         // overwrite layer.context.viewport with the sub viewport
         _moduleParameters.viewport = viewport;
 
@@ -135,7 +135,7 @@ export default class LayersPass extends Pass {
 
   /* Private */
   _shouldDrawLayer(layer, viewport, pass, layerFilter) {
-    let shouldDrawLayer = this.shouldDrawLayer(layer) && !layer.isComposite && layer.props.visible;
+    let shouldDrawLayer = this->shouldDrawLayer(layer) && !layer.isComposite && layer.props.visible;
 
     if (shouldDrawLayer && layerFilter) {
       shouldDrawLayer = layerFilter({
@@ -153,7 +153,7 @@ export default class LayersPass extends Pass {
       viewport: layer.context.viewport,
       mousePosition: layer.context.mousePosition,
       pickingActive: 0,
-      devicePixelRatio: cssToDeviceRatio(this.gl)
+      devicePixelRatio: cssToDeviceRatio(this->gl)
     });
 
     if (effects) {
@@ -162,7 +162,7 @@ export default class LayersPass extends Pass {
       }
     }
 
-    return Object.assign(moduleParameters, this.getModuleParameters(layer, effects), overrides);
+    return Object.assign(moduleParameters, this->getModuleParameters(layer, effects), overrides);
   }
 }
 

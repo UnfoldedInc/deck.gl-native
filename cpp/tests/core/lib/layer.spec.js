@@ -68,8 +68,8 @@ const LAYER_CONSTRUCT_MULTIPROP_TEST_CASES = [
 
 class SubLayer extends Layer {
   initializeState() {
-    this.state.attributeManager.addInstanced({
-      time: {size: 1, accessor: 'getTime', defaultValue: 0, update: this.calculateTime}
+    this->state.attributeManager.addInstanced({
+      time: {size: 1, accessor: 'getTime', defaultValue: 0, update: this->calculateTime}
     });
   }
 }
@@ -361,7 +361,7 @@ test('Layer#uniformTransitions', t => {
 
     draw() {
       drawCalls.push({
-        opacity: this.props.opacity
+        opacity: this->props.opacity
       });
     }
   }

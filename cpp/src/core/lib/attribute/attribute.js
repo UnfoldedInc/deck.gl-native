@@ -20,15 +20,15 @@ export default class Attribute extends DataColumn {
       startIndices = null
     } = opts;
 
-    Object.assign(this.settings, {
+    Object.assign(this->settings, {
       transition,
       noAlloc,
-      update: update || (accessor && this._autoUpdater),
+      update: update || (accessor && this->_autoUpdater),
       accessor,
       transform
     });
 
-    Object.assign(this.state, {
+    Object.assign(this->state, {
       lastExternalBuffer: null,
       binaryValue: null,
       binaryAccessor: null,
@@ -38,48 +38,48 @@ export default class Attribute extends DataColumn {
       startIndices
     });
 
-    Object.seal(this.settings);
-    Object.seal(this.state);
+    Object.seal(this->settings);
+    Object.seal(this->state);
 
     // Check all fields and generate helpful error messages
-    this._validateAttributeUpdaters();
+    this->_validateAttributeUpdaters();
   }
 
   get startIndices() {
-    return this.state.startIndices;
+    return this->state.startIndices;
   }
 
   set startIndices(layout) {
-    this.state.startIndices = layout;
+    this->state.startIndices = layout;
   }
 
   needsUpdate() {
-    return this.state.needsUpdate;
+    return this->state.needsUpdate;
   }
 
   needsRedraw({clearChangedFlags = false} = {}) {
-    const needsRedraw = this.state.needsRedraw;
-    this.state.needsRedraw = needsRedraw && !clearChangedFlags;
+    const needsRedraw = this->state.needsRedraw;
+    this->state.needsRedraw = needsRedraw && !clearChangedFlags;
     return needsRedraw;
   }
 
   getUpdateTriggers() {
-    const {accessor} = this.settings;
+    const {accessor} = this->settings;
 
     // Backards compatibility: allow attribute name to be used as update trigger key
-    return [this.id].concat((typeof accessor !== 'function' && accessor) || []);
+    return [this->id].concat((typeof accessor !== 'function' && accessor) || []);
   }
 
   supportsTransition() {
-    return Boolean(this.settings.transition);
+    return Boolean(this->settings.transition);
   }
 
   // Resolve transition settings object if transition is enabled, otherwise `null`
   getTransitionSetting(opts) {
-    const {accessor} = this.settings;
+    const {accessor} = this->settings;
     // TODO: have the layer resolve these transition settings itself?
-    const layerSettings = this.settings.transition;
-    if (!this.supportsTransition()) {
+    const layerSettings = this->settings.transition;
+    if (!this->supportsTransition()) {
       return null;
     }
     // these are the transition settings passed in by the user
@@ -91,28 +91,28 @@ export default class Attribute extends DataColumn {
     return normalizeTransitionSettings(userSettings, layerSettings);
   }
 
-  setNeedsUpdate(reason = this.id, dataRange) {
-    this.state.needsUpdate = this.state.needsUpdate || reason;
+  setNeedsUpdate(reason = this->id, dataRange) {
+    this->state.needsUpdate = this->state.needsUpdate || reason;
     if (dataRange) {
       const {startRow = 0, endRow = Infinity} = dataRange;
-      this.state.updateRanges = range.add(this.state.updateRanges, [startRow, endRow]);
+      this->state.updateRanges = range.add(this->state.updateRanges, [startRow, endRow]);
     } else {
-      this.state.updateRanges = range.FULL;
+      this->state.updateRanges = range.FULL;
     }
   }
 
   clearNeedsUpdate() {
-    this.state.needsUpdate = false;
-    this.state.updateRanges = range.EMPTY;
+    this->state.needsUpdate = false;
+    this->state.updateRanges = range.EMPTY;
   }
 
-  setNeedsRedraw(reason = this.id) {
-    this.state.needsRedraw = this.state.needsRedraw || reason;
+  setNeedsRedraw(reason = this->id) {
+    this->state.needsRedraw = this->state.needsRedraw || reason;
   }
 
   update(opts) {
     // backward compatibility
-    this.setData(opts);
+    this->setData(opts);
   }
 
   allocate(numInstances) {
@@ -136,7 +136,7 @@ export default class Attribute extends DataColumn {
   }
 
   updateBuffer({numInstances, data, props, context}) {
-    if (!this.needsUpdate()) {
+    if (!this->needsUpdate()) {
       return false;
     }
 
@@ -151,35 +151,35 @@ export default class Attribute extends DataColumn {
       for (const [startRow, endRow] of updateRanges) {
         update.call(context, this, {data, startRow, endRow, props, numInstances});
       }
-      if (!this.value) {
+      if (!this->value) {
         // no value was assigned during update
       } else if (
-        this.constant ||
-        this.buffer.byteLength < this.value.byteLength + this.byteOffset
+        this->constant ||
+        this->buffer.byteLength < this->value.byteLength + this->byteOffset
       ) {
-        this.setData({
-          value: this.value,
-          constant: this.constant
+        this->setData({
+          value: this->value,
+          constant: this->constant
         });
       } else {
         for (const [startRow, endRow] of updateRanges) {
-          const startOffset = Number.isFinite(startRow) ? this.getVertexOffset(startRow) : 0;
+          const startOffset = Number.isFinite(startRow) ? this->getVertexOffset(startRow) : 0;
           const endOffset = Number.isFinite(endRow)
-            ? this.getVertexOffset(endRow)
+            ? this->getVertexOffset(endRow)
             : noAlloc || !Number.isFinite(numInstances)
-              ? this.value.length
-              : numInstances * this.size;
+              ? this->value.length
+              : numInstances * this->size;
 
           super.updateSubBuffer({startOffset, endOffset});
         }
       }
-      this._checkAttributeArray();
+      this->_checkAttributeArray();
     } else {
       updated = false;
     }
 
-    this.clearNeedsUpdate();
-    this.setNeedsRedraw();
+    this->clearNeedsUpdate();
+    this->setNeedsRedraw();
 
     return updated;
   }
@@ -191,12 +191,12 @@ export default class Attribute extends DataColumn {
       return false;
     }
 
-    const hasChanged = this.setData({constant: true, value});
+    const hasChanged = this->setData({constant: true, value});
 
     if (hasChanged) {
-      this.setNeedsRedraw();
+      this->setNeedsRedraw();
     }
-    this.clearNeedsUpdate();
+    this->clearNeedsUpdate();
     return true;
   }
 
@@ -211,14 +211,14 @@ export default class Attribute extends DataColumn {
       return false;
     }
 
-    this.clearNeedsUpdate();
+    this->clearNeedsUpdate();
 
     if (state.lastExternalBuffer === buffer) {
       return true;
     }
     state.lastExternalBuffer = buffer;
-    this.setNeedsRedraw();
-    this.setData(buffer);
+    this->setNeedsRedraw();
+    this->setData(buffer);
     return true;
   }
 
@@ -240,23 +240,23 @@ export default class Attribute extends DataColumn {
     }
 
     if (state.binaryValue === buffer) {
-      this.clearNeedsUpdate();
+      this->clearNeedsUpdate();
       return true;
     }
     state.binaryValue = buffer;
-    this.setNeedsRedraw();
+    this->setNeedsRedraw();
 
     if (ArrayBuffer.isView(buffer)) {
       buffer = {value: buffer};
     }
-    const needsUpdate = settings.transform || startIndices !== this.startIndices;
+    const needsUpdate = settings.transform || startIndices !== this->startIndices;
 
     if (needsUpdate) {
       assert(ArrayBuffer.isView(buffer.value), `invalid ${settings.accessor}`);
-      const needsNormalize = buffer.size && buffer.size !== this.size;
+      const needsNormalize = buffer.size && buffer.size !== this->size;
 
       state.binaryAccessor = getAccessorFromBuffer(buffer.value, {
-        size: buffer.size || this.size,
+        size: buffer.size || this->size,
         stride: buffer.stride,
         offset: buffer.offset,
         startIndices,
@@ -266,19 +266,19 @@ export default class Attribute extends DataColumn {
       return false;
     }
 
-    this.clearNeedsUpdate();
-    this.setData(buffer);
+    this->clearNeedsUpdate();
+    this->setData(buffer);
     return true;
   }
 
   getVertexOffset(row) {
     const {startIndices} = this;
     const vertexIndex = startIndices ? startIndices[row] : row;
-    return vertexIndex * this.size;
+    return vertexIndex * this->size;
   }
 
   getShaderAttributes() {
-    const shaderAttributeDefs = this.settings.shaderAttributes || {[this.id]: null};
+    const shaderAttributeDefs = this->settings.shaderAttributes || {[this->id]: null};
     const shaderAttributes = {};
 
     for (const shaderAttributeName in shaderAttributeDefs) {
@@ -350,7 +350,7 @@ export default class Attribute extends DataColumn {
     // Check that 'update' is a valid function
     const hasUpdater = settings.noAlloc || typeof settings.update === 'function';
     if (!hasUpdater) {
-      throw new Error(`Attribute ${this.id} missing update or accessor`);
+      throw new Error(`Attribute ${this->id} missing update or accessor`);
     }
   }
 
@@ -363,7 +363,7 @@ export default class Attribute extends DataColumn {
         Number.isFinite(value[2]) &&
         Number.isFinite(value[3]);
       if (!valid) {
-        throw new Error(`Illegal attribute generated for ${this.id}`);
+        throw new Error(`Illegal attribute generated for ${this->id}`);
       }
     }
   }

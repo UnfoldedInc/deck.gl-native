@@ -110,28 +110,28 @@ public:
     super(viewportOpts);
 
     // Save parameters
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.zoom = zoom;
-    this.pitch = pitch;
-    this.bearing = bearing;
-    this.altitude = altitude;
+    this->latitude = latitude;
+    this->longitude = longitude;
+    this->zoom = zoom;
+    this->pitch = pitch;
+    this->bearing = bearing;
+    this->altitude = altitude;
 
-    this.orthographic = orthographic;
+    this->orthographic = orthographic;
 
-    this._subViewports = repeat ? [] : null;
+    this->_subViewports = repeat ? [] : null;
 
     Object.freeze(this);
   }
   /* eslint-enable complexity, max-statements */
 
   get subViewports() {
-    if (this._subViewports && !this._subViewports.length) {
+    if (this->_subViewports && !this->_subViewports.length) {
       // Cache sub viewports so that we only calculate them once
-      const topLeft = this.unproject([0, 0]);
-      const topRight = this.unproject([this.width, 0]);
-      const bottomLeft = this.unproject([0, this.height]);
-      const bottomRight = this.unproject([this.width, this.height]);
+      const topLeft = this->unproject([0, 0]);
+      const topRight = this->unproject([this->width, 0]);
+      const bottomLeft = this->unproject([0, this->height]);
+      const bottomRight = this->unproject([this->width, this->height]);
 
       const minLon = Math.min(topLeft[0], topRight[0], bottomLeft[0], bottomRight[0]);
       const maxLon = Math.max(topLeft[0], topRight[0], bottomLeft[0], bottomRight[0]);
@@ -146,10 +146,10 @@ public:
               worldOffset: x
             })
           : this;
-        this._subViewports.push(offsetViewport);
+        this->_subViewports.push(offsetViewport);
       }
     }
-    return this._subViewports;
+    return this->_subViewports;
   }
 
   /**
@@ -177,13 +177,13 @@ public:
    * @return {Array} [lng,lat] new map center.
    */
   getMapCenterByLngLatPosition({lngLat, pos}) {
-    const fromLocation = pixelsToWorld(pos, this.pixelUnprojectionMatrix);
-    const toLocation = this.projectFlat(lngLat);
+    const fromLocation = pixelsToWorld(pos, this->pixelUnprojectionMatrix);
+    const toLocation = this->projectFlat(lngLat);
 
     const translate = vec2.add([], toLocation, vec2.negate([], fromLocation));
-    const newCenter = vec2.add([], this.center, translate);
+    const newCenter = vec2.add([], this->center, translate);
 
-    return this.unprojectFlat(newCenter);
+    return this->unprojectFlat(newCenter);
   }
 
   /**

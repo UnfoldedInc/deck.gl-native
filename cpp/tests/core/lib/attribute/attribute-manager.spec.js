@@ -36,7 +36,7 @@ function update(attribute, {data}) {
 }
 
 function enable() {
-  return this.enabled; // eslint-disable-line
+  return this->enabled; // eslint-disable-line
 }
 
 const fixture = {

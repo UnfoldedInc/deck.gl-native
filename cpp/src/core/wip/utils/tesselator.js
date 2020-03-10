@@ -27,23 +27,23 @@ export default class Tesselator {
   constructor(opts = {}) {
     const {attributes = {}} = opts;
 
-    this.typedArrayManager = defaultTypedArrayManager;
-    this.indexStarts = null;
-    this.vertexStarts = null;
-    this.vertexCount = 0;
-    this.instanceCount = 0;
-    this.attributes = {};
-    this._attributeDefs = attributes;
-    this.opts = opts;
+    this->typedArrayManager = defaultTypedArrayManager;
+    this->indexStarts = null;
+    this->vertexStarts = null;
+    this->vertexCount = 0;
+    this->instanceCount = 0;
+    this->attributes = {};
+    this->_attributeDefs = attributes;
+    this->opts = opts;
 
-    this.updateGeometry(opts);
+    this->updateGeometry(opts);
 
     Object.seal(this);
   }
 
   /* Public methods */
   updateGeometry(opts) {
-    Object.assign(this.opts, opts);
+    Object.assign(this->opts, opts);
     const {
       data,
       buffers = {},
@@ -52,18 +52,18 @@ export default class Tesselator {
       positionFormat,
       dataChanged,
       normalize = true
-    } = this.opts;
-    this.data = data;
-    this.getGeometry = getGeometry;
-    this.positionSize =
+    } = this->opts;
+    this->data = data;
+    this->getGeometry = getGeometry;
+    this->positionSize =
       (geometryBuffer && geometryBuffer.size) || (positionFormat === 'XY' ? 2 : 3);
-    this.buffers = buffers;
-    this.normalize = normalize;
+    this->buffers = buffers;
+    this->normalize = normalize;
 
     // Handle external logical value
     if (geometryBuffer) {
       assert(data.startIndices, 'binary data missing startIndices');
-      this.getGeometry = this.getGeometryFromBuffer(geometryBuffer);
+      this->getGeometry = this->getGeometryFromBuffer(geometryBuffer);
 
       if (!normalize) {
         // skip packing and set attribute value directly
@@ -71,20 +71,20 @@ export default class Tesselator {
         buffers.positions = geometryBuffer;
       }
     }
-    this.geometryBuffer = buffers.positions;
+    this->geometryBuffer = buffers.positions;
 
     if (Array.isArray(dataChanged)) {
       // is partial update
       for (const dataRange of dataChanged) {
-        this._rebuildGeometry(dataRange);
+        this->_rebuildGeometry(dataRange);
       }
     } else {
-      this._rebuildGeometry();
+      this->_rebuildGeometry();
     }
   }
 
   updatePartialGeometry({startRow, endRow}) {
-    this._rebuildGeometry({startRow, endRow});
+    this->_rebuildGeometry({startRow, endRow});
   }
 
   /* Subclass interface */
@@ -104,10 +104,10 @@ export default class Tesselator {
     assert(ArrayBuffer.isView(value), 'cannot read geometries');
 
     return getAccessorFromBuffer(value, {
-      size: this.positionSize,
+      size: this->positionSize,
       offset: geometryBuffer.offset,
       stride: geometryBuffer.stride,
-      startIndices: this.data.startIndices
+      startIndices: this->data.startIndices
     });
   }
 
@@ -148,7 +148,7 @@ export default class Tesselator {
 
   /* eslint-disable complexity,max-statements */
   _rebuildGeometry(dataRange) {
-    if (!this.data || !this.getGeometry) {
+    if (!this->data || !this->getGeometry) {
       return;
     }
 
@@ -161,10 +161,10 @@ export default class Tesselator {
       indexStarts = [0];
       vertexStarts = [0];
     }
-    if (this.normalize || !geometryBuffer) {
-      this._forEachGeometry(
+    if (this->normalize || !geometryBuffer) {
+      this->_forEachGeometry(
         (geometry, dataIndex) => {
-          vertexStarts[dataIndex + 1] = vertexStarts[dataIndex] + this.getGeometrySize(geometry);
+          vertexStarts[dataIndex + 1] = vertexStarts[dataIndex] + this->getGeometrySize(geometry);
         },
         startRow,
         endRow
@@ -172,29 +172,29 @@ export default class Tesselator {
       // count instances
       instanceCount = vertexStarts[vertexStarts.length - 1];
     } else if (geometryBuffer.buffer instanceof Buffer) {
-      const byteStride = geometryBuffer.stride || this.positionSize * 4;
+      const byteStride = geometryBuffer.stride || this->positionSize * 4;
       // assume user provided data is already normalized
       vertexStarts = data.startIndices;
       instanceCount = vertexStarts[data.length] || geometryBuffer.buffer.byteLength / byteStride;
     } else {
       const bufferValue = geometryBuffer.value || geometryBuffer;
       const elementStride =
-        geometryBuffer.stride / bufferValue.BYTES_PER_ELEMENT || this.positionSize;
+        geometryBuffer.stride / bufferValue.BYTES_PER_ELEMENT || this->positionSize;
       // assume user provided data is already normalized
       vertexStarts = data.startIndices;
       instanceCount = vertexStarts[data.length] || bufferValue.length / elementStride;
     }
 
     // allocate attributes
-    this._allocate(instanceCount, Boolean(dataRange));
+    this->_allocate(instanceCount, Boolean(dataRange));
 
-    this.indexStarts = indexStarts;
-    this.vertexStarts = vertexStarts;
-    this.instanceCount = instanceCount;
+    this->indexStarts = indexStarts;
+    this->vertexStarts = vertexStarts;
+    this->instanceCount = instanceCount;
 
     const context = {};
 
-    this._forEachGeometry(
+    this->_forEachGeometry(
       (geometry, dataIndex) => {
         context.vertexStart = vertexStarts[dataIndex];
         context.indexStart = indexStarts[dataIndex];
@@ -202,12 +202,12 @@ export default class Tesselator {
           dataIndex < vertexStarts.length - 1 ? vertexStarts[dataIndex + 1] : instanceCount;
         context.geometrySize = vertexEnd - vertexStarts[dataIndex];
         context.geometryIndex = dataIndex;
-        this.updateGeometryAttributes(geometry, context);
+        this->updateGeometryAttributes(geometry, context);
       },
       startRow,
       endRow
     );
 
-    this.vertexCount = indexStarts[indexStarts.length - 1];
+    this->vertexCount = indexStarts[indexStarts.length - 1];
   }
 }

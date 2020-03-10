@@ -12,7 +12,7 @@ export default class ShadowPass extends LayersPass {
     super(gl, props);
 
     // The shadowMap texture
-    this.shadowMap = new Texture2D(gl, {
+    this->shadowMap = new Texture2D(gl, {
       width: 1,
       height: 1,
       parameters: {
@@ -23,29 +23,29 @@ export default class ShadowPass extends LayersPass {
       }
     });
 
-    this.depthBuffer = new Renderbuffer(gl, {
+    this->depthBuffer = new Renderbuffer(gl, {
       format: gl.DEPTH_COMPONENT16,
       width: 1,
       height: 1
     });
 
-    this.fbo = new Framebuffer(gl, {
+    this->fbo = new Framebuffer(gl, {
       id: 'shadowmap',
       width: 1,
       height: 1,
       attachments: {
-        [gl.COLOR_ATTACHMENT0]: this.shadowMap,
+        [gl.COLOR_ATTACHMENT0]: this->shadowMap,
         // Depth attachment has to be specified for depth test to work
-        [gl.DEPTH_ATTACHMENT]: this.depthBuffer
+        [gl.DEPTH_ATTACHMENT]: this->depthBuffer
       }
     });
   }
 
   render(params) {
-    const target = this.fbo;
+    const target = this->fbo;
 
     withParameters(
-      this.gl,
+      this->gl,
       {
         depthRange: [0, 1],
         depthTest: true,
@@ -54,7 +54,7 @@ export default class ShadowPass extends LayersPass {
       },
       () => {
         const viewport = params.viewports[0];
-        const pixelRatio = cssToDeviceRatio(this.gl);
+        const pixelRatio = cssToDeviceRatio(this->gl);
         const width = viewport.width * pixelRatio;
         const height = viewport.height * pixelRatio;
         if (width !== target.width || height !== target.height) {
@@ -77,19 +77,19 @@ export default class ShadowPass extends LayersPass {
   }
 
   delete() {
-    if (this.fbo) {
-      this.fbo.delete();
-      this.fbo = null;
+    if (this->fbo) {
+      this->fbo.delete();
+      this->fbo = null;
     }
 
-    if (this.shadowMap) {
-      this.shadowMap.delete();
-      this.shadowMap = null;
+    if (this->shadowMap) {
+      this->shadowMap.delete();
+      this->shadowMap = null;
     }
 
-    if (this.depthBuffer) {
-      this.depthBuffer.delete();
-      this.depthBuffer = null;
+    if (this->depthBuffer) {
+      this->depthBuffer.delete();
+      this->depthBuffer = null;
     }
   }
 }

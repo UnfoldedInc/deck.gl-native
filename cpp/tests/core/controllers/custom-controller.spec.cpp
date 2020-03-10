@@ -3,26 +3,26 @@ import {Controller} from '@deck.gl/core';
 
 class MockEventManager {
   constructor() {
-    this.listeners = new Set();
+    this->listeners = new Set();
   }
 
   on(eventName) {
-    this.listeners.add(eventName);
+    this->listeners.add(eventName);
   }
 
   off(eventName) {
-    this.listeners.delete(eventName);
+    this->listeners.delete(eventName);
   }
 
   has(eventName) {
-    return this.listeners.has(eventName);
+    return this->listeners.has(eventName);
   }
 }
 
 class TestController extends Controller {
   constructor(props) {
     super({}, props);
-    this.events = ['press', 'wheel'];
+    this->events = ['press', 'wheel'];
   }
 }
 

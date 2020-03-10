@@ -54,14 +54,14 @@ function distance(value1, value2) {
 
 export default class CPUSpringTransition extends Transition {
   get value() {
-    return this._currValue;
+    return this->_currValue;
   }
 
   _onUpdate() {
     // TODO - use timeline
     // const {time} = this;
 
-    const {fromValue, toValue, damping, stiffness} = this.settings;
+    const {fromValue, toValue, damping, stiffness} = this->settings;
     const {_prevValue = fromValue, _currValue = fromValue} = this;
     let nextValue = updateSpring(_prevValue, _currValue, toValue, damping, stiffness);
     const delta = distance(nextValue, toValue);
@@ -69,10 +69,10 @@ export default class CPUSpringTransition extends Transition {
 
     if (delta < EPSILON && velocity < EPSILON) {
       nextValue = toValue;
-      this.end();
+      this->end();
     }
 
-    this._prevValue = _currValue;
-    this._currValue = nextValue;
+    this->_prevValue = _currValue;
+    this->_currValue = nextValue;
   }
 }

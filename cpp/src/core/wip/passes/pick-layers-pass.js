@@ -10,7 +10,7 @@ const PICKING_PARAMETERS = {
 export default class PickLayersPass extends LayersPass {
   render(props) {
     if (props.pickingFBO) {
-      this._drawPickingBuffer(props);
+      this->_drawPickingBuffer(props);
     } else {
       super.render(props);
     }
@@ -30,8 +30,8 @@ export default class PickLayersPass extends LayersPass {
     redrawReason,
     pickZ
   }) {
-    const gl = this.gl;
-    this.pickZ = pickZ;
+    const gl = this->gl;
+    this->pickZ = pickZ;
 
     // Make sure we clear scissor test and fbo bindings in case of exceptions
     // We are only interested in one pixel, no need to render anything else
@@ -77,7 +77,7 @@ export default class PickLayersPass extends LayersPass {
   getModuleParameters() {
     return {
       pickingActive: 1,
-      pickingAttribute: this.pickZ,
+      pickingAttribute: this->pickZ,
       // turn off lighting by adding empty light source object
       // lights shader module relies on the `lightSources` to turn on/off lighting
       lightSources: {}
@@ -86,7 +86,7 @@ export default class PickLayersPass extends LayersPass {
 
   getLayerParameters(layer, layerIndex) {
     // These will override any layer parameters
-    const pickParameters = this.pickZ
+    const pickParameters = this->pickZ
       ? {blend: false}
       : {...PICKING_PARAMETERS, blend: true, blendColor: [0, 0, 0, (layerIndex + 1) / 255]};
 

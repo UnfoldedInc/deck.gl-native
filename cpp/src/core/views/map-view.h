@@ -34,7 +34,7 @@ class MapView : public View {
   // TODO - get controller()
   getController() {
     throw new std::exception('Not implemented');
-    // return this._getControllerProps({
+    // return this->_getControllerProps({
     //   type: MapController
     // });
   }

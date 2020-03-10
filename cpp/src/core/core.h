@@ -17,8 +17,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/* eslint-disable max-len */
 
+#include "./lib/constants.h" // COORDINATE_SYSTEM
+#include "./lib/layer.h" // Layer, LayerProps, LayerState
+
+/*
 // Intialize globals, check version
 import './lib/init';
 
@@ -90,3 +93,4 @@ export {count as _count} from './utils/count';
 export {default as _memoize} from './utils/memoize';
 export {mergeShaders as _mergeShaders} from './utils/shader';
 export {compareProps as _compareProps} from './lifecycle/props';
+*/

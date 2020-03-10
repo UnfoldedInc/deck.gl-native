@@ -12,33 +12,33 @@ import Transition from './transition';
 
 export default class GPUInterpolationTransition {
   constructor({gl, attribute, timeline}) {
-    this.gl = gl;
-    this.type = 'interpolation';
-    this.transition = new Transition(timeline);
-    this.attribute = attribute;
+    this->gl = gl;
+    this->type = 'interpolation';
+    this->transition = new Transition(timeline);
+    this->attribute = attribute;
     // this is the attribute we return during the transition - note: if it is a constant
     // attribute, it will be converted and returned as a regular attribute
     // `attribute.userData` is the original options passed when constructing the attribute.
     // This ensures that we set the proper `doublePrecision` flag and shader attributes.
-    this.attributeInTransition = new Attribute(gl, attribute.settings);
-    this.currentStartIndices = attribute.startIndices;
-    // storing currentLength because this.buffer may be larger than the actual length we want to use
+    this->attributeInTransition = new Attribute(gl, attribute.settings);
+    this->currentStartIndices = attribute.startIndices;
+    // storing currentLength because this->buffer may be larger than the actual length we want to use
     // this is because we only reallocate buffers when they grow, not when they shrink,
     // due to performance costs
-    this.currentLength = 0;
-    this.transform = getTransform(gl, attribute);
+    this->currentLength = 0;
+    this->transform = getTransform(gl, attribute);
     const bufferOpts = {
       byteLength: 0,
       usage: GL.DYNAMIC_COPY
     };
-    this.buffers = [
+    this->buffers = [
       new Buffer(gl, bufferOpts), // from
       new Buffer(gl, bufferOpts) // current
     ];
   }
 
   get inProgress() {
-    return this.transition.inProgress;
+    return this->transition.inProgress;
   }
 
   // this is called when an attribute's values have changed and
@@ -48,7 +48,7 @@ export default class GPUInterpolationTransition {
   // startIndices
   start(transitionSettings, numInstances) {
     if (transitionSettings.duration <= 0) {
-      this.transition.cancel();
+      this->transition.cancel();
       return;
     }
 
@@ -61,8 +61,8 @@ export default class GPUInterpolationTransition {
     const padBufferOpts = {
       numInstances,
       attribute,
-      fromLength: this.currentLength,
-      fromStartIndices: this.currentStartIndices,
+      fromLength: this->currentLength,
+      fromStartIndices: this->currentStartIndices,
       getData: transitionSettings.enter
     };
 
@@ -70,19 +70,19 @@ export default class GPUInterpolationTransition {
       padBuffer({buffer, ...padBufferOpts});
     }
 
-    this.currentStartIndices = attribute.startIndices;
-    this.currentLength = getAttributeBufferLength(attribute, numInstances);
-    this.attributeInTransition.update({
+    this->currentStartIndices = attribute.startIndices;
+    this->currentLength = getAttributeBufferLength(attribute, numInstances);
+    this->attributeInTransition.update({
       buffer: buffers[1],
       // Hack: Float64Array is required for double-precision attributes
       // to generate correct shader attributes
       value: attribute.value
     });
 
-    this.transition.start(transitionSettings);
+    this->transition.start(transitionSettings);
 
-    this.transform.update({
-      elementCount: Math.floor(this.currentLength / attribute.size),
+    this->transform.update({
+      elementCount: Math.floor(this->currentLength / attribute.size),
       sourceBuffers: {
         aFrom: buffers[0],
         aTo: getSourceBufferAttribute(gl, attribute)
@@ -94,14 +94,14 @@ export default class GPUInterpolationTransition {
   }
 
   update() {
-    const updated = this.transition.update();
+    const updated = this->transition.update();
     if (updated) {
       const {
         time,
         settings: {duration, easing}
-      } = this.transition;
+      } = this->transition;
       const t = easing(time / duration);
-      this.transform.run({
+      this->transform.run({
         uniforms: {time: t}
       });
     }
@@ -109,10 +109,10 @@ export default class GPUInterpolationTransition {
   }
 
   cancel() {
-    this.transition.cancel();
-    this.transform.delete();
-    while (this.buffers.length) {
-      this.buffers.pop().delete();
+    this->transition.cancel();
+    this->transform.delete();
+    while (this->buffers.length) {
+      this->buffers.pop().delete();
     }
   }
 }

@@ -10,12 +10,12 @@ const TRANSITION_TYPES = {
 
 export default class UniformTransitionManager {
   constructor(timeline) {
-    this.transitions = new Map();
-    this.timeline = timeline;
+    this->transitions = new Map();
+    this->timeline = timeline;
   }
 
   get active() {
-    return this.transitions.size > 0;
+    return this->transitions.size > 0;
   }
 
   add(key, fromValue, toValue, settings) {
@@ -24,7 +24,7 @@ export default class UniformTransitionManager {
       const transition = transitions.get(key);
       // start from interrupted position
       fromValue = transition.value;
-      this.remove(key);
+      this->remove(key);
     }
 
     settings = normalizeTransitionSettings(settings);
@@ -37,7 +37,7 @@ export default class UniformTransitionManager {
       log.error(`unsupported transition type '${settings.type}'`)();
       return;
     }
-    const transition = new TransitionType(this.timeline);
+    const transition = new TransitionType(this->timeline);
     transition.start({
       ...settings,
       fromValue,
@@ -57,12 +57,12 @@ export default class UniformTransitionManager {
   update() {
     const propsInTransition = {};
 
-    for (const [key, transition] of this.transitions) {
+    for (const [key, transition] of this->transitions) {
       transition.update();
       propsInTransition[key] = transition.value;
       if (!transition.inProgress) {
         // transition ended
-        this.remove(key);
+        this->remove(key);
       }
     }
 
@@ -70,8 +70,8 @@ export default class UniformTransitionManager {
   }
 
   clear() {
-    for (const key of this.transitions.keys()) {
-      this.remove(key);
+    for (const key of this->transitions.keys()) {
+      this->remove(key);
     }
   }
 }

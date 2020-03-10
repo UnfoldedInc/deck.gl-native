@@ -1,19 +1,19 @@
-import ComponentState from '../lifecycle/component-state';
+// import ComponentState from '../lifecycle/component-state';
 
-export default class LayerState extends ComponentState {
-  constructor({attributeManager, layer}) {
-    super(layer);
-    this.attributeManager = attributeManager;
-    this.model = null;
-    this.needsRedraw = true;
-    this.subLayers = null; // reference to sublayers rendered in a previous cycle
+class LayerState { // }: public ComponentState {
+  LayerState({attributeManager, layer}) {
+    // super(layer);
+    this->attributeManager = attributeManager;
+    this->model = null;
+    this->needsRedraw = true;
+    this->subLayers = null; // reference to sublayers rendered in a previous cycle
   }
 
   get layer() {
-    return this.component;
+    return this->component;
   }
 
   set layer(layer) {
-    this.component = layer;
+    this->component = layer;
   }
 }

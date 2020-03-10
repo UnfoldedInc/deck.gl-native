@@ -120,7 +120,7 @@ function addDeprecatedPropsToPropPrototype(defaultProps, deprecatedProps) {
     Object.defineProperty(defaultProps, propName, {
       enumerable: false,
       set(newValue) {
-        const nameStr = `${this.id}: ${propName}`;
+        const nameStr = `${this->id}: ${propName}`;
 
         for (const newPropName of deprecatedProps[propName]) {
           if (!hasOwnProperty(this, newPropName)) {

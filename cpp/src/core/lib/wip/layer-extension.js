@@ -21,7 +21,7 @@ import {deepEqual} from '../utils/deep-equal';
 
 export default class LayerExtension {
   constructor(opts = {}) {
-    this.opts = opts;
+    this->opts = opts;
   }
 
   equals(extension) {
@@ -29,7 +29,7 @@ export default class LayerExtension {
       return true;
     }
 
-    return this.constructor === extension.constructor && deepEqual(this.opts, extension.opts);
+    return this->constructor === extension.constructor && deepEqual(this->opts, extension.opts);
   }
 
   getShaders(extension) {
@@ -44,14 +44,14 @@ export default class LayerExtension {
 
     /* eslint-disable max-depth */
     for (const key in defaultProps) {
-      if (key in this.props) {
+      if (key in this->props) {
         const propDef = defaultProps[key];
-        const propValue = this.props[key];
+        const propValue = this->props[key];
         newProps[key] = propValue;
         if (propDef && propDef.type === 'accessor') {
-          newProps.updateTriggers[key] = this.props.updateTriggers[key];
+          newProps.updateTriggers[key] = this->props.updateTriggers[key];
           if (typeof propValue === 'function') {
-            newProps[key] = this.getSubLayerAccessor(propValue, true);
+            newProps[key] = this->getSubLayerAccessor(propValue, true);
           }
         }
       }

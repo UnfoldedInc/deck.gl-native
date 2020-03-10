@@ -11,20 +11,20 @@ export default class ScreenPass extends Pass {
   constructor(gl, props = {}) {
     super(gl, props);
     const {module, fs, id, moduleProps} = props;
-    this.model = this._getModel(gl, module, fs, id, moduleProps);
+    this->model = this->_getModel(gl, module, fs, id, moduleProps);
   }
 
   render(params) {
-    const gl = this.gl;
+    const gl = this->gl;
 
     withParameters(gl, {framebuffer: params.outputBuffer, clearColor: [0, 0, 0, 0]}, () =>
-      this._renderPass(gl, params)
+      this->_renderPass(gl, params)
     );
   }
 
   delete() {
-    this.model.delete();
-    this.model = null;
+    this->model.delete();
+    this->model = null;
   }
 
   // Private method
@@ -46,7 +46,7 @@ export default class ScreenPass extends Pass {
    */
   _renderPass(gl, {inputBuffer, outputBuffer}) {
     clear(gl, {color: true});
-    this.model.draw({
+    this->model.draw({
       uniforms: {
         texture: inputBuffer,
         texSize: [inputBuffer.width, inputBuffer.height]

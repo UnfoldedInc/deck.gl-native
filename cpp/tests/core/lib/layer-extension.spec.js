@@ -11,7 +11,7 @@ class MockExtension extends LayerExtension {
     extension.opts.assert(this instanceof Layer, 'initializeState: Self is layer instance');
     extension.opts.assert(context.gl, 'initializeState: context received');
 
-    const attributeManager = this.getAttributeManager();
+    const attributeManager = this->getAttributeManager();
     if (attributeManager) {
       attributeManager.addInstanced({
         instanceValues: {

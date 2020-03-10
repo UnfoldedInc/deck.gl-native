@@ -67,13 +67,13 @@ TestLayer.layerName = 'TestLayer';
 
 class TestCompositeLayer extends CompositeLayer {
   initializeState() {
-    this.state = {scale: 1};
+    this->state = {scale: 1};
   }
 
   renderLayers() {
     return [
-      new TestLayer(this.getSubLayerProps(), {
-        scale: this.state.scale
+      new TestLayer(this->getSubLayerProps(), {
+        scale: this->state.scale
       })
     ];
   }
@@ -193,8 +193,8 @@ test('CompositeLayer#getSubLayerProps(accessor)', t => {
     initializeState() {}
 
     updateState({props}) {
-      this.setState({
-        data: props.data.map((d, i) => this.getSubLayerRow({position: [0, 0]}, d, i))
+      this->setState({
+        data: props.data.map((d, i) => this->getSubLayerRow({position: [0, 0]}, d, i))
       });
     }
 
@@ -202,20 +202,20 @@ test('CompositeLayer#getSubLayerProps(accessor)', t => {
       return [
         new TestLayer(
           {
-            getColor: this.getSubLayerAccessor(this.props.getColor)
+            getColor: this->getSubLayerAccessor(this->props.getColor)
           },
-          this.getSubLayerProps({id: 'wrapped'}),
+          this->getSubLayerProps({id: 'wrapped'}),
           {
-            data: this.state.data
+            data: this->state.data
           }
         ),
         new TestLayer(
           {
-            getColor: this.props.getColor
+            getColor: this->props.getColor
           },
-          this.getSubLayerProps({id: 'pass-through'}),
+          this->getSubLayerProps({id: 'pass-through'}),
           {
-            data: this.props.data
+            data: this->props.data
           }
         )
       ];

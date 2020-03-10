@@ -13,31 +13,31 @@ import Transition from './transition';
 
 export default class GPUSpringTransition {
   constructor({gl, attribute, timeline}) {
-    this.gl = gl;
-    this.type = 'spring';
-    this.transition = new Transition(timeline);
-    this.attribute = attribute;
+    this->gl = gl;
+    this->type = 'spring';
+    this->transition = new Transition(timeline);
+    this->attribute = attribute;
     // this is the attribute we return during the transition - note: if it is a constant
     // attribute, it will be converted and returned as a regular attribute
     // `attribute.userData` is the original options passed when constructing the attribute.
     // This ensures that we set the proper `doublePrecision` flag and shader attributes.
-    this.attributeInTransition = new Attribute(
+    this->attributeInTransition = new Attribute(
       gl,
       Object.assign({}, attribute.settings, {normalized: false})
     );
-    this.currentStartIndices = attribute.startIndices;
-    // storing currentLength because this.buffer may be larger than the actual length we want to use
+    this->currentStartIndices = attribute.startIndices;
+    // storing currentLength because this->buffer may be larger than the actual length we want to use
     // this is because we only reallocate buffers when they grow, not when they shrink,
     // due to performance costs
-    this.currentLength = 0;
-    this.texture = getTexture(gl);
-    this.framebuffer = getFramebuffer(gl, this.texture);
-    this.transform = getTransform(gl, attribute, this.framebuffer);
+    this->currentLength = 0;
+    this->texture = getTexture(gl);
+    this->framebuffer = getFramebuffer(gl, this->texture);
+    this->transform = getTransform(gl, attribute, this->framebuffer);
     const bufferOpts = {
       byteLength: 0,
       usage: GL.DYNAMIC_COPY
     };
-    this.buffers = [
+    this->buffers = [
       new Buffer(gl, bufferOpts), // previous
       new Buffer(gl, bufferOpts), // current
       new Buffer(gl, bufferOpts) // next
@@ -45,7 +45,7 @@ export default class GPUSpringTransition {
   }
 
   get inProgress() {
-    return this.transition.inProgress;
+    return this->transition.inProgress;
   }
 
   // this is called when an attribute's values have changed and
@@ -58,8 +58,8 @@ export default class GPUSpringTransition {
     const padBufferOpts = {
       numInstances,
       attribute,
-      fromLength: this.currentLength,
-      fromStartIndices: this.currentStartIndices,
+      fromLength: this->currentLength,
+      fromStartIndices: this->currentStartIndices,
       getData: transitionSettings.enter
     };
 
@@ -67,9 +67,9 @@ export default class GPUSpringTransition {
       padBuffer({buffer, ...padBufferOpts});
     }
 
-    this.currentStartIndices = attribute.startIndices;
-    this.currentLength = getAttributeBufferLength(attribute, numInstances);
-    this.attributeInTransition.update({
+    this->currentStartIndices = attribute.startIndices;
+    this->currentLength = getAttributeBufferLength(attribute, numInstances);
+    this->attributeInTransition.update({
       buffer: buffers[1],
       // Hack: Float64Array is required for double-precision attributes
       // to generate correct shader attributes
@@ -77,13 +77,13 @@ export default class GPUSpringTransition {
     });
 
     // when an attribute changes values, a new transition is started. These
-    // are properties that we have to store on this.transition but can change
+    // are properties that we have to store on this->transition but can change
     // when new transitions are started, so we have to keep them up-to-date.
-    // this.transition.start() takes the latest settings and updates them.
-    this.transition.start(transitionSettings);
+    // this->transition.start() takes the latest settings and updates them.
+    this->transition.start(transitionSettings);
 
-    this.transform.update({
-      elementCount: Math.floor(this.currentLength / attribute.size),
+    this->transform.update({
+      elementCount: Math.floor(this->currentLength / attribute.size),
       sourceBuffers: {
         aTo: getSourceBufferAttribute(gl, attribute)
       }
@@ -124,7 +124,7 @@ export default class GPUSpringTransition {
     });
 
     cycleBuffers(buffers);
-    this.attributeInTransition.update({buffer: buffers[1]});
+    this->attributeInTransition.update({buffer: buffers[1]});
 
     const isTransitioning = readPixelsToArray(framebuffer)[0] > 0;
 
@@ -136,15 +136,15 @@ export default class GPUSpringTransition {
   }
 
   cancel() {
-    this.transition.cancel();
-    this.transform.delete();
-    while (this.buffers.length) {
-      this.buffers.pop().delete();
+    this->transition.cancel();
+    this->transform.delete();
+    while (this->buffers.length) {
+      this->buffers.pop().delete();
     }
-    this.texture.delete();
-    this.texture = null;
-    this.framebuffer.delete();
-    this.framebuffer = null;
+    this->texture.delete();
+    this->texture = null;
+    this->framebuffer.delete();
+    this->framebuffer = null;
   }
 }
 

@@ -50,14 +50,14 @@ class View {
     type = Viewport // TODO - default to WebMercator?
   ) {
     assert(!viewportInstance || viewportInstance instanceof Viewport);
-    this.viewportInstance = viewportInstance;
+    this->viewportInstance = viewportInstance;
 
     // Id
-    this.id = id || this.constructor.displayName || 'view';
-    this.type = type;
+    this->id = id || this->constructor.displayName || 'view';
+    this->type = type;
 
-    this.props = Object.assign({}, props, {
-      id: this.id,
+    this->props = Object.assign({}, props, {
+      id: this->id,
       projectionMatrix,
       fovy,
       near,
@@ -66,10 +66,10 @@ class View {
     });
 
     // Extents
-    this._parseDimensions({x, y, width, height});
+    this->_parseDimensions({x, y, width, height});
 
     // Bind methods for easy access
-    this.equals = this.equals.bind(this);
+    this->equals = this->equals.bind(this);
 
     Object.seal(this);
   }
@@ -81,11 +81,11 @@ class View {
 
     // if `viewportInstance` is set, it is the only prop that is used
     // Delegate to `Viewport.equals`
-    if (this.viewportInstance) {
-      return view.viewportInstance && this.viewportInstance.equals(view.viewportInstance);
+    if (this->viewportInstance) {
+      return view.viewportInstance && this->viewportInstance.equals(view.viewportInstance);
     }
 
-    const viewChanged = deepEqual(this.props, view.props);
+    const viewChanged = deepEqual(this->props, view.props);
 
     return viewChanged;
   }
@@ -93,47 +93,47 @@ class View {
   // Build a `Viewport` from a view descriptor
   // TODO - add support for autosizing viewports using width and height
   makeViewport({width, height, viewState}) {
-    if (this.viewportInstance) {
-      return this.viewportInstance;
+    if (this->viewportInstance) {
+      return this->viewportInstance;
     }
 
-    viewState = this.filterViewState(viewState);
+    viewState = this->filterViewState(viewState);
 
     // Resolve relative viewport dimensions
-    const viewportDimensions = this.getDimensions({width, height});
-    const props = Object.assign({viewState}, viewState, this.props, viewportDimensions);
-    return this._getViewport(props);
+    const viewportDimensions = this->getDimensions({width, height});
+    const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
+    return this->_getViewport(props);
   }
 
   getViewStateId() {
-    switch (typeof this.props.viewState) {
+    switch (typeof this->props.viewState) {
       case 'string':
         // if View.viewState is a string, return it
-        return this.props.viewState;
+        return this->props.viewState;
 
       case 'object':
         // If it is an object, return its id component
-        return this.props.viewState && this.props.viewState.id;
+        return this->props.viewState && this->props.viewState.id;
 
       default:
-        return this.id;
+        return this->id;
     }
   }
 
   // Allows view to override (or completely define) viewState
   filterViewState(viewState) {
-    if (this.props.viewState && typeof this.props.viewState === 'object') {
+    if (this->props.viewState && typeof this->props.viewState === 'object') {
       // If we have specified an id, then intent is to override,
       // If not, completely specify the view state
-      if (!this.props.viewState.id) {
-        return this.props.viewState;
+      if (!this->props.viewState.id) {
+        return this->props.viewState;
       }
 
       // Merge in all props from View's viewState, except id
       const newViewState = Object.assign({}, viewState);
-      for (const key in this.props.viewState) {
+      for (const key in this->props.viewState) {
         if (key !== 'id') {
-          newViewState[key] = this.props.viewState[key];
+          newViewState[key] = this->props.viewState[key];
         }
       }
       return newViewState;
@@ -145,16 +145,16 @@ class View {
   // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
   getDimensions({width, height}) {
     return {
-      x: getPosition(this._x, width),
-      y: getPosition(this._y, height),
-      width: getPosition(this._width, width),
-      height: getPosition(this._height, height)
+      x: getPosition(this->_x, width),
+      y: getPosition(this->_y, height),
+      width: getPosition(this->_width, width),
+      height: getPosition(this->_height, height)
     };
   }
 
   // Used by sub classes to resolve controller props
   _getControllerProps(defaultOpts) {
-    let opts = this.props.controller;
+    let opts = this->props.controller;
 
     if (!opts) {
       return null;
@@ -177,9 +177,9 @@ class View {
 
   // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
   _parseDimensions({x, y, width, height}) {
-    this._x = parsePosition(x);
-    this._y = parsePosition(y);
-    this._width = parsePosition(width);
-    this._height = parsePosition(height);
+    this->_x = parsePosition(x);
+    this->_y = parsePosition(y);
+    this->_width = parsePosition(width);
+    this->_height = parsePosition(height);
   }
 }

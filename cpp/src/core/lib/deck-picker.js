@@ -34,51 +34,51 @@ import {processPickInfo, getLayerPickingInfo} from './picking/pick-info';
 
 export default class DeckPicker {
   constructor(gl) {
-    this.gl = gl;
-    this.pickingFBO = null;
-    this.pickLayersPass = new PickLayersPass(gl);
-    this.layerFilter = null;
-    this.lastPickedInfo = {
+    this->gl = gl;
+    this->pickingFBO = null;
+    this->pickLayersPass = new PickLayersPass(gl);
+    this->layerFilter = null;
+    this->lastPickedInfo = {
       // For callback tracking and auto highlight
       index: -1,
       layerId: null,
       info: null
     };
-    this._onError = null;
+    this->_onError = null;
   }
 
   setProps(props) {
     if ('layerFilter' in props) {
-      this.layerFilter = props.layerFilter;
+      this->layerFilter = props.layerFilter;
     }
 
     if ('onError' in props) {
-      this._onError = props.onError;
+      this->_onError = props.onError;
     }
   }
 
   finalize() {
-    if (this.pickingFBO) {
-      this.pickingFBO.delete();
+    if (this->pickingFBO) {
+      this->pickingFBO.delete();
     }
-    if (this.depthFBO) {
-      this.depthFBO.color.delete();
-      this.depthFBO.delete();
+    if (this->depthFBO) {
+      this->depthFBO.color.delete();
+      this->depthFBO.delete();
     }
   }
 
   // Pick the closest info at given coordinate
   pickObject(opts) {
-    return this._pickClosestObject(opts);
+    return this->_pickClosestObject(opts);
   }
 
   // Get all unique infos within a bounding box
   pickObjects(opts) {
-    return this._pickVisibleObjects(opts);
+    return this->_pickVisibleObjects(opts);
   }
 
   // Returns a new picking info object by assuming the last picked object is still picked
-  getLastPickedObject({x, y, layers, viewports}, lastPickedInfo = this.lastPickedInfo.info) {
+  getLastPickedObject({x, y, layers, viewports}, lastPickedInfo = this->lastPickedInfo.info) {
     const lastPickedLayerId = lastPickedInfo && lastPickedInfo.layer && lastPickedInfo.layer.id;
     const layer = lastPickedLayerId ? layers.find(l => l.id === lastPickedLayerId) : null;
     const coordinate = viewports[0] && viewports[0].unproject([x, y]);
@@ -102,11 +102,11 @@ export default class DeckPicker {
   _resizeBuffer() {
     const {gl} = this;
     // Create a frame buffer if not already available
-    if (!this.pickingFBO) {
-      this.pickingFBO = new Framebuffer(gl);
+    if (!this->pickingFBO) {
+      this->pickingFBO = new Framebuffer(gl);
       if (Framebuffer.isSupported(gl, {colorBufferFloat: true})) {
-        this.depthFBO = new Framebuffer(gl);
-        this.depthFBO.attach({
+        this->depthFBO = new Framebuffer(gl);
+        this->depthFBO.attach({
           [GL.COLOR_ATTACHMENT0]: new Texture2D(gl, {
             format: isWebGL2(gl) ? GL.RGBA32F : GL.RGBA,
             type: GL.FLOAT
@@ -115,9 +115,9 @@ export default class DeckPicker {
       }
     }
     // Resize it to current canvas size (this is a noop if size hasn't changed)
-    this.pickingFBO.resize({width: gl.canvas.width, height: gl.canvas.height});
-    this.depthFBO.resize({width: gl.canvas.width, height: gl.canvas.height});
-    return this.pickingFBO;
+    this->pickingFBO.resize({width: gl.canvas.width, height: gl.canvas.height});
+    this->depthFBO.resize({width: gl.canvas.width, height: gl.canvas.height});
+    return this->pickingFBO;
   }
 
   // Pick the closest object at the given (x,y) coordinate
@@ -133,20 +133,20 @@ export default class DeckPicker {
     unproject3D,
     onViewportActive
   }) {
-    this._resizeBuffer();
+    this->_resizeBuffer();
     // Convert from canvas top-left to WebGL bottom-left coordinates
     // Top-left coordinates [x, y] to bottom-left coordinates [deviceX, deviceY]
     // And compensate for pixelRatio
-    const pixelRatio = cssToDeviceRatio(this.gl);
-    const devicePixelRange = cssToDevicePixels(this.gl, [x, y], true);
+    const pixelRatio = cssToDeviceRatio(this->gl);
+    const devicePixelRange = cssToDevicePixels(this->gl, [x, y], true);
     const devicePixel = [
       devicePixelRange.x + Math.floor(devicePixelRange.width / 2),
       devicePixelRange.y + Math.floor(devicePixelRange.height / 2)
     ];
 
     const deviceRadius = Math.round(radius * pixelRatio);
-    const {width, height} = this.pickingFBO;
-    const deviceRect = this._getPickingRect({
+    const {width, height} = this->pickingFBO;
+    const deviceRect = this->_getPickingRect({
       deviceX: devicePixel[0],
       deviceY: devicePixel[1],
       deviceRadius,
@@ -161,7 +161,7 @@ export default class DeckPicker {
     for (let i = 0; i < depth; i++) {
       const pickedColors =
         deviceRect &&
-        this._drawAndSample({
+        this->_drawAndSample({
           layers,
           viewports,
           onViewportActive,
@@ -180,8 +180,8 @@ export default class DeckPicker {
       });
 
       let z;
-      if (pickInfo.pickedLayer && unproject3D && this.depthFBO) {
-        const zValues = this._drawAndSample({
+      if (pickInfo.pickedLayer && unproject3D && this->depthFBO) {
+        const zValues = this->_drawAndSample({
           layers: [pickInfo.pickedLayer],
           viewports,
           onViewportActive,
@@ -207,7 +207,7 @@ export default class DeckPicker {
       // This logic needs to run even if no object is picked.
       infos = processPickInfo({
         pickInfo,
-        lastPickedInfo: this.lastPickedInfo,
+        lastPickedInfo: this->lastPickedInfo,
         mode,
         layers,
         viewports,
@@ -248,18 +248,18 @@ export default class DeckPicker {
     mode = 'query',
     onViewportActive
   }) {
-    this._resizeBuffer();
+    this->_resizeBuffer();
     // Convert from canvas top-left to WebGL bottom-left coordinates
     // And compensate for pixelRatio
-    const pixelRatio = cssToDeviceRatio(this.gl);
-    const leftTop = cssToDevicePixels(this.gl, [x, y], true);
+    const pixelRatio = cssToDeviceRatio(this->gl);
+    const leftTop = cssToDevicePixels(this->gl, [x, y], true);
 
     // take left and top (y inverted in device pixels) from start location
     const deviceLeft = leftTop.x;
     const deviceTop = leftTop.y + leftTop.height;
 
     // take right and bottom (y inverted in device pixels) from end location
-    const rightBottom = cssToDevicePixels(this.gl, [x + width, y + height], true);
+    const rightBottom = cssToDevicePixels(this->gl, [x + width, y + height], true);
     const deviceRight = rightBottom.x + rightBottom.width;
     const deviceBottom = rightBottom.y;
 
@@ -271,7 +271,7 @@ export default class DeckPicker {
       height: deviceTop - deviceBottom
     };
 
-    const pickedColors = this._drawAndSample({
+    const pickedColors = this->_drawAndSample({
       layers,
       viewports,
       onViewportActive,
@@ -316,12 +316,12 @@ export default class DeckPicker {
       return null;
     }
 
-    const pickingFBO = pickZ ? this.depthFBO : this.pickingFBO;
+    const pickingFBO = pickZ ? this->depthFBO : this->pickingFBO;
 
-    this.pickLayersPass.render({
+    this->pickLayersPass.render({
       layers,
-      layerFilter: this.layerFilter,
-      onError: this._onError,
+      layerFilter: this->layerFilter,
+      onError: this->_onError,
       viewports,
       onViewportActive,
       pickingFBO,

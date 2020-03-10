@@ -3,7 +3,7 @@ import Transition from './transition';
 
 export default class CPUInterpolationTransition extends Transition {
   get value() {
-    return this._value;
+    return this->_value;
   }
 
   _onUpdate() {
@@ -12,6 +12,6 @@ export default class CPUInterpolationTransition extends Transition {
       settings: {fromValue, toValue, duration, easing}
     } = this;
     const t = easing(time / duration);
-    this._value = lerp(fromValue, toValue, t);
+    this->_value = lerp(fromValue, toValue, t);
   }
 }

@@ -1,9 +1,9 @@
 export class TypedArrayManager {
   constructor({overAlloc = 2, poolSize = 100} = {}) {
-    this.overAlloc = overAlloc;
-    this.poolSize = poolSize;
+    this->overAlloc = overAlloc;
+    this->poolSize = poolSize;
 
-    this._pool = [];
+    this->_pool = [];
   }
 
   allocate(typedArray, count, {size = 1, type, padding = 0, copy = false}) {
@@ -19,7 +19,7 @@ export class TypedArrayManager {
       }
     }
 
-    const newArray = this._allocate(Type, newSize);
+    const newArray = this->_allocate(Type, newSize);
 
     if (typedArray && copy) {
       newArray.set(typedArray);
@@ -29,20 +29,20 @@ export class TypedArrayManager {
       newArray.fill(0, 0, 4);
     }
 
-    this._release(typedArray);
+    this->_release(typedArray);
     return newArray;
   }
 
   release(typedArray) {
-    this._release(typedArray);
+    this->_release(typedArray);
   }
 
   _allocate(Type, size) {
     // Allocate at least one element to ensure a valid buffer
-    size = Math.max(Math.ceil(size * this.overAlloc), 1);
+    size = Math.max(Math.ceil(size * this->overAlloc), 1);
 
     // Check if available in pool
-    const pool = this._pool;
+    const pool = this->_pool;
     const byteLength = Type.BYTES_PER_ELEMENT * size;
     const i = pool.findIndex(b => b.byteLength >= byteLength);
     if (i >= 0) {
@@ -56,7 +56,7 @@ export class TypedArrayManager {
     if (!ArrayBuffer.isView(typedArray)) {
       return;
     }
-    const pool = this._pool;
+    const pool = this->_pool;
     const {buffer} = typedArray;
     // Save the buffer of the released array into the pool
     // Sort buffers by size
@@ -65,10 +65,10 @@ export class TypedArrayManager {
     const i = pool.findIndex(b => b.byteLength >= byteLength);
     if (i < 0) {
       pool.push(buffer);
-    } else if (i > 0 || pool.length < this.poolSize) {
+    } else if (i > 0 || pool.length < this->poolSize) {
       pool.splice(i, 0, buffer);
     }
-    if (pool.length > this.poolSize) {
+    if (pool.length > this->poolSize) {
       // Drop the smallest one
       pool.shift();
     }

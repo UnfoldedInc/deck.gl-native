@@ -4,22 +4,22 @@
 export default class ShaderAttribute {
   constructor(dataColumn, opts) {
     // Options that cannot be changed later
-    this.opts = opts;
-    this.source = dataColumn;
+    this->opts = opts;
+    this->source = dataColumn;
   }
 
   get value() {
-    return this.source.value;
+    return this->source.value;
   }
 
   getValue() {
-    const buffer = this.source.getBuffer();
-    const accessor = this.getAccessor();
+    const buffer = this->source.getBuffer();
+    const accessor = this->getAccessor();
     if (buffer) {
       return [buffer, accessor];
     }
 
-    const {value} = this.source;
+    const {value} = this->source;
     const {size} = accessor;
     let constantValue = value;
 
@@ -38,9 +38,9 @@ export default class ShaderAttribute {
   getAccessor() {
     return {
       // source data accessor
-      ...this.source.getAccessor(),
+      ...this->source.getAccessor(),
       // shader attribute overrides
-      ...this.opts
+      ...this->opts
     };
   }
 }

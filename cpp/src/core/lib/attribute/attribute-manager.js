@@ -57,19 +57,19 @@ export default class AttributeManager {
    * by offering the ability to "invalidate" each attribute separately.
    */
   constructor(gl, {id = 'attribute-manager', stats, timeline} = {}) {
-    this.id = id;
-    this.gl = gl;
+    this->id = id;
+    this->gl = gl;
 
-    this.attributes = {};
+    this->attributes = {};
 
-    this.updateTriggers = {};
-    this.accessors = {};
-    this.needsRedraw = true;
+    this->updateTriggers = {};
+    this->accessors = {};
+    this->needsRedraw = true;
 
-    this.userData = {};
-    this.stats = stats;
+    this->userData = {};
+    this->stats = stats;
 
-    this.attributeTransitionManager = new AttributeTransitionManager(gl, {
+    this->attributeTransitionManager = new AttributeTransitionManager(gl, {
       id: `${id}-transitions`,
       timeline
     });
@@ -79,10 +79,10 @@ export default class AttributeManager {
   }
 
   finalize() {
-    for (const attributeName in this.attributes) {
-      this.attributes[attributeName].delete();
+    for (const attributeName in this->attributes) {
+      this->attributes[attributeName].delete();
     }
-    this.attributeTransitionManager.finalize();
+    this->attributeTransitionManager.finalize();
   }
 
   // Returns the redraw flag, optionally clearing it.
@@ -92,27 +92,27 @@ export default class AttributeManager {
   // @param {String} [clearRedrawFlags=false] - whether to clear the flag
   // @return {false|String} - reason a redraw is needed.
   getNeedsRedraw(opts = {clearRedrawFlags: false}) {
-    const redraw = this.needsRedraw;
-    this.needsRedraw = this.needsRedraw && !opts.clearRedrawFlags;
-    return redraw && this.id;
+    const redraw = this->needsRedraw;
+    this->needsRedraw = this->needsRedraw && !opts.clearRedrawFlags;
+    return redraw && this->id;
   }
 
   // Sets the redraw flag.
   // @param {Boolean} redraw=true
   // @return {AttributeManager} - for chaining
   setNeedsRedraw(redraw = true) {
-    this.needsRedraw = true;
+    this->needsRedraw = true;
     return this;
   }
 
   // Adds attributes
   add(attributes, updaters) {
-    this._add(attributes, updaters);
+    this->_add(attributes, updaters);
   }
 
   // Adds attributes
   addInstanced(attributes, updaters) {
-    this._add(attributes, updaters, {instanced: 1});
+    this->_add(attributes, updaters, {instanced: 1});
   }
 
   /**
@@ -128,23 +128,23 @@ export default class AttributeManager {
   remove(attributeNameArray) {
     for (let i = 0; i < attributeNameArray.length; i++) {
       const name = attributeNameArray[i];
-      if (this.attributes[name] !== undefined) {
-        this.attributes[name].delete();
-        delete this.attributes[name];
+      if (this->attributes[name] !== undefined) {
+        this->attributes[name].delete();
+        delete this->attributes[name];
       }
     }
   }
 
   // Marks an attribute for update
   invalidate(triggerName, dataRange) {
-    const invalidatedAttributes = this._invalidateTrigger(triggerName, dataRange);
+    const invalidatedAttributes = this->_invalidateTrigger(triggerName, dataRange);
     // For performance tuning
     debug(TRACE_INVALIDATE, this, triggerName, invalidatedAttributes);
   }
 
   invalidateAll(dataRange) {
-    for (const attributeName in this.attributes) {
-      this.attributes[attributeName].setNeedsUpdate(attributeName, dataRange);
+    for (const attributeName in this->attributes) {
+      this->attributes[attributeName].setNeedsUpdate(attributeName, dataRange);
     }
     // For performance tuning
     debug(TRACE_INVALIDATE, this, 'all');
@@ -164,12 +164,12 @@ export default class AttributeManager {
     let updated = false;
 
     debug(TRACE_UPDATE_START, this);
-    if (this.stats) {
-      this.stats.get('Update Attributes').timeStart();
+    if (this->stats) {
+      this->stats.get('Update Attributes').timeStart();
     }
 
-    for (const attributeName in this.attributes) {
-      const attribute = this.attributes[attributeName];
+    for (const attributeName in this->attributes) {
+      const attribute = this->attributes[attributeName];
       const accessorName = attribute.settings.accessor;
       attribute.startIndices = startIndices;
 
@@ -188,7 +188,7 @@ export default class AttributeManager {
       } else if (attribute.needsUpdate()) {
         // Step 4: update via updater callback
         updated = true;
-        this._updateAttribute({
+        this->_updateAttribute({
           attribute,
           numInstances,
           data,
@@ -197,7 +197,7 @@ export default class AttributeManager {
         });
       }
 
-      this.needsRedraw |= attribute.needsRedraw();
+      this->needsRedraw |= attribute.needsRedraw();
     }
 
     if (updated) {
@@ -205,12 +205,12 @@ export default class AttributeManager {
       debug(TRACE_UPDATE_END, this, numInstances);
     }
 
-    if (this.stats) {
-      this.stats.get('Update Attributes').timeEnd();
+    if (this->stats) {
+      this->stats.get('Update Attributes').timeEnd();
     }
 
-    this.attributeTransitionManager.update({
-      attributes: this.attributes,
+    this->attributeTransitionManager.update({
+      attributes: this->attributes,
       numInstances,
       transitions
     });
@@ -221,7 +221,7 @@ export default class AttributeManager {
   updateTransition() {
     const {attributeTransitionManager} = this;
     const transitionUpdated = attributeTransitionManager.run();
-    this.needsRedraw = this.needsRedraw || transitionUpdated;
+    this->needsRedraw = this->needsRedraw || transitionUpdated;
     return transitionUpdated;
   }
 
@@ -231,7 +231,7 @@ export default class AttributeManager {
    * @return {Object} attributes - descriptors
    */
   getAttributes() {
-    return this.attributes;
+    return this->attributes;
   }
 
   /**
@@ -257,7 +257,7 @@ export default class AttributeManager {
   // Returns shader attributes
   getShaderAttributes(attributes, excludeAttributes = {}) {
     if (!attributes) {
-      attributes = this.getAttributes();
+      attributes = this->getAttributes();
     }
     const shaderAttributes = {};
     for (const attributeName in attributes) {
@@ -273,7 +273,7 @@ export default class AttributeManager {
   // Returns object containing all accessors as keys, with non-null values
   // @return {Object} - accessors object
   getAccessors() {
-    return this.updateTriggers;
+    return this->updateTriggers;
   }
 
   // PRIVATE METHODS
@@ -290,14 +290,14 @@ export default class AttributeManager {
       const attribute = attributes[attributeName];
 
       // Initialize the attribute descriptor, with WebGL and metadata fields
-      const newAttribute = this._createAttribute(attributeName, attribute, extraProps);
+      const newAttribute = this->_createAttribute(attributeName, attribute, extraProps);
 
       newAttributes[attributeName] = newAttribute;
     }
 
-    Object.assign(this.attributes, newAttributes);
+    Object.assign(this->attributes, newAttributes);
 
-    this._mapUpdateTriggersToAttributes();
+    this->_mapUpdateTriggersToAttributes();
   }
   /* eslint-enable max-statements */
 
@@ -312,15 +312,15 @@ export default class AttributeManager {
       divisor: attribute.instanced || extraProps.instanced ? 1 : attribute.divisor
     };
 
-    return new Attribute(this.gl, Object.assign({}, attribute, props));
+    return new Attribute(this->gl, Object.assign({}, attribute, props));
   }
 
   // build updateTrigger name to attribute name mapping
   _mapUpdateTriggersToAttributes() {
     const triggers = {};
 
-    for (const attributeName in this.attributes) {
-      const attribute = this.attributes[attributeName];
+    for (const attributeName in this->attributes) {
+      const attribute = this->attributes[attributeName];
       attribute.getUpdateTriggers().forEach(triggerName => {
         if (!triggers[triggerName]) {
           triggers[triggerName] = [];
@@ -329,7 +329,7 @@ export default class AttributeManager {
       });
     }
 
-    this.updateTriggers = triggers;
+    this->updateTriggers = triggers;
   }
 
   _invalidateTrigger(triggerName, dataRange) {
@@ -358,7 +358,7 @@ export default class AttributeManager {
     // Calls update on any buffers that need update
     const updated = attribute.updateBuffer(opts);
     if (updated) {
-      this.needsRedraw = true;
+      this->needsRedraw = true;
       debug(TRACE_ATTRIBUTE_UPDATE_END, attribute, numInstances);
     }
   }

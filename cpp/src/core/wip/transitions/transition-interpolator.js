@@ -19,9 +19,9 @@ export default class TransitionInterpolator {
     }
     const {compare, extract, required} = opts;
 
-    this._propsToCompare = compare;
-    this._propsToExtract = extract;
-    this._requiredProps = required;
+    this->_propsToCompare = compare;
+    this->_propsToExtract = extract;
+    this->_requiredProps = required;
   }
 
   /**
@@ -31,7 +31,7 @@ export default class TransitionInterpolator {
    * @returns {bool} - true if two props are equivalent
    */
   arePropsEqual(currentProps, nextProps) {
-    for (const key of this._propsToCompare || Object.keys(nextProps)) {
+    for (const key of this->_propsToCompare || Object.keys(nextProps)) {
       if (
         !(key in currentProps) ||
         !(key in nextProps) ||
@@ -53,11 +53,11 @@ export default class TransitionInterpolator {
   initializeProps(startProps, endProps) {
     let result;
 
-    if (this._propsToExtract) {
+    if (this->_propsToExtract) {
       const startViewStateProps = {};
       const endViewStateProps = {};
 
-      for (const key of this._propsToExtract) {
+      for (const key of this->_propsToExtract) {
         startViewStateProps[key] = startProps[key];
         endViewStateProps[key] = endProps[key];
       }
@@ -66,8 +66,8 @@ export default class TransitionInterpolator {
       result = {start: startProps, end: endProps};
     }
 
-    this._checkRequiredProps(result.start);
-    this._checkRequiredProps(result.end);
+    this->_checkRequiredProps(result.start);
+    this->_checkRequiredProps(result.end);
 
     return result;
   }
@@ -94,11 +94,11 @@ export default class TransitionInterpolator {
   }
 
   _checkRequiredProps(props) {
-    if (!this._requiredProps) {
+    if (!this->_requiredProps) {
       return;
     }
 
-    this._requiredProps.forEach(propName => {
+    this->_requiredProps.forEach(propName => {
       const value = props[propName];
       assert(
         Number.isFinite(value) || Array.isArray(value),

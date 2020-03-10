@@ -31,8 +31,8 @@ TestLayer.layerName = 'TestLayer';
 class TestCompositeLayer extends CompositeLayer {
   renderLayers() {
     return [
-      new TestLayer(Object.assign({id: `${this.props.id}-sublayer-1`}, this.getSubLayerProps())),
-      new TestLayer(Object.assign({id: `${this.props.id}-sublayer-2`}, this.getSubLayerProps()))
+      new TestLayer(Object.assign({id: `${this->props.id}-sublayer-1`}, this->getSubLayerProps())),
+      new TestLayer(Object.assign({id: `${this->props.id}-sublayer-2`}, this->getSubLayerProps()))
     ];
   }
 }
@@ -183,7 +183,7 @@ test('LayerManager#error handling', t => {
     initializeState() {}
 
     updateState() {
-      if (this.props.throw) {
+      if (this->props.throw) {
         throw new Error();
       }
     }

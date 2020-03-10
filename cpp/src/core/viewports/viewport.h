@@ -66,36 +66,36 @@ export default class Viewport {
       height = 1
     } = opts;
 
-    this.id = id || this.constructor.displayName || 'viewport';
+    this->id = id || this->constructor.displayName || 'viewport';
 
-    this.x = x;
-    this.y = y;
+    this->x = x;
+    this->y = y;
     // Silently allow apps to send in w,h = 0,0
-    this.width = width || 1;
-    this.height = height || 1;
-    this._frustumPlanes = {};
+    this->width = width || 1;
+    this->height = height || 1;
+    this->_frustumPlanes = {};
 
-    this._initViewMatrix(opts);
-    this._initProjectionMatrix(opts);
-    this._initPixelMatrices();
+    this->_initViewMatrix(opts);
+    this->_initProjectionMatrix(opts);
+    this->_initPixelMatrices();
 
     // Bind methods for easy access
-    this.equals = this.equals.bind(this);
-    this.project = this.project.bind(this);
-    this.unproject = this.unproject.bind(this);
-    this.projectPosition = this.projectPosition.bind(this);
-    this.unprojectPosition = this.unprojectPosition.bind(this);
-    this.projectFlat = this.projectFlat.bind(this);
-    this.unprojectFlat = this.unprojectFlat.bind(this);
+    this->equals = this->equals.bind(this);
+    this->project = this->project.bind(this);
+    this->unproject = this->unproject.bind(this);
+    this->projectPosition = this->projectPosition.bind(this);
+    this->unprojectPosition = this->unprojectPosition.bind(this);
+    this->projectFlat = this->projectFlat.bind(this);
+    this->unprojectFlat = this->unprojectFlat.bind(this);
   }
 
   get metersPerPixel() {
-    return this.distanceScales.metersPerUnit[2] / this.scale;
+    return this->distanceScales.metersPerUnit[2] / this->scale;
   }
 
   get projectionMode() {
-    if (this.isGeospatial) {
-      return this.zoom < 12
+    if (this->isGeospatial) {
+      return this->zoom < 12
         ? PROJECTION_MODE.WEB_MERCATOR
         : PROJECTION_MODE.WEB_MERCATOR_AUTO_OFFSET;
     }
@@ -110,11 +110,11 @@ export default class Viewport {
     }
 
     return (
-      viewport.width === this.width &&
-      viewport.height === this.height &&
-      viewport.scale === this.scale &&
-      equals(viewport.projectionMatrix, this.projectionMatrix) &&
-      equals(viewport.viewMatrix, this.viewMatrix)
+      viewport.width === this->width &&
+      viewport.height === this->height &&
+      viewport.scale === this->scale &&
+      equals(viewport.projectionMatrix, this->projectionMatrix) &&
+      equals(viewport.viewMatrix, this->viewMatrix)
     );
     // TODO - check distance scales?
   }
@@ -132,11 +132,11 @@ export default class Viewport {
    * @return {Array} - [x, y] or [x, y, z] in top left coords
    */
   project(xyz, {topLeft = true} = {}) {
-    const worldPosition = this.projectPosition(xyz);
-    const coord = worldToPixels(worldPosition, this.pixelProjectionMatrix);
+    const worldPosition = this->projectPosition(xyz);
+    const coord = worldToPixels(worldPosition, this->pixelProjectionMatrix);
 
     const [x, y] = coord;
-    const y2 = topLeft ? y : this.height - y;
+    const y2 = topLeft ? y : this->height - y;
     return xyz.length === 2 ? [x, y2] : [x, y2, coord[2]];
   }
 
@@ -153,10 +153,10 @@ export default class Viewport {
   unproject(xyz, {topLeft = true, targetZ} = {}) {
     const [x, y, z] = xyz;
 
-    const y2 = topLeft ? y : this.height - y;
-    const targetZWorld = targetZ && targetZ * this.distanceScales.unitsPerMeter[2];
-    const coord = pixelsToWorld([x, y2, z], this.pixelUnprojectionMatrix, targetZWorld);
-    const [X, Y, Z] = this.unprojectPosition(coord);
+    const y2 = topLeft ? y : this->height - y;
+    const targetZWorld = targetZ && targetZ * this->distanceScales.unitsPerMeter[2];
+    const coord = pixelsToWorld([x, y2, z], this->pixelUnprojectionMatrix, targetZWorld);
+    const [X, Y, Z] = this->unprojectPosition(coord);
 
     if (Number.isFinite(z)) {
       return [X, Y, Z];
@@ -168,14 +168,14 @@ export default class Viewport {
   // Used for web meractor projection
 
   projectPosition(xyz) {
-    const [X, Y] = this.projectFlat(xyz);
-    const Z = (xyz[2] || 0) * this.distanceScales.unitsPerMeter[2];
+    const [X, Y] = this->projectFlat(xyz);
+    const Z = (xyz[2] || 0) * this->distanceScales.unitsPerMeter[2];
     return [X, Y, Z];
   }
 
   unprojectPosition(xyz) {
-    const [X, Y] = this.unprojectFlat(xyz);
-    const Z = (xyz[2] || 0) * this.distanceScales.metersPerUnit[2];
+    const [X, Y] = this->unprojectFlat(xyz);
+    const Z = (xyz[2] || 0) * this->distanceScales.metersPerUnit[2];
     return [X, Y, Z];
   }
 
@@ -189,7 +189,7 @@ export default class Viewport {
    * @return {Array} [x,y] coordinates.
    */
   projectFlat(xyz) {
-    if (this.isGeospatial) {
+    if (this->isGeospatial) {
       return lngLatToWorld(xyz);
     }
     return xyz;
@@ -204,7 +204,7 @@ export default class Viewport {
    *   Per cartographic tradition, lat and lon are specified as degrees.
    */
   unprojectFlat(xyz) {
-    if (this.isGeospatial) {
+    if (this->isGeospatial) {
       return worldToLngLat(xyz);
     }
     return xyz;
@@ -218,55 +218,55 @@ export default class Viewport {
         highPrecision: true
       });
     }
-    return this.distanceScales;
+    return this->distanceScales;
   }
 
   containsPixel({x, y, width = 1, height = 1}) {
     return (
-      x < this.x + this.width &&
-      this.x < x + width &&
-      y < this.y + this.height &&
-      this.y < y + height
+      x < this->x + this->width &&
+      this->x < x + width &&
+      y < this->y + this->height &&
+      this->y < y + height
     );
   }
 
   // Extract frustum planes in common space
   getFrustumPlanes() {
-    if (this._frustumPlanes.near) {
-      return this._frustumPlanes;
+    if (this->_frustumPlanes.near) {
+      return this->_frustumPlanes;
     }
 
-    const {near, far, fovyRadians, aspect} = this.projectionProps;
+    const {near, far, fovyRadians, aspect} = this->projectionProps;
 
     Object.assign(
-      this._frustumPlanes,
+      this->_frustumPlanes,
       getFrustumPlanes({
         aspect,
         near,
         far,
         fovyRadians,
-        position: this.cameraPosition,
-        direction: this.cameraDirection,
-        up: this.cameraUp,
-        right: this.cameraRight
+        position: this->cameraPosition,
+        direction: this->cameraDirection,
+        up: this->cameraUp,
+        right: this->cameraRight
       })
     );
 
-    return this._frustumPlanes;
+    return this->_frustumPlanes;
   }
 
   // EXPERIMENTAL METHODS
 
   getCameraPosition() {
-    return this.cameraPosition;
+    return this->cameraPosition;
   }
 
   getCameraDirection() {
-    return this.cameraDirection;
+    return this->cameraDirection;
   }
 
   getCameraUp() {
-    return this.cameraUp;
+    return this->cameraUp;
   }
 
   // INTERNAL METHODS
@@ -295,51 +295,51 @@ export default class Viewport {
     } = opts;
 
     // Check if we have a geospatial anchor
-    this.isGeospatial = Number.isFinite(latitude) && Number.isFinite(longitude);
+    this->isGeospatial = Number.isFinite(latitude) && Number.isFinite(longitude);
 
-    this.zoom = zoom;
-    if (!Number.isFinite(this.zoom)) {
-      this.zoom = this.isGeospatial
+    this->zoom = zoom;
+    if (!Number.isFinite(this->zoom)) {
+      this->zoom = this->isGeospatial
         ? getMeterZoom({latitude}) + Math.log2(focalDistance)
         : DEFAULT_ZOOM;
     }
-    const scale = Math.pow(2, this.zoom);
-    this.scale = scale;
+    const scale = Math.pow(2, this->zoom);
+    this->scale = scale;
 
     // Calculate distance scales if lng/lat/zoom are provided
-    this.distanceScales = this.isGeospatial
+    this->distanceScales = this->isGeospatial
       ? getDistanceScales({latitude, longitude})
       : distanceScales || DEFAULT_DISTANCE_SCALES;
 
-    this.focalDistance = focalDistance;
+    this->focalDistance = focalDistance;
 
-    this.distanceScales.metersPerUnit = new Vector3(this.distanceScales.metersPerUnit);
-    this.distanceScales.unitsPerMeter = new Vector3(this.distanceScales.unitsPerMeter);
+    this->distanceScales.metersPerUnit = new Vector3(this->distanceScales.metersPerUnit);
+    this->distanceScales.unitsPerMeter = new Vector3(this->distanceScales.unitsPerMeter);
 
-    this.position = ZERO_VECTOR;
-    this.meterOffset = ZERO_VECTOR;
+    this->position = ZERO_VECTOR;
+    this->meterOffset = ZERO_VECTOR;
     if (position) {
       // Apply model matrix if supplied
-      this.position = position;
-      this.modelMatrix = modelMatrix;
-      this.meterOffset = modelMatrix ? modelMatrix.transformVector(position) : position;
+      this->position = position;
+      this->modelMatrix = modelMatrix;
+      this->meterOffset = modelMatrix ? modelMatrix.transformVector(position) : position;
     }
 
-    if (this.isGeospatial) {
+    if (this->isGeospatial) {
       // Determine camera center
-      this.longitude = longitude;
-      this.latitude = latitude;
-      this.center = this._getCenterInWorld({longitude, latitude});
+      this->longitude = longitude;
+      this->latitude = latitude;
+      this->center = this->_getCenterInWorld({longitude, latitude});
     } else {
-      this.center = position ? this.projectPosition(position) : [0, 0, 0];
+      this->center = position ? this->projectPosition(position) : [0, 0, 0];
     }
-    this.viewMatrixUncentered = viewMatrix;
+    this->viewMatrixUncentered = viewMatrix;
     // Make a centered version of the matrix for projection modes without an offset
-    this.viewMatrix = new Matrix4()
+    this->viewMatrix = new Matrix4()
       // Apply the uncentered view matrix
-      .multiplyRight(this.viewMatrixUncentered)
+      .multiplyRight(this->viewMatrixUncentered)
       // And center it
-      .translate(new Vector3(this.center || ZERO_VECTOR).negate());
+      .translate(new Vector3(this->center || ZERO_VECTOR).negate());
   }
   /* eslint-enable complexity, max-statements */
 
@@ -347,7 +347,7 @@ export default class Viewport {
     const {meterOffset, distanceScales} = this;
 
     // Make a centered version of the matrix for projection modes without an offset
-    const center2d = this.projectFlat([longitude, latitude]);
+    const center2d = this->projectFlat([longitude, latitude]);
     const center = new Vector3(center2d[0], center2d[1], 0);
 
     if (meterOffset) {
@@ -374,42 +374,42 @@ export default class Viewport {
       focalDistance = 1
     } = opts;
 
-    this.projectionProps = {
+    this->projectionProps = {
       orthographic,
       fovyRadians: fovyRadians || fovy * DEGREES_TO_RADIANS,
-      aspect: this.width / this.height,
+      aspect: this->width / this->height,
       focalDistance,
       near,
       far
     };
 
-    this.projectionMatrix = projectionMatrix || this._createProjectionMatrix(this.projectionProps);
+    this->projectionMatrix = projectionMatrix || this->_createProjectionMatrix(this->projectionProps);
   }
 
   _initPixelMatrices() {
     // Note: As usual, matrix operations should be applied in "reverse" order
     // since vectors will be multiplied in from the right during transformation
     const vpm = createMat4();
-    mat4.multiply(vpm, vpm, this.projectionMatrix);
-    mat4.multiply(vpm, vpm, this.viewMatrix);
-    this.viewProjectionMatrix = vpm;
+    mat4.multiply(vpm, vpm, this->projectionMatrix);
+    mat4.multiply(vpm, vpm, this->viewMatrix);
+    this->viewProjectionMatrix = vpm;
 
-    // console.log('VPM', this.viewMatrix, this.projectionMatrix, this.viewProjectionMatrix);
+    // console.log('VPM', this->viewMatrix, this->projectionMatrix, this->viewProjectionMatrix);
 
     // Calculate inverse view matrix
-    this.viewMatrixInverse = mat4.invert([], this.viewMatrix) || this.viewMatrix;
+    this->viewMatrixInverse = mat4.invert([], this->viewMatrix) || this->viewMatrix;
 
     // Decompose camera directions
     const {eye, direction, up, right} = extractCameraVectors({
-      viewMatrix: this.viewMatrix,
-      viewMatrixInverse: this.viewMatrixInverse
+      viewMatrix: this->viewMatrix,
+      viewMatrixInverse: this->viewMatrixInverse
     });
-    this.cameraPosition = eye;
-    this.cameraDirection = direction;
-    this.cameraUp = up;
-    this.cameraRight = right;
+    this->cameraPosition = eye;
+    this->cameraDirection = direction;
+    this->cameraUp = up;
+    this->cameraRight = right;
 
-    // console.log(this.cameraPosition, this.cameraDirection, this.cameraUp);
+    // console.log(this->cameraPosition, this->cameraDirection, this->cameraUp);
 
     /*
      * Builds matrices that converts preprojected lngLats to screen pixels
@@ -424,14 +424,14 @@ export default class Viewport {
     // matrix for conversion from world location to screen (pixel) coordinates
     const viewportMatrix = createMat4(); // matrix from NDC to viewport.
     const pixelProjectionMatrix = createMat4(); // matrix from world space to viewport.
-    mat4.scale(viewportMatrix, viewportMatrix, [this.width / 2, -this.height / 2, 1]);
+    mat4.scale(viewportMatrix, viewportMatrix, [this->width / 2, -this->height / 2, 1]);
     mat4.translate(viewportMatrix, viewportMatrix, [1, -1, 0]);
-    mat4.multiply(pixelProjectionMatrix, viewportMatrix, this.viewProjectionMatrix);
-    this.pixelProjectionMatrix = pixelProjectionMatrix;
-    this.viewportMatrix = viewportMatrix;
+    mat4.multiply(pixelProjectionMatrix, viewportMatrix, this->viewProjectionMatrix);
+    this->pixelProjectionMatrix = pixelProjectionMatrix;
+    this->viewportMatrix = viewportMatrix;
 
-    this.pixelUnprojectionMatrix = mat4.invert(createMat4(), this.pixelProjectionMatrix);
-    if (!this.pixelUnprojectionMatrix) {
+    this->pixelUnprojectionMatrix = mat4.invert(createMat4(), this->pixelProjectionMatrix);
+    if (!this->pixelUnprojectionMatrix) {
       log.warn('Pixel project matrix not invertible')();
       // throw new Error('Pixel project matrix not invertible');
     }

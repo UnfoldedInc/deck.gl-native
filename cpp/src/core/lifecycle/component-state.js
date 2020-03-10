@@ -28,37 +28,37 @@ const EMPTY_PROPS = Object.freeze({});
 
 export default class ComponentState {
   constructor(component = null) {
-    this.component = component;
-    this.asyncProps = {}; // Prop values that the layer sees
-    this.onAsyncPropUpdated = () => {};
-    this.oldProps = EMPTY_PROPS; // Last props before update
-    this.oldAsyncProps = null; // Last props before update, with async values copied.
+    this->component = component;
+    this->asyncProps = {}; // Prop values that the layer sees
+    this->onAsyncPropUpdated = () => {};
+    this->oldProps = EMPTY_PROPS; // Last props before update
+    this->oldAsyncProps = null; // Last props before update, with async values copied.
   }
 
   getOldProps() {
-    return this.oldAsyncProps || this.oldProps;
+    return this->oldAsyncProps || this->oldProps;
   }
 
   resetOldProps() {
-    this.oldAsyncProps = null;
-    this.oldProps = this.component.props;
+    this->oldAsyncProps = null;
+    this->oldProps = this->component.props;
   }
 
   // Whenever async props are changing, we need to make a copy of oldProps
   // otherwise the prop rewriting will affect the value both in props and oldProps.
   // While the copy is relatively expensive, this only happens on load completion.
   freezeAsyncOldProps() {
-    if (!this.oldAsyncProps) {
+    if (!this->oldAsyncProps) {
       // Make sure oldProps is set
-      this.oldProps = this.oldProps || this.component.props;
+      this->oldProps = this->oldProps || this->component.props;
 
       // 1. inherit all synchronous props from oldProps
       // 2. reconfigure the async prop descriptors to fixed values
-      this.oldAsyncProps = Object.create(this.oldProps);
-      for (const propName in this.asyncProps) {
-        Object.defineProperty(this.oldAsyncProps, propName, {
+      this->oldAsyncProps = Object.create(this->oldProps);
+      for (const propName in this->asyncProps) {
+        Object.defineProperty(this->oldAsyncProps, propName, {
           enumerable: true,
-          value: this.oldProps[propName]
+          value: this->oldProps[propName]
         });
       }
     }
@@ -69,17 +69,17 @@ export default class ComponentState {
 
   // Checks if a prop is overridden
   hasAsyncProp(propName) {
-    return propName in this.asyncProps;
+    return propName in this->asyncProps;
   }
 
   // Returns value of an overriden prop
   getAsyncProp(propName) {
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     return asyncProp && asyncProp.resolvedValue;
   }
 
   isAsyncPropLoading(propName) {
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     return Boolean(
       asyncProp &&
         asyncProp.pendingLoadCount > 0 &&
@@ -98,51 +98,51 @@ export default class ComponentState {
     // TODO - use async props from the layer's prop types
     for (const propName in resolvedValues) {
       const value = resolvedValues[propName];
-      this._createAsyncPropData(propName, value, defaultValues[propName]);
-      this._updateAsyncProp(propName, value);
+      this->_createAsyncPropData(propName, value, defaultValues[propName]);
+      this->_updateAsyncProp(propName, value);
     }
 
     for (const propName in originalValues) {
       const value = originalValues[propName];
       // Makes sure a record exists for this prop
-      this._createAsyncPropData(propName, value, defaultValues[propName]);
-      this._updateAsyncProp(propName, value);
+      this->_createAsyncPropData(propName, value, defaultValues[propName]);
+      this->_updateAsyncProp(propName, value);
     }
   }
 
   // Intercept strings (URLs) and Promises and activates loading and prop rewriting
   _updateAsyncProp(propName, value) {
-    if (!this._didAsyncInputValueChange(propName, value)) {
+    if (!this->_didAsyncInputValueChange(propName, value)) {
       return;
     }
 
     // interpret value string as url and start a new load tracked by a promise
     if (typeof value === 'string') {
-      const fetch = this.layer && this.layer.props.fetch;
+      const fetch = this->layer && this->layer.props.fetch;
       const url = value;
       if (fetch) {
-        value = fetch(url, {propName, layer: this.layer});
+        value = fetch(url, {propName, layer: this->layer});
       }
     }
 
     // interprets promise and track the "loading"
     if (value instanceof Promise) {
-      this._watchPromise(propName, value);
+      this->_watchPromise(propName, value);
       return;
     }
 
     if (isAsyncIterable(value)) {
-      this._resolveAsyncIterable(propName, value);
+      this->_resolveAsyncIterable(propName, value);
       return;
     }
 
     // else, normal, non-async value. Just store value for now
-    this._setPropValue(propName, value);
+    this->_setPropValue(propName, value);
   }
 
   // Checks if an input value actually changed (to avoid reloading/rewatching promises/urls)
   _didAsyncInputValueChange(propName, value) {
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     if (value === asyncProp.lastValue) {
       return false;
     }
@@ -152,7 +152,7 @@ export default class ComponentState {
 
   // Set normal, non-async value
   _setPropValue(propName, value) {
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     asyncProp.value = value;
     asyncProp.resolvedValue = value;
     asyncProp.pendingLoadCount++;
@@ -163,34 +163,34 @@ export default class ComponentState {
   _setAsyncPropValue(propName, value, loadCount) {
     // Only update if loadCount is larger or equal to resolvedLoadCount
     // otherwise a more recent load has already completed
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     if (asyncProp && loadCount >= asyncProp.resolvedLoadCount) {
       assert(value !== undefined);
 
       // A chance to copy old props before updating
-      this.freezeAsyncOldProps();
+      this->freezeAsyncOldProps();
 
       asyncProp.resolvedValue = value;
       asyncProp.resolvedLoadCount = loadCount;
 
       // Call callback to inform listener
-      this.onAsyncPropUpdated(propName, value);
+      this->onAsyncPropUpdated(propName, value);
     }
   }
 
   // Tracks a promise, sets the prop when loaded, handles load count
   _watchPromise(propName, promise) {
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     asyncProp.pendingLoadCount++;
     const loadCount = asyncProp.pendingLoadCount;
     promise
       .then(data => {
-        data = this._postProcessValue(propName, data);
-        this._setAsyncPropValue(propName, data, loadCount);
+        data = this->_postProcessValue(propName, data);
+        this->_setAsyncPropValue(propName, data, loadCount);
 
-        const onDataLoad = this.layer && this.layer.props.onDataLoad;
+        const onDataLoad = this->layer && this->layer.props.onDataLoad;
         if (propName === 'data' && onDataLoad) {
-          onDataLoad(data, {propName, layer: this.layer});
+          onDataLoad(data, {propName, layer: this->layer});
         }
       })
       .catch(error => log.error(error)());
@@ -199,17 +199,17 @@ export default class ComponentState {
   async _resolveAsyncIterable(propName, iterable) {
     if (propName !== 'data') {
       // we only support data as async iterable
-      this._setPropValue(propName, iterable);
+      this->_setPropValue(propName, iterable);
     }
 
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     asyncProp.pendingLoadCount++;
     const loadCount = asyncProp.pendingLoadCount;
     let data = [];
     let count = 0;
 
     for await (const chunk of iterable) {
-      data = this._postProcessValue(propName, chunk, data);
+      data = this->_postProcessValue(propName, chunk, data);
 
       // Used by the default _dataDiff function
       Object.defineProperty(data, '__diff', {
@@ -218,18 +218,18 @@ export default class ComponentState {
       });
 
       count = data.length;
-      this._setAsyncPropValue(propName, data, loadCount);
+      this->_setAsyncPropValue(propName, data, loadCount);
     }
 
-    const onDataLoad = this.layer && this.layer.props.onDataLoad;
+    const onDataLoad = this->layer && this->layer.props.onDataLoad;
     if (onDataLoad) {
-      onDataLoad(data, {propName, layer: this.layer});
+      onDataLoad(data, {propName, layer: this->layer});
     }
   }
 
   // Give the app a chance to post process the loaded data
   _postProcessValue(propName, value, previousValue) {
-    const {dataTransform} = this.component ? this.component.props : {};
+    const {dataTransform} = this->component ? this->component.props : {};
     if (propName !== 'data') {
       return value;
     }
@@ -242,10 +242,10 @@ export default class ComponentState {
 
   // Creating an asyncProp record if needed
   _createAsyncPropData(propName, value, defaultValue) {
-    const asyncProp = this.asyncProps[propName];
+    const asyncProp = this->asyncProps[propName];
     if (!asyncProp) {
       // assert(defaultValue !== undefined);
-      this.asyncProps[propName] = {
+      this->asyncProps[propName] = {
         lastValue: null, // Supplied prop value (can be url/promise, not visible to layer)
         resolvedValue: defaultValue, // Resolved prop value (valid data, can be "shown" to layer)
         pendingLoadCount: 0, // How many loads have been issued

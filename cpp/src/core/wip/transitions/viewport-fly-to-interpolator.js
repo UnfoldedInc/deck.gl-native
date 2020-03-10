@@ -31,11 +31,11 @@ export default class FlyToInterpolator extends TransitionInterpolator {
       extract: ['width', 'height', 'longitude', 'latitude', 'zoom', 'bearing', 'pitch'],
       required: ['width', 'height', 'latitude', 'longitude', 'zoom']
     });
-    this.props = Object.assign({}, DEFAULT_OPTS, props);
+    this->props = Object.assign({}, DEFAULT_OPTS, props);
   }
 
   interpolateProps(startProps, endProps, t) {
-    const viewport = flyToViewport(startProps, endProps, t, this.props);
+    const viewport = flyToViewport(startProps, endProps, t, this->props);
 
     // Linearly interpolate 'bearing' and 'pitch'.
     // If pitch/bearing are not supplied, they are interpreted as zeros in viewport calculation
@@ -54,7 +54,7 @@ export default class FlyToInterpolator extends TransitionInterpolator {
     let {transitionDuration} = endProps;
     if (transitionDuration === 'auto') {
       // auto calculate duration based on start and end props
-      transitionDuration = getFlyToDuration(startProps, endProps, this.props);
+      transitionDuration = getFlyToDuration(startProps, endProps, this->props);
     }
     return transitionDuration;
   }

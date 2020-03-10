@@ -36,15 +36,15 @@ export default class Tooltip {
     const canvasParent = canvas.parentElement;
 
     if (canvasParent) {
-      this.el = document.createElement('div');
-      this.el.className = 'deck-tooltip';
-      Object.assign(this.el.style, defaultStyle);
-      canvasParent.appendChild(this.el);
+      this->el = document.createElement('div');
+      this->el.className = 'deck-tooltip';
+      Object.assign(this->el.style, defaultStyle);
+      canvasParent.appendChild(this->el);
     }
   }
 
   setTooltip(displayInfo, x, y) {
-    const el = this.el;
+    const el = this->el;
 
     if (typeof displayInfo === 'string') {
       el.innerText = displayInfo;
@@ -68,8 +68,8 @@ export default class Tooltip {
   }
 
   remove() {
-    if (this.el) {
-      this.el.remove();
+    if (this->el) {
+      this->el.remove();
     }
   }
 }
