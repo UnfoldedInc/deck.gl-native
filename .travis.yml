@@ -45,8 +45,10 @@ install:
   - git checkout .
   - git pull
   - ./bootstrap-vcpkg.sh
+  # Try to avoid building unneeded debug versions of dependencies
   - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
   - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
+  # Install our dependencies:
   - ./vcpkg install jsoncpp gtest --recurse
   - rm -rf buildtrees
   - popd

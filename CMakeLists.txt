@@ -22,6 +22,9 @@ if(NOT WIN32)
         list(APPEND DECK_LINK_FLAGS $<$<CONFIG:Debug>:--coverage>)
     endif()
 
+    # Not a good idea to leave this on because it will generate errors on different compilers
+    # that aren't tested in our CI. Can be useful for developers in order to keep code clean
+    # of warnings.
     option(WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
     if(WARNINGS_AS_ERRORS)
         list(APPEND DECK_COMPILE_FLAGS -Werror)
@@ -32,7 +35,6 @@ include(CMakeDependentOption)
 include(CTest)
 
 # Define source file lists
-
 set(LIB_SOURCE_FILES
     cpp/src/main.cpp)
 set(LIB_HEADER_FILES
@@ -90,6 +92,7 @@ find_package(GTest CONFIG REQUIRED)
 
 option(ENABLE_COVERAGE "Enable coverage instrumentation" ON)
 if(ENABLE_COVERAGE)
+    # Add a "coverage" target that generates a coverage report.
     file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/scripts/coverage.sh"
                     INPUT "${CMAKE_CURRENT_SOURCE_DIR}/scripts/coverage.sh.in")
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "coverage.info")
@@ -104,6 +107,7 @@ if(ENABLE_COVERAGE)
         )
 endif()
 
+# Add each source file as a test executable
 foreach(test_src ${TEST_SOURCE_FILES})
     get_filename_component(test ${test_src} NAME_WE)
     add_executable(${test} ${test_src})
