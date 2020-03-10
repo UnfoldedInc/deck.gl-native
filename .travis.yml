@@ -22,22 +22,6 @@ matrix:
           packages:
             - clang-format-5.0
       script: make format && git diff --exit-code
-    - name: "Coverage report"
-      compiler: gcc
-      addons:
-        apt:
-          packages:
-            - lcov
-      install:
-        - gem install coveralls-lcov
-      before_script:
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DWARNINGS_AS_ERRORS=ON .
-      script:
-        - make
-        - CTEST_OUTPUT_ON_FAILURE=1 make test
-        - make coverage
-      after_success:
-        - coveralls-lcov coverage.cleaned.info
     - name: "Valgrind test"
       compiler: gcc
       addons:
