@@ -395,7 +395,25 @@ public:
   }
 
   // Private Methods
+  // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
+  // TODO: For backwards compatibility ensure numeric width and height is added to the viewState
+  _getViewState() {
+    return this->props.viewState || this->viewState;
+  }
 
+  // Get the view descriptor list
+  _getViews() {
+    // Default to a full screen map view port
+    let views = this->props.views || [new MapView({id: 'default-view'})];
+    views = Array.isArray(views) ? views : [views];
+    if (views.length && this->props.controller) {
+      // Backward compatibility: support controller prop
+      views[0].props.controller = this->props.controller;
+    }
+    return views;
+  }
+
+  /*
   _pick(method, statKey, opts) {
     const {stats} = this;
 
@@ -504,24 +522,6 @@ public:
       onBeforeRender: props.onBeforeRender,
       onAfterRender: props.onAfterRender
     });
-  }
-
-  // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
-  // TODO: For backwards compatibility ensure numeric width and height is added to the viewState
-  _getViewState() {
-    return this->props.viewState || this->viewState;
-  }
-
-  // Get the view descriptor list
-  _getViews() {
-    // Default to a full screen map view port
-    let views = this->props.views || [new MapView({id: 'default-view'})];
-    views = Array.isArray(views) ? views : [views];
-    if (views.length && this->props.controller) {
-      // Backward compatibility: support controller prop
-      views[0].props.controller = this->props.controller;
-    }
-    return views;
   }
 
   // The `pointermove` event may fire multiple times in between two animation frames,
@@ -836,11 +836,6 @@ public:
     metrics.renderbufferMemory = memoryStats.get('Renderbuffer Memory').count;
     metrics.gpuMemory = memoryStats.get('GPU Memory').count;
   }
+
+  */
 }
-
-Deck.getPropTypes = getPropTypes;
-Deck.defaultProps = defaultProps;
-
-// This is used to defeat tree shaking of init.js
-// https://github.com/uber/deck.gl/issues/3213
-Deck.VERSION = deckGlobal.VERSION;
