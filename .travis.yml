@@ -43,6 +43,8 @@ matrix:
 
 install:
   # Install vcpkg and dependencies
+  - export CC=${CC_COMPILER}
+  - export CXX=${CXX_COMPILER}
   - mkdir -p ${DEPS_DIR}/vcpkg
   - pushd ${DEPS_DIR}/vcpkg
   - git init
