@@ -44,12 +44,13 @@ matrix:
 install:
   # Install vcpkg and dependencies
   - mkdir -p ${DEPS_DIR}/vcpkg
-  - pushd ${DEPS_DIR}
-  - git clone https://github.com/Microsoft/vcpkg.git
-  - pushd vcpkg
+  - pushd ${DEPS_DIR}/vcpkg
+  - git init
+  - git remote add origin https://github.com/Microsoft/vcpkg.git
+  - git fetch origin master
+  - git checkout -b master origin/master
   - ./bootstrap-vcpkg.sh
   - ./vcpkg install jsoncpp gtest
-  - popd
   - popd
 
 cache:
