@@ -34,4 +34,12 @@ Notes:
 ../vcpkg install jsoncpp
 ```
 
+### Google Test
+
+- [Google Test](https://github.com/google/googletest)
+
+```sh
+../vcpkg install gtest
+```
+
 Notes: See `vcpkg` install above.
