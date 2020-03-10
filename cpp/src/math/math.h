@@ -5,6 +5,9 @@
 #ifndef MATH_GL
 #define MATH_GL
 
+#include <cmath>
+#include <ostream>
+
 namespace mathgl {
 
 // Templates
@@ -80,6 +83,10 @@ template <typename coord>
   auto operator == (const Vector2<coord> &v1, const Vector2<coord> &v2) -> bool
     { return v1.x == v2.x && v1.xy == v2.y; }
 
+template <typename coord>
+  auto operator != (const Vector2<coord> &v1, const Vector2<coord> &v2) -> bool
+    { return !(v1 == v2); }
+
 
 
 ///////////////////////////////////////////////////////////
@@ -128,6 +135,9 @@ template <typename coord>
   auto operator == (const Vector3<coord> &v1, const Vector3<coord> &v2) -> bool
     { return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z; }
 
+template <typename coord>
+  auto operator != (const Vector3<coord> &v1, const Vector3<coord> &v2) -> bool
+    { return !(v1 == v2); }
 
 
 ///////////////////////////////////////////////////////////
@@ -173,8 +183,6 @@ template <typename coord>
 
 template <typename coord>
   Vector4<coord> ElementProduct (const Vector4<coord> &, const Vector4<coord> &);
-
-
 
 
 ///////////////////////////////////////////////////////////
@@ -275,6 +283,7 @@ public:
   // Template types
   typedef coord Coord;
 
+  Matrix4 ();
   Matrix4 (
     coord m11, coord m12, coord m13, coord m14,
     coord m21, coord m22, coord m23, coord m24,
@@ -312,6 +321,18 @@ public:
   coord m[4][4];
 };
 
+template <typename coord>
+  auto operator == (const Matrix4<coord> &m1, const Matrix4<coord> &m2) -> bool
+    { return
+        m1.m[0][0] == m2.m[0][0] && m1.m[0][1] == m2.m[0][1] && m1.m[0][2] == m2.m[0][2] && m1.m[0][3] == m2.m[0][3] &&
+        m1.m[1][0] == m2.m[1][0] && m1.m[1][1] == m2.m[1][1] && m1.m[1][2] == m2.m[1][2] && m1.m[1][3] == m2.m[1][3] &&
+        m1.m[2][0] == m2.m[2][0] && m1.m[2][1] == m2.m[2][1] && m1.m[2][2] == m2.m[2][2] && m1.m[2][3] == m2.m[2][3] &&
+        m1.m[3][0] == m2.m[3][0] && m1.m[3][1] == m2.m[3][1] && m1.m[3][2] == m2.m[3][2] && m1.m[3][3] == m2.m[3][3];
+    }
+
+template <typename coord>
+  auto operator != (const Matrix4<coord> &v1, const Matrix4<coord> &v2) -> bool
+    { return !(v1 == v2); }
 
 
 
@@ -729,6 +750,10 @@ template <typename coord>
 ///////////////////////////////////////////////////////////
 // Matrix4<coord> implementation
 
+template <typename coord>
+  Matrix4<coord>::Matrix4() : Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+{
+}
 
 template <typename coord>
   Matrix4<coord>::Matrix4 (

@@ -20,118 +20,66 @@
 
 #include <string>
 #include <functional>
+#include <list>
+#include <map>
+#include <exception>
 
 #include "constants.h"
+#include "../lifecycle/prop-types.h"
 #include "../../math/math.h"
 
-use namespace mathgl;
+using namespace mathgl;
 
 /* eslint-disable react/no-direct-mutation-state */
-// import {COORDINATE_SYSTEM} from './constants';
-// import AttributeManager from './attribute/attribute-manager';
-// import UniformTransitionManager from './wip/uniform-transition-manager';
-// import {diffProps, validateProps} from '../lifecycle/props';
-// import {count} from '../utils/count';
-// import log from '../utils/log';
-// import debug from '../wip/debug';
-// import GL from '@luma.gl/constants';
-// import {withParameters, setParameters} from '@luma.gl/core';
-// import assert from '../utils/assert';
-// import {mergeShaders} from '../utils/shader';
-// import {projectPosition, getWorldPosition} from '../shaderlib/project/project-functions';
-// import typedArrayManager from '../utils/typed-array-manager';
+// import {COORDINATE_SYSTEM} from "./constants";
+// import AttributeManager from "./attribute/attribute-manager";
+// import UniformTransitionManager from "./wip/uniform-transition-manager";
+// import {diffProps, validateProps} from "../lifecycle/props";
+// import {count} from "../utils/count";
+// import log from "../utils/log";
+// import debug from "../wip/debug";
+// import GL from "@luma.gl/constants";
+// import {withParameters, setParameters} from "@luma.gl/core";
+// import assert from "../utils/assert";
+// import {mergeShaders} from "../utils/shader";
+// import {projectPosition, getWorldPosition} from "../shaderlib/project/project-functions";
+// import typedArrayManager from "../utils/typed-array-manager";
 
-// import Component from '../lifecycle/component';
-// import LayerState from './layer-state';
+// import Component from "../lifecycle/component";
+// import LayerState from "./layer-state";
 
-// import {worldToPixels} from '@math.gl/web-mercator';
+// import {worldToPixels} from "@math.gl/web-mercator";
 
-// import {load} from '@loaders.gl/core';
+// import {load} from "@loaders.gl/core";
 
-// const TRACE_CHANGE_FLAG = 'layer.changeFlag';
-// const TRACE_INITIALIZE = 'layer.initialize';
-// const TRACE_UPDATE = 'layer.update';
-// const TRACE_FINALIZE = 'layer.finalize';
-// const TRACE_MATCHED = 'layer.matched';
+// const TRACE_CHANGE_FLAG = "layer.changeFlag";
+// const TRACE_INITIALIZE = "layer.initialize";
+// const TRACE_UPDATE = "layer.update";
+// const TRACE_FINALIZE = "layer.finalize";
+// const TRACE_MATCHED = "layer.matched";
 
 // const EMPTY_ARRAY = Object.freeze([]);
 
-/*
-class PropType {
-  PropType(std::string type, int value) {}
-};
-
-class BooleanProp: PropType {
-  BooleanProp(bool value);
-};
-
-class LayerPropTypes {
-public:
-  LayerPropTypes()
-    : visible{new BooleanProp(true)}
-    , pickable{new BooleanProp(true)}
-
-  // data: Special handling for null, see below
-  // data: {type: 'data', value: EMPTY_ARRAY, async: true},
-  // dataComparator: null,
-  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare: false, optional: true},
-  // dataTransform: {type: 'function', value: null, compare: false, optional: true},
-  // onDataLoad: {type: 'function', value: null, compare: false, optional: true},
-  // fetch: {
-  //   type: 'function',
-  //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
-  //   compare: false
-  // },
-  // updateTriggers: {}, // Update triggers: a core change detection mechanism in deck.gl
-
-  PropType* visible;
-  PropType* pickable;
-  PropType* opacity{}
-  opacity: {type: 'number', min: 0, max: 1, value: 1},
-
-  onHover: {type: 'function', value: null, compare: false, optional: true},
-  onClick: {type: 'function', value: null, compare: false, optional: true},
-  onDragStart: {type: 'function', value: null, compare: false, optional: true},
-  onDrag: {type: 'function', value: null, compare: false, optional: true},
-  onDragEnd: {type: 'function', value: null, compare: false, optional: true},
-
-  coordinateSystem: COORDINATE_SYSTEM.DEFAULT,
-  coordinateOrigin: {type: 'array', value: [0, 0, 0], compare: true},
-  modelMatrix: {type: 'array', value: null, compare: true, optional: true},
-  wrapLongitude: false,
-  positionFormat: 'XYZ',
-  colorFormat: 'RGBA',
-
-  parameters: {},
-  uniforms: {},
-  extensions: [],
-
-  // Offset depth based on layer index to avoid z-fighting.
-  // Negative values pull layer towards the camera
-  // https://www.opengl.org/archives/resources/faq/technical/polygonoffset.htm
-  getPolygonOffset: {
-    type: 'function',
-    value: ({layerIndex}) => [0, -layerIndex * 100],
-    compare: false
-  },
-
-  // Selection/Highlighting
-  highlightedObjectIndex: null,
-  autoHighlight: false,
-  highlightColor: {type: 'color', value: [0, 0, 128, 128]}
-};
-*/
-
 // TODO - these should be imported from other files
+
+
+class Model {
+public:
+  void draw();
+};
 
 class LayerContext;
 
-class AttributeManager {};
+class AttributeManager {
+public:
+  void invalidate(const std::string &);
+  void invalidateAll();
+};
 
 // let pickingColorCache = new Uint8ClampedArray(0);
 class ColorRGBA {
 public:
-  ColorRGBA(float r_, float g_, float b_, float a_); // : r{r_}, g:{g_}, b{b_}, a{a_} {} 
+  ColorRGBA(float r_, float g_, float b_, float a_) : r{r_}, g{g_}, b{b_}, a{a_} {}
   float r, g, b, a;
 };
 
@@ -139,6 +87,7 @@ public:
 
 // Prop diffing results
 class LayerChangeFlags {
+public:
   // Primary changeFlags, can be strings stating reason for change
   bool dataChanged;
   bool propsChanged;
@@ -169,11 +118,18 @@ class LayerState {
 public: // friend class Layer;
   AttributeManager* attributeManager;
   bool needsRedraw;
+  bool needsUpdate;
 };
 
-class LayerProps {
+class LayerProps : public Props {
 public:
-  LayerProps() 
+  static std::map<std::string, const Prop *> propTypes;
+
+  const std::map<std::string, const Prop *> getPropTypes() {
+    return LayerProps::propTypes;
+  }
+
+  LayerProps()
     // TODO - how to deal with data ?
 
     : visible{true}
@@ -200,13 +156,13 @@ public:
     {}
 
   // data: Special handling for null, see below
-  // data: {type: 'data', value: EMPTY_ARRAY, async: true},
+  // data: {type: "data", value: EMPTY_ARRAY, async: true},
   // dataComparator: null,
-  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare: false, optional: true},
-  // dataTransform: {type: 'function', value: null, compare: false, optional: true},
-  // onDataLoad: {type: 'function', value: null, compare: false, optional: true},
+  // _dataDiff: {type: "function", value: data => data && data.__diff, compare: false, optional: true},
+  // dataTransform: {type: "function", value: null, compare: false, optional: true},
+  // onDataLoad: {type: "function", value: null, compare: false, optional: true},
   // fetch: {
-  //   type: 'function',
+  //   type: "function",
   //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
   //   compare: false
   // },
@@ -237,12 +193,18 @@ public:
   std::function<void()> onDragStart;
   std::function<void()> onDrag;
   std::function<void()> onDragEnd;
+
+  auto compare(const LayerProps *oldProps) -> bool;
 };
 
 class Layer { // : public Component 
+public:
+  typedef LayerProps Props;
 
   LayerProps* props;
+  LayerState* state;
   LayerState* internalState;
+  LayerContext* context;
 
   Layer(LayerProps* props_, LayerState* state_ = nullptr)
     : props{props_}
@@ -252,7 +214,7 @@ class Layer { // : public Component
 
   // auto toString() {
   //   const className = this->constructor.layerName || this->constructor.name;
-  //   return `${className}({id: '${this->props.id}'})`;
+  //   return `${className}({id: "${this->props.id}"})`;
   // }
 
   // Public API
@@ -273,8 +235,8 @@ class Layer { // : public Component
 
   // This layer needs a deep update
   void setNeedsUpdate() {
-    this->context.layerManager.setNeedsUpdate(String(this));
-    this->internalState.needsUpdate = true;
+    // this->context->layerManager->setNeedsUpdate(String(this));
+    this->internalState->needsUpdate = true;
   }
 
   // Checks state of attributes and model
@@ -286,7 +248,7 @@ class Layer { // : public Component
   // auto needsUpdate() -> bool {
   //   // Call subclass lifecycle method
   //   return (
-  //     this->internalState.needsUpdate ||
+  //     this->internalState->needsUpdate ||
   //     this->hasUniformTransition() ||
   //     this->shouldUpdateState(this->_getUpdateParams())
   //   );
@@ -298,13 +260,14 @@ class Layer { // : public Component
     return this->props->pickable && this->props->visible;
   }
 
-  getAttributeManager() {
-    return this->internalState && this->internalState->attributeManager;
+  auto getAttributeManager() -> AttributeManager* {
+    return this->internalState->attributeManager;
   }
 
   // Return an array of models used by this layer, can be overriden by layer subclass
-  auto getModels() -> std::list<Model *> {
-    return this->state && (this->state.models || (this->state.model ? [this->state.model] : []));
+  auto getModels() -> std::list<Model*> {
+    return std::list<Model*>();
+    // return this->state && (this->state.models || (this->state.model ? [this->state.model] : []));
   }
 
   // Returns the most recent layer that matched to this state
@@ -317,12 +280,11 @@ class Layer { // : public Component
   // getLoadOptions() {
   //   return this->props->loadOptions;
   // }
-}
 
   // PROJECTION METHODS
 
   // Projects a point with current map state (lat, lon, zoom, pitch, bearing)
-  // From the current layer's coordinate system to screen
+  // From the current layer"s coordinate system to screen
   /*
   project(xyz) {
     const {viewport} = this->context;
@@ -333,11 +295,11 @@ class Layer { // : public Component
       coordinateSystem: this->props.coordinateSystem
     });
     const [x, y, z] = worldToPixels(worldPosition, viewport.pixelProjectionMatrix);
-    return xyz.length === 2 ? [x, y] : [x, y, z];
+    return xyz.length == 2 ? [x, y] : [x, y, z];
   }
 
   // Note: this does not reverse `project`.
-  // Always unprojects to the viewport's coordinate system
+  // Always unprojects to the viewport"s coordinate system
   unproject(xy) {
     const {viewport} = this->context;
     return viewport.unproject(xy);
@@ -345,7 +307,7 @@ class Layer { // : public Component
 
   projectPosition(xyz) {
     return projectPosition(xyz, {
-      viewport: this->context.viewport,
+      viewport: this->context->viewport,
       modelMatrix: this->props.modelMatrix,
       coordinateOrigin: this->props.coordinateOrigin,
       coordinateSystem: this->props.coordinateSystem
@@ -355,13 +317,12 @@ class Layer { // : public Component
   use64bitPositions() {
     const {coordinateSystem} = this->props;
     return (
-      coordinateSystem === COORDINATE_SYSTEM.DEFAULT ||
-      coordinateSystem === COORDINATE_SYSTEM.LNGLAT ||
-      coordinateSystem === COORDINATE_SYSTEM.CARTESIAN
+      coordinateSystem == COORDINATE_SYSTEM.DEFAULT ||
+      coordinateSystem == COORDINATE_SYSTEM.LNGLAT ||
+      coordinateSystem == COORDINATE_SYSTEM.CARTESIAN
     );
   }
 
-  /*
   // Event handling
   onHover(info, pickingEvent) {
     if (this->props.onHover) {
@@ -378,14 +339,14 @@ class Layer { // : public Component
   }
 
 
-  // Returns the picking color that doesn't match any subfeature
+  // Returns the picking color that doesn"t match any subfeature
   // Use if some graphics do not belong to any pickable subfeature
   // @return {Array} - a black color
   nullPickingColor() {
     return [0, 0, 0];
   }
 
-  // Returns the picking color that doesn't match any subfeature
+  // Returns the picking color that doesn"t match any subfeature
   // Use if some graphics do not belong to any pickable subfeature
   encodePickingColor(i, target = []) {
     target[0] = (i + 1) & 255;
@@ -394,7 +355,7 @@ class Layer { // : public Component
     return target;
   }
 
-  // Returns the index corresponding to a picking color that doesn't match any subfeature
+  // Returns the index corresponding to a picking color that doesn"t match any subfeature
   // @param {Uint8Array} color - color array to be decoded
   // @return {Array} - the decoded picking color
   decodePickingColor(color) {
@@ -411,8 +372,8 @@ class Layer { // : public Component
 
   // Called once to set up the initial state
   // App can create WebGL resources
-  initializeState() {
-    throw new std::exception("Layer ${this} has not defined initializeState");
+  virtual void initializeState() {
+    throw new std::logic_error("Layer has not defined initializeState");
   }
 
   // getShaders(shaders) {
@@ -422,7 +383,7 @@ class Layer { // : public Component
   //   return shaders;
   // }
 
-  // Let's layer control if updateState should be called
+  // Let"s layer control if updateState should be called
   virtual auto shouldUpdateState(
     LayerProps* oldProps,
     LayerProps* props,
@@ -437,54 +398,56 @@ class Layer { // : public Component
   virtual void updateState(
     LayerProps* oldProps,
     LayerProps* props,
-    LayerContext* context, 
+    LayerContext* context,
     const LayerChangeFlags& changeFlags
   ) {
-    const attributeManager = this->getAttributeManager();
+    /*
+    const auto attributeManager = this->getAttributeManager();
     if (changeFlags.dataChanged && attributeManager) {
-      const {dataChanged} = changeFlags;
+      const dataChanged = changeFlags.dataChanged;
       if (Array.isArray(dataChanged)) {
         // is partial update
         for (const dataRange of dataChanged) {
-          attributeManager.invalidateAll(dataRange);
+          attributeManager->invalidateAll(dataRange);
         }
       } else {
-        attributeManager.invalidateAll();
+        attributeManager->invalidateAll();
       }
     }
+    */
   }
 
   // Called once when layer is no longer matched and state will be discarded
   // App can destroy WebGL resources here
-  finalizeState() {
-    for (const model : this->getModels()) {
+  virtual void finalizeState() {
+    for (const auto model : this->getModels()) {
       delete model;
     }
     delete this->getAttributeManager();
-    // TODO this->internalState.uniformTransitions.clear();
+    // TODO this->internalState->uniformTransitions.clear();
   }
 
   // If state has a model, draw it with supplied uniforms
-  draw(opts) {
-    for (const model : this->getModels()) {
-      model.draw(opts);
+  virtual void draw() {
+    for (const auto model : this->getModels()) {
+      model->draw();
     }
   }
 
   // called to populate the info object that is passed to the event handler
   // @return null to cancel event
-  getPickingInfo({info, mode}) {
-    const {index} = info;
+  // getPickingInfo({info, mode}) {
+  //   const {index} = info;
 
-    if (index >= 0) {
-      // If props.data is an indexable array, get the object
-      if (Array.isArray(this->props.data)) {
-        info.object = this->props.data[index];
-      }
-    }
+  //   if (index >= 0) {
+  //     // If props.data is an indexable array, get the object
+  //     if (Array.isArray(this->props.data)) {
+  //       info.object = this->props.data[index];
+  //     }
+  //   }
 
-    return info;
-  }
+  //   return info;
+  // }
 
   // END LIFECYCLE METHODS
   // //////////////////////////////////////////////////
@@ -492,38 +455,38 @@ class Layer { // : public Component
   // INTERNAL METHODS
 
   // Default implementation of attribute invalidation, can be redefined
-  invalidateAttribute(const std::string& name = 'all', const std::string& diffReason = '') {
-    const attributeManager = this->getAttributeManager();
+  void invalidateAttribute(const std::string& name = "all", const std::string& diffReason = "") {
+    const auto attributeManager = this->getAttributeManager();
     if (!attributeManager) {
       return;
     }
 
-    if (name === 'all') {
-      attributeManager.invalidateAll();
+    if (name == "all") {
+      attributeManager->invalidateAll();
     } else {
-      attributeManager.invalidate(name);
+      attributeManager->invalidate(name);
     }
   }
 
-  updateAttributes(changedAttributes) {
-    for (const model of this->getModels()) {
-      this->_setModelAttributes(model, changedAttributes);
-    }
-  }
+  // void updateAttributes(changedAttributes) {
+  //   for (const model of this->getModels()) {
+  //     this->_setModelAttributes(model, changedAttributes);
+  //   }
+  // }
 
   // Calls attribute manager to update any WebGL attributes
-  _updateAttributes(LayerProps* props) {
-    const attributeManager = this->getAttributeManager();
+  void _updateAttributes(LayerProps* props) {
+    const auto attributeManager = this->getAttributeManager();
     if (!attributeManager) {
       return;
     }
 
     // Figure out data length
-    const numInstances = this->getNumInstances(props);
-    const startIndices = this->getStartIndices(props);
+    // auto numInstances = this->getNumInstances(props);
+    // auto startIndices = this->getStartIndices(props);
 
   /*
-    attributeManager.update({
+    attributeManager->update({
       data: props.data,
       numInstances,
       startIndices,
@@ -531,25 +494,26 @@ class Layer { // : public Component
       transitions: props.transitions,
       buffers: props.data.attributes,
       context: this,
-      // Don't worry about non-attribute props
+      // Don"t worry about non-attribute props
       ignoreUnknownAttributes: true
     });
   */
- 
-    const auto changedAttributes = attributeManager.getChangedAttributes({clearChangedFlags: true});
-    this->updateAttributes(changedAttributes);
+
+    // const auto changedAttributes = attributeManager->getChangedAttributes({clearChangedFlags: true});
+    // this->updateAttributes(changedAttributes);
   }
 
   // Update attribute transitions. This is called in drawLayer, no model updates required.
-  _updateAttributeTransition() {
-    const attributeManager = this->getAttributeManager();
+  /*
+  void _updateAttributeTransition() {
+    const auto attributeManager = this->getAttributeManager();
     if (attributeManager) {
-      attributeManager.updateTransition();
+      attributeManager->updateTransition();
     }
   }
 
   // Update uniform (prop) transitions. This is called in updateState, may result in model updates.
-  _updateUniformTransition() {
+  void _updateUniformTransition() {
     const {uniformTransitions} = this->internalState;
     if (uniformTransitions.active) {
       // clone props
@@ -562,8 +526,10 @@ class Layer { // : public Component
     }
     return this->props;
   }
+  */
 
-  calculateInstancePickingColors(attribute, {numInstances}) {
+  /*
+  void calculateInstancePickingColors(attribute, {numInstances}) {
     // calculateInstancePickingColors always generates the same sequence.
     // pickingColorCache saves the largest generated sequence for reuse
     const cacheSize = pickingColorCache.length / 3;
@@ -576,7 +542,7 @@ class Layer { // : public Component
       // If the attribute is larger than the cache, resize the cache and populate the missing chunk
       const newCacheSize = pickingColorCache.length / 3;
       const pickingColor = [];
-      assert(newCacheSize < 16777215, 'index out of picking color range');
+      // assert(newCacheSize < 16777215, "index out of picking color range");
 
       for (let i = cacheSize; i < newCacheSize; i++) {
         this->encodePickingColor(i, pickingColor);
@@ -592,7 +558,7 @@ class Layer { // : public Component
   _setModelAttributes(model, changedAttributes) {
     const attributeManager = this->getAttributeManager();
     const excludeAttributes = model.userData.excludeAttributes || {};
-    const shaderAttributes = attributeManager.getShaderAttributes(
+    const shaderAttributes = attributeManager->getShaderAttributes(
       changedAttributes,
       excludeAttributes
     );
@@ -621,33 +587,36 @@ class Layer { // : public Component
     const colors = pickingColors || instancePickingColors;
     colors.updateSubBuffer({startOffset: 0});
   }
+  */
 
   // Deduces numer of instances. Intention is to support:
   // - Explicit setting of numInstances
   // - Auto-deduction for ES6 containers that define a size member
   // - Auto-deduction for Classic Arrays via the built-in length attribute
   // - Auto-deduction via arrays
-  getNumInstances(props) {
-    props = props || this->props;
+  auto getNumInstances(LayerProps* props) -> int {
+    return 0;
+    // props = props || this->props;
 
-    // First Check if app has provided an explicit value
-    if (props.numInstances >= 0) {
-      return props.numInstances;
-    }
+    // // First Check if app has provided an explicit value
+    // if (props.numInstances >= 0) {
+    //   return props.numInstances;
+    // }
 
-    // Second check if the layer has set its own value
-    if (this->state && this->state.numInstances !== undefined) {
-      return this->state.numInstances;
-    }
+    // // Second check if the layer has set its own value
+    // if (this->state && this->state.numInstances !== undefined) {
+    //   return this->state.numInstances;
+    // }
 
-    // Use container library to get a count for any ES6 container or object
-    return count(props.data);
+    // // Use container library to get a count for any ES6 container or object
+    // return count(props.data);
   }
 
   // Buffer layout describes how many attribute values are packed for each data object
   // The default (null) is one value each object.
   // Some data formats (e.g. paths, polygons) have various length. Their buffer layout
   //  is in the form of [L0, L1, L2, ...]
+  /*
   getStartIndices(props) {
     props = props || this->props;
 
@@ -668,7 +637,6 @@ class Layer { // : public Component
   // Should only be called by the deck.gl LayerManager class
 
   // Called by layer manager when a new layer is found
-  /* eslint-disable max-statements */
   _initialize() {
     debug(TRACE_INITIALIZE, this);
 
@@ -705,20 +673,19 @@ class Layer { // : public Component
       this->_updateState();
     }
   }
-  /* eslint-enable max-statements */
 
   // Common code for _initialize and _update
   _updateState() {
     const currentProps = this->props;
     const propsInTransition = this->_updateUniformTransition();
-    this->internalState.propsInTransition = propsInTransition;
+    this->internalState->propsInTransition = propsInTransition;
     // Overwrite this->props during update to use in-transition prop values
     this->props = propsInTransition;
 
     const updateParams = this->_getUpdateParams();
 
     // Safely call subclass lifecycle methods
-    if (this->context.gl) {
+    if (this->context->gl) {
       this->updateState(updateParams);
     } else {
       try {
@@ -750,8 +717,8 @@ class Layer { // : public Component
 
     this->props = currentProps;
     this->clearChangeFlags();
-    this->internalState.needsUpdate = false;
-    this->internalState.resetOldProps();
+    this->internalState->needsUpdate = false;
+    this->internalState->resetOldProps();
   }
 
   // Called by manager when layer is about to be disposed
@@ -774,8 +741,8 @@ class Layer { // : public Component
 
     const currentProps = this->props;
     // Overwrite this->props during redraw to use in-transition prop values
-    // `internalState.propsInTransition` could be missing if `updateState` failed
-    this->props = this->internalState.propsInTransition || currentProps;
+    // `internalState->propsInTransition` could be missing if `updateState` failed
+    this->props = this->internalState->propsInTransition || currentProps;
 
     const {opacity} = this->props;
     // apply gamma to opacity to make it visually "linear"
@@ -791,10 +758,10 @@ class Layer { // : public Component
     const {getPolygonOffset} = this->props;
     const offsets = (getPolygonOffset && getPolygonOffset(uniforms)) || [0, 0];
 
-    setParameters(this->context.gl, {polygonOffset: offsets});
+    setParameters(this->context->gl, {polygonOffset: offsets});
 
     // Call subclass lifecycle method
-    withParameters(this->context.gl, parameters, () => {
+    withParameters(this->context->gl, parameters, () => {
       this->draw({moduleParameters, uniforms, parameters, context: this->context});
     });
 
@@ -805,11 +772,10 @@ class Layer { // : public Component
 
   // Helper methods
   getChangeFlags() {
-    return this->internalState.changeFlags;
+    return this->internalState->changeFlags;
   }
 
   // Dirty some change flags, will be handled by updateLayer
-  /* eslint-disable complexity */
   setChangeFlags(flags) {
     const {changeFlags} = this->internalState;
 
@@ -830,11 +796,10 @@ class Layer { // : public Component
     changeFlags.somethingChanged =
       propsOrDataChanged || flags.viewportChanged || flags.stateChanged;
   }
-  /* eslint-enable complexity */
 
   // Clear all changeFlags, typically after an update
   clearChangeFlags() {
-    this->internalState.changeFlags = {
+    this->internalState->changeFlags = {
       // Primary changeFlags, can be strings stating reason for change
       dataChanged: false,
       propsChanged: false,
@@ -868,7 +833,7 @@ class Layer { // : public Component
     if (changeFlags.transitionsChanged) {
       for (const key in changeFlags.transitionsChanged) {
         // prop changed and transition is enabled
-        this->internalState.uniformTransitions.add(
+        this->internalState->uniformTransitions.add(
           key,
           oldProps[key],
           newProps[key],
@@ -921,9 +886,9 @@ class Layer { // : public Component
   _getUpdateParams() {
     return {
       props: this->props,
-      oldProps: this->internalState.getOldProps(),
+      oldProps: this->internalState->getOldProps(),
       context: this->context,
-      changeFlags: this->internalState.changeFlags
+      changeFlags: this->internalState->changeFlags
     };
   }
 
@@ -936,12 +901,12 @@ class Layer { // : public Component
     }
 
     let redraw = false;
-    redraw = redraw || (this->internalState.needsRedraw && this->id);
-    this->internalState.needsRedraw = this->internalState.needsRedraw && !opts.clearRedrawFlags;
+    redraw = redraw || (this->internalState->needsRedraw && this->id);
+    this->internalState->needsRedraw = this->internalState->needsRedraw && !opts.clearRedrawFlags;
 
     // TODO - is attribute manager needed? - Model should be enough.
     const attributeManager = this->getAttributeManager();
-    const attributeManagerNeedsRedraw = attributeManager && attributeManager.getNeedsRedraw(opts);
+    const attributeManagerNeedsRedraw = attributeManager && attributeManager->getNeedsRedraw(opts);
     redraw = redraw || attributeManagerNeedsRedraw;
 
     return redraw;
@@ -949,10 +914,10 @@ class Layer { // : public Component
 
   // Create new attribute manager
   _getAttributeManager() {
-    return new AttributeManager(this->context.gl, {
+    return new AttributeManager(this->context->gl, {
       id: this->props.id,
-      stats: this->context.stats,
-      timeline: this->context.timeline
+      stats: this->context->stats,
+      timeline: this->context->timeline
     });
   }
 
@@ -966,7 +931,7 @@ class Layer { // : public Component
       // All instanced layers get instancePickingColors attribute by default
       // Their shaders can use it to render a picking scene
       // TODO - this slightly slows down non instanced layers
-      attributeManager.addInstanced({
+      attributeManager->addInstanced({
         instancePickingColors: {
           type: GL.UNSIGNED_BYTE,
           size: 3,
@@ -980,42 +945,40 @@ class Layer { // : public Component
       attributeManager,
       layer: this
     });
-    this->clearChangeFlags(); // populate this->internalState.changeFlags
+    this->clearChangeFlags(); // populate this->internalState->changeFlags
 
     this->state = {};
     // for backwards compatibility with older layers
     // TODO - remove in next release
-    /* eslint-disable accessor-pairs */
-    Object.defineProperty(this->state, 'attributeManager', {
+    Object.defineProperty(this->state, "attributeManager", {
       get: () => {
-        log.deprecated('layer.state.attributeManager', 'layer.getAttributeManager()');
+        log.deprecated("layer.state.attributeManager", "layer.getAttributeManager()");
         return attributeManager;
       }
     });
-    /* eslint-enable accessor-pairs */
 
-    this->internalState.layer = this;
-    this->internalState.uniformTransitions = new UniformTransitionManager(this->context.timeline);
-    this->internalState.onAsyncPropUpdated = this->_onAsyncPropUpdated.bind(this);
+    this->internalState->layer = this;
+    this->internalState->uniformTransitions = new UniformTransitionManager(this->context->timeline);
+    this->internalState->onAsyncPropUpdated = this->_onAsyncPropUpdated.bind(this);
 
     // Ensure any async props are updated
-    this->internalState.setAsyncProps(this->props);
+    this->internalState->setAsyncProps(this->props);
   }
 
   // Called by layer manager to transfer state from an old layer
   _transferState(oldLayer) {
-    debug(TRACE_MATCHED, this, this === oldLayer);
+    debug(TRACE_MATCHED, this, this == oldLayer);
 
     const {state, internalState} = oldLayer;
     assert(state && internalState);
 
-    if (this === oldLayer) {
+    if (this == oldLayer) {
       return;
     }
 
     // Move internalState
     this->internalState = internalState;
-    this->internalState.layer = this;
+    this->internalState->layer = this;
 
     // Move state
     this->state = state;
@@ -1023,16 +986,19 @@ class Layer { // : public Component
     // oldLayer.state = null;
 
     // Ensure any async props are updated
-    this->internalState.setAsyncProps(this->props);
+    this->internalState->setAsyncProps(this->props);
 
-    this->diffProps(this->props, this->internalState.getOldProps());
+    this->diffProps(this->props, this->internalState->getOldProps());
   }
 
   _onAsyncPropUpdated() {
-    this->diffProps(this->props, this->internalState.getOldProps());
+    this->diffProps(this->props, this->internalState->getOldProps());
     this->setNeedsUpdate();
   }
 }
 
-Layer.layerName = 'Layer';
+Layer.layerName = "Layer";
 Layer.defaultProps = defaultProps;
+
+  */
+};

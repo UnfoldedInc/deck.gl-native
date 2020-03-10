@@ -382,19 +382,19 @@ public:
     return this->viewManager.getViewports(rect);
   }
 
-  // {x, y, radius = 0, layerIds = nullptr, unproject3D} 
+  // {x, y, radius = 0, layerIds = nullptr, unproject3D}
   pickObject(opts) {
     const infos = this->_pick('pickObject', 'pickObject Time', opts).result;
     return infos.length ? infos[0] : nullptr;
   }
 
-  // {x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10} 
+  // {x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10}
   pickMultipleObjects(opts) {
     opts.depth = opts.depth || 10;
     return this->_pick('pickObject', 'pickMultipleObjects Time', opts).result;
   }
 
-  // {x, y, width = 1, height = 1, layerIds = nullptr} 
+  // {x, y, width = 1, height = 1, layerIds = nullptr}
   pickObjects(opts) {
     return this->_pick('pickObjects', 'pickObjects Time', opts);
   }

@@ -36,7 +36,11 @@
 #ifndef CLASS_REFLECTION
 #define CLASS_REFLECTION
 
+<<<<<<< HEAD
 namespace reflection 
+=======
+namespace reflection
+>>>>>>> prop-types: can now iterate over and compare layer props
 {
 
 ////////////////////////////////////////////////////////////
@@ -46,17 +50,28 @@ class Object;
   class HeapObject;                 // Object allocated on optimized heap allocator
     class RefObject;                // Uses reference counted smart pointers
       class Value;                  // Native object
+<<<<<<< HEAD
         class Bool;                 // 
+=======
+        class Bool;                 //
+>>>>>>> prop-types: can now iterate over and compare layer props
         class Integer;              // RangedInteger, Enumeration (signed int/unsigned int)
         class Float;                // RangedFloat
         class Character;            //wchar_t        class Pointer;              // non ref counted
         class CompositeObject;      // For fundamental value-semantics types
           // class Point, Size, Rect
         class Container;            // size(), iteration, foreach()
+<<<<<<< HEAD
           class Sequence;      
             class List_;              // std::list<Ref<RefObject>>
             class Array;              // Get(index), Set(index)
               class Vector;           // std::vector<Ref<RefObject>>  
+=======
+          class Sequence;
+            class List_;              // std::list<Ref<RefObject>>
+            class Array;              // Get(index), Set(index)
+              class Vector;           // std::vector<Ref<RefObject>>
+>>>>>>> prop-types: can now iterate over and compare layer props
               class String;           // std::string
       class ScriptObject;         // Hashmap, key-value map etc
 // <<LispObject, JavaScriptObject, ...>
@@ -72,7 +87,11 @@ class Object;
       void WriteObject (const Object *obj, std::ostream &os, WriteContext &) const override; \
     } class_; \
     auto GetClass_ () const -> const mutil::Class * override { return &class_; }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 
 
 ////////////////////////////////////////////////////////////
@@ -80,7 +99,11 @@ class Object;
 
 //!Value is the base class for "fundamental" value data types:
 // bool, int, float, pointer, std::string
+<<<<<<< HEAD
 // enumerations are supported as a subclass of int - they can be used where an int is expected, but 
+=======
+// enumerations are supported as a subclass of int - they can be used where an int is expected, but
+>>>>>>> prop-types: can now iterate over and compare layer props
 
 class Value : public RefObject {
 public:
@@ -89,7 +112,11 @@ public:
 
   static const struct Class : mutil::Class {
     Class () : mutil::Class (DefinitionT<Value> (namespace_, "Value")) {}
+<<<<<<< HEAD
   } class_; 
+=======
+  } class_;
+>>>>>>> prop-types: can now iterate over and compare layer props
   auto GetClass_ () const -> const mutil::Class * override { return &class_; }
 };
 
@@ -97,10 +124,17 @@ public:
 class Bool : public Value {
 public:
   typedef Value inherited;
+<<<<<<< HEAD
   explicit Bool(bool value_) : value(value_) {} 
   // void SetValue(Ref<Value> value) { value = value; }
   bool value;
  
+=======
+  explicit Bool(bool value_) : value(value_) {}
+  // void SetValue(Ref<Value> value) { value = value; }
+  bool value;
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   MU_DECLARE_BUILTIN_CLASS();
 };
 
@@ -109,10 +143,17 @@ class Integer : public Value {
 public:
   typedef Value inherited;
   explicit Integer (int value_) : value(value_) {}
+<<<<<<< HEAD
   int Get() const { return value; }    
   virtual void Set(int value_) { value = value_; }
   int value;    
   
+=======
+  int Get() const { return value; }
+  virtual void Set(int value_) { value = value_; }
+  int value;
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   MU_DECLARE_BUILTIN_CLASS();
 };
 
@@ -126,10 +167,17 @@ public:
 };
 
 
+<<<<<<< HEAD
 class Pointer : public Value { 
 public:
   typedef Value inherited;
   explicit Pointer(void *value_) : value(value_) {} 
+=======
+class Pointer : public Value {
+public:
+  typedef Value inherited;
+  explicit Pointer(void *value_) : value(value_) {}
+>>>>>>> prop-types: can now iterate over and compare layer props
   void *value;
 
   MU_DECLARE_BUILTIN_CLASS();
@@ -137,26 +185,43 @@ public:
 
 
 class String : public Value {
+<<<<<<< HEAD
 public:  
   typedef Value inherited;
   // [construct/copy/destroy]
   String();
   explicit String(const std::string &value_) : value(value_) {} 
+=======
+public:
+  typedef Value inherited;
+  // [construct/copy/destroy]
+  String();
+  explicit String(const std::string &value_) : value(value_) {}
+>>>>>>> prop-types: can now iterate over and compare layer props
 
   // [selectors]
   const std::string &GetString() const { return value; }
 
   // [modifiers]
   void SetString(const std::string &s) { value = s; }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   std::string value;
   bool readOnly;
 
   MU_DECLARE_BUILTIN_CLASS();
 };
 
+<<<<<<< HEAD
  
  
+=======
+
+
+>>>>>>> prop-types: can now iterate over and compare layer props
  ////////////////////////////////////////////////////////////
 // @class
 
@@ -182,7 +247,11 @@ public:
   wchar_t GetCode () const { return value; }
   int GetDigit () const;
   std::string GetName () const;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   bool IsAlpha () const;
   bool IsAlnum () const;
   bool IsUpper () const;
@@ -196,7 +265,11 @@ public:
   // [Operations]
   void DownCase ();
   void UpCase ();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   // [static members]
   static int CodeLimit () { return 65536; } //numeric_limitswchar_t::max () + 1;}
   static Ref<Character> CreateFromDigit (unsigned digit);
@@ -214,7 +287,11 @@ public:
 
   MU_DECLARE_BUILTIN_CLASS();
 };
+<<<<<<< HEAD
 # undef MU_DECLARE_BUILTIN_CLASS  
+=======
+# undef MU_DECLARE_BUILTIN_CLASS
+>>>>>>> prop-types: can now iterate over and compare layer props
 
 
 
@@ -233,7 +310,11 @@ public:
 class Enumeration : public Integer {
 public:
   typedef Integer inherited;
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   void Set (int value);
   void SetValue(Ref<Value> value) override;
 
@@ -257,7 +338,11 @@ public:
     bool IsValidEnumeratorName (const std::string &name) const;
     const std::list<int> GetEnumerators() const;
     std::list<std::string> GetEnumeratorNames() const;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
     // [Enumeration::Class implementation]
     struct Map {
       const char *name;
@@ -267,7 +352,11 @@ public:
     const Map &operator[] (int i) const { return *std::next (GetMap().begin(), i); }
     typedef boost::iterator_range<const Map *> Range;
     virtual boost::iterator_range<const Map *> GetMap() const;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
     int invalidNativeValue;
   };
   static const Class class_;
@@ -287,6 +376,7 @@ public:
   // [types]
   typedef Enumeration inherited;
   typedef T Type;
+<<<<<<< HEAD
   
   // [construct/copy/destroy]
   explicit Enum (T e) : Enumeration (static_cast<int>(e)) {
@@ -294,6 +384,15 @@ public:
       throw XBadArgument("invalid enum value", value); 
   }
   
+=======
+
+  // [construct/copy/destroy]
+  explicit Enum (T e) : Enumeration (static_cast<int>(e)) {
+    if (! GetClass_()->IsValidEnumerator(static_cast<int>(e)))
+      throw XBadArgument("invalid enum value", value);
+  }
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   struct Class : public inherited::Class {
     Class (const Namespace &namespace_, const char *name, Map *map, int count,
       int invalidNativeValue = -1)
@@ -336,7 +435,11 @@ template <class T>
 
 
 ////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 // Class Property Support 
+=======
+// Class Property Support
+>>>>>>> prop-types: can now iterate over and compare layer props
 ////////////////////////////////////////////////////////////
 
 
@@ -353,8 +456,13 @@ template <typename Type_, typename ObjectType_> struct StructTraitsT {
   typedef const Type & ArgumentType;
   typedef Type ReturnType;
   static ReturnType ConvertArgument(ObjectType *object) { return object->value; }
+<<<<<<< HEAD
   static Ref<ObjectType> ConvertReturn(ArgumentType value) { return make_ref<ObjectType> (value); }   
   static bool IsRef() { return false; }   
+=======
+  static Ref<ObjectType> ConvertReturn(ArgumentType value) { return make_ref<ObjectType> (value); }
+  static bool IsRef() { return false; }
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
@@ -364,15 +472,24 @@ template <typename Type_, typename ObjectType_> struct BuiltinTraitsT {
   typedef Type ArgumentType;
   typedef Type ReturnType;
   static ReturnType ConvertArgument(ObjectType *object) { return object->value; }
+<<<<<<< HEAD
   static Ref<ObjectType> ConvertReturn(ArgumentType value) { return make_ref<ObjectType> (value); }   
   static bool IsRef() { return false; }   
+=======
+  static Ref<ObjectType> ConvertReturn(ArgumentType value) { return make_ref<ObjectType> (value); }
+  static bool IsRef() { return false; }
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
 template <> struct TypeTraits<bool> : BuiltinTraitsT<bool, Bool> {};
 
 template <> struct TypeTraits<int> : BuiltinTraitsT<int, Integer> {};
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 template <> struct TypeTraits<unsigned int> : BuiltinTraitsT<unsigned int, Integer> {};
 
 template <> struct TypeTraits<std::string> : StructTraitsT<std::string, String> {};
@@ -384,37 +501,66 @@ template <class T> struct TypeTraits<Enum<T>> : BuiltinTraitsT<T, Enum<T>> {
   typedef Enum<Type> ObjectType;
   static T ConvertArgument(ObjectType *object) { return static_cast<Type> (object->value); }
   static Ref<Enum<Type>> ConvertReturn(T value) { return make_ref<Enum<Type>> (value); }
+<<<<<<< HEAD
   static bool IsRef() { return false; }   
 };
 
 template <class T> struct TypeTraits<T *> { 
+=======
+  static bool IsRef() { return false; }
+};
+
+template <class T> struct TypeTraits<T *> {
+>>>>>>> prop-types: can now iterate over and compare layer props
   typedef T * Type;
   typedef T * ArgumentType;
   typedef const T * ReturnType;
   typedef T ObjectType;
+<<<<<<< HEAD
   static ArgumentType ConvertArgument (T *object) { return object; } 
   static Ref<T> ConvertReturn(ReturnType value) { return Ref<ObjectType>(const_cast<ObjectType *> (value)); } // ERROR const cast   
   static bool IsRef() { return false; }   
 };
 
 template <class T> struct TypeTraits<Ref<T>> { 
+=======
+  static ArgumentType ConvertArgument (T *object) { return object; }
+  static Ref<T> ConvertReturn(ReturnType value) { return Ref<ObjectType>(const_cast<ObjectType *> (value)); } // ERROR const cast
+  static bool IsRef() { return false; }
+};
+
+template <class T> struct TypeTraits<Ref<T>> {
+>>>>>>> prop-types: can now iterate over and compare layer props
   typedef Ref<T> Type;
   typedef Ref<T> ArgumentType;
   typedef Ref<const T> ReturnType;
   typedef T ObjectType;
+<<<<<<< HEAD
   static Ref<T> ConvertArgument (T * object) { return Ref<T> (object); } 
   static Ref<T> ConvertReturn (Ref<const T> value) { return const_pointer_cast<T> (value); }
   static bool IsRef() { return true; }   
 };
 
 template <class T> struct TypeTraits<Ref<const T>> { 
+=======
+  static Ref<T> ConvertArgument (T * object) { return Ref<T> (object); }
+  static Ref<T> ConvertReturn (Ref<const T> value) { return const_pointer_cast<T> (value); }
+  static bool IsRef() { return true; }
+};
+
+template <class T> struct TypeTraits<Ref<const T>> {
+>>>>>>> prop-types: can now iterate over and compare layer props
   typedef Ref<T> Type;
   typedef Ref<T> ArgumentType;
   typedef Ref<const T> ReturnType;
   typedef T ObjectType;
   static Ref<T> ConvertArgument (const T *object) { return const_pointer_cast<T> (object); }
   static Ref<T> ConvertReturn (Ref<const T> value) { return const_pointer_cast<T> (value); }
+<<<<<<< HEAD
   static bool IsRef() { return true; }   
+=======
+  static bool IsRef() { return true; }
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
@@ -439,7 +585,11 @@ public:
   T value;
 
   static const struct Class : mutil::Class {
+<<<<<<< HEAD
     Class (const Definition &def) : mutil::Class (def) {} 
+=======
+    Class (const Definition &def) : mutil::Class (def) {}
+>>>>>>> prop-types: can now iterate over and compare layer props
     void WriteObject (const Object *obj, std::ostream &os, WriteContext &) const override
       { os << dynamic_cast<const Box<T> * >(obj)->value; }
   } class_;
@@ -459,7 +609,11 @@ public:
   explicit ContainerBox (const T &value) : Box(value) {}
 
   static const struct Class : mutil::Class {
+<<<<<<< HEAD
     Class (const Definition &def) : mutil::Class (def) {} 
+=======
+    Class (const Definition &def) : mutil::Class (def) {}
+>>>>>>> prop-types: can now iterate over and compare layer props
     void WriteObject (const Object *obj, std::ostream &os, WriteContext &c) const override
       { WriteObjectList (os, c, "list", dynamic_cast<const Box<T> * >(obj)->value); }
   } class_;
@@ -490,8 +644,13 @@ public:
 
   void WriteProperties (std::ostream &,  WriteContext &, const Object *) const;
   const Class *GetBaseClass() const;
+<<<<<<< HEAD
   
   mutable EmbeddedList<const Property> propertyList;    
+=======
+
+  mutable EmbeddedList<const Property> propertyList;
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
@@ -509,18 +668,30 @@ public:
   std::string GetName() const { return name_; }
   Flag GetFlag() const { return flag_; }
   // TODO remove const_iterator begin() const {return const_iterator(this); }
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   // [implementation]
   virtual const mutil::Class *GetClass() const = 0;
   virtual void Set(Object *object, Ref<RefObject> newValue) const = 0;
   virtual Ref<RefObject> Get(const Object *object) const = 0;
+<<<<<<< HEAD
   virtual bool IsReadOnly() const { return false; } 
+=======
+  virtual bool IsReadOnly() const { return false; }
+>>>>>>> prop-types: can now iterate over and compare layer props
   virtual bool IsReference() const { return false; }
 
 protected:
   Property(PropertyClass *, const char *name, Flag flag);
   virtual ~Property() {}
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 private:
   // MU_NO_COPY(Property); TODO - enable once generalized initializers are supported
   const char *name_;
@@ -535,7 +706,11 @@ inline Property::Property(PropertyClass *poc, const char *name, Flag flag)
   poc->propertyList.set (this);
 }
 
+<<<<<<< HEAD
 template <class T>  
+=======
+template <class T>
+>>>>>>> prop-types: can now iterate over and compare layer props
   inline auto GetProperty(Ref<RefObject> object, const Property *property, T * = nullptr) -> Ref<const T>
 {
   if (auto typedValue = dynamic_pointer_cast<const T> (property->Get(object.get())))
@@ -584,7 +759,11 @@ struct WrapIterator : public PolymorphicIterator {
 
 /*
 struct polymorphic_const_iterator
+<<<<<<< HEAD
   : public boost::iterator_facade<polymorphic_const_iterator, Ref<const RefObject>, boost::forward_traversal_tag, Ref<const RefObject>> 
+=======
+  : public boost::iterator_facade<polymorphic_const_iterator, Ref<const RefObject>, boost::forward_traversal_tag, Ref<const RefObject>>
+>>>>>>> prop-types: can now iterate over and compare layer props
 {
   polymorphic_const_iterator(Ref<PolymorphicIterator> it) : it_(it) {}
   void increment() { it_->increment(); }
@@ -594,7 +773,11 @@ struct polymorphic_const_iterator
 };
 
 struct polymorphic_iterator
+<<<<<<< HEAD
   : public boost::iterator_facade<polymorphic_iterator, Ref<RefObject>, boost::forward_traversal_tag, Ref<RefObject>> 
+=======
+  : public boost::iterator_facade<polymorphic_iterator, Ref<RefObject>, boost::forward_traversal_tag, Ref<RefObject>>
+>>>>>>> prop-types: can now iterate over and compare layer props
 {
   polymorphic_iterator(Ref<PolymorphicIterator> it) : it_(it) {}
   void increment() { it_->increment(); }
@@ -652,10 +835,17 @@ public:
 ///////////////////////////////////////////////////////////
 /// \brief Utility to write an attribute that is a list of RefObjects
 
+<<<<<<< HEAD
 template <class List> 
   void WriteObjectList (
     std::ostream &os, WriteContext &context, const char *itemName, const List &list)  
 { 
+=======
+template <class List>
+  void WriteObjectList (
+    std::ostream &os, WriteContext &context, const char *itemName, const List &list)
+{
+>>>>>>> prop-types: can now iterate over and compare layer props
   os << " " << itemName << "=( "; // << list.size() << " : ";
 
   if (context.recursion >= context.maxRecursion)
@@ -667,6 +857,7 @@ template <class List>
     context.recursion += 1;
     for (auto item : list)
     {
+<<<<<<< HEAD
       if (context.indent) 
       {
         os << std::endl;    
@@ -674,6 +865,15 @@ template <class List>
           os << "  ";
       }
       
+=======
+      if (context.indent)
+      {
+        os << std::endl;
+        for (int i = 0; i < context.recursion; ++i)
+          os << "  ";
+      }
+
+>>>>>>> prop-types: can now iterate over and compare layer props
       WriteObject (item, os, context);
     }
     context.recursion -= 1;
@@ -697,18 +897,30 @@ public:
   // [construct/copy/destroy]
   MU_constexpr ObjectProperty (PropertyClass *poc, const char *name, Flag flag)
     : Property(poc, name, flag) {}
+<<<<<<< HEAD
   
   // [implementation]
   void Set(Object *object_, Ref<RefObject> newValue) const override {
     if (auto object = dynamic_cast<C *> (object_))
       ObjectSet(object, newValue.get()); 
+=======
+
+  // [implementation]
+  void Set(Object *object_, Ref<RefObject> newValue) const override {
+    if (auto object = dynamic_cast<C *> (object_))
+      ObjectSet(object, newValue.get());
+>>>>>>> prop-types: can now iterate over and compare layer props
     else
       MU_THROW(XBadArgument("Property write on incompatible object", object));
   }
   Ref<RefObject> Get(const Object *object_) const override {
     if (auto object = dynamic_cast<const C *> (object_))
       return ObjectGet(object);
+<<<<<<< HEAD
     MU_THROW(std::logic_error("Property read on incompatible object")); 
+=======
+    MU_THROW(std::logic_error("Property read on incompatible object"));
+>>>>>>> prop-types: can now iterate over and compare layer props
   }
   // [avoids excessive dynamic_cast instantiations to save binary size]
   virtual void ObjectSet (C *, RefObject *value) const = 0;
@@ -718,13 +930,21 @@ public:
 
 /// \brief Base class for a Property whose value is an Object
 template <class C, class T>
+<<<<<<< HEAD
   class ValueProperty : public ObjectProperty<C> 
+=======
+  class ValueProperty : public ObjectProperty<C>
+>>>>>>> prop-types: can now iterate over and compare layer props
 {
 public:
   // [types]
   typedef typename TypeTraits<T>::Type Type;
   typedef typename TypeTraits<T>::ObjectType ObjectType;
+<<<<<<< HEAD
   typedef Type C::* MemberObjectPointer;   
+=======
+  typedef Type C::* MemberObjectPointer;
+>>>>>>> prop-types: can now iterate over and compare layer props
   typedef Property::Flag Flag;
 
 
@@ -734,6 +954,7 @@ public:
     : ObjectProperty<C>(poc, name, flag), pMember(pMember_) {}
 
   // [implementation]
+<<<<<<< HEAD
   const Class *GetClass() const // override 
     { return &ObjectType::class_; }
   bool IsReference() const // override 
@@ -743,6 +964,17 @@ public:
   void ObjectSet(C *object, RefObject *newValue_) const // override
   {
     if (ObjectType *newValue = dynamic_cast<ObjectType *> (newValue_)) 
+=======
+  const Class *GetClass() const // override
+    { return &ObjectType::class_; }
+  bool IsReference() const // override
+    { return TypeTraits<T>::IsRef(); }
+  Ref<RefObject> ObjectGet(const C *object) const // override
+    { return TypeTraits<T>::ConvertReturn(object->*pMember); }
+  void ObjectSet(C *object, RefObject *newValue_) const // override
+  {
+    if (ObjectType *newValue = dynamic_cast<ObjectType *> (newValue_))
+>>>>>>> prop-types: can now iterate over and compare layer props
       object->*pMember = TypeTraits<T>::ConvertArgument(newValue);
     Throw(XBadArgument("Property write on incompatible object", newValue_));
   }
@@ -754,23 +986,37 @@ protected:
 
 /*
 template <class C, class MemberObjectPointer>
+<<<<<<< HEAD
   class ValueProperty2 : public ValueProperty<C, decltype(((Object *)nullptr)->*MemberObjectPointer);> 
 {
 public:
   static_assert(std::is_member_object_pointer(MemberPointer), "Supplied type not a member pointer"); 
   
+=======
+  class ValueProperty2 : public ValueProperty<C, decltype(((Object *)nullptr)->*MemberObjectPointer);>
+{
+public:
+  static_assert(std::is_member_object_pointer(MemberPointer), "Supplied type not a member pointer");
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   // [types]
   typedef decltype(((Object *)nullptr)->*MemberObjectPointer) PrimType;
   typedef typename TypeTraits<T>::Type Type;
   typedef typename TypeTraits<T>::ObjectType  ObjectType;
+<<<<<<< HEAD
   
   typedef Type C::* MemberObjectPointer;   
+=======
+
+  typedef Type C::* MemberObjectPointer;
+>>>>>>> prop-types: can now iterate over and compare layer props
 
   // [construct/copy/destroy]
   ValueProperty2 (PropertyObject::Class *poc, const char *name)
     : ObjectProperty<C>(poc, name), pMember(pMember_) {}
 
   // [implementation]
+<<<<<<< HEAD
   const Class *GetClass() const // override 
     { return &ObjectType::class_; }
   bool IsReference() const // override 
@@ -780,6 +1026,17 @@ public:
   void ObjectSet(C *object, RefObject *newValue_) // override 
   {
     if (ObjectType *newValue = dynamic_cast<ObjectType *> (newValue_)) 
+=======
+  const Class *GetClass() const // override
+    { return &ObjectType::class_; }
+  bool IsReference() const // override
+    { return TypeTraits<T>::IsRef(); }
+  Ref<RefObject> ObjectGet(const C *object) const // override
+    { return TypeTraits<T>::ConvertReturn(object->*pMember); }
+  void ObjectSet(C *object, RefObject *newValue_) // override
+  {
+    if (ObjectType *newValue = dynamic_cast<ObjectType *> (newValue_))
+>>>>>>> prop-types: can now iterate over and compare layer props
       object->*pMember = TypeTraits<T>::ConvertArgument(newValue);
     Throw(XBadArgument("Property write on incompatible object", newValue_));
   }
@@ -791,8 +1048,13 @@ public:
 template <class C, class T>
 class PointerProperty : public Property {
 public:
+<<<<<<< HEAD
   typedef T * C::* MemberPointer;   
    
+=======
+  typedef T * C::* MemberPointer;
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   // [construct/copy/destroy]
   PointerProperty (PropertyClass *poc, const char *name,
       MemberPointer pMember_, Flag flag = Flag::None)
@@ -804,6 +1066,7 @@ public:
   void Set(Object *, Ref<RefObject>) const override
     { throw std::logic_error("Can't set native pointer property"); }
   Ref<RefObject> Get(const Object *object_) const override
+<<<<<<< HEAD
     { 
       if (const C *object = dynamic_cast<const C *> (object_)) 
         return make_ref<Pointer> (object->*pMember);
@@ -812,6 +1075,16 @@ public:
 
 protected:
   MemberPointer pMember; 
+=======
+    {
+      if (const C *object = dynamic_cast<const C *> (object_))
+        return make_ref<Pointer> (object->*pMember);
+      throw XBadArgument("Property read on incompatible object");
+    }
+
+protected:
+  MemberPointer pMember;
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
@@ -822,11 +1095,19 @@ public:
   typedef typename TypeTraits<T>::ArgumentType ArgumentType;
   typedef typename TypeTraits<T>::ReturnType ReturnType;
   typedef typename TypeTraits<T>::ObjectType ObjectType;
+<<<<<<< HEAD
   
   typedef ReturnType (C::*MemberPointerGet) () const;
   typedef void (C::*MemberPointerSet) (ArgumentType);
   typedef Property::Flag Flag;
   
+=======
+
+  typedef ReturnType (C::*MemberPointerGet) () const;
+  typedef void (C::*MemberPointerSet) (ArgumentType);
+  typedef Property::Flag Flag;
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   // [construct/copy/destroy]
   MU_constexpr SyntheticProperty (PropertyClass *poc, const char *name,
       MemberPointerGet pMemberGet_, MemberPointerSet pMemberSet_,
@@ -838,6 +1119,7 @@ public:
   // [implementation]
   const Class *GetClass() const // override
     { return &ObjectType::class_; }
+<<<<<<< HEAD
   bool IsReadOnly() const // override 
     { return pMemberSet == 0; } 
   Ref<RefObject> ObjectGet(const C *object) const // override 
@@ -859,6 +1141,29 @@ public:
 protected:
   MemberPointerGet pMemberGet; 
   MemberPointerSet pMemberSet; 
+=======
+  bool IsReadOnly() const // override
+    { return pMemberSet == 0; }
+  Ref<RefObject> ObjectGet(const C *object) const // override
+  {
+    if (pMemberGet == nullptr)
+      MU_THROW(XBadArgument("Attempt to read write-only propery", object));
+    return TypeTraits<T>::ConvertReturn((object->*pMemberGet) ()); // ERROR
+  }
+  void ObjectSet(C *object, RefObject * value) const // override
+  {
+    if (pMemberSet != 0)
+      MU_THROW(XBadArgument("Attempt to write read-only property", object));
+    ObjectType *newValue = dynamic_cast<ObjectType *> (value);
+    if (newValue == nullptr)
+      MU_THROW(XBadArgument("Attempt to write property with incompatible type", value));
+    (object->*pMemberSet) (TypeTraits<T>::ConvertArgument(newValue));
+  }
+
+protected:
+  MemberPointerGet pMemberGet;
+  MemberPointerSet pMemberSet;
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
@@ -870,11 +1175,19 @@ public:
   typedef typename TypeTraits<T>::ArgumentType ArgumentType;
   typedef typename TypeTraits<T>::ReturnType ReturnType;
   typedef typename TypeTraits<T>::ObjectType ObjectType;
+<<<<<<< HEAD
   
   typedef ReturnType (C::*MemberPointerGet) () const;
   typedef void (C::*MemberPointerSet) (ArgumentType, bool animate);
   typedef Property::Flag Flag;
    
+=======
+
+  typedef ReturnType (C::*MemberPointerGet) () const;
+  typedef void (C::*MemberPointerSet) (ArgumentType, bool animate);
+  typedef Property::Flag Flag;
+
+>>>>>>> prop-types: can now iterate over and compare layer props
   // [construct/copy/destroy]
   AnimatedProperty (PropertyClass *poc, const char *name,
     MemberPointerGet pMemberGet_, MemberPointerSet pMemberSet_, Flag flag = Flag::None)
@@ -885,6 +1198,7 @@ public:
   // [implementation]
   const Class *GetClass() const // override
     { return &ObjectType::class_; }
+<<<<<<< HEAD
   bool IsReadOnly() const // override 
     { return pMemberSet == 0; } 
   Ref<RefObject> ObjectGet(const C *object) const // override 
@@ -915,6 +1229,38 @@ public:
 protected:
   MemberPointerGet pMemberGet; 
   MemberPointerSet pMemberSet; 
+=======
+  bool IsReadOnly() const // override
+    { return pMemberSet == 0; }
+  Ref<RefObject> ObjectGet(const C *object) const // override
+  {
+    if (pMemberGet == nullptr)
+      MU_THROW(XBadArgument("Attempt to read write-only propery", object));
+    return TypeTraits<T>::ConvertReturn((object->*pMemberGet) ()); // TODO ERROR
+  }
+  void ObjectSet(C *object, RefObject * value) const // override
+  {
+    if (pMemberSet != 0)
+      MU_THROW(XBadArgument("Attempt to write read-only property", object));
+    ObjectType *newValue = dynamic_cast<ObjectType *> (value);
+    if (newValue == nullptr)
+      MU_THROW(XBadArgument("Attempt to write property with incompatible type", value));
+    (object->*pMemberSet) (TypeTraits<T>::ConvertArgument(newValue), true);
+  }
+  void ObjectSetAnimated(C *object, RefObject * value, bool animate) const // override
+  {
+    if (pMemberSet != 0)
+      MU_THROW(XBadArgument("Attempt to write read-only property", object));
+    ObjectType *newValue = dynamic_cast<ObjectType *> (value);
+    if (newValue == nullptr)
+      MU_THROW(XBadArgument("Attempt to write property with incompatible type", value));
+    (object->*pMemberSet) (TypeTraits<T>::ConvertArgument(newValue), animate);
+  }
+
+protected:
+  MemberPointerGet pMemberGet;
+  MemberPointerSet pMemberSet;
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 
 
@@ -927,6 +1273,7 @@ public:
   typedef typename TypeTraits<T>::ArgumentType ArgumentType;
   typedef typename TypeTraits<T>::ReturnType ReturnType;
   typedef typename TypeTraits<T>::ObjectType ObjectType;
+<<<<<<< HEAD
   
   typedef ReturnType (C::*MemberPointerGet) () ;   
   typedef void (C::*MemberPointerSet) (ArgumentType) ;   
@@ -934,11 +1281,21 @@ public:
   // [construct/copy/destroy]
   SyntheticRefProperty (PropertyClass *poc, const char *name, MemberPointerGet pMemberGet_, MemberPointerSet pMemberSet_)
     : ObjectProperty<C> (poc, name), pMemberGet(pMemberGet_), pMemberSet(pMemberSet_) 
+=======
+
+  typedef ReturnType (C::*MemberPointerGet) () ;
+  typedef void (C::*MemberPointerSet) (ArgumentType) ;
+
+  // [construct/copy/destroy]
+  SyntheticRefProperty (PropertyClass *poc, const char *name, MemberPointerGet pMemberGet_, MemberPointerSet pMemberSet_)
+    : ObjectProperty<C> (poc, name), pMemberGet(pMemberGet_), pMemberSet(pMemberSet_)
+>>>>>>> prop-types: can now iterate over and compare layer props
     { C::class_.propertyList.push_front (this); }
 
   // [implementation]
   const Class *GetClass() const // override
     { return &ObjectType::class_; }
+<<<<<<< HEAD
   bool IsReadOnly() const // override 
     { return pMemberSet == 0; } 
   Ref<RefObject> ObjectGet(const C *object) const // override 
@@ -960,6 +1317,29 @@ public:
 protected:
   MemberPointerGet pMemberGet; 
   MemberPointerSet pMemberSet; 
+=======
+  bool IsReadOnly() const // override
+    { return pMemberSet == 0; }
+  Ref<RefObject> ObjectGet(const C *object) const // override
+  {
+    if (pMemberGet == nullptr)
+      MU_THROW(XBadArgument("Attempt to read write-only propery", object));
+    return TypeTraits<T>::ConvertReturn((const_cast<C *> (object)->*pMemberGet) ()); // ERROR
+  }
+  void ObjectSet(C *object, RefObject * value) const // override
+  {
+    if (pMemberSet != 0)
+      MU_THROW(XBadArgument("Attempt to write read-only property", object));
+    ObjectType *newValue = dynamic_cast<ObjectType *> (value);
+    if (newValue == nullptr)
+      MU_THROW(XBadArgument("Attempt to write property with incompatible type", value));
+    (object->*pMemberSet) (TypeTraits<T>::ConvertArgument(newValue));
+  }
+
+protected:
+  MemberPointerGet pMemberGet;
+  MemberPointerSet pMemberSet;
+>>>>>>> prop-types: can now iterate over and compare layer props
 };
 */
 
@@ -983,18 +1363,32 @@ public:
 //  virtual void Invoke (Object *object, Params &args, Returns &returns) = 0;
 };
 
+<<<<<<< HEAD
 template<typename C, typename Return, typename Param1, typename Param2> 
 class Method2 : public Method {
 public:
   typedef Return (C::*) (Param1, Param2) MethodPointer;
   Method2(MethodPointer pM, const char *name, const char *param1, const char *param2) : param1(param1), param2(param2) {} 
+=======
+template<typename C, typename Return, typename Param1, typename Param2>
+class Method2 : public Method {
+public:
+  typedef Return (C::*) (Param1, Param2) MethodPointer;
+  Method2(MethodPointer pM, const char *name, const char *param1, const char *param2) : param1(param1), param2(param2) {}
+>>>>>>> prop-types: can now iterate over and compare layer props
 //  void Invoke (Object *object, Params &Params, Returns &returns) {
 //    Ref<RefObject> param1 = params.Pop<TypeMap<Param1>::ObjectType> (param1);
 //    Ref<RefObject> param2 = params.Pop<TypeMap<Param2>::ObjectType> (param2);
 //    params.End();
+<<<<<<< HEAD
 //    returns.Add<TypeMap<Return>::ObjectType>(Get<C>(object)->pMethodPointer_(param1, param2)); 
 //  }
     
+=======
+//    returns.Add<TypeMap<Return>::ObjectType>(Get<C>(object)->pMethodPointer_(param1, param2));
+//  }
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 private:
   MethodPointer pMethodPointer_;
   const char *name;
@@ -1054,12 +1448,20 @@ private:
     }; \
     static const Class class_; \
     const PropertyClass *GetClass_ () const override { return &class_; }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 # define MU_DEFINE_CLASS(TYPE) \
     const TYPE::Class TYPE::class_
 
 # define MU_DEFINE_CLASS2(NAMESPACE, TYPE, NAME) \
+<<<<<<< HEAD
     const TYPE::Class TYPE::class_ = Class::DefinitionT<TYPE> (NAMESPACE, NAME) 
+=======
+    const TYPE::Class TYPE::class_ = Class::DefinitionT<TYPE> (NAMESPACE, NAME)
+>>>>>>> prop-types: can now iterate over and compare layer props
 
 
 ///////////////////////////////////////////////////////////
@@ -1082,7 +1484,11 @@ private:
     struct TYPE::Class : PropertyClass { \
       typedef TYPE T; \
       Class () : PropertyClass (DefinitionT<TYPE> (namespace_, (NAME))) {}
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 # define MU_BEGIN_LIST_CONTAINER_CLASS_EXT(TYPE, NAME) \
     struct TYPE::Class : ListContainerClass { \
       typedef TYPE T; \
@@ -1093,13 +1499,21 @@ private:
 # define MU_END_CLASS_EXT() \
     }; \
     const PropertyClass *TYPE::GetClass_ () const override { return &class_; }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> prop-types: can now iterate over and compare layer props
 /*
 # define MU_DEFINE_CLASS(TYPE) \
     const TYPE::Class TYPE::class_
 
 # define MU_DEFINE_CLASS2(NAMESPACE, TYPE, NAME) \
+<<<<<<< HEAD
     const TYPE::Class TYPE::class_ = Class::DefinitionT<TYPE> (NAMESPACE, NAME) 
+=======
+    const TYPE::Class TYPE::class_ = Class::DefinitionT<TYPE> (NAMESPACE, NAME)
+>>>>>>> prop-types: can now iterate over and compare layer props
 */
 
 ///////////////////////////////////////////////////////////
