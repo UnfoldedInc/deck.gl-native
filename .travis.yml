@@ -1,19 +1,14 @@
 # Inspired by https://github.com/uber/h3/blob/master/.travis.yml
 # and https://github.com/google/s2geometry/blob/master/.travis.yml
-# and https://github.com/amaiorano/vectrexy/blob/master/.travis.yml
 
 language: c
 
 os: linux
-dist: xenial
+dist: bionic
 
 compiler:
   - gcc
   - clang
-
-env:
-  global:
-    - DEPS_DIR=${HOME}/deps
 
 matrix:
   include:
@@ -38,26 +33,27 @@ matrix:
       script:
         - make
         - CTEST_OUTPUT_ON_FAILURE=1 make test
-    - name: "Mac OSX (Xcode 8)"
+    - name: "Mac OSX (Xcode 10)"
       os: osx
+      osx_image: xcode10.1
 
 install:
   # Install vcpkg and dependencies
-  - export CC=${CC_COMPILER}
-  - export CXX=${CXX_COMPILER}
-  - mkdir -p ${DEPS_DIR}/vcpkg
-  - pushd ${DEPS_DIR}/vcpkg
-  - git init
-  - git remote add origin https://github.com/Microsoft/vcpkg.git
-  - git fetch origin master
-  - git checkout -b master origin/master
+  - pushd $HOME
+  - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
+  - cd vcpkg
+  - git checkout .
+  - git pull
   - ./bootstrap-vcpkg.sh
-  - ./vcpkg install jsoncpp gtest
+  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
+  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
+  - ./vcpkg install jsoncpp gtest --recurse
+  - rm -rf buildtrees
   - popd
 
 cache:
   directories:
-    - ${DEPS_DIR}/vcpkg/installed
+    - ${HOME}/vcpkg
 
 before_script:
   # Build out of source
