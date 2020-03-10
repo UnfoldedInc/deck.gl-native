@@ -45,11 +45,14 @@ SET(TEST_HEADER_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${TEST_SOURCE_FILES} ${LIB_HEADER_FILES} ${TEST_HEADER_FILES})
 
+# Dependencies
+find_package(jsoncpp CONFIG REQUIRED)
+
 # Build the actual library file
 add_library(deck.gl ${LIB_SOURCE_FILES})
 
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS})
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)

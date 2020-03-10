@@ -49,7 +49,7 @@ Notes: See `vcpkg` install above.
 ```
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_VCPKG>/scripts/buildsystems/vcpkg.cmake ..
 make
 ```
 

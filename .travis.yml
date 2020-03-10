@@ -1,5 +1,6 @@
 # Inspired by https://github.com/uber/h3/blob/master/.travis.yml
 # and https://github.com/google/s2geometry/blob/master/.travis.yml
+# and https://github.com/amaiorano/vectrexy/blob/master/.travis.yml
 
 language: c
 
@@ -9,6 +10,10 @@ dist: xenial
 compiler:
   - gcc
   - clang
+
+env:
+  global:
+    - DEPS_DIR=${HOME}/deps
 
 matrix:
   include:
@@ -29,18 +34,33 @@ matrix:
           packages:
             - valgrind
       before_script:
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON .
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake .
       script:
         - make
         - CTEST_OUTPUT_ON_FAILURE=1 make test
     - name: "Mac OSX (Xcode 8)"
       os: osx
 
+install:
+  # Install vcpkg and dependencies
+  - mkdir -p ${DEPS_DIR}/vcpkg
+  - pushd ${DEPS_DIR}
+  - git clone https://github.com/Microsoft/vcpkg.git
+  - pushd vcpkg
+  - ./bootstrap-vcpkg.sh
+  - ./vcpkg install jsoncpp gtest
+  - popd
+  - popd
+
+cache:
+  directories:
+    - ${DEPS_DIR}/vcpkg/installed
+
 before_script:
   # Build out of source
   - mkdir build
   - cd build
-  - cmake -DWARNINGS_AS_ERRORS=ON ..
+  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake ..
 
 script:
   - make
