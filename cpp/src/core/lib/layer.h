@@ -20,7 +20,11 @@
 
 #include <string>
 #include <functional>
+
 #include "constants.h"
+#include "../../math/math.h"
+
+use namespace mathgl;
 
 /* eslint-disable react/no-direct-mutation-state */
 // import {COORDINATE_SYSTEM} from './constants';
@@ -52,11 +56,9 @@
 
 // const EMPTY_ARRAY = Object.freeze([]);
 
+class AttributeManager {};
+
 // let pickingColorCache = new Uint8ClampedArray(0);
-
-template <class T> class Matrix4 {};
-template <class T> class Vector3 {};
-
 class ColorRGBA {
 public:
   ColorRGBA(float r_, float g_, float b_, float a_); // : r{r_}, g:{g_}, b{b_}, a{a_} {} 
@@ -198,6 +200,7 @@ public:
 
 class LayerState {
 public: // friend class Layer;
+  AttributeManager* attributeManager;
   bool needsRedraw;
 };
 
@@ -265,19 +268,21 @@ class Layer { // : public Component
 
   // Returns the most recent layer that matched to this state
   // (When reacting to an async event, this layer may no longer be the latest)
-  getCurrentLayer() {
-    return this->internalState && this->internalState->layer;
-  }
+  // getCurrentLayer() {
+  //   return this->internalState && this->internalState->layer;
+  // }
 
   // Returns the default parse options for async props
-  getLoadOptions() {
-    return this->props->loadOptions;
-  }
+  // getLoadOptions() {
+  //   return this->props->loadOptions;
+  // }
+}
 
   // PROJECTION METHODS
 
   // Projects a point with current map state (lat, lon, zoom, pitch, bearing)
   // From the current layer's coordinate system to screen
+  /*
   project(xyz) {
     const {viewport} = this->context;
     const worldPosition = getWorldPosition(xyz, {
