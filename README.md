@@ -8,7 +8,7 @@ This is a C++ implementation of deck.gl
 ### gcc
 
 ```sh
-brew install gcc
+brew install gcc cmake clang-format lcov
 ```
 
 ### vcpkg (Microsoft C++ Package Manager)

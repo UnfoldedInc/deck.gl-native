@@ -114,3 +114,5 @@ DerivedData/
 ## Ignore Xcode project settings completely
 *.xcodeproj
 *.xcworkspace
+
+.vscode
