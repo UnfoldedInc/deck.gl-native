@@ -64,6 +64,7 @@ public:
 };
 
 class LayerProps {
+public:
   // data: Special handling for null, see below
   // data: {type: 'data', value: EMPTY_ARRAY, async: true},
   // dataComparator: null,
@@ -196,7 +197,7 @@ public:
 */
 
 class LayerState {
-  friend class Layer;
+public: // friend class Layer;
   bool needsRedraw;
 };
 
@@ -250,27 +251,27 @@ class Layer { // : public Component
 
   // Returns true if the layer is pickable and visible.
   auto isPickable() -> bool {
-    return this->props.pickable && this->props.visible;
+    return this->props->pickable && this->props->visible;
   }
 
   // Return an array of models used by this layer, can be overriden by layer subclass
-  getModels() {
-    return this->state && (this->state.models || (this->state.model ? [this->state.model] : []));
-  }
+  // getModels() {
+  //   return this->state && (this->state.models || (this->state.model ? [this->state.model] : []));
+  // }
 
   getAttributeManager() {
-    return this->internalState && this->internalState.attributeManager;
+    return this->internalState && this->internalState->attributeManager;
   }
 
   // Returns the most recent layer that matched to this state
   // (When reacting to an async event, this layer may no longer be the latest)
   getCurrentLayer() {
-    return this->internalState && this->internalState.layer;
+    return this->internalState && this->internalState->layer;
   }
 
   // Returns the default parse options for async props
   getLoadOptions() {
-    return this->props.loadOptions;
+    return this->props->loadOptions;
   }
 
   // PROJECTION METHODS
