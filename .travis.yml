@@ -1,6 +1,9 @@
 # Inspired by https://github.com/uber/h3/blob/master/.travis.yml
 # and https://github.com/google/s2geometry/blob/master/.travis.yml
 
+# Many builds are disabled here to save time. They should be enabled
+# later (and they should be working.)
+
 language: c
 
 os: linux
@@ -8,7 +11,7 @@ dist: bionic
 
 compiler:
   - gcc
-  - clang
+  # - clang
 
 matrix:
   include:
