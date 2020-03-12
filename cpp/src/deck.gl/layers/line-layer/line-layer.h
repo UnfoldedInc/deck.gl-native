@@ -21,7 +21,7 @@
 #ifndef DECKGL_LAYERS_LINE_LAYER_H
 #define DECKGL_LAYERS_LINE_LAYER_H
 
-#include "deck.gl/core.h" // {Layer, project32, picking}
+#include "deck.gl/core.h"  // {Layer, project32, picking}
 
 #include <limits>
 
@@ -40,37 +40,42 @@ const DEFAULT_COLOR = [0, 0, 0, 255];
 */
 
 class LineLayerProps : public LayerProps {
-public:
-/*
-  LineLayerProps()
-<<<<<<< HEAD:cpp/src/layers/line-layer/line-layer.h
-    : widthUnits{"pixels"}, 
-=======
-    : widthUnits{"pixels"},
->>>>>>> File structure improvements: enable `#include "deck.gl/core"`:cpp/src/deck.gl/layers/line-layer/line-layer.h
-    , widthScale{1},
-    , widthMinPixels{0},
-    , widthMaxPixels{std::numeric_limits<float>::max()},
-  {}
+   public:
+    /*
+      LineLayerProps()
+    <<<<<<< HEAD:cpp/src/layers/line-layer/line-layer.h
+        : widthUnits{"pixels"},
+    =======
+        : widthUnits{"pixels"},
+    >>>>>>> File structure improvements: enable `#include
+    "deck.gl/core"`:cpp/src/deck.gl/layers/line-layer/line-layer.h ,
+    widthScale{1}, , widthMinPixels{0}, ,
+    widthMaxPixels{std::numeric_limits<float>::max()},
+      {}
 
-  std::string widthUnits; // : 'pixels',
-  float widthScale; //  {type: 'number', value: 1, min: 0},
-  float widthMinPixels; //  {type: 'number', value: 0, min: 0},
-  float widthMaxPixels; //  {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+      std::string widthUnits; // : 'pixels',
+      float widthScale; //  {type: 'number', value: 1, min: 0},
+      float widthMinPixels; //  {type: 'number', value: 0, min: 0},
+      float widthMaxPixels; //  {type: 'number', value: Number.MAX_SAFE_INTEGER,
+    min: 0}
 
-  // std::function<(auto row) -> Vector3<double>> getSourcePosition; //  {type: 'accessor', value: x => x.sourcePosition},
-  // std::function<(auto row) -> Vector3<double>> getTargetPosition; //  {type: 'accessor', value: x => x.targetPosition},
-  // std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor', value: DEFAULT_COLOR},
-  // std::function<(auto row) -> float> getWidth; //  {type: 'accessor', value: 1},
-*/
+      // std::function<(auto row) -> Vector3<double>> getSourcePosition; //
+    {type: 'accessor', value: x => x.sourcePosition},
+      // std::function<(auto row) -> Vector3<double>> getTargetPosition; //
+    {type: 'accessor', value: x => x.targetPosition},
+      // std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor',
+    value: DEFAULT_COLOR},
+      // std::function<(auto row) -> float> getWidth; //  {type: 'accessor',
+    value: 1},
+    */
 };
 
 class LineLayerState : public LayerState {
-public:
+   public:
 };
 
 class LineLayer : public Layer {
-public:
+   public:
 };
 
 /*
@@ -128,9 +133,11 @@ public:
 
   draw({uniforms}) {
     const {viewport} = this->context;
-    const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = this->props;
+    const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} =
+this->props;
 
-    const widthMultiplier = widthUnits === 'pixels' ? viewport.metersPerPixel : 1;
+    const widthMultiplier = widthUnits === 'pixels' ? viewport.metersPerPixel :
+1;
 
     this->state.model
       .setUniforms(
@@ -173,6 +180,6 @@ LineLayer.layerName = 'LineLayer';
 LineLayer.defaultProps = defaultProps;
 */
 
-} // namespace deckgl
+}  // namespace deckgl
 
-#endif // DECKGL_LAYERS_LINE_LAYER_H
+#endif  // DECKGL_LAYERS_LINE_LAYER_H

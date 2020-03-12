@@ -23,8 +23,8 @@
 
 // To be ported for prototype
 
-#include "./layers/line-layer/line-layer.h" // LineLayer
-#include "./layers/scatterplot-layer/scatterplot-layer.h" // ScatterplotLayer
+#include "./layers/line-layer/line-layer.h"                // LineLayer
+#include "./layers/scatterplot-layer/scatterplot-layer.h"  // ScatterplotLayer
 // #include "./solid-polygon-layer/solid-polygon-layer.h" // SolidPolygonLayer
 
 // Not to be ported for prototype
@@ -48,4 +48,4 @@
 #include './text-layer/multi-icon-layer/multi-icon-layer'; // _MultiIconLayer
 */
 
-#endif // DECKGL_LAYERS_H
+#endif  // DECKGL_LAYERS_H
