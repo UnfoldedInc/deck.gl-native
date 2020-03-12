@@ -54,6 +54,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/src/deck.gl/core/lib/layer-manager.h
     cpp/src/deck.gl/core/lib/layer-state.h
     cpp/src/deck.gl/core/lib/view-manager.h
+    cpp/src/deck.gl/core/lifecycle/component.h
     cpp/src/deck.gl/core/lifecycle/prop-types.h
     cpp/src/deck.gl/core/viewports/viewport.h
     )

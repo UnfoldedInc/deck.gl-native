@@ -22,6 +22,16 @@
 
 #include <gtest/gtest.h>
 
+Json::Value hello() {
+  // Json::StreamWriterBuilder builder;
+  // const std::unique_ptr<Json::StreamWriter>
+  // writer(builder.newStreamWriter());
+
+  Json::Value root;
+  root["hello"] = "world";
+  return root;
+}
+
 Json::Value hello();
 
 TEST(SuiteName1, TestName1) {

@@ -95,8 +95,7 @@ class LayerManager {
   bool _needsUpdate;
   bool _debug;
 
-  LayerManager(
-      deck)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
+  LayerManager(deck)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
       : context(deck, this)
   // gl,
   // // Enabling luma.gl Program caching using private API (_cachePrograms)
@@ -164,12 +163,8 @@ class LayerManager {
     // Filtering by layerId compares beginning of strings, so that sublayers
     // will be included Dependes on the convention of adding suffixes to the
     // parent's layer name
-    return layerIds
-               ? this->layers.filter(
-                     layer = > layerIds.find(layerId =
-                                                 > layer.id.indexOf(layerId) ==
-                                             = 0))
-               : this->layers;
+    return layerIds ? this->layers.filter(layer = > layerIds.find(layerId = > layer.id.indexOf(layerId) == = 0))
+                    : this->layers;
   }
 
   // Set props needed for layer rendering and picking.
@@ -277,9 +272,7 @@ class LayerManager {
     const oldLayerMap = {};
     for (const oldLayer of oldLayers) {
       if (oldLayerMap[oldLayer.id]) {
-        log.warn(`Multiple old layers with same id $ {
-          layerName(oldLayer)
-        }`)();
+        log.warn(`Multiple old layers with same id $ { layerName(oldLayer) }`)();
       } else {
         oldLayerMap[oldLayer.id] = oldLayer;
       }
@@ -317,9 +310,7 @@ class LayerManager {
       if (oldLayer == = null) {
         // null, rather than undefined, means this id was originally
         // there
-        log.warn(`Multiple new layers with same id $ {
-          layerName(newLayer)
-        }`)();
+        log.warn(`Multiple new layers with same id $ { layerName(newLayer) }`)();
       }
       // Remove the old layer from candidates, as it has been matched with
       // this layer
@@ -351,8 +342,7 @@ class LayerManager {
       }
 
       if (sublayers) {
-        this->_updateSublayersRecursively(sublayers, oldLayerMap,
-                                          generatedLayers);
+        this->_updateSublayersRecursively(sublayers, oldLayerMap, generatedLayers);
       }
     }
   }

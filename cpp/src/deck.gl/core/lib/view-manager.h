@@ -111,9 +111,7 @@ class ViewManager {
 
   // Resolves a viewId string to a View, if already a View returns it.
   getView(viewOrViewId) {
-    return typeof viewOrViewId ==
-           = 'string' ? this->views.find(view = > view.id == = viewOrViewId)
-                      : viewOrViewId;
+    return typeof viewOrViewId == = 'string' ? this->views.find(view = > view.id == = viewOrViewId) : viewOrViewId;
   }
 
   // Returns the viewState for a specific viewId. Matches the viewState by
@@ -124,8 +122,7 @@ class ViewManager {
   getViewState(viewId) {
     const view = this->getView(viewId);
     // Backward compatibility: view state for single view
-    const viewState =
-        (view && this->viewState[view.getViewStateId()]) || this->viewState;
+    const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
     return view ? view.filterViewState(viewState) : viewState;
   }
 
@@ -260,13 +257,9 @@ class ViewManager {
 
   _updateController(view, viewState, viewport, controller) {
     if (view.controller) {
-      const controllerProps = Object.assign({}, view.controller, viewState, {
-        id : view.id,
-        x : viewport.x,
-        y : viewport.y,
-        width : viewport.width,
-        height : viewport.height
-      });
+      const controllerProps = Object.assign(
+          {}, view.controller, viewState,
+          {id : view.id, x : viewport.x, y : viewport.y, width : viewport.width, height : viewport.height});
 
       // TODO - check if view / controller type has changed, and replace
       // the controller
@@ -296,8 +289,7 @@ class ViewManager {
       const viewport = view.makeViewport({width, height, viewState});
 
       // Update the controller
-      this->controllers[view.id] = this->_updateController(
-          view, viewState, viewport, oldControllers[view.id]);
+      this->controllers[view.id] = this->_updateController(view, viewState, viewport, oldControllers[view.id]);
 
       this->_viewports.unshift(viewport);
     }
@@ -318,8 +310,7 @@ class ViewManager {
     this->_viewports.forEach(viewport = > {
       if (viewport.id) {
         // TODO - issue warning if multiple viewports use same id
-        this->_viewportMap[viewport.id] =
-            this->_viewportMap[viewport.id] || viewport;
+        this->_viewportMap[viewport.id] = this->_viewportMap[viewport.id] || viewport;
       }
     });
   }

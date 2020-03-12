@@ -1,5 +1,7 @@
 #include "./layer.h"
 
+using namespace deckgl;
+
 // LayerProps::propTypes
 // Contains setters and getters for properties
 
@@ -7,52 +9,30 @@
 
 const std::map<const std::string, const Prop*> LayerProps::propTypes = {
     {"visible",
-     new PropType<Layer, bool>{
-         [](const Layer::Props* props) { return props->visible; },
-         [](Layer::Props* props, bool value) { return props->visible = value; },
-         true}},
-    {"pickable", new PropType<Layer, bool>{[](const Layer::Props* props) {
-                                             return props->pickable;
-                                           },
-                                           [](Layer::Props* props, bool value) {
-                                             return props->pickable = value;
-                                           },
-                                           false}},
+     new PropType<Layer, bool>{[](const Layer::Props* props) { return props->visible; },
+                               [](Layer::Props* props, bool value) { return props->visible = value; }, true}},
+    {"pickable",
+     new PropType<Layer, bool>{[](const Layer::Props* props) { return props->pickable; },
+                               [](Layer::Props* props, bool value) { return props->pickable = value; }, false}},
     {"opacity",
-     new PropType<Layer, float>{
-         [](const Layer::Props* props) { return props->opacity; },
-         [](Layer::Props* props, float value) {
-           return props->opacity = value;
-         },
-         1.0}},
+     new PropType<Layer, float>{[](const Layer::Props* props) { return props->opacity; },
+                                [](Layer::Props* props, float value) { return props->opacity = value; }, 1.0}},
     {"coordinateSystem",
      new PropType<Layer, COORDINATE_SYSTEM>{
          [](const Layer::Props* props) { return props->coordinateSystem; },
-         [](Layer::Props* props, COORDINATE_SYSTEM value) {
-           return props->coordinateSystem = value;
-         },
+         [](Layer::Props* props, COORDINATE_SYSTEM value) { return props->coordinateSystem = value; },
          COORDINATE_SYSTEM::DEFAULT}},
-    {"coordinateOrigin",
-     new PropType<Layer, Vector3<double>>{
-         [](const Layer::Props* props) { return props->coordinateOrigin; },
-         [](Layer::Props* props, Vector3<double> value) {
-           return props->coordinateOrigin = value;
-         },
-         Vector3<double>()}},
+    {"coordinateOrigin", new PropType<Layer, Vector3<double>>{
+                             [](const Layer::Props* props) { return props->coordinateOrigin; },
+                             [](Layer::Props* props, Vector3<double> value) { return props->coordinateOrigin = value; },
+                             Vector3<double>()}},
     {"modelMatrix",
      new PropType<Layer, Matrix4<double>>{
          [](const Layer::Props* props) { return props->modelMatrix; },
-         [](Layer::Props* props, Matrix4<double> value) {
-           return props->modelMatrix = value;
-         },
-         Matrix4<double>()}},
+         [](Layer::Props* props, Matrix4<double> value) { return props->modelMatrix = value; }, Matrix4<double>()}},
     {"wrapLongitude",
-     new PropType<Layer, bool>{
-         [](const Layer::Props* props) { return props->wrapLongitude; },
-         [](Layer::Props* props, bool value) {
-           return props->wrapLongitude = value;
-         },
-         false}}};
+     new PropType<Layer, bool>{[](const Layer::Props* props) { return props->wrapLongitude; },
+                               [](Layer::Props* props, bool value) { return props->wrapLongitude = value; }, false}}};
 
 /*
 class LayerPropTypes {

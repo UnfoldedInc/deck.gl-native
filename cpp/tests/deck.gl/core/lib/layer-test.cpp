@@ -24,6 +24,8 @@
 
 #include "deck.gl/core.h"
 
+using namespace deckgl;
+
 TEST(Layer, Props) {
   auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
   auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
