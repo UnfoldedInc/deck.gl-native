@@ -17,15 +17,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 #include <gtest/gtest.h>
 
 #include "layers/layers.h"
+#include <memory>
 
-TEST(Layer, Props) {
-  auto layerProps1 = new LayerProps();
-  auto layerProps2 = new LayerProps();
+using namespace deckgl;
 
-  EXPECT_TRUE(layerProps1->compare(layerProps2));
+TEST(LineLayer, Props) {
+  auto layerProps1 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
+  auto layerProps2 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
+
+  EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
   layerProps2->opacity = 0.5;
-  EXPECT_FALSE(layerProps1->compare(layerProps2));
+  EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
 }
