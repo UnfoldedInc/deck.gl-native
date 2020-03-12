@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020, Unfolded Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,27 +18,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import project from '../project/project';
 
-const vs = `
-vec4 project_position_to_clipspace(
-  vec3 position, vec3 position64Low, vec3 offset, out vec4 commonPosition
-) {
-  vec3 projectedPosition = project_position(position, position64Low);
-  commonPosition = vec4(projectedPosition + offset, 1.0);
-  return project_common_position_to_clipspace(commonPosition);
+#include <gtest/gtest.h>
+
+#include "layers/layers.h"
+#include <memory>
+
+using namespace deckgl;
+
+TEST(ScatterplotLayer, Props) {
+  auto layerProps1 = std::unique_ptr<ScatterplotLayerProps>(new ScatterplotLayerProps());
+  auto layerProps2 = std::unique_ptr<ScatterplotLayerProps>(new ScatterplotLayerProps());
+
+  EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
+  layerProps2->opacity = 0.5;
+  EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
 }
-
-vec4 project_position_to_clipspace(
-  vec3 position, vec3 position64Low, vec3 offset
-) {
-  vec4 commonPosition;
-  return project_position_to_clipspace(position, position64Low, offset, commonPosition);
-}
-`;
-
-export default {
-  name: 'project32',
-  dependencies: [project],
-  vs
-};

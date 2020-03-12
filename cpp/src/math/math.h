@@ -2,8 +2,11 @@
 /// \file
 /// \brief Matrix operation support for geometrical transformations
 
-#ifndef MATH_GL
-#define MATH_GL
+#ifndef MATHGL_CORE
+#define MATHGL_CORE
+
+#include <cmath>
+#include <ostream>
 
 #include <cmath>
 #include <ostream>
@@ -1007,4 +1010,4 @@ template <typename coord>
 
 } // namespace math_gl
 
-#endif // MATH_GL
+#endif // MATHGL_CORE

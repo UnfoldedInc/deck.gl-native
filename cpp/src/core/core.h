@@ -18,7 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./lib/constants.h" // COORDINATE_SYSTEM
+#ifndef DECKGL_CORE_H
+#define DECKGL_CORE_H
+
+// #include "./lib/constants.h" // COORDINATE_SYSTEM
 #include "./lib/layer.h" // Layer, LayerProps, LayerState
 
 /*
@@ -94,3 +97,5 @@ export {default as _memoize} from './utils/memoize';
 export {mergeShaders as _mergeShaders} from './utils/shader';
 export {compareProps as _compareProps} from './lifecycle/props';
 */
+
+#endif // DECKGL_CORE_H

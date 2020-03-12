@@ -22,8 +22,15 @@
 #include "../../../src/core/lib/layer.h"
 
 TEST(Layer, Props) {
-  auto layerProps1 = new LayerProps();
-  auto layerProps2 = new LayerProps();
+
+#include <gtest/gtest.h>
+
+#include "layers/layers.h"
+#include <memory>
+
+TEST(Layer, Props) {
+  auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
+  auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
 
   EXPECT_TRUE(layerProps1->compare(layerProps2));
   layerProps2->opacity = 0.5;

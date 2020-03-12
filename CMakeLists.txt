@@ -35,16 +35,44 @@ endif()
 include(CMakeDependentOption)
 include(CTest)
 
-# Define source file lists
-set(LIB_SOURCE_FILES
-    cpp/src/main.cpp
-    cpp/src/core/lib/layer.cpp)
+# Define source file lists per library
+set(DECKGL_CORE_HEADER_FILES
+    cpp/src/core/lib/prop-types.h
+    cpp/src/core/lib/layer.h
+    )
+set(DECKGL_CORE_SOURCE_FILES
+    cpp/src/core/lib/layer.cpp
+    )
+set(DECKGL_CORE_TEST_FILES
+    cpp/src/core/lib/layer.cpp
+    )
+
+set(DECKGL_LAYERS_HEADER_FILES
+    cpp/src/layers/line-layer/line-layer.h
+    cpp/src/layers/scatterplot-layer/scatterplot-layer.h
+    )
+set(DECKGL_LAYERS_SOURCE_FILES
+    cpp/src/layers/line-layer/line-layer.cpp
+    cpp/src/layers/scatterplot-layer/scatterplot-layer.cpp
+    )    
+set(DECKGL_LAYERS_TEST_FILES
+    cpp/tests/layers/line-layer/line-layer-test.cpp
+    cpp/tests/layers/scatterplot-layer/scatterplot-layer-test.cpp
+    )
+
+# Define source file lists per type
 set(LIB_HEADER_FILES
     cpp/src/main.h
-    cpp/src/core/lib/layer.h)
+    cpp/src/math/math.h
+    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
+    )
+set(LIB_SOURCE_FILES
+    cpp/src/main.cpp
+    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
+    )
 set(TEST_SOURCE_FILES
     cpp/tests/main.cpp
-    cpp/tests/core/lib/layer.spec.cpp
+    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
     )
 SET(TEST_HEADER_FILES
     )
