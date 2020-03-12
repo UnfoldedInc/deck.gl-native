@@ -4,15 +4,15 @@
 #define DECKGL_CORE_PROP_TYPES_H
 
 #include <functional>
+#include <map>
+#include <string>
 
 namespace deckgl {
 
-class Props {
- public:
-  virtual ~Props() {}
-};
+class Props;
 
-struct Prop {
+class Prop {
+ public:
   virtual bool equals(const Props*, const Props*) const { return false; }
 };
 
@@ -32,6 +32,14 @@ struct PropType : public Prop {
     auto componentProps2 = dynamic_cast<const typename ComponentT::Props*>(props2);
     return this->get(componentProps1) == this->get(componentProps2);
   }
+};
+
+class Props {
+ public:
+  virtual ~Props() {}
+  virtual auto getPropTypes() -> const std::map<const std::string, const Prop*> = 0;
+
+  auto compare(const Props* oldProps) -> bool;
 };
 
 }  // namespace deckgl
