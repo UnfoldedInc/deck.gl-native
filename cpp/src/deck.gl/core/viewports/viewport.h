@@ -158,8 +158,6 @@ class Viewport {
   void _initProjectionMatrix(/* opts */);
 
   void _initPixelMatrices();
-
-  friend bool operator==(const Viewport& v1, const Viewport& v2);
 };
 
 bool operator==(const Viewport& v1, const Viewport& v2);

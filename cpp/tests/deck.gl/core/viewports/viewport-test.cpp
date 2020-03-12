@@ -33,8 +33,3 @@ TEST(Viewport, Simple) {
   viewport.height = 10;
   EXPECT_TRUE(viewport.containsPixel(2, 1, 5, 5));
 }
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
