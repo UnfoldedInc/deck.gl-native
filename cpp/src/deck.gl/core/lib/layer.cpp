@@ -5,58 +5,73 @@
 
 // TODO - auto generate from language-independent prop definition schema
 
- const std::map<const std::string, const Prop*> LayerProps::propTypes = {
-  {"visible", new PropType<Layer, bool>{
-    [](const Layer::Props* props) { return props->visible; },
-    [](Layer::Props* props, bool value) { return props->visible = value; },
-    true
-  }},
-  {"pickable", new PropType<Layer, bool>{
-    [](const Layer::Props* props) { return props->pickable; },
-    [](Layer::Props* props, bool value) { return props->pickable = value; },
-    false
-  }},
-  {"opacity", new PropType<Layer, float>{
-    [](const Layer::Props* props) { return props->opacity; },
-    [](Layer::Props* props, float value) { return props->opacity = value; },
-    1.0
-  }},
-  {"coordinateSystem", new PropType<Layer, COORDINATE_SYSTEM>{
-    [](const Layer::Props* props) { return props->coordinateSystem; },
-    [](Layer::Props* props, COORDINATE_SYSTEM value) { return props->coordinateSystem = value; },
-    COORDINATE_SYSTEM::DEFAULT
-  }},
-  {"coordinateOrigin", new PropType<Layer, Vector3<double>>{
-    [](const Layer::Props* props) { return props->coordinateOrigin; },
-    [](Layer::Props* props, Vector3<double> value) { return props->coordinateOrigin = value; },
-    Vector3<double>()
-  }},
-  {"modelMatrix", new PropType<Layer, Matrix4<double>>{
-    [](const Layer::Props* props) { return props->modelMatrix; },
-    [](Layer::Props* props, Matrix4<double> value) { return props->modelMatrix = value; },
-    Matrix4<double>()
-  }},
-  {"wrapLongitude", new PropType<Layer, bool>{
-    [](const Layer::Props* props) { return props->wrapLongitude; },
-    [](Layer::Props* props, bool value) { return props->wrapLongitude = value; },
-    false
-  }}
-};
+const std::map<const std::string, const Prop*> LayerProps::propTypes = {
+    {"visible",
+     new PropType<Layer, bool>{
+         [](const Layer::Props* props) { return props->visible; },
+         [](Layer::Props* props, bool value) { return props->visible = value; },
+         true}},
+    {"pickable", new PropType<Layer, bool>{[](const Layer::Props* props) {
+                                               return props->pickable;
+                                           },
+                                           [](Layer::Props* props, bool value) {
+                                               return props->pickable = value;
+                                           },
+                                           false}},
+    {"opacity",
+     new PropType<Layer, float>{
+         [](const Layer::Props* props) { return props->opacity; },
+         [](Layer::Props* props, float value) {
+             return props->opacity = value;
+         },
+         1.0}},
+    {"coordinateSystem",
+     new PropType<Layer, COORDINATE_SYSTEM>{
+         [](const Layer::Props* props) { return props->coordinateSystem; },
+         [](Layer::Props* props, COORDINATE_SYSTEM value) {
+             return props->coordinateSystem = value;
+         },
+         COORDINATE_SYSTEM::DEFAULT}},
+    {"coordinateOrigin",
+     new PropType<Layer, Vector3<double>>{
+         [](const Layer::Props* props) { return props->coordinateOrigin; },
+         [](Layer::Props* props, Vector3<double> value) {
+             return props->coordinateOrigin = value;
+         },
+         Vector3<double>()}},
+    {"modelMatrix",
+     new PropType<Layer, Matrix4<double>>{
+         [](const Layer::Props* props) { return props->modelMatrix; },
+         [](Layer::Props* props, Matrix4<double> value) {
+             return props->modelMatrix = value;
+         },
+         Matrix4<double>()}},
+    {"wrapLongitude",
+     new PropType<Layer, bool>{
+         [](const Layer::Props* props) { return props->wrapLongitude; },
+         [](Layer::Props* props, bool value) {
+             return props->wrapLongitude = value;
+         },
+         false}}};
 
 /*
 class LayerPropTypes {
   // data: Special handling for null, see below
   // data: {type: 'data', value: EMPTY_ARRAY, async: true},
   // dataComparator: null,
-  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare: false, optional: true},
-  // dataTransform: {type: 'function', value: null, compare: false, optional: true},
-  // onDataLoad: {type: 'function', value: null, compare: false, optional: true},
+  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare:
+false, optional: true},
+  // dataTransform: {type: 'function', value: null, compare: false, optional:
+true},
+  // onDataLoad: {type: 'function', value: null, compare: false, optional:
+true},
   // fetch: {
   //   type: 'function',
   //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
   //   compare: false
   // },
-  // updateTriggers: {}, // Update triggers: a core change detection mechanism in deck.gl
+  // updateTriggers: {}, // Update triggers: a core change detection mechanism
+in deck.gl
 
   opacity: {type: 'number', min: 0, max: 1, value: 1},
 
@@ -93,19 +108,19 @@ class LayerPropTypes {
 };
 */
 
-auto LayerProps::compare(const LayerProps *oldProps) -> bool {
-  auto propTypes = this->getPropTypes();
+auto LayerProps::compare(const LayerProps* oldProps) -> bool {
+    auto propTypes = this->getPropTypes();
 
-  for (std::pair<std::string, const Prop *> element : propTypes) {
-    // Accessing KEY from element
-    std::string name = element.first;
-    // Accessing VALUE from element.
-    const Prop *propType = element.second;
-    // std::cout<<word<<" :: "<<count<<std::endl;
-    if (!propType->equals(this, oldProps)) {
-      return false;
+    for (std::pair<std::string, const Prop*> element : propTypes) {
+        // Accessing KEY from element
+        std::string name = element.first;
+        // Accessing VALUE from element.
+        const Prop* propType = element.second;
+        // std::cout<<word<<" :: "<<count<<std::endl;
+        if (!propType->equals(this, oldProps)) {
+            return false;
+        }
     }
-  }
 
-  return true;
+    return true;
 }

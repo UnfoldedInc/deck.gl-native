@@ -21,7 +21,7 @@
 #ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 #define DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 
-#include "deck.gl/core.h" // import {Layer, project32, picking} from '@deck.gl/core';
+#include "deck.gl/core.h"  // import {Layer, project32, picking} from '@deck.gl/core';
 
 #include <string>
 
@@ -34,35 +34,39 @@
 namespace deckgl {
 
 class ScatterplotLayerProps : public LayerProps {
-public:
-/*
-  ScatterPlotLayerProps()
-    : radiusScale{1}
-    , radiusMinPixels{1}
-    , radiusMaxPixels{0}
-    , lineWidthUnits{"meters"}
-    , stroked{false}
-    , filled{true}
-    {}
+   public:
+    /*
+      ScatterPlotLayerProps()
+        : radiusScale{1}
+        , radiusMinPixels{1}
+        , radiusMaxPixels{0}
+        , lineWidthUnits{"meters"}
+        , stroked{false}
+        , filled{true}
+        {}
 
-  float radiusScale, // {type: 'number', min: 0, value: 1},
-  float radiusMinPixels, // {type: 'number', min: 0, value: 0}, //  min point radius in pixels
-  float radiusMaxPixels, // {type: 'number', min: 0, value: Number.MAX_SAFE_INTEGER}, // max point radius in pixels
+      float radiusScale, // {type: 'number', min: 0, value: 1},
+      float radiusMinPixels, // {type: 'number', min: 0, value: 0}, //  min
+      point radius in pixels float radiusMaxPixels, // {type: 'number', min: 0,
+      value: Number.MAX_SAFE_INTEGER}, // max point radius in pixels
 
-  std::string lineWidthUnits,
-  lineWidthScale, // {type: 'number', min: 0, value: 1},
-  lineWidthMinPixels, // {type: 'number', min: 0, value: 0},
-  lineWidthMaxPixels, // {type: 'number', min: 0, value: Number.MAX_SAFE_INTEGER},
+      std::string lineWidthUnits,
+      lineWidthScale, // {type: 'number', min: 0, value: 1},
+      lineWidthMinPixels, // {type: 'number', min: 0, value: 0},
+      lineWidthMaxPixels, // {type: 'number', min: 0, value:
+      Number.MAX_SAFE_INTEGER},
 
-  stroked: false,
-  filled: true,
+      stroked: false,
+      filled: true,
 
-  std::function<(auto row) -> Vector3<double>> getPosition, // {type: 'accessor', value: x => x.position},
-  std::function<(auto row) -> float> getRadius, // {type: 'accessor', value: 1},
-  std::function<(auto row) -> ColorRGBA> getFillColor, // {type: 'accessor', value: DEFAULT_COLOR},
-  std::function<(auto row) -> ColorRGBA> getLineColor, // {type: 'accessor', value: DEFAULT_COLOR},
-  std::function<(auto row) -> float> getLineWidth, // {type: 'accessor', value: 1},
-  */
+      std::function<(auto row) -> Vector3<double>> getPosition, // {type:
+      'accessor', value: x => x.position}, std::function<(auto row) -> float>
+      getRadius, // {type: 'accessor', value: 1}, std::function<(auto row) ->
+      ColorRGBA> getFillColor, // {type: 'accessor', value: DEFAULT_COLOR},
+      std::function<(auto row) -> ColorRGBA> getLineColor, // {type: 'accessor',
+      value: DEFAULT_COLOR}, std::function<(auto row) -> float> getLineWidth, //
+      {type: 'accessor', value: 1},
+      */
 };
 
 class ScatterplotLayerState : public LayerState {};
@@ -141,7 +145,8 @@ class ScatterplotLayer : Layer {
       lineWidthMaxPixels
     } = this->props;
 
-    const widthMultiplier = lineWidthUnits === 'pixels' ? viewport.metersPerPixel : 1;
+    const widthMultiplier = lineWidthUnits === 'pixels' ?
+viewport.metersPerPixel : 1;
 
     this->state.model
       .setUniforms(uniforms)
@@ -180,6 +185,6 @@ class ScatterplotLayer : Layer {
 }
 */
 
-} // namespace deckgl
+}  // namespace deckgl
 
-#endif // DECKGL_LAYERS_SCATTERPLOT_LAYER_H
+#endif  // DECKGL_LAYERS_SCATTERPLOT_LAYER_H

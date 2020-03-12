@@ -116,3 +116,5 @@ DerivedData/
 *.xcworkspace
 
 .vscode
+
+/build*/

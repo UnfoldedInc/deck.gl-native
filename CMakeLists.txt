@@ -39,7 +39,7 @@ include(CTest)
 
 ## math.gl
 set(MATHGL_CORE_HEADER_FILES
-    cpp/src/math.gl/math.h
+    cpp/src/math.gl/core.h
     )
 set(MATHGL_CORE_SOURCE_FILES
     )
@@ -48,9 +48,14 @@ set(MATHGL_CORE_TEST_FILES
 
 ## deck.gl/core
 set(DECKGL_CORE_HEADER_FILES
-    cpp/src/deck.gl/core/lib/core.h
-    cpp/src/deck.gl/core/lib/prop-types.h
+    cpp/src/deck.gl/core/lib/constants.h
+    cpp/src/deck.gl/core/lib/deck.h
     cpp/src/deck.gl/core/lib/layer.h
+    cpp/src/deck.gl/core/lib/layer-manager.h
+    cpp/src/deck.gl/core/lib/layer-state.h
+    cpp/src/deck.gl/core/lib/view-manager.h
+    cpp/src/deck.gl/core/lifecycle/prop-types.h
+    cpp/src/deck.gl/core/viewports/viewport.h
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/src/deck.gl/core/lib/layer.cpp
@@ -87,7 +92,6 @@ set(DECKGL_JSON_TEST_FILES
 
 # Define source file lists per type
 set(LIB_HEADER_FILES
-    cpp/src/main.h
     ${MATHGL_CORE_HEADER_FILES}
     ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES} ${DECKGL_JSON_HEADER_FILES}
     )
