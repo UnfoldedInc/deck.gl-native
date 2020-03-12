@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "main.h"
+#include "deck.gl/json.h"
 
 TEST(SuiteName1, TestName1) {
     Json::Value val = hello();

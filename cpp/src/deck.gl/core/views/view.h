@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include '../viewports/viewport'; // import Viewport from 
+#include '../viewports/viewport'; // import Viewport from
 // import {parsePosition, getPosition} from '../utils/positions';
 // import {deepEqual} from '../utils/deep-equal';
 // import assert from '../utils/assert';

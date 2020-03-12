@@ -36,43 +36,68 @@ include(CMakeDependentOption)
 include(CTest)
 
 # Define source file lists per library
-set(DECKGL_CORE_HEADER_FILES
-    cpp/src/core/lib/prop-types.h
-    cpp/src/core/lib/layer.h
+
+## math.gl
+set(MATHGL_CORE_HEADER_FILES
+    cpp/src/math.gl/math.h
     )
-set(DECKGL_CORE_SOURCE_FILES
-    cpp/src/core/lib/layer.cpp
+set(MATHGL_CORE_SOURCE_FILES
     )
-set(DECKGL_CORE_TEST_FILES
-    cpp/src/core/lib/layer.cpp
+set(MATHGL_CORE_TEST_FILES
     )
 
+## deck.gl/core
+set(DECKGL_CORE_HEADER_FILES
+    cpp/src/deck.gl/core/lib/core.h
+    cpp/src/deck.gl/core/lib/prop-types.h
+    cpp/src/deck.gl/core/lib/layer.h
+    )
+set(DECKGL_CORE_SOURCE_FILES
+    cpp/src/deck.gl/core/lib/layer.cpp
+    )
+set(DECKGL_CORE_TEST_FILES
+    cpp/tests/deck.gl/core/lib/layer-test.cpp
+    )
+
+## deck.gl/layers
 set(DECKGL_LAYERS_HEADER_FILES
-    cpp/src/layers/line-layer/line-layer.h
-    cpp/src/layers/scatterplot-layer/scatterplot-layer.h
+    cpp/src/deck.gl/layers.h
+    cpp/src/deck.gl/layers/line-layer/line-layer.h
+    cpp/src/deck.gl/layers/scatterplot-layer/scatterplot-layer.h
     )
 set(DECKGL_LAYERS_SOURCE_FILES
-    cpp/src/layers/line-layer/line-layer.cpp
-    cpp/src/layers/scatterplot-layer/scatterplot-layer.cpp
-    )    
+    cpp/src/deck.gl/layers/line-layer/line-layer.cpp
+    cpp/src/deck.gl/layers/scatterplot-layer/scatterplot-layer.cpp
+    )
 set(DECKGL_LAYERS_TEST_FILES
-    cpp/tests/layers/line-layer/line-layer-test.cpp
-    cpp/tests/layers/scatterplot-layer/scatterplot-layer-test.cpp
+    cpp/tests/deck.gl/layers/line-layer/line-layer-test.cpp
+    cpp/tests/deck.gl/layers/scatterplot-layer/scatterplot-layer-test.cpp
+    )
+
+## deck.gl/json
+set(DECKGL_JSON_HEADER_FILES
+    cpp/src/deck.gl/json.h
+    )
+set(DECKGL_JSON_SOURCE_FILES
+    cpp/src/deck.gl/json/json.cpp
+    )
+set(DECKGL_JSON_TEST_FILES
+    cpp/tests/deck.gl/json/json-test.cpp
     )
 
 # Define source file lists per type
 set(LIB_HEADER_FILES
     cpp/src/main.h
-    cpp/src/math/math.h
-    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
+    ${MATHGL_CORE_HEADER_FILES}
+    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES} ${DECKGL_JSON_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
-    cpp/src/main.cpp
-    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
+    ${MATHGL_CORE_SOURCE_FILES}
+    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES} ${DECKGL_JSON_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
-    cpp/tests/main.cpp
-    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
+    ${MATHGL_CORE_TEST_FILES}
+    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES} ${DECKGL_JSON_TEST_FILES}
     )
 SET(TEST_HEADER_FILES
     )

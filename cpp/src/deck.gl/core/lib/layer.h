@@ -24,7 +24,7 @@
 #include <map>
 #include <exception>
 
-#include "math/math.h"
+#include "math.gl/core.h"
 
 #include "constants.h"
 #include "../lifecycle/prop-types.h"
@@ -198,7 +198,7 @@ public:
   auto compare(const LayerProps *oldProps) -> bool;
 };
 
-class Layer { // : public Component 
+class Layer { // : public Component
 public:
   typedef LayerProps Props;
 

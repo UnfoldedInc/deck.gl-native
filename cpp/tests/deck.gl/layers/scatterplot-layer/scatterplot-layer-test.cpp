@@ -17,27 +17,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#include <gtest/gtest.h>
 
-#include "../../../src/core/lib/layer.h"
-
-TEST(Layer, Props) {
 
 #include <gtest/gtest.h>
 
-#include "layers/layers.h"
+#include "deck.gl/layers.h"
 #include <memory>
 
-TEST(Layer, Props) {
-  auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
-  auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
+using namespace deckgl;
 
-  EXPECT_TRUE(layerProps1->compare(layerProps2));
+TEST(ScatterplotLayer, Props) {
+  auto layerProps1 = std::unique_ptr<ScatterplotLayerProps>(new ScatterplotLayerProps());
+  auto layerProps2 = std::unique_ptr<ScatterplotLayerProps>(new ScatterplotLayerProps());
+
+  EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
   layerProps2->opacity = 0.5;
-  EXPECT_FALSE(layerProps1->compare(layerProps2));
-}
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
 }
