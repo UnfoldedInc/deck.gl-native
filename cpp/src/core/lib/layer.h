@@ -56,82 +56,6 @@ use namespace mathgl;
 
 // const EMPTY_ARRAY = Object.freeze([]);
 
-class AttributeManager {};
-
-// let pickingColorCache = new Uint8ClampedArray(0);
-class ColorRGBA {
-public:
-  ColorRGBA(float r_, float g_, float b_, float a_); // : r{r_}, g:{g_}, b{b_}, a{a_} {} 
-  float r, g, b, a;
-};
-
-class LayerProps {
-public:
-  // data: Special handling for null, see below
-  // data: {type: 'data', value: EMPTY_ARRAY, async: true},
-  // dataComparator: null,
-  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare: false, optional: true},
-  // dataTransform: {type: 'function', value: null, compare: false, optional: true},
-  // onDataLoad: {type: 'function', value: null, compare: false, optional: true},
-  // fetch: {
-  //   type: 'function',
-  //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
-  //   compare: false
-  // },
-  // updateTriggers: {}, // Update triggers: a core change detection mechanism in deck.gl
-
-  LayerProps() 
-    : visible{true}
-    , pickable{false}
-    , opacity{1.0}
-
-    , coordinateSystem{COORDINATE_SYSTEM::DEFAULT}
-
-    , positionFormat{"XYZ"}
-    , colorFormat{"RGBA"}
-
-
-    , autoHighlight{false}
-    , highlightColor{0, 0, 128, 128}
-    , highlightedObjectIndex{-1}
-
-    // Callbacks
-    // TODO - Initialize to noop (prevent bad_function_call exceptions)
-    // , onHover
-    // , onClick
-    // , onDragStart
-    // , onDrag
-    // , onDragEnd
-
-    {}
-
-  bool visible;
-  bool pickable;
-  float opacity;
-
-  COORDINATE_SYSTEM coordinateSystem;
-  Vector3<double> coordinateOrigin;
-  Matrix4<double> modelMatrix;
-  bool wrapLongitude;
-
-  std::string positionFormat;
-  std::string colorFormat;
-
-  // Selection/Highlighting
-  bool autoHighlight;
-  ColorRGBA highlightColor;
-  int highlightedObjectIndex;
-
-  // Offset depth based on layer index to avoid z-fighting. Negative values pull layer towards the camera
-  // std::function getPolygonOffset
-
-  std::function<void()> onHover;
-  std::function<void()> onClick;
-  std::function<void()> onDragStart;
-  std::function<void()> onDrag;
-  std::function<void()> onDragEnd;
-};
-
 /*
 class PropType {
   PropType(std::string type, int value) {}
@@ -198,16 +122,133 @@ public:
 };
 */
 
+// TODO - these should be imported from other files
+
+class LayerContext;
+
+class AttributeManager {};
+
+// let pickingColorCache = new Uint8ClampedArray(0);
+class ColorRGBA {
+public:
+  ColorRGBA(float r_, float g_, float b_, float a_); // : r{r_}, g:{g_}, b{b_}, a{a_} {} 
+  float r, g, b, a;
+};
+
+// Local definitions
+
+// Prop diffing results
+class LayerChangeFlags {
+  // Primary changeFlags, can be strings stating reason for change
+  bool dataChanged;
+  bool propsChanged;
+  bool updateTriggersChanged;
+  bool viewportChanged;
+  bool stateChanged;
+  bool extensionsChanged;
+
+  // Derived changeFlags
+  bool propsOrDataChanged;
+  bool somethingChanged;
+
+  LayerChangeFlags()
+    : dataChanged{false}
+    , propsChanged{false}
+    , updateTriggersChanged{false}
+    , viewportChanged{false}
+    , stateChanged{false}
+    , extensionsChanged{false}
+
+    // Derived changeFlags
+    , propsOrDataChanged{false}
+    , somethingChanged{false}
+    {}
+};
+
 class LayerState {
 public: // friend class Layer;
   AttributeManager* attributeManager;
   bool needsRedraw;
 };
 
+class LayerProps {
+public:
+  LayerProps() 
+    // TODO - how to deal with data ?
+
+    : visible{true}
+    , pickable{false}
+    , opacity{1.0}
+
+    , coordinateSystem{COORDINATE_SYSTEM::DEFAULT}
+
+    , positionFormat{"XYZ"}
+    , colorFormat{"RGBA"}
+
+    , autoHighlight{false}
+    , highlightColor{0, 0, 128, 128}
+    , highlightedObjectIndex{-1}
+
+    // Callbacks
+    // TODO - Initialize to noop (prevent bad_function_call exceptions)
+    // , onHover
+    // , onClick
+    // , onDragStart
+    // , onDrag
+    // , onDragEnd
+
+    {}
+
+  // data: Special handling for null, see below
+  // data: {type: 'data', value: EMPTY_ARRAY, async: true},
+  // dataComparator: null,
+  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare: false, optional: true},
+  // dataTransform: {type: 'function', value: null, compare: false, optional: true},
+  // onDataLoad: {type: 'function', value: null, compare: false, optional: true},
+  // fetch: {
+  //   type: 'function',
+  //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
+  //   compare: false
+  // },
+  // updateTriggers: {}, // Update triggers: a core change detection mechanism in deck.gl
+
+  bool visible;
+  bool pickable;
+  float opacity;
+
+  COORDINATE_SYSTEM coordinateSystem;
+  Vector3<double> coordinateOrigin;
+  Matrix4<double> modelMatrix;
+  bool wrapLongitude;
+
+  std::string positionFormat;
+  std::string colorFormat;
+
+  // Selection/Highlighting
+  bool autoHighlight;
+  ColorRGBA highlightColor;
+  int highlightedObjectIndex;
+
+  // Offset depth based on layer index to avoid z-fighting. Negative values pull layer towards the camera
+  // std::function getPolygonOffset
+
+  std::function<void()> onHover;
+  std::function<void()> onClick;
+  std::function<void()> onDragStart;
+  std::function<void()> onDrag;
+  std::function<void()> onDragEnd;
+};
+
 class Layer { // : public Component 
 
   LayerProps* props;
   LayerState* internalState;
+
+  Layer(LayerProps* props_, LayerState* state_ = nullptr)
+    : props{props_}
+    , state{state_}
+  {
+  }
 
   // auto toString() {
   //   const className = this->constructor.layerName || this->constructor.name;
@@ -231,10 +272,10 @@ class Layer { // : public Component
   }
 
   // This layer needs a deep update
-  // void setNeedsUpdate() {
-  //   this->context.layerManager.setNeedsUpdate(String(this));
-  //   this->internalState.needsUpdate = true;
-  // }
+  void setNeedsUpdate() {
+    this->context.layerManager.setNeedsUpdate(String(this));
+    this->internalState.needsUpdate = true;
+  }
 
   // Checks state of attributes and model
   // auto getNeedsRedraw(opts = {clearRedrawFlags: false}) -> bool {
@@ -257,13 +298,13 @@ class Layer { // : public Component
     return this->props->pickable && this->props->visible;
   }
 
-  // Return an array of models used by this layer, can be overriden by layer subclass
-  // getModels() {
-  //   return this->state && (this->state.models || (this->state.model ? [this->state.model] : []));
-  // }
-
   getAttributeManager() {
     return this->internalState && this->internalState->attributeManager;
+  }
+
+  // Return an array of models used by this layer, can be overriden by layer subclass
+  auto getModels() -> std::list<Model *> {
+    return this->state && (this->state.models || (this->state.model ? [this->state.model] : []));
   }
 
   // Returns the most recent layer that matched to this state
@@ -320,6 +361,7 @@ class Layer { // : public Component
     );
   }
 
+  /*
   // Event handling
   onHover(info, pickingEvent) {
     if (this->props.onHover) {
@@ -334,6 +376,7 @@ class Layer { // : public Component
     }
     return false;
   }
+
 
   // Returns the picking color that doesn't match any subfeature
   // Use if some graphics do not belong to any pickable subfeature
@@ -361,6 +404,7 @@ class Layer { // : public Component
     const index = i1 + i2 * 256 + i3 * 65536 - 1;
     return index;
   }
+  */
 
   // //////////////////////////////////////////////////
   // LIFECYCLE METHODS, overridden by the layer subclasses
@@ -368,25 +412,34 @@ class Layer { // : public Component
   // Called once to set up the initial state
   // App can create WebGL resources
   initializeState() {
-    throw new Error(`Layer ${this} has not defined initializeState`);
+    throw new std::exception("Layer ${this} has not defined initializeState");
   }
 
-  getShaders(shaders) {
-    for (const extension of this->props.extensions) {
-      shaders = mergeShaders(shaders, extension.getShaders.call(this, extension));
-    }
-    return shaders;
-  }
+  // getShaders(shaders) {
+  //   for (const extension of this->props.extensions) {
+  //     shaders = mergeShaders(shaders, extension.getShaders.call(this, extension));
+  //   }
+  //   return shaders;
+  // }
 
   // Let's layer control if updateState should be called
-  shouldUpdateState({oldProps, props, context, changeFlags}) {
+  virtual auto shouldUpdateState(
+    LayerProps* oldProps,
+    LayerProps* props,
+    LayerContext* context,
+    const LayerChangeFlags& changeFlags
+  ) -> bool {
     return changeFlags.propsOrDataChanged;
   }
 
   // Default implementation, all attributes will be invalidated and updated
   // when data changes
-  /* eslint-disable-next-line complexity */
-  updateState({oldProps, props, context, changeFlags}) {
+  virtual void updateState(
+    LayerProps* oldProps,
+    LayerProps* props,
+    LayerContext* context, 
+    const LayerChangeFlags& changeFlags
+  ) {
     const attributeManager = this->getAttributeManager();
     if (changeFlags.dataChanged && attributeManager) {
       const {dataChanged} = changeFlags;
@@ -404,19 +457,16 @@ class Layer { // : public Component
   // Called once when layer is no longer matched and state will be discarded
   // App can destroy WebGL resources here
   finalizeState() {
-    for (const model of this->getModels()) {
-      model.delete();
+    for (const model : this->getModels()) {
+      delete model;
     }
-    const attributeManager = this->getAttributeManager();
-    if (attributeManager) {
-      attributeManager.finalize();
-    }
-    this->internalState.uniformTransitions.clear();
+    delete this->getAttributeManager();
+    // TODO this->internalState.uniformTransitions.clear();
   }
 
   // If state has a model, draw it with supplied uniforms
   draw(opts) {
-    for (const model of this->getModels()) {
+    for (const model : this->getModels()) {
       model.draw(opts);
     }
   }
@@ -442,7 +492,7 @@ class Layer { // : public Component
   // INTERNAL METHODS
 
   // Default implementation of attribute invalidation, can be redefined
-  invalidateAttribute(name = 'all', diffReason = '') {
+  invalidateAttribute(const std::string& name = 'all', const std::string& diffReason = '') {
     const attributeManager = this->getAttributeManager();
     if (!attributeManager) {
       return;
@@ -462,7 +512,7 @@ class Layer { // : public Component
   }
 
   // Calls attribute manager to update any WebGL attributes
-  _updateAttributes(props) {
+  _updateAttributes(LayerProps* props) {
     const attributeManager = this->getAttributeManager();
     if (!attributeManager) {
       return;
@@ -472,6 +522,7 @@ class Layer { // : public Component
     const numInstances = this->getNumInstances(props);
     const startIndices = this->getStartIndices(props);
 
+  /*
     attributeManager.update({
       data: props.data,
       numInstances,
@@ -483,8 +534,9 @@ class Layer { // : public Component
       // Don't worry about non-attribute props
       ignoreUnknownAttributes: true
     });
-
-    const changedAttributes = attributeManager.getChangedAttributes({clearChangedFlags: true});
+  */
+ 
+    const auto changedAttributes = attributeManager.getChangedAttributes({clearChangedFlags: true});
     this->updateAttributes(changedAttributes);
   }
 
@@ -579,7 +631,7 @@ class Layer { // : public Component
     props = props || this->props;
 
     // First Check if app has provided an explicit value
-    if (props.numInstances !== undefined) {
+    if (props.numInstances >= 0) {
       return props.numInstances;
     }
 

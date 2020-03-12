@@ -18,6 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "./layer.h"
+
+/*
 import assert from '../utils/assert';
 import {Timeline} from '@luma.gl/core';
 import Layer from './layer';
@@ -52,10 +55,57 @@ const INITIAL_CONTEXT = Object.seal({
 });
 
 const layerName = layer => (layer instanceof Layer ? `${layer}` : !layer ? 'null' : 'invalid');
+*/
 
-export default class LayerManager {
-  // eslint-disable-next-line
-  constructor(gl, {deck, stats, viewport = null, timeline = null} = {}) {
+class Deck;
+class LayerManager;
+
+class DeckContext {
+public:
+  Deck *deck;
+  LayerManager *layerManager;
+  // gl,
+
+  // // General resources
+  // stats: null, // for tracking lifecycle performance
+  // // GL Resources
+  // shaderCache: null,
+  // pickingFBO: null, // Screen-size framebuffer that layers can reuse
+  // mousePosition: null,
+  // userData: {} // Place for any custom app `context`
+
+  DeckContext(Deck *deck_, LayerManager *layerManager_)
+    : deck{deck_}
+    , layerManager{layerManager_}
+    // , gl{nullptr}
+    // , stats
+  {}
+};
+
+class LayerManagerProps {
+public:
+
+};
+
+class LayerManager {
+public:
+  DeckContext context;
+  std::list<Layer*> layers;
+  std::list<Layer*> lastRenderedLayers;
+
+  bool _needsUpdate;
+  bool _debug;
+
+  LayerManager(deck) // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
+    : context(deck, this)
+      // gl,
+      // // Enabling luma.gl Program caching using private API (_cachePrograms)
+      // programManager: gl && createProgramManager(gl),
+      // stats: stats || new Stats({id: 'deck.gl'}),
+      // // Make sure context.viewport is not empty on the first layer initialization
+      // viewport: viewport || new Viewport({id: 'DEFAULT-INITIAL-VIEWPORT'}), // Current viewport, exposed to layers for project* function
+      // timeline: timeline || new Timeline()
+  { 
     // Currently deck.gl expects the DeckGL.layers array to be different
     // whenever React rerenders. If the same layers array is used, the
     // LayerManager's diffing algorithm will generate a fatal error and
@@ -65,33 +115,15 @@ export default class LayerManager {
     // down to LayerManager, so that `layers` reference can be compared.
     // If it's the same across two React render calls, the diffing logic
     // will be skipped.
-    this->lastRenderedLayers = [];
-    this->layers = [];
 
-    this->context = Object.assign({}, INITIAL_CONTEXT, {
-      layerManager: this,
-      deck,
-      gl,
-      // Enabling luma.gl Program caching using private API (_cachePrograms)
-      programManager: gl && createProgramManager(gl),
-      stats: stats || new Stats({id: 'deck.gl'}),
-      // Make sure context.viewport is not empty on the first layer initialization
-      viewport: viewport || new Viewport({id: 'DEFAULT-INITIAL-VIEWPORT'}), // Current viewport, exposed to layers for project* function
-      timeline: timeline || new Timeline()
-    });
-
-    this->_needsRedraw = 'Initial render';
+    // this->_needsRedraw = 'Initial render';
     this->_needsUpdate = false;
     this->_debug = false;
-    this->_onError = null;
-
-    this->activateViewport = this->activateViewport.bind(this);
-
-    Object.seal(this);
+    // this->_onError = null;
   }
 
   // Method to call when the layer manager is not needed anymore.
-  finalize() {
+  ~LayerManager() {
     // Finalize all layers
     for (const layer of this->layers) {
       this->_finalizeLayer(layer);
