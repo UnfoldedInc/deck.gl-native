@@ -18,16 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_CORE_LAYER_H
+#define DECKGL_CORE_LAYER_H
+
 #include <exception>
 #include <functional>
 #include <list>
 #include <map>
 #include <string>
 
-#include "math.gl/core.h"
-
 #include "../lifecycle/prop-types.h"
 #include "constants.h"
+#include "math.gl/core.h"
+
+namespace deckgl {
 
 using namespace mathgl;
 
@@ -80,8 +84,7 @@ class AttributeManager {
 // let pickingColorCache = new Uint8ClampedArray(0);
 class ColorRGBA {
  public:
-  ColorRGBA(float r_, float g_, float b_, float a_)
-      : r{r_}, g{g_}, b{b_}, a{a_} {}
+  ColorRGBA(float r_, float g_, float b_, float a_) : r{r_}, g{g_}, b{b_}, a{a_} {}
   float r, g, b, a;
 };
 
@@ -127,10 +130,7 @@ class LayerProps : public Props {
  public:
   static const std::map<const std::string, const Prop*> propTypes;
 
-  virtual auto getPropTypes()
-      -> const std::map<const std::string, const Prop*> {
-    return LayerProps::propTypes;
-  }
+  virtual auto getPropTypes() -> const std::map<const std::string, const Prop*> { return LayerProps::propTypes; }
 
   LayerProps()
       // TODO - how to deal with data ?
@@ -213,8 +213,7 @@ class Layer {  // : public Component
   LayerState* internalState;
   LayerContext* context;
 
-  Layer(LayerProps* props_, LayerState* state_ = nullptr)
-      : props{props_}, state{state_} {}
+  Layer(LayerProps* props_, LayerState* state_ = nullptr) : props{props_}, state{state_} {}
 
   // auto toString() {
   //   const className = this->constructor.layerName ||
@@ -262,13 +261,9 @@ class Layer {  // : public Component
   // }
 
   // Returns true if the layer is pickable and visible.
-  auto isPickable() -> bool {
-    return this->props->pickable && this->props->visible;
-  }
+  auto isPickable() -> bool { return this->props->pickable && this->props->visible; }
 
-  auto getAttributeManager() -> AttributeManager* {
-    return this->internalState->attributeManager;
-  }
+  auto getAttributeManager() -> AttributeManager* { return this->internalState->attributeManager; }
 
   // Return an array of models used by this layer, can be overriden by layer
   // subclass
@@ -382,9 +377,7 @@ class Layer {  // : public Component
 
   // Called once to set up the initial state
   // App can create WebGL resources
-  virtual void initializeState() {
-    throw new std::logic_error("Layer has not defined initializeState");
-  }
+  virtual void initializeState() { throw new std::logic_error("Layer has not defined initializeState"); }
 
   // getShaders(shaders) {
   //   for (const extension of this->props.extensions) {
@@ -395,16 +388,14 @@ class Layer {  // : public Component
   // }
 
   // Let"s layer control if updateState should be called
-  virtual auto shouldUpdateState(LayerProps* oldProps, LayerProps* props,
-                                 LayerContext* context,
+  virtual auto shouldUpdateState(LayerProps* oldProps, LayerProps* props, LayerContext* context,
                                  const LayerChangeFlags& changeFlags) -> bool {
     return changeFlags.propsOrDataChanged;
   }
 
   // Default implementation, all attributes will be invalidated and updated
   // when data changes
-  virtual void updateState(LayerProps* oldProps, LayerProps* props,
-                           LayerContext* context,
+  virtual void updateState(LayerProps* oldProps, LayerProps* props, LayerContext* context,
                            const LayerChangeFlags& changeFlags) {
     /*
     const auto attributeManager = this->getAttributeManager();
@@ -460,8 +451,7 @@ class Layer {  // : public Component
   // INTERNAL METHODS
 
   // Default implementation of attribute invalidation, can be redefined
-  void invalidateAttribute(const std::string& name = "all",
-                           const std::string& diffReason = "") {
+  void invalidateAttribute(const std::string& name = "all", const std::string& diffReason = "") {
     const auto attributeManager = this->getAttributeManager();
     if (!attributeManager) {
       return;
@@ -1016,3 +1006,7 @@ Layer.defaultProps = defaultProps;
 
   */
 };
+
+}  // namespace deckgl
+
+#endif  // DECKGL_CORE_LAYER_H

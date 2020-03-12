@@ -18,47 +18,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-export default `\
-#define SHADER_NAME scatterplot-layer-fragment-shader
+const char* fs = R"shader(
+#define SHADER_NAME line-layer-fragment-shader
 
 precision highp float;
 
-uniform bool filled;
-uniform float stroked;
-
-varying vec4 vFillColor;
-varying vec4 vLineColor;
-varying vec2 unitPosition;
-varying float innerUnitRadius;
-varying float outerRadiusPixels;
+varying vec4 vColor;
+varying vec2 uv;
 
 void main(void) {
-  geometry.uv = unitPosition;
+  geometry.uv = uv;
 
-  float distToCenter = length(unitPosition) * outerRadiusPixels;
-  float inCircle = smoothedge(distToCenter, outerRadiusPixels);
+  gl_FragColor = vColor;
 
-  if (inCircle == 0.0) {
-    discard;
-  }
-
-  if (stroked > 0.5) {
-    float isLine = smoothedge(innerUnitRadius * outerRadiusPixels, distToCenter);
-    if (filled) {
-      gl_FragColor = mix(vFillColor, vLineColor, isLine);
-    } else {
-      if (isLine == 0.0) {
-        discard;
-      }
-      gl_FragColor = vec4(vLineColor.rgb, vLineColor.a * isLine);
-    }
-  } else if (filled) {
-    gl_FragColor = vFillColor;
-  } else {
-    discard;
-  }
-
-  gl_FragColor.a *= inCircle;
   DECKGL_FILTER_COLOR(gl_FragColor, geometry);
 }
-`;
+)shader";

@@ -11,6 +11,10 @@ This is a C++ implementation of deck.gl
 brew install gcc cmake clang-format lcov
 ```
 
+```sh
+brew install clang-format
+```
+
 ### vcpkg (Microsoft C++ Package Manager)
 
 ```sh

@@ -21,9 +21,9 @@
 #ifndef DECKGL_LAYERS_LINE_LAYER_H
 #define DECKGL_LAYERS_LINE_LAYER_H
 
-#include "deck.gl/core.h"  // {Layer, project32, picking}
-
 #include <limits>
+
+#include "deck.gl/core.h"  // {Layer, project32, picking}
 
 namespace deckgl {
 

@@ -59,9 +59,8 @@ class DeckProps {
       std::list<Layer*> layers,  // PropTypes.oneOfType([PropTypes.object,
                                  // PropTypes.array]),
       // std::function<> layerFilter, // PropTypes.func,
-      std::list<Views*>
-          views,  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-      ViewState *viewState,  // PropTypes.object,
+      std::list<Views*> views,  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+      ViewState *viewState,     // PropTypes.object,
       // effects, // PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
       // controller, // PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
       // PropTypes.object]),
@@ -96,8 +95,7 @@ class DeckProps {
       DeckProps(), id{'deckgl-overlay'}, width{'100%'}, height{'100%'}
 
   ,
-      pickingRadius{0}, layerFilter{nullptr}, glOptions{{}}, gl{nullptr},
-      layers{[]}, effects{[]}, views{nullptr},
+      pickingRadius{0}, layerFilter{nullptr}, glOptions{{}}, gl{nullptr}, layers{[]}, effects{[]}, views{nullptr},
       controller{nullptr,  // Rely on external controller, e.g. react-map-g}
                  ,
                  useDevicePixels{true},
@@ -207,8 +205,7 @@ class DeckProps {
     // Maps view descriptors to vieports, rebuilds when
     // width/height/viewState/views change
     ,
-        viewManager{nullptr}, layerManager{nullptr}, effectManager{nullptr},
-        deckRenderer{nullptr}, deckPicker{nullptr}
+        viewManager{nullptr}, layerManager{nullptr}, effectManager{nullptr}, deckRenderer{nullptr}, deckPicker{nullptr}
 
     ,
         _needsRedraw{true}, _pickRequest {
@@ -292,8 +289,7 @@ class DeckProps {
     setProps(DeckProps* props) {
       // this->stats.get('setProps Time').timeStart();
 
-      if (props.initialViewState &&
-          !deepEqual(this->props.initialViewState, props.initialViewState)) {
+      if (props.initialViewState && !deepEqual(this->props.initialViewState, props.initialViewState)) {
         // Overwrite internal view state
         this->viewState = props.initialViewState;
       }
@@ -307,12 +303,9 @@ class DeckProps {
       // We need to overwrite CSS style width and height with actual,
       // numeric values
       const resolvedProps = Object.create(this->props);
-      Object.assign(resolvedProps, {
-        views : this->_getViews(),
-        width : this->width,
-        height : this->height,
-        viewState : this->_getViewState()
-      });
+      Object.assign(
+          resolvedProps,
+          {views : this->_getViews(), width : this->width, height : this->height, viewState : this->_getViewState()});
 
       // Update the animation loop
       this->animationLoop.setProps(resolvedProps);
@@ -350,8 +343,8 @@ class DeckProps {
       const effectManagerNeedsRedraw = this->effectManager->needsRedraw(opts);
       const deckRendererNeedsRedraw = this->deckRenderer->needsRedraw(opts);
 
-      redraw = redraw || viewManagerNeedsRedraw || layerManagerNeedsRedraw ||
-               effectManagerNeedsRedraw || deckRendererNeedsRedraw;
+      redraw = redraw || viewManagerNeedsRedraw || layerManagerNeedsRedraw || effectManagerNeedsRedraw ||
+               deckRendererNeedsRedraw;
       return redraw;
     }
 
@@ -407,15 +400,12 @@ class DeckProps {
     // shadows internal viewState
     // TODO: For backwards compatibility ensure numeric width and height is
     // added to the viewState
-    auto _getViewState() -> ViewState* {
-      return this->props->viewState || this->viewState;
-    }
+    auto _getViewState() -> ViewState* { return this->props->viewState || this->viewState; }
 
     // Get the view descriptor list
     _getViews() {
       // Default to a full screen map view port
-      let views = this->props.views ||
-                  new std::list<View*>(new MapView('default-view'));
+      let views = this->props.views || new std::list<View*>(new MapView('default-view'));
       views = Array.isArray(views) ? views : [views];
       if (views.length && this->props.controller) {
         // Backward compatibility: support controller prop
@@ -686,11 +676,10 @@ class DeckProps {
 
       this->props->onBeforeRender(gl);
 
-      this->deckRenderer.renderLayers(
-          this->props._framebuffer, this->layerManager.getLayers(),
-          this->viewManager.getViewports(), this->layerManager.activateViewport,
-          this->viewManager.getViews(), 'screen', redrawReason
-          // this->effectManager.getEffects()
+      this->deckRenderer.renderLayers(this->props._framebuffer, this->layerManager.getLayers(),
+                                      this->viewManager.getViewports(), this->layerManager.activateViewport,
+                                      this->viewManager.getViews(), 'screen', redrawReason
+                                      // this->effectManager.getEffects()
       );
 
       this->props->onAfterRender(gl);
@@ -742,8 +731,7 @@ class DeckProps {
     _onViewStateChange(params) {
       // Let app know that view state is changing, and give it a chance to
       // change it
-      const viewState =
-          this->props.onViewStateChange(params) || params.viewState;
+      const viewState = this->props.onViewStateChange(params) || params.viewState;
 
       // If initialViewState was set on creation, auto track position
       if (this->viewState) {

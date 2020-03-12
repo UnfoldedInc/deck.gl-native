@@ -18,9 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "deck.gl/json.h"
+
 #include <gtest/gtest.h>
 
-#include "deck.gl/json.h"
+Json::Value hello() {
+  // Json::StreamWriterBuilder builder;
+  // const std::unique_ptr<Json::StreamWriter>
+  // writer(builder.newStreamWriter());
+
+  Json::Value root;
+  root["hello"] = "world";
+  return root;
+}
+
+Json::Value hello();
 
 TEST(SuiteName1, TestName1) {
   Json::Value val = hello();

@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include <string>
+
 #include "lib/constants.h"
 #include "math/math.h"
 
@@ -155,8 +156,7 @@ class Viewport {
 
   // Private methods
 
-  Matrix4d _createProjectionMatrix(bool orthographic, double fovyRadians,
-                                   double aspect, double focalDistance,
+  Matrix4d _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
                                    double near, double far);
 
   void _initViewMatrix(/* opts */);
