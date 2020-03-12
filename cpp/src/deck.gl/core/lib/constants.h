@@ -23,27 +23,27 @@
 
 // Describes how positions are interpreted. Can be specified per layer
 enum class COORDINATE_SYSTEM {
-    DEFAULT = -1,  // `LNGLAT` if rendering into a geospatial viewport,
-                   // `CARTESIAN` otherwise
+  DEFAULT = -1,  // `LNGLAT` if rendering into a geospatial viewport,
+                 // `CARTESIAN` otherwise
 
-    // Non-geospatial coordinates
-    CARTESIAN = 0,
+  // Non-geospatial coordinates
+  CARTESIAN = 0,
 
-    // Geospatial coordinates
-    LNGLAT = 1,  // Positions interpreted as [lng, lat, elevation]. lng + lat in
-                 // degrees, elevation + distances in meters.
-    METER_OFFSETS =
-        2,  // Positions are interpreted as meter offsets, distances as meters
-    LNGLAT_OFFSETS = 3,  // Positions are lng lat offsets: [deltaLng, deltaLat,
-                         // elevation]. elevation+distances are meters.
+  // Geospatial coordinates
+  LNGLAT = 1,  // Positions interpreted as [lng, lat, elevation]. lng + lat in
+               // degrees, elevation + distances in meters.
+  METER_OFFSETS =
+      2,  // Positions are interpreted as meter offsets, distances as meters
+  LNGLAT_OFFSETS = 3,  // Positions are lng lat offsets: [deltaLng, deltaLat,
+                       // elevation]. elevation+distances are meters.
 };
 
 // Describes the common space
 enum class PROJECTION_MODE {
-    IDENTITY = 0,
-    WEB_MERCATOR = 1,
-    WEB_MERCATOR_AUTO_OFFSET =
-        4  // This is automatically assigned by the project module
+  IDENTITY = 0,
+  WEB_MERCATOR = 1,
+  WEB_MERCATOR_AUTO_OFFSET =
+      4  // This is automatically assigned by the project module
 };
 
 // export const EVENTS = {
