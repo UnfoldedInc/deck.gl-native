@@ -23,11 +23,11 @@
 #include "deck.gl/json.h"
 
 TEST(SuiteName1, TestName1) {
-    Json::Value val = hello();
-    EXPECT_EQ(val["hello"], "world");
+  Json::Value val = hello();
+  EXPECT_EQ(val["hello"], "world");
 }
 
 int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

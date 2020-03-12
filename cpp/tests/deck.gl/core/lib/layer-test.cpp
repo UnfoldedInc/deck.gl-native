@@ -24,15 +24,15 @@
 #include "deck.gl/core.h"
 
 TEST(Layer, Props) {
-    auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
-    auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
+  auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
+  auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
 
-    EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
-    layerProps2->opacity = 0.5;
-    EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+  EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
+  layerProps2->opacity = 0.5;
+  EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
 }
 
 int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

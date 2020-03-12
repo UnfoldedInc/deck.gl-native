@@ -26,10 +26,10 @@
 using namespace deckgl;
 
 TEST(LineLayer, Props) {
-    auto layerProps1 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
-    auto layerProps2 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
+  auto layerProps1 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
+  auto layerProps2 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
 
-    EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
-    layerProps2->opacity = 0.5;
-    EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+  EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
+  layerProps2->opacity = 0.5;
+  EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
 }
