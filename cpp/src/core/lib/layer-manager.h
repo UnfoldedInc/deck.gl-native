@@ -105,11 +105,7 @@ public:
       // // Make sure context.viewport is not empty on the first layer initialization
       // viewport: viewport || new Viewport({id: 'DEFAULT-INITIAL-VIEWPORT'}), // Current viewport, exposed to layers for project* function
       // timeline: timeline || new Timeline()
-<<<<<<< HEAD:cpp/src/core/lib/layer-manager.h
-  { 
-=======
   {
->>>>>>> prop-types: can now iterate over and compare layer props:cpp/src/core/lib/layer-manager.js
     // Currently deck.gl expects the DeckGL.layers array to be different
     // whenever React rerenders. If the same layers array is used, the
     // LayerManager's diffing algorithm will generate a fatal error and
