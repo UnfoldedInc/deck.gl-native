@@ -18,6 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_CORE_CONSTANTS_H
+#define DECKGL_CORE_CONSTANTS_H
+
 // Note: The numeric values here are matched by shader code in the
 // "project" and "project64" shader modules. Both places need to be updated.
 
@@ -50,3 +53,5 @@ enum class PROJECTION_MODE {
 //   panmove: {handler: 'onDrag'},
 //   panend: {handler: 'onDragEnd'}
 // };
+
+#endif

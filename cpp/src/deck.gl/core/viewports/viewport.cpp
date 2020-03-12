@@ -20,7 +20,7 @@
 
 #include "deck.gl/core/viewports/viewport.h"
 
-Viewport::Viewport() {}
+Viewport::Viewport() : x(0), y(0), width(0), height(0) {}
 
 double Viewport::metersPerPixel() { return this->distanceScaleMetersPerUnit.z / this->scale; }
 

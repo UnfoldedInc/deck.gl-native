@@ -18,12 +18,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_CORE_VIEWPORT_H
+#define DECKGL_CORE_VIEWPORT_H
+
 #include <string>
 #include "deck.gl/core/lib/constants.h"
 #include "math.gl/core.h"
 
 class Viewport {
  public:
+  std::string id;
+  double x;
+  double y;
+  double width;
+  double height;
+  double _frustumPlanes;  // TODO: actually an object
+  bool isGeospatial;
+  double zoom;
+  double scale;
+  mathgl::Vector3d distanceScaleMetersPerUnit;
+  mathgl::Vector3d distanceScaleUnitsPerMeter;
+  double focalDistance;
+  mathgl::Vector3d position;
+  mathgl::Vector3d meterOffset;
+  mathgl::Matrix4d modelMatrix;
+  double longitude;
+  double latitude;
+  mathgl::Vector3d center;
+  mathgl::Matrix4d viewMatrixUncentered;
+  mathgl::Matrix4d viewMatrix;
+
+  // projectionProps in JS
+  bool projectionOrthographic;
+  double projectionFovyRadians;
+  double projectionAspect;
+  double projectionFocalDistance;
+  double projectionNear;
+  double projectionFar;
+
+  mathgl::Matrix4d porjectionMatrix;
+  mathgl::Matrix4d viewProjectionMatrix;
+  mathgl::Matrix4d viewMatrixInverse;
+  mathgl::Vector3d cameraPosition;
+  mathgl::Vector3d cameraDirection;
+  mathgl::Vector3d cameraUp;
+  mathgl::Vector3d cameraRight;
+
+  mathgl::Matrix4d pixelProjectionMatrix;
+  mathgl::Matrix4d viewportMatrix;
+  mathgl::Matrix4d pixelUnrpojectionMatrix;
+
   Viewport();
   // Viewport(/* opts */);
 
@@ -103,52 +147,7 @@ class Viewport {
   mathgl::Vector3d getCameraDirection();
   mathgl::Vector3d getCameraUp();
 
-  // INTERNAL METHODS
-
  private:
-  std::string id;
-  double x;
-  double y;
-  double width;
-  double height;
-  double _frustumPlanes;  // TODO: actually an object
-  bool isGeospatial;
-  double zoom;
-  double scale;
-  mathgl::Vector3d distanceScaleMetersPerUnit;
-  mathgl::Vector3d distanceScaleUnitsPerMeter;
-  double focalDistance;
-  mathgl::Vector3d position;
-  mathgl::Vector3d meterOffset;
-  mathgl::Matrix4d modelMatrix;
-  double longitude;
-  double latitude;
-  mathgl::Vector3d center;
-  mathgl::Matrix4d viewMatrixUncentered;
-  mathgl::Matrix4d viewMatrix;
-
-  // projectionProps in JS
-  bool projectionOrthographic;
-  double projectionFovyRadians;
-  double projectionAspect;
-  double projectionFocalDistance;
-  double projectionNear;
-  double projectionFar;
-
-  mathgl::Matrix4d porjectionMatrix;
-  mathgl::Matrix4d viewProjectionMatrix;
-  mathgl::Matrix4d viewMatrixInverse;
-  mathgl::Vector3d cameraPosition;
-  mathgl::Vector3d cameraDirection;
-  mathgl::Vector3d cameraUp;
-  mathgl::Vector3d cameraRight;
-
-  mathgl::Matrix4d pixelProjectionMatrix;
-  mathgl::Matrix4d viewportMatrix;
-  mathgl::Matrix4d pixelUnrpojectionMatrix;
-
-  // Private methods
-
   mathgl::Matrix4d _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
                                            double near, double far);
 
@@ -165,3 +164,5 @@ class Viewport {
 
 bool operator==(const Viewport& v1, const Viewport& v2);
 bool operator!=(const Viewport& v1, const Viewport& v2);
+
+#endif

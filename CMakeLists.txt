@@ -66,6 +66,7 @@ set(DECKGL_CORE_SOURCE_FILES
     )
 set(DECKGL_CORE_TEST_FILES
     cpp/tests/deck.gl/core/lib/layer-test.cpp
+    cpp/tests/deck.gl/core/viewports/viewport-test.cpp
     )
 
 ## deck.gl/layers

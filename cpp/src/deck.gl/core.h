@@ -26,6 +26,8 @@
 
 #include "./core/lib/layer.h" // Layer, Layer::Props, Layer::State
 
+#include "./core/viewports/viewport.h"
+
 /*
 // Intialize globals, check version
 import './lib/init';
