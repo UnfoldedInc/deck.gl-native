@@ -21,8 +21,9 @@
 #ifndef DECKGL_LAYERS_LINE_LAYER_H
 #define DECKGL_LAYERS_LINE_LAYER_H
 
+#include "deck.gl/core.h" // {Layer, project32, picking}
+
 #include <limits>
-#include "core/core.h" // {Layer, project32, picking}
 
 namespace deckgl {
 
@@ -42,7 +43,11 @@ class LineLayerProps : public LayerProps {
 public:
 /*
   LineLayerProps()
+<<<<<<< HEAD:cpp/src/layers/line-layer/line-layer.h
     : widthUnits{"pixels"}, 
+=======
+    : widthUnits{"pixels"},
+>>>>>>> File structure improvements: enable `#include "deck.gl/core"`:cpp/src/deck.gl/layers/line-layer/line-layer.h
     , widthScale{1},
     , widthMinPixels{0},
     , widthMaxPixels{std::numeric_limits<float>::max()},

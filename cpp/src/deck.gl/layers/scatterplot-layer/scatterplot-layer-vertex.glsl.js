@@ -55,7 +55,7 @@ void main(void) {
     project_size_to_pixel(radiusScale * instanceRadius),
     radiusMinPixels, radiusMaxPixels
   );
-  
+
   // Multiply out line width and clamp to limits
   float lineWidthPixels = clamp(
     project_size_to_pixel(lineWidthScale * instanceLineWidths),
@@ -71,7 +71,7 @@ void main(void) {
   geometry.pickingColor = instancePickingColors;
 
   innerUnitRadius = 1.0 - stroked * lineWidthPixels / outerRadiusPixels;
-  
+
   vec3 offset = positions * project_pixel_size(outerRadiusPixels);
   DECKGL_FILTER_SIZE(offset, geometry);
   gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset, geometry.position);

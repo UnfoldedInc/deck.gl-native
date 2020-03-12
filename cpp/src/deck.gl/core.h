@@ -22,7 +22,7 @@
 #define DECKGL_CORE_H
 
 // #include "./lib/constants.h" // COORDINATE_SYSTEM
-#include "./lib/layer.h" // Layer, LayerProps, LayerState
+#include "./core/lib/layer.h" // Layer, LayerProps, LayerState
 
 /*
 // Intialize globals, check version

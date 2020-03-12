@@ -64,7 +64,7 @@ void main(void) {
     project_size_to_pixel(instanceWidths * widthScale),
     widthMinPixels, widthMaxPixels
   );
-  
+
   // linear interpolation of source & target to pick right coord
   float segmentIndex = positions.x;
   vec4 p = mix(source, target, segmentIndex);
