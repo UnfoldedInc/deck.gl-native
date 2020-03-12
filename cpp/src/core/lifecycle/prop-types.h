@@ -1,5 +1,8 @@
 //
 
+#ifndef DECKGL_CORE_PROP_TYPES_H
+#define DECKGL_CORE_PROP_TYPES_H
+
 #include <functional>
 
 class Props {
@@ -33,3 +36,5 @@ public:
     return this->get(componentProps1) == this->get(componentProps2);
   }
 };
+
+#endif // DECKGL_CORE_PROP_TYPES_H

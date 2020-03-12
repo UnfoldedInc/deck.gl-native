@@ -1,4 +1,4 @@
-// Copyright (c) 2015 - 2017 Uber Technologies, Inc.
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,8 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_LAYERS_LINE_LAYER_H
+#define DECKGL_LAYERS_LINE_LAYER_H
+
 #include <limits>
-#include "../core/core.h" // {Layer, project32, picking} 
+#include "core/core.h" // {Layer, project32, picking}
+
+namespace deckgl {
 
 /*
 import GL from '@luma.gl/constants';
@@ -35,7 +40,8 @@ const DEFAULT_COLOR = [0, 0, 0, 255];
 
 class LineLayerProps : public LayerProps {
 public:
-  LayerProps()
+/*
+  LineLayerProps()
     : widthUnits{"pixels"}, 
     , widthScale{1},
     , widthMinPixels{0},
@@ -47,32 +53,22 @@ public:
   float widthMinPixels; //  {type: 'number', value: 0, min: 0},
   float widthMaxPixels; //  {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
 
-  std::function<(auto row) -> Vector3<double>> getSourcePosition; //  {type: 'accessor', value: x => x.sourcePosition},
-  std::function<(auto row) -> Vector3<double>> getTargetPosition; //  {type: 'accessor', value: x => x.targetPosition},
-  std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor', value: DEFAULT_COLOR},
-  std::function<(auto row) -> float> getWidth; //  {type: 'accessor', value: 1},
-};
-
-/*
-const defaultProps = {
-  getSourcePosition: {type: 'accessor', value: x => x.sourcePosition},
-  getTargetPosition: {type: 'accessor', value: x => x.targetPosition},
-  getColor: {type: 'accessor', value: DEFAULT_COLOR},
-  getWidth: {type: 'accessor', value: 1},
-
-  widthUnits: 'pixels',
-  widthScale: {type: 'number', value: 1, min: 0},
-  widthMinPixels: {type: 'number', value: 0, min: 0},
-  widthMaxPixels: {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
-};
+  // std::function<(auto row) -> Vector3<double>> getSourcePosition; //  {type: 'accessor', value: x => x.sourcePosition},
+  // std::function<(auto row) -> Vector3<double>> getTargetPosition; //  {type: 'accessor', value: x => x.targetPosition},
+  // std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor', value: DEFAULT_COLOR},
+  // std::function<(auto row) -> float> getWidth; //  {type: 'accessor', value: 1},
 */
+};
 
 class LineLayerState : public LayerState {
 public:
 };
 
-export default class LineLayer : public Layer {
+class LineLayer : public Layer {
 public:
+};
+
+/*
   getShaders() {
     return super.getShaders({vs, fs, modules: [project32, picking]});
   }
@@ -80,7 +76,6 @@ public:
   initializeState() {
     const attributeManager = this->getAttributeManager();
 
-    /* eslint-disable max-len */
     attributeManager->addInstanced({
       instanceSourcePositions: {
         size: 3,
@@ -111,7 +106,6 @@ public:
         defaultValue: 1
       }
     });
-    /* eslint-enable max-len */
   }
 
   updateState({props, oldProps, changeFlags}) {
@@ -145,13 +139,13 @@ public:
   }
 
   _getModel(gl) {
-    /*
-     *  (0, -1)-------------_(1, -1)
-     *       |          _,-"  |
-     *       o      _,-"      o
-     *       |  _,-"          |
-     *   (0, 1)"-------------(1, 1)
-     */
+    //
+    //  (0, -1)-------------_(1, -1)
+    //       |          _,-"  |
+    //       o      _,-"      o
+    //       |  _,-"          |
+    //  (0, 1)"-------------(1, 1)
+    //
     const positions = [0, -1, 0, 0, 1, 0, 1, -1, 0, 1, 1, 0];
 
     return new Model(
@@ -172,3 +166,8 @@ public:
 
 LineLayer.layerName = 'LineLayer';
 LineLayer.defaultProps = defaultProps;
+*/
+
+} // namespace deckgl
+
+#endif // DECKGL_LAYERS_LINE_LAYER_H

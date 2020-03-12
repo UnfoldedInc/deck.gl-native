@@ -1,4 +1,4 @@
-// Copyright (c) 2015 - 2017 Uber Technologies, Inc.
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,8 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_H
+#define DECKGL_LAYERS_SCATTERPLOT_LAYER_H
+
 #include <string>
-#include "../core/core.h" // import {Layer, project32, picking} from '@deck.gl/core';
+#include "core/core.h" // import {Layer, project32, picking} from '@deck.gl/core';
 
 // import GL from '@luma.gl/constants';
 // import {Model, Geometry} from '@luma.gl/core';
@@ -27,8 +30,11 @@
 // import vs from './scatterplot-layer-vertex.glsl';
 // import fs from './scatterplot-layer-fragment.glsl';
 
+namespace deckgl {
+
 class ScatterplotLayerProps : public LayerProps {
 public:
+/*
   ScatterPlotLayerProps()
     : radiusScale{1}
     , radiusMinPixels{1}
@@ -55,41 +61,14 @@ public:
   std::function<(auto row) -> ColorRGBA> getFillColor, // {type: 'accessor', value: DEFAULT_COLOR},
   std::function<(auto row) -> ColorRGBA> getLineColor, // {type: 'accessor', value: DEFAULT_COLOR},
   std::function<(auto row) -> float> getLineWidth, // {type: 'accessor', value: 1},
+  */
 };
 
-class ScatterplotLayerState : public LayerState {
+class ScatterplotLayerState : public LayerState {};
 
-}
+class ScatterplotLayer : public Layer {};
 
 /*
-const DEFAULT_COLOR = [0, 0, 0, 255];
-
-const defaultProps = {
-  radiusScale: {type: 'number', min: 0, value: 1},
-  radiusMinPixels: {type: 'number', min: 0, value: 0}, //  min point radius in pixels
-  radiusMaxPixels: {type: 'number', min: 0, value: Number.MAX_SAFE_INTEGER}, // max point radius in pixels
-
-  lineWidthUnits: 'meters',
-  lineWidthScale: {type: 'number', min: 0, value: 1},
-  lineWidthMinPixels: {type: 'number', min: 0, value: 0},
-  lineWidthMaxPixels: {type: 'number', min: 0, value: Number.MAX_SAFE_INTEGER},
-
-  stroked: false,
-  filled: true,
-
-  getPosition: {type: 'accessor', value: x => x.position},
-  getRadius: {type: 'accessor', value: 1},
-  getFillColor: {type: 'accessor', value: DEFAULT_COLOR},
-  getLineColor: {type: 'accessor', value: DEFAULT_COLOR},
-  getLineWidth: {type: 'accessor', value: 1},
-
-  // deprecated
-  strokeWidth: {deprecatedFor: 'getLineWidth'},
-  outline: {deprecatedFor: 'stroked'},
-  getColor: {deprecatedFor: ['getFillColor', 'getLineColor']}
-};
-*/
-
 class ScatterplotLayer : Layer {
   // getShaders(id) {
   //   return super.getShaders({vs, fs, modules: [project32, picking]});
@@ -198,3 +177,8 @@ class ScatterplotLayer : Layer {
     );
   }
 }
+*/
+
+} // namespace deckgl
+
+#endif // DECKGL_LAYERS_SCATTERPLOT_LAYER_H

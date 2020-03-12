@@ -24,9 +24,10 @@
 #include <map>
 #include <exception>
 
+#include "math/math.h"
+
 #include "constants.h"
 #include "../lifecycle/prop-types.h"
-#include "../../math/math.h"
 
 using namespace mathgl;
 
@@ -123,9 +124,9 @@ public: // friend class Layer;
 
 class LayerProps : public Props {
 public:
-  static std::map<std::string, const Prop *> propTypes;
+  static const std::map<const std::string, const Prop *> propTypes;
 
-  const std::map<std::string, const Prop *> getPropTypes() {
+  virtual auto getPropTypes() -> const std::map<const std::string, const Prop *> {
     return LayerProps::propTypes;
   }
 
