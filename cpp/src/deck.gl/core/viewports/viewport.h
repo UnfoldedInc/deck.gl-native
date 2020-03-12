@@ -19,22 +19,16 @@
 // THE SOFTWARE.
 
 #include <string>
-
-#include "lib/constants.h"
-#include "math/math.h"
-
-using namespace mathgl;
-using namespace std;
+#include "deck.gl/core/lib/constants.h"
+#include "math.gl/core.h"
 
 class Viewport {
+ public:
   Viewport();
   // Viewport(/* opts */);
 
   double metersPerPixel();
   PROJECTION_MODE projectionMode();
-
-  bool operator==(const Viewport& other);
-  bool operator!=(const Viewport& other);
 
   /**
    * Projects xyz (possibly latitude and longitude) to pixel coordinates in
@@ -48,8 +42,8 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether projected coords are top left
    * @return {Array} - [x, y] or [x, y, z] in top left coords
    */
-  Vector2d project(const Vector2d& latlng, bool topLeft = true);
-  Vector3d project(const Vector3d& latlng, bool topLeft = true);
+  mathgl::Vector2d project(const mathgl::Vector2d& latlng, bool topLeft = true);
+  mathgl::Vector3d project(const mathgl::Vector3d& latlng, bool topLeft = true);
 
   /**
    * Unproject pixel coordinates on screen onto world coordinates,
@@ -61,17 +55,17 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
-  Vector2d unproject(const Vector2d& xy, bool topLeft = true);
-  Vector3d unproject(const Vector3d& xy, bool topLeft = true);
+  mathgl::Vector2d unproject(const mathgl::Vector2d& xy, bool topLeft = true);
+  mathgl::Vector3d unproject(const mathgl::Vector3d& xy, bool topLeft = true);
 
   // NON_LINEAR PROJECTION HOOKS
   // Used for web meractor projection
 
-  Vector2d projectPosition(const Vector2d& xy);
-  Vector3d projectPosition(const Vector3d& xyz);
+  mathgl::Vector2d projectPosition(const mathgl::Vector2d& xy);
+  mathgl::Vector3d projectPosition(const mathgl::Vector3d& xyz);
 
-  Vector2d unprojectPosition(const Vector2d& xy);
-  Vector3d unprojectPosition(const Vector3d& xyz);
+  mathgl::Vector2d unprojectPosition(const mathgl::Vector2d& xy);
+  mathgl::Vector3d unprojectPosition(const mathgl::Vector3d& xyz);
 
   /**
    * Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
@@ -82,21 +76,21 @@ class Viewport {
    *   Specifies a point on the sphere to project onto the map.
    * @return {Array} [x,y] coordinates.
    */
-  Vector2d projectFlat(const Vector2d& xy);
-  Vector3d projectFlat(const Vector3d& xyz);
+  mathgl::Vector2d projectFlat(const mathgl::Vector2d& xy);
+  mathgl::Vector3d projectFlat(const mathgl::Vector3d& xyz);
 
   /**
    * Unproject world point [x,y] on map onto {lat, lon} on sphere
-   * @param {object|Vector} xy - object with {x,y} members
+   * @param {object|mathgl::Vector} xy - object with {x,y} members
    *  representing point on projected map plane
    * @return {GeoCoordinates} - object with {lat,lon} of point on sphere.
    *   Has toArray method if you need a GeoJSON Array.
    *   Per cartographic tradition, lat and lon are specified as degrees.
    */
-  Vector2d unprojectFlat(const Vector2d& xy);
-  Vector3d unprojectFlat(const Vector3d& xyz);
+  mathgl::Vector2d unprojectFlat(const mathgl::Vector2d& xy);
+  mathgl::Vector3d unprojectFlat(const mathgl::Vector3d& xyz);
 
-  double getDistancceScales(const Vector2d* coordinateOrigin);
+  double getDistancceScales(const mathgl::Vector2d* coordinateOrigin);
   bool containsPixel(double x, double y, double width = 1, double height = 1);
 
   // Extract frustum planes in common space
@@ -105,14 +99,14 @@ class Viewport {
 
   // EXPERIMENTAL METHODS
 
-  Vector3d getCameraPosition();
-  Vector3d getCameraDirection();
-  Vector3d getCameraUp();
+  mathgl::Vector3d getCameraPosition();
+  mathgl::Vector3d getCameraDirection();
+  mathgl::Vector3d getCameraUp();
 
   // INTERNAL METHODS
 
  private:
-  string id;
+  std::string id;
   double x;
   double y;
   double width;
@@ -121,18 +115,17 @@ class Viewport {
   bool isGeospatial;
   double zoom;
   double scale;
-  Vector3d distanceScales;  // TODO: actually two Vector3d
+  mathgl::Vector3d distanceScaleMetersPerUnit;
+  mathgl::Vector3d distanceScaleUnitsPerMeter;
   double focalDistance;
-  Vector3d position;
-  Vector3d meterOffset;
-  Vector3d position;
-  Matrix4d modelMatrix;
-  Matrix4d meterOffset;
+  mathgl::Vector3d position;
+  mathgl::Vector3d meterOffset;
+  mathgl::Matrix4d modelMatrix;
   double longitude;
   double latitude;
-  Vector3d center;
-  Matrix4d viewMatrixUncentered;
-  Matrix4d viewMatrix;
+  mathgl::Vector3d center;
+  mathgl::Matrix4d viewMatrixUncentered;
+  mathgl::Matrix4d viewMatrix;
 
   // projectionProps in JS
   bool projectionOrthographic;
@@ -142,28 +135,33 @@ class Viewport {
   double projectionNear;
   double projectionFar;
 
-  Matrix4d porjectionMatrix;
-  Matrix4d viewProjectionMatrix;
-  Matrix4d viewMatrixInverse;
-  Vector3d cameraPosition;
-  Vector3d cameraDirection;
-  Vector3d cameraUp;
-  Vector3d cameraRight;
+  mathgl::Matrix4d porjectionMatrix;
+  mathgl::Matrix4d viewProjectionMatrix;
+  mathgl::Matrix4d viewMatrixInverse;
+  mathgl::Vector3d cameraPosition;
+  mathgl::Vector3d cameraDirection;
+  mathgl::Vector3d cameraUp;
+  mathgl::Vector3d cameraRight;
 
-  Matrix4d pixelProjectionMatrix;
-  Matrix4d viewportMatrix;
-  Matrix4d pixelUnrpojectionMatrix;
+  mathgl::Matrix4d pixelProjectionMatrix;
+  mathgl::Matrix4d viewportMatrix;
+  mathgl::Matrix4d pixelUnrpojectionMatrix;
 
   // Private methods
 
-  Matrix4d _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
-                                   double near, double far);
+  mathgl::Matrix4d _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
+                                           double near, double far);
 
   void _initViewMatrix(/* opts */);
 
-  Vector3d _getCenterInWorld(double longitude, double latitude);
+  mathgl::Vector3d _getCenterInWorld(double longitude, double latitude);
 
   void _initProjectionMatrix(/* opts */);
 
   void _initPixelMatrices();
-}
+
+  friend bool operator==(const Viewport& v1, const Viewport& v2);
+};
+
+bool operator==(const Viewport& v1, const Viewport& v2);
+bool operator!=(const Viewport& v1, const Viewport& v2);
