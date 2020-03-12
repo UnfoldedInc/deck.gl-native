@@ -60,7 +60,8 @@ set(DECKGL_CORE_HEADER_FILES
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/src/deck.gl/core/lib/layer.cpp
-    )
+    cpp/src/deck.gl/core/lifecycle/prop-types.cpp
+)
 set(DECKGL_CORE_TEST_FILES
     cpp/tests/deck.gl/core/lib/layer-test.cpp
     )

@@ -87,20 +87,3 @@ in deck.gl
   highlightColor: {type: 'color', value: [0, 0, 128, 128]}
 };
 */
-
-auto LayerProps::compare(const LayerProps* oldProps) -> bool {
-  auto propTypes = this->getPropTypes();
-
-  for (std::pair<std::string, const Prop*> element : propTypes) {
-    // Accessing KEY from element
-    std::string name = element.first;
-    // Accessing VALUE from element.
-    const Prop* propType = element.second;
-    // std::cout<<word<<" :: "<<count<<std::endl;
-    if (!propType->equals(this, oldProps)) {
-      return false;
-    }
-  }
-
-  return true;
-}

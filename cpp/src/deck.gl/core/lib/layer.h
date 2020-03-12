@@ -27,6 +27,7 @@
 #include <map>
 #include <string>
 
+#include "../lifecycle/component.h"
 #include "../lifecycle/prop-types.h"
 #include "constants.h"
 #include "math.gl/core.h"
@@ -200,11 +201,9 @@ class LayerProps : public Props {
   std::function<void()> onDragStart;
   std::function<void()> onDrag;
   std::function<void()> onDragEnd;
-
-  auto compare(const LayerProps* oldProps) -> bool;
 };
 
-class Layer {  // : public Component
+class Layer : public Component {  // : public Component
  public:
   typedef LayerProps Props;
 
