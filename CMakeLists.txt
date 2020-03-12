@@ -37,11 +37,15 @@ include(CTest)
 
 # Define source file lists
 set(LIB_SOURCE_FILES
-    cpp/src/main.cpp)
+    cpp/src/main.cpp
+    cpp/src/core/lib/layer.cpp)
 set(LIB_HEADER_FILES
-    cpp/src/main.h)
+    cpp/src/main.h
+    cpp/src/core/lib/layer.h)
 set(TEST_SOURCE_FILES
-    cpp/tests/main.cpp)
+    cpp/tests/main.cpp
+    cpp/tests/core/lib/layer.spec.cpp
+    )
 SET(TEST_HEADER_FILES
     )
 
