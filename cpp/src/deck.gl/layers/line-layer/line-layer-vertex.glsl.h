@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-export default `\
+const char* vs = R"shader(
 #define SHADER_NAME line-layer-vertex-shader
 
 attribute vec3 positions;
@@ -85,4 +85,4 @@ void main(void) {
   vColor = vec4(instanceColors.rgb, instanceColors.a * opacity);
   DECKGL_FILTER_COLOR(vColor, geometry);
 }
-`;
+)shader";

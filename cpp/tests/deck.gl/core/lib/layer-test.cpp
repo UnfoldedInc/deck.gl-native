@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 #include <memory>
+
 #include "deck.gl/core.h"
 
 TEST(Layer, Props) {

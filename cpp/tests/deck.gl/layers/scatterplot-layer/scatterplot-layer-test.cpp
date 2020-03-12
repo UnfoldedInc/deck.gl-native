@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 #include <memory>
+
 #include "deck.gl/layers.h"
 
 using namespace deckgl;

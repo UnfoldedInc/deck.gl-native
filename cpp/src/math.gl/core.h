@@ -8,9 +8,6 @@
 #include <cmath>
 #include <ostream>
 
-#include <cmath>
-#include <ostream>
-
 namespace mathgl {
 
 // Templates

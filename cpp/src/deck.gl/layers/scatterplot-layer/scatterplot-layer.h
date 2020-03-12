@@ -21,9 +21,9 @@
 #ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 #define DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 
-#include "deck.gl/core.h"  // import {Layer, project32, picking} from '@deck.gl/core';
-
 #include <string>
+
+#include "deck.gl/core.h"  // import {Layer, project32, picking} from '@deck.gl/core';
 
 // import GL from '@luma.gl/constants';
 // import {Model, Geometry} from '@luma.gl/core';

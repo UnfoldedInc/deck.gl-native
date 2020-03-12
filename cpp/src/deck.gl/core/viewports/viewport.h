@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include <string>
+
 #include "lib/constants.h"
 #include "math/math.h"
 
