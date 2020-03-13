@@ -7,7 +7,7 @@ using namespace deckgl;
 
 // TODO - auto generate from language-independent prop definition schema
 
-const std::map<const std::string, const Prop*> LayerProps::propTypes = {
+static const std::map<const std::string, const Prop*> propTypes = {
     {"visible",
      new PropType<Layer, bool>{[](const Layer::Props* props) { return props->visible; },
                                [](Layer::Props* props, bool value) { return props->visible = value; }, true}},
@@ -33,6 +33,8 @@ const std::map<const std::string, const Prop*> LayerProps::propTypes = {
     {"wrapLongitude",
      new PropType<Layer, bool>{[](const Layer::Props* props) { return props->wrapLongitude; },
                                [](Layer::Props* props, bool value) { return props->wrapLongitude = value; }, false}}};
+
+auto LayerProps::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* { return &propTypes; }
 
 /*
 class LayerPropTypes {

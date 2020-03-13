@@ -4,7 +4,7 @@
 
 using namespace deckgl;
 
-const std::map<const std::string, const Prop*> ScatterplotLayer::Props::propTypes = {
+const std::map<const std::string, const Prop*> propTypes = {
     {"filled", new PropType<ScatterplotLayer, bool>{
                    [](const ScatterplotLayer::Props* props) { return props->filled; },
                    [](ScatterplotLayer::Props* props, bool value) { return props->filled = value; }, true}},
@@ -41,6 +41,10 @@ const std::map<const std::string, const Prop*> ScatterplotLayer::Props::propType
                             [](const ScatterplotLayer::Props* props) { return props->radiusMaxPixels; },
                             [](ScatterplotLayer::Props* props, float value) { return props->radiusMaxPixels = value; },
                             std::numeric_limits<float>::max()}}};
+
+auto ScatterplotLayer::Props::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* {
+  return &propTypes;
+}
 
 /*
 const DEFAULT_COLOR = [0, 0, 0, 255];

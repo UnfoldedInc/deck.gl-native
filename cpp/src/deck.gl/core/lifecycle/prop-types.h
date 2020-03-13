@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 
 namespace deckgl {
@@ -36,10 +37,18 @@ struct PropType : public Prop {
 
 class Props {
  public:
+  Props() {}
   virtual ~Props() {}
-  virtual auto getPropTypes() -> const std::map<const std::string, const Prop*> = 0;
 
+  auto getPropTypes() -> const std::map<const std::string, const Prop*>*;
   auto compare(const Props* oldProps) -> bool;
+
+ protected:
+  virtual auto getParentProps() const -> std::shared_ptr<Props> { return nullptr; }
+  virtual auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* = 0;
+
+ private:
+  std::map<const std::string, const Prop*> _mergedPropTypes;
 };
 
 }  // namespace deckgl

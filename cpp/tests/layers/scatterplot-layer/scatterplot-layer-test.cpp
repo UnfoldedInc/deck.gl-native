@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include "layers/layers.h"
+#include "deck.gl/layers.h"
 #include <memory>
 
 using namespace deckgl;
@@ -32,5 +32,23 @@ TEST(ScatterplotLayer, Props) {
 
   EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
   layerProps2->opacity = 0.5;
+  layerProps2->radiusScale = 0.5;
   EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+
+  auto propTypes = layerProps1->getPropTypes();
+  EXPECT_TRUE(propTypes->count("opacity") == 1);
+  EXPECT_TRUE(propTypes->count("radiusScale") == 1);
+
+  for (auto element : propTypes) {
+    // Accessing KEY from element
+    std::string name = element.first;
+    // Accessing VALUE from element.
+    const Prop* propType = element.second;
+    // std::cout<<word<<" :: "<<count<<std::endl;
+  }
+}
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
