@@ -28,13 +28,23 @@ using namespace deckgl;
 
 namespace {
 
-TEST(LineLayer, Props) {
-  auto layerProps1 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
-  auto layerProps2 = std::unique_ptr<LineLayerProps>(new LineLayerProps());
+TEST(LineLayer, PropComparison) {
+  auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
+  auto layerProps2 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
 
   EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
   layerProps2->opacity = 0.5;
+  layerProps2->widthScale = 0.5;
   EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+}
+
+TEST(LineLayer, PropAccess) {
+  auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
+
+  auto propTypes = layerProps1->getPropTypes();
+  EXPECT_TRUE(propTypes->count("opacity") == 1);
+  EXPECT_TRUE(propTypes->count("widthScale") == 1);
+  EXPECT_TRUE(propTypes->count("radiusScale") == 0);
 }
 
 }  // namespace

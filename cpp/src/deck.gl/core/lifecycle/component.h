@@ -3,10 +3,13 @@
 
 #include <functional>
 
+#include "./prop-types.h"
+
 namespace deckgl {
 
 class Component {
  public:
+  using Props = Props;
   virtual ~Component() {}
 };
 

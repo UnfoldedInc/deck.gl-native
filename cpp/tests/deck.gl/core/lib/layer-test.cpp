@@ -29,8 +29,8 @@ using namespace deckgl;
 namespace {
 
 TEST(Layer, Props) {
-  auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
-  auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
+  auto layerProps1 = std::unique_ptr<Layer::Props>(new Layer::Props());
+  auto layerProps2 = std::unique_ptr<Layer::Props>(new Layer::Props());
 
   EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
   layerProps2->opacity = 0.5;
