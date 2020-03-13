@@ -50,8 +50,10 @@ Notes: See `vcpkg` install above.
 mkdir build
 cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_VCPKG>/scripts/buildsystems/vcpkg.cmake ..
-make
+make -j
 ```
+
+To use different compilers, set the build options `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER` on the `cmake` command line.
 
 ## Test
 
