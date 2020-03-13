@@ -107,8 +107,8 @@ class Viewport {
            // Window width/height in pixels (for pixel projection)
            double x = 0, double y = 0, double width = 1, double height = 1);
 
-  double metersPerPixel();
-  PROJECTION_MODE projectionMode();
+  auto metersPerPixel() -> double;
+  auto projectionMode() -> PROJECTION_MODE;
 
   /**
    * Projects xyz (possibly latitude and longitude) to pixel coordinates in
@@ -122,8 +122,8 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether projected coords are top left
    * @return {Array} - [x, y] or [x, y, z] in top left coords
    */
-  mathgl::Vector2d project(const mathgl::Vector2d& latlng, bool topLeft = true);
-  mathgl::Vector3d project(const mathgl::Vector3d& latlng, bool topLeft = true);
+  auto project(const mathgl::Vector2d& latlng, bool topLeft = true) -> mathgl::Vector2d;
+  auto project(const mathgl::Vector3d& latlng, bool topLeft = true) -> mathgl::Vector3d;
 
   /**
    * Unproject pixel coordinates on screen onto world coordinates,
@@ -135,17 +135,17 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
-  mathgl::Vector2d unproject(const mathgl::Vector2d& xy, bool topLeft = true);
-  mathgl::Vector3d unproject(const mathgl::Vector3d& xy, bool topLeft = true);
+  auto unproject(const mathgl::Vector2d& xy, bool topLeft = true) -> mathgl::Vector2d;
+  auto unproject(const mathgl::Vector3d& xy, bool topLeft = true) -> mathgl::Vector3d;
 
   // NON_LINEAR PROJECTION HOOKS
   // Used for web meractor projection
 
-  mathgl::Vector2d projectPosition(const mathgl::Vector2d& xy);
-  mathgl::Vector3d projectPosition(const mathgl::Vector3d& xyz);
+  auto projectPosition(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
+  auto projectPosition(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
 
-  mathgl::Vector2d unprojectPosition(const mathgl::Vector2d& xy);
-  mathgl::Vector3d unprojectPosition(const mathgl::Vector3d& xyz);
+  auto unprojectPosition(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
+  auto unprojectPosition(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
 
   /**
    * Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
@@ -156,8 +156,8 @@ class Viewport {
    *   Specifies a point on the sphere to project onto the map.
    * @return {Array} [x,y] coordinates.
    */
-  mathgl::Vector2d projectFlat(const mathgl::Vector2d& xy);
-  mathgl::Vector3d projectFlat(const mathgl::Vector3d& xyz);
+  auto projectFlat(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
+  auto projectFlat(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
 
   /**
    * Unproject world point [x,y] on map onto {lat, lon} on sphere
@@ -167,11 +167,11 @@ class Viewport {
    *   Has toArray method if you need a GeoJSON Array.
    *   Per cartographic tradition, lat and lon are specified as degrees.
    */
-  mathgl::Vector2d unprojectFlat(const mathgl::Vector2d& xy);
-  mathgl::Vector3d unprojectFlat(const mathgl::Vector3d& xyz);
+  auto unprojectFlat(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
+  auto unprojectFlat(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
 
-  double getDistancceScales(const mathgl::Vector2d* coordinateOrigin);
-  bool containsPixel(double x, double y, double width = 1, double height = 1);
+  auto getDistancceScales(const mathgl::Vector2d* coordinateOrigin) -> double;
+  auto containsPixel(double x, double y, double width = 1, double height = 1) -> bool;
 
   // Extract frustum planes in common space
   // TODO: don't know type
@@ -179,24 +179,24 @@ class Viewport {
 
   // EXPERIMENTAL METHODS
 
-  mathgl::Vector3d getCameraPosition();
-  mathgl::Vector3d getCameraDirection();
-  mathgl::Vector3d getCameraUp();
+  auto getCameraPosition() -> mathgl::Vector3d;
+  auto getCameraDirection() -> mathgl::Vector3d;
+  auto getCameraUp() -> mathgl::Vector3d;
 
  private:
-  mathgl::Matrix4d _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
-                                           double near, double far);
+  auto _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance, double near,
+                               double far) -> mathgl::Matrix4d;
 
   void _initViewMatrix(/* opts */);
 
-  mathgl::Vector3d _getCenterInWorld(double longitude, double latitude);
+  auto _getCenterInWorld(double longitude, double latitude) -> mathgl::Vector3d;
 
   void _initProjectionMatrix(/* opts */);
 
   void _initPixelMatrices();
 };
 
-bool operator==(const Viewport& v1, const Viewport& v2);
-bool operator!=(const Viewport& v1, const Viewport& v2);
+auto operator==(const Viewport& v1, const Viewport& v2) -> bool;
+auto operator!=(const Viewport& v1, const Viewport& v2) -> bool;
 
 #endif

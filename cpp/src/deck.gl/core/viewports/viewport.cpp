@@ -33,28 +33,28 @@ Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
                    double height)
     : id{id}, x{x}, y{y}, width{width}, height{height} {}
 
-double Viewport::metersPerPixel() { return this->distanceScaleMetersPerUnit.z / this->scale; }
+auto Viewport::metersPerPixel() -> double { return this->distanceScaleMetersPerUnit.z / this->scale; }
 
-PROJECTION_MODE Viewport::projectionMode() {
+auto Viewport::projectionMode() -> PROJECTION_MODE {
   if (this->isGeospatial) {
     return this->zoom < 12 ? PROJECTION_MODE::WEB_MERCATOR : PROJECTION_MODE::WEB_MERCATOR_AUTO_OFFSET;
   }
   return PROJECTION_MODE::IDENTITY;
 }
 
-bool Viewport::containsPixel(double x, double y, double width, double height) {
+auto Viewport::containsPixel(double x, double y, double width, double height) -> bool {
   return (x < this->x + this->width) && (this->x < x + width) && (y < this->y + this->height) && (this->y < y + height);
 }
 
-mathgl::Vector3d Viewport::getCameraPosition() { return this->cameraPosition; }
+auto Viewport::getCameraPosition() -> mathgl::Vector3d { return this->cameraPosition; }
 
-mathgl::Vector3d Viewport::getCameraDirection() { return this->cameraDirection; }
+auto Viewport::getCameraDirection() -> mathgl::Vector3d { return this->cameraDirection; }
 
-mathgl::Vector3d Viewport::getCameraUp() { return this->cameraUp; }
+auto Viewport::getCameraUp() -> mathgl::Vector3d { return this->cameraUp; }
 
-bool operator==(const Viewport& v1, const Viewport& v2) {
+auto operator==(const Viewport& v1, const Viewport& v2) -> bool {
   return v1.width == v2.width && v1.height == v2.height && v1.scale == v2.scale &&
          v1.projectionMatrix == v2.projectionMatrix && v1.viewMatrix == v2.viewMatrix;
 }
 
-bool operator!=(const Viewport& v1, const Viewport& v2) { return !(v1 == v2); }
+auto operator!=(const Viewport& v1, const Viewport& v2) -> bool { return !(v1 == v2); }
