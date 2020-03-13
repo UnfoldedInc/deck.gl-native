@@ -20,7 +20,17 @@
 
 #include "deck.gl/core/viewports/viewport.h"
 
-Viewport::Viewport() : x(0), y(0), width(0), height(0) {}
+using namespace std;
+using namespace mathgl;
+
+ViewMatrixOptions::ViewMatrixOptions() : viewMatrix(Matrix4d() /*identity*/), focalDistance(1) {}
+
+ProjectionMatrixOptions::ProjectionMatrixOptions()
+    : orthographic(false), fovy(75), near(0.1), far(1000), focalDistance(1) {}
+
+Viewport::Viewport(string id, ViewMatrixOptions viewMatrixOptions, ProjectionMatrixOptions projectionMatrixOptions,
+                   int x, int y, int width, int height)
+    : id(id), x(x), y(y), width(width), height(height) {}
 
 double Viewport::metersPerPixel() { return this->distanceScaleMetersPerUnit.z / this->scale; }
 

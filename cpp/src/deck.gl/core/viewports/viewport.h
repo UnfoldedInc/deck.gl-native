@@ -25,6 +25,40 @@
 #include "deck.gl/core/lib/constants.h"
 #include "math.gl/core.h"
 
+struct ViewMatrixOptions {
+  mathgl::Matrix4d viewMatrix;
+  // Anchor: lng lat zoom makes viewport work w/ geospatial coordinate systems
+  double longitude;
+  double latitude;
+  double zoom;
+  // Anchor position offset (in meters for geospatial viewports)
+  mathgl::Vector3d position;
+  // A model matrix to be applied to position, to match the layer props API
+  mathgl::Matrix4d modelMatrix;
+  // Only needed for orthographic views
+  double focalDistance;
+  double distanceScales;  // TODO type
+
+  ViewMatrixOptions();
+};
+
+struct ProjectionMatrixOptions {
+  // Projection matrix
+  mathgl::Matrix4d projectionMatrix;
+
+  // Projection matrix parameters, used if projectionMatrix not supplied
+  bool orthographic;
+  double fovyRadians;
+  double fovy;
+  // Distance of near clipping plane
+  double near;
+  // Distance of far clipping plane
+  double far;
+  double focalDistance;
+
+  ProjectionMatrixOptions();
+};
+
 class Viewport {
  public:
   std::string id;
@@ -68,8 +102,9 @@ class Viewport {
   mathgl::Matrix4d viewportMatrix;
   mathgl::Matrix4d pixelUnrpojectionMatrix;
 
-  Viewport();
-  // Viewport(/* opts */);
+  Viewport(std::string id, ViewMatrixOptions viewMatrixOptions, ProjectionMatrixOptions projectionMatrixOptions,
+           // Window width/height in pixels (for pixel projection)
+           int x = 0, int y = 0, int width = 1, int height = 1);
 
   double metersPerPixel();
   PROJECTION_MODE projectionMode();

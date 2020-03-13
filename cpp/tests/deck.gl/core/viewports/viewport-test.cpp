@@ -27,7 +27,9 @@
 using namespace deckgl;
 
 TEST(Viewport, Simple) {
-  Viewport viewport;
+  ViewMatrixOptions viewMatrixOptions;
+  ProjectionMatrixOptions projectionMatrixOptions;
+  Viewport viewport("my-viewport-id", viewMatrixOptions, projectionMatrixOptions, 0, 0, 0, 0);
   EXPECT_FALSE(viewport.containsPixel(0, 0));
   viewport.width = 10;
   viewport.height = 10;
