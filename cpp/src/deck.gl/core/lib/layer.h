@@ -129,10 +129,6 @@ class LayerState {
 
 class LayerProps : public Props {
  public:
-  static const std::map<const std::string, const Prop*> propTypes;
-
-  virtual auto getPropTypes() -> const std::map<const std::string, const Prop*> { return LayerProps::propTypes; }
-
   LayerProps()
       // TODO - how to deal with data ?
 
@@ -201,6 +197,10 @@ class LayerProps : public Props {
   std::function<void()> onDragStart;
   std::function<void()> onDrag;
   std::function<void()> onDragEnd;
+
+ protected:
+  auto getParentProps() const -> std::shared_ptr<Props> { return nullptr; }
+  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>*;
 };
 
 class Layer : public Component {  // : public Component

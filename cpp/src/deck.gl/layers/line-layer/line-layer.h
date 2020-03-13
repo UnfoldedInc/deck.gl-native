@@ -38,28 +38,27 @@ const DEFAULT_COLOR = [0, 0, 0, 255];
 
 class LineLayerProps : public LayerProps {
  public:
-  using super = LayerProps;
-
-  static const std::map<const std::string, const Prop*> propTypes;
-
-  LineLayerProps()
-      : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
-
   std::string widthUnits;  // : 'pixels',
   float widthScale;        //  {type: 'number', value: 1, min: 0},
   float widthMinPixels;    //  {type: 'number', value: 0, min: 0},
   float widthMaxPixels;    //  {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
 
   /*
-      // std::function<(auto row) -> Vector3<double>> getSourcePosition; //
+    // std::function<(auto row) -> Vector3<double>> getSourcePosition; //
     {type: 'accessor', value: x => x.sourcePosition},
-      // std::function<(auto row) -> Vector3<double>> getTargetPosition; //
+    // std::function<(auto row) -> Vector3<double>> getTargetPosition; //
     {type: 'accessor', value: x => x.targetPosition},
-      // std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor',
+    // std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor',
     value: DEFAULT_COLOR},
-      // std::function<(auto row) -> float> getWidth; //  {type: 'accessor',
+    // std::function<(auto row) -> float> getWidth; //  {type: 'accessor',
     value: 1},
-    */
+   */
+  LineLayerProps()
+      : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
+
+ protected:
+  auto getParentProps() const -> std::shared_ptr<Props> { return std::shared_ptr<Props>(new Layer::Props()); }
+  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> *;
 };
 
 class LineLayerState : public LayerState {

@@ -33,6 +33,11 @@ TEST(Layer, Props) {
   EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
   layerProps2->opacity = 0.5;
   EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+
+  auto propTypes = layerProps1->getPropTypes();
+
+  EXPECT_TRUE(propTypes->count("opacity"));
+  EXPECT_FALSE(propTypes->count("radiusScale"));
 }
 
 int main(int argc, char **argv) {

@@ -4,7 +4,7 @@
 
 using namespace deckgl;
 
-const std::map<const std::string, const Prop*> LineLayer::Props::propTypes = {
+const std::map<const std::string, const Prop*> propTypes = {
     // {"widthUnits", new PropType<LineLayer, std::string>{
     //                    [](const LineLayer::Props* props) { return props->widthUnits; },
     //                    [](LineLayer::Props* props, bool value) { return props->widthUnits = value; }, true}},
@@ -18,6 +18,8 @@ const std::map<const std::string, const Prop*> LineLayer::Props::propTypes = {
      new PropType<LineLayer, float>{[](const LineLayer::Props* props) { return props->widthMaxPixels; },
                                     [](LineLayer::Props* props, float value) { return props->widthMaxPixels = value; },
                                     std::numeric_limits<float>::max()}}};
+
+auto LineLayer::Props::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* { return &propTypes; }
 
 /*
 const defaultProps = {

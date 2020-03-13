@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-const char *vs = R"shader(
+static const char *vs = R"GLSL(
 #define SHADER_NAME scatterplot-layer-vertex-shader
 
 attribute vec3 positions;
@@ -83,4 +83,4 @@ void main(void) {
   vLineColor = vec4(instanceLineColors.rgb, instanceLineColors.a * opacity);
   DECKGL_FILTER_COLOR(vLineColor, geometry);
 }
-)shader";
+)GLSL";

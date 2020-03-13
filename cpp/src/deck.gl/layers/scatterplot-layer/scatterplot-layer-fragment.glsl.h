@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-const char* fs = R"shader(
+static const char* fs = R"GLSL(
 #define SHADER_NAME scatterplot-layer-fragment-shader
 
 precision highp float;
@@ -61,4 +61,4 @@ void main(void) {
   gl_FragColor.a *= inCircle;
   DECKGL_FILTER_COLOR(gl_FragColor, geometry);
 }
-)shader";
+)GLSL";

@@ -35,23 +35,6 @@ namespace deckgl {
 
 class ScatterplotLayerProps : public LayerProps {
  public:
-  using super = LayerProps;
-
-  static const std::map<const std::string, const Prop*> propTypes;
-
-  ScatterplotLayerProps()
-      : filled{true},
-        stroked{false},
-
-        lineWidthUnits{"meters"},
-        lineWidthScale{1},
-        lineWidthMinPixels{1},
-        lineWidthMaxPixels{0},
-
-        radiusScale{1},
-        radiusMinPixels{1},
-        radiusMaxPixels{0} {}
-
   bool filled;
   bool stroked;
 
@@ -71,6 +54,23 @@ class ScatterplotLayerProps : public LayerProps {
   // std::function<(auto row) -> ColorRGBA> getLineColor, // {type: 'accessor',
   // value: DEFAULT_COLOR}, std::function<(auto row) -> float> getLineWidth, //
   // {type: 'accessor', value: 1},
+
+  ScatterplotLayerProps()
+      : filled{true},
+        stroked{false},
+
+        lineWidthUnits{"meters"},
+        lineWidthScale{1},
+        lineWidthMinPixels{1},
+        lineWidthMaxPixels{0},
+
+        radiusScale{1},
+        radiusMinPixels{1},
+        radiusMaxPixels{0} {}
+
+ protected:
+  auto getParentProps() const -> std::shared_ptr<Props> { return std::shared_ptr<Props>(new Layer::Props()); }
+  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> *;
 };
 
 class ScatterplotLayerState : public LayerState {};
