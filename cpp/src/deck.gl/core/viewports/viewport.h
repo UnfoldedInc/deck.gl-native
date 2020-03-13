@@ -22,6 +22,7 @@
 #define DECKGL_CORE_VIEWPORT_H
 
 #include <string>
+
 #include "deck.gl/core/lib/constants.h"
 #include "math.gl/core.h"
 

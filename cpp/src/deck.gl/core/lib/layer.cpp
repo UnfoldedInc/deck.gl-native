@@ -21,11 +21,10 @@ static const std::map<const std::string, const Prop*> propTypeMap = {
          [](const Layer::Props* props) { return props->coordinateSystem; },
          [](Layer::Props* props, COORDINATE_SYSTEM value) { return props->coordinateSystem = value; },
          COORDINATE_SYSTEM::DEFAULT}},
-    {"coordinateOrigin",
-     new PropType<Layer, Vector3<double>>{
-         [](const Layer::Props* props) { return props->coordinateOrigin; },
-         [](Layer::Props* props, Vector3<double> value) { return props->coordinateOrigin = value; },
-         Vector3<double>()}},
+    {"coordinateOrigin", new PropType<Layer, Vector3<double>>{
+                             [](const Layer::Props* props) { return props->coordinateOrigin; },
+                             [](Layer::Props* props, Vector3<double> value) { return props->coordinateOrigin = value; },
+                             Vector3<double>()}},
     {"modelMatrix",
      new PropType<Layer, Matrix4<double>>{
          [](const Layer::Props* props) { return props->modelMatrix; },

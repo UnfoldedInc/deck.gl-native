@@ -6,15 +6,13 @@
 
 using namespace deckgl;
 
-const std::map<const std::string, const Prop*> propTypes = {
-    {"filled",
-     new PropType<ScatterplotLayer, bool>{
-         [](const ScatterplotLayer::Props* props) { return props->filled; },
-         [](ScatterplotLayer::Props* props, bool value) { return props->filled = value; }, true}},
-    {"stroked",
-     new PropType<ScatterplotLayer, bool>{
-         [](const ScatterplotLayer::Props* props) { return props->stroked; },
-         [](ScatterplotLayer::Props* props, bool value) { return props->stroked = value; }, false}},
+const std::map<const std::string, const Prop*> propTypeMap = {
+    {"filled", new PropType<ScatterplotLayer, bool>{
+                   [](const ScatterplotLayer::Props* props) { return props->filled; },
+                   [](ScatterplotLayer::Props* props, bool value) { return props->filled = value; }, true}},
+    {"stroked", new PropType<ScatterplotLayer, bool>{
+                    [](const ScatterplotLayer::Props* props) { return props->stroked; },
+                    [](ScatterplotLayer::Props* props, bool value) { return props->stroked = value; }, false}},
 
     // {"lineWidthUnits", new PropType<ScatterplotLayer, std::string>{
     //                    [](const ScatterplotLayer::Props* props) { return props->widthUnits; },
@@ -34,10 +32,9 @@ const std::map<const std::string, const Prop*> propTypes = {
          [](ScatterplotLayer::Props* props, float value) { return props->lineWidthMaxPixels = value; },
          std::numeric_limits<float>::max()}},
 
-    {"radiusScale",
-     new PropType<ScatterplotLayer, float>{
-         [](const ScatterplotLayer::Props* props) { return props->radiusScale; },
-         [](ScatterplotLayer::Props* props, float value) { return props->radiusScale = value; }, 1.0}},
+    {"radiusScale", new PropType<ScatterplotLayer, float>{
+                        [](const ScatterplotLayer::Props* props) { return props->radiusScale; },
+                        [](ScatterplotLayer::Props* props, float value) { return props->radiusScale = value; }, 1.0}},
     {"radiusMinPixels",
      new PropType<ScatterplotLayer, float>{
          [](const ScatterplotLayer::Props* props) { return props->radiusMinPixels; },
