@@ -69,11 +69,7 @@ class Props {
   }
   auto compare(const Props* oldProps) -> bool;
 
- protected:
-  // TODO - remove
-  // virtual auto getParentProps() const -> std::shared_ptr<Props> { return nullptr; }
-  // virtual auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* = 0;
-
+ private:
   std::unique_ptr<PropTypes> _propTypes;
 };
 

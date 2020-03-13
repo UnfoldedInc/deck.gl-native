@@ -355,10 +355,6 @@ class Layer::Props : public deckgl::Props {
 
   // COMPONENT
   auto getPropTypes() const -> const PropTypes* override;
-
- protected:
-  // auto getParentProps() const -> std::shared_ptr<deckgl::Props> override { return nullptr; }
-  // auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* override;
 };
 
 class Layer::State {
