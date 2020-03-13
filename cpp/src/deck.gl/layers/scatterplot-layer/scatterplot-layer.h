@@ -28,9 +28,6 @@
 // import GL from '@luma.gl/constants';
 // import {Model, Geometry} from '@luma.gl/core';
 
-// import vs from './scatterplot-layer-vertex.glsl';
-// import fs from './scatterplot-layer-fragment.glsl';
-
 namespace deckgl {
 
 class ScatterplotLayerProps : public LayerProps {

@@ -24,6 +24,6 @@
 
 namespace {
 
-TEST(SuiteName1, TestName1) { EXPECT_EQ(42, 42); }
+TEST(DeckJsonTests, DummyTest) { EXPECT_EQ(42, 42); }
 
 }  // namespace

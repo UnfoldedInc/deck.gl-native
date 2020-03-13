@@ -78,8 +78,8 @@ set(DECKGL_LAYERS_SOURCE_FILES
     cpp/src/deck.gl/layers/scatterplot-layer/scatterplot-layer.cpp
     )
 set(DECKGL_LAYERS_TEST_FILES
-    cpp/tests/deck.gl/layers/line-layer/line-layer-test.cpp
-    cpp/tests/deck.gl/layers/scatterplot-layer/scatterplot-layer-test.cpp
+    cpp/tests/deck.gl/layers/line-layer-test.cpp
+    cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
     )
 
 ## deck.gl/json
