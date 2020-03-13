@@ -18,6 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_CORE_LAYER_MANAGER_H
+#define DECKGL_CORE_LAYER_MANAGER_H
+
 #include "./layer.h"
 
 /*
@@ -58,6 +61,8 @@ const layerName = layer => (layer instanceof Layer ? `${layer}` : !layer ?
 'null' : 'invalid');
 */
 
+namespace deckgl {
+
 class Deck;
 class LayerManager;
 
@@ -95,7 +100,7 @@ class LayerManager {
   bool _needsUpdate;
   bool _debug;
 
-  LayerManager(deck)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
+  LayerManager(Deck *deck)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
       : context(deck, this)
   // gl,
   // // Enabling luma.gl Program caching using private API (_cachePrograms)
@@ -131,9 +136,9 @@ class LayerManager {
   }
 
   // Check if a redraw is needed
-  needsRedraw(opts = {clearRedrawFlags : false}) {
+  needsRedraw(bool clearRedrawFlags = false) {
     let redraw = this->_needsRedraw;
-    if (opts.clearRedrawFlags) {
+    if (clearRedrawFlags) {
       this->_needsRedraw = false;
     }
 
@@ -149,17 +154,17 @@ class LayerManager {
   }
 
   // Check if a deep update of all layers is needed
-  needsUpdate() { return this->_needsUpdate; }
+  bool needsUpdate() { return this->_needsUpdate; }
 
   // Layers will be redrawn (in next animation frame)
-  setNeedsRedraw(reason) { this->_needsRedraw = this->_needsRedraw || reason; }
+  void setNeedsRedraw(const std::string &reason) { this->_needsRedraw = this->_needsRedraw || reason; }
 
   // Layers will be updated deeply (in next animation frame)
   // Potentially regenerating attributes and sub layers
-  setNeedsUpdate(reason) { this->_needsUpdate = this->_needsUpdate || reason; }
+  void setNeedsUpdate(const std::string &reason) { this->_needsUpdate = this->_needsUpdate || reason; }
 
   // Gets an (optionally) filtered list of layers
-  getLayers({layerIds = null} = {}) {
+  auto getLayers({layerIds = null} = {}) : std::list<Layer *> {
     // Filtering by layerId compares beginning of strings, so that sublayers
     // will be included Dependes on the convention of adding suffixes to the
     // parent's layer name
@@ -168,7 +173,8 @@ class LayerManager {
   }
 
   // Set props needed for layer rendering and picking.
-  setProps(props) {
+  /*
+  void setProps(props) {
     if ('debug' in props) {
       this->_debug = props.debug;
     }
@@ -187,10 +193,11 @@ class LayerManager {
       this->_onError = props.onError;
     }
   }
+  */
 
   // Supply a new layer list, initiating sublayer generation and layer
   // matching
-  setLayers(newLayers, forceUpdate = false) {
+  void setLayers(newLayers, bool forceUpdate = false) {
     // TODO - something is generating state updates that cause rerender of
     // the same
     const shouldUpdate = forceUpdate || newLayers != = this->lastRenderedLayers;
@@ -213,7 +220,7 @@ class LayerManager {
   }
 
   // Update layers from last cycle if `setNeedsUpdate()` has been called
-  updateLayers() {
+  void updateLayers() {
     // NOTE: For now, even if only some layer has changed, we update all
     // layers to ensure that layer id maps etc remain consistent even if
     // different sublayers are rendered
@@ -232,7 +239,7 @@ class LayerManager {
 
   // Make a viewport "current" in layer context, updating viewportChanged
   // flags
-  activateViewport(viewport) {
+  void activateViewport(viewport) {
     assert(viewport, 'LayerManager: viewport not set');
 
     const oldViewport = this->context.viewport;
@@ -255,7 +262,7 @@ class LayerManager {
     return this;
   }
 
-  _handleError(stage, error, layer) {
+  void _handleError(stage, error, layer) {
     if (this->_onError) {
       this->_onError(error, layer);
     } else {
@@ -267,7 +274,7 @@ class LayerManager {
   // To avoid having an exception in one layer disrupt other layers
   // TODO - mark layers with exceptions as bad and remove from rendering
   // cycle?
-  _updateLayers(oldLayers, newLayers) {
+  void _updateLayers(oldLayers, newLayers) {
     // Create old layer map
     const oldLayerMap = {};
     for (const oldLayer of oldLayers) {
@@ -301,7 +308,7 @@ class LayerManager {
 
   /* eslint-disable complexity,max-statements */
   // Note: adds generated layers to `generatedLayers` array parameter
-  _updateSublayersRecursively(newLayers, oldLayerMap, generatedLayers) {
+  void _updateSublayersRecursively(newLayers, oldLayerMap, generatedLayers) {
     for (const newLayer of newLayers) {
       newLayer.context = this->context;
 
@@ -349,7 +356,7 @@ class LayerManager {
   /* eslint-enable complexity,max-statements */
 
   // Finalize any old layers that were not matched
-  _finalizeOldLayers(oldLayerMap) {
+  void _finalizeOldLayers(oldLayerMap) {
     for (const layerId in oldLayerMap) {
       const layer = oldLayerMap[layerId];
       if (layer) {
@@ -361,7 +368,7 @@ class LayerManager {
   // EXCEPTION SAFE LAYER ACCESS
 
   // Initializes a single layer, calling layer methods
-  _initializeLayer(layer) {
+  void _initializeLayer(layer) {
     try {
       layer._initialize();
       layer.lifecycle = LIFECYCLE.INITIALIZED;
@@ -372,7 +379,7 @@ class LayerManager {
     }
   }
 
-  _transferLayerState(oldLayer, newLayer) {
+  void _transferLayerState(oldLayer, newLayer) {
     newLayer._transferState(oldLayer);
     newLayer.lifecycle = LIFECYCLE.MATCHED;
 
@@ -382,7 +389,7 @@ class LayerManager {
   }
 
   // Updates a single layer, cleaning all flags
-  _updateLayer(layer) {
+  void _updateLayer(layer) {
     try {
       layer._update();
     } catch (err) {
@@ -391,7 +398,7 @@ class LayerManager {
   }
 
   // Finalizes a single layer
-  _finalizeLayer(layer) {
+  void _finalizeLayer(layer) {
     this->_needsRedraw = this->_needsRedraw || `finalized $ { layerName(layer) }
     `;
 
@@ -405,3 +412,7 @@ class LayerManager {
     }
   }
 }
+
+}  // namespace deckgl
+
+#endif  // DECKGL_CORE_LAYER_MANAGER_H

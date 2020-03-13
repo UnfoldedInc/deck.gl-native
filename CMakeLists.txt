@@ -60,8 +60,9 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/src/deck.gl/core/viewports/viewport.h
     )
 set(DECKGL_CORE_SOURCE_FILES
-    cpp/src/deck.gl/core/lib/layer.cpp
-    cpp/src/deck.gl/core/lifecycle/prop-types.cpp
+   cpp/src/deck.gl/core/lib/layer.cpp
+   cpp/src/deck.gl/core/lib/layer-manager.cpp
+   cpp/src/deck.gl/core/lifecycle/prop-types.cpp
     cpp/src/deck.gl/core/viewports/viewport.cpp
     )
 set(DECKGL_CORE_TEST_FILES

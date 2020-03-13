@@ -316,18 +316,13 @@ class Layer::Props : public deckgl::Props {
                                     // , onDragEnd
   {}
 
-  // data: Special handling for null, see below
-  // data: {type: "data", value: EMPTY_ARRAY, async: true},
-  // dataComparator: null,
-  // _dataDiff: {type: "function", value: data => data && data.__diff,
-  // compare: false, optional: true}, dataTransform: {type: "function", value:
-  // null, compare: false, optional: true}, onDataLoad: {type: "function",
-  // value: null, compare: false, optional: true}, fetch: {
-  //   type: "function",
-  //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
-  //   compare: false
-  // },
-  // updateTriggers: {}, // Update triggers: a core change detection mechanism in deck.gl
+  std::string id;
+
+  // data: TODO - how do we manage ownership of data? i.e prevent leaks?
+  void* data;
+  std::function<auto(void*, void*)->bool> dataComparator;
+  // updateTriggers // TODO - how do we handle these in C++?
+
   bool visible;
   bool pickable;
   float opacity;
@@ -340,20 +335,26 @@ class Layer::Props : public deckgl::Props {
   std::string positionFormat;
   std::string colorFormat;
 
+  // Offset depth based on layer index to avoid z-fighting. Negative values
+  // pull layer towards the camera
+  // std::function getPolygonOffset;
+
+  // INTERACTIVITY PROPS
+
+  // TODO - interactivity is not planned for the v0.1 prototype
+
   // Selection/Highlighting
   bool autoHighlight;
   ColorRGBA highlightColor;
   int highlightedObjectIndex;
 
-  // Offset depth based on layer index to avoid z-fighting. Negative values
-  // pull layer towards the camera std::function getPolygonOffset
-  std::function<void()> onHover;
-  std::function<void()> onClick;
-  std::function<void()> onDragStart;
-  std::function<void()> onDrag;
-  std::function<void()> onDragEnd;
+  // std::function<void()> onHover;
+  // std::function<void()> onClick;
+  // std::function<void()> onDragStart;
+  // std::function<void()> onDrag;
+  // std::function<void()> onDragEnd;
 
-  // COMPONENT
+  // implement Component::Props interface
   auto getPropTypes() const -> const PropTypes* override;
 };
 
