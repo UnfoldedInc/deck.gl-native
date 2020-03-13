@@ -47,7 +47,10 @@ const std::map<const std::string, const Prop*> propTypes = {
                             [](ScatterplotLayer::Props* props, float value) { return props->radiusMaxPixels = value; },
                             std::numeric_limits<float>::max()}}};
 
-auto ScatterplotLayer::Props::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* {
+// TODO - this could be auto-injected?
+
+auto ScatterplotLayer::Props::getPropTypes() const -> const PropTypes* {
+  static PropTypes propTypes{PropTypes::from<ScatterplotLayer>(propTypeMap)};
   return &propTypes;
 }
 

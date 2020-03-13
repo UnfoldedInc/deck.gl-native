@@ -30,9 +30,8 @@
 namespace deckgl {
 
 class LineLayer : public Layer {
-  using super = Layer;
-
  public:
+  using super = Layer;
   class Props;
   class State;
 
@@ -66,11 +65,7 @@ class LineLayer::Props : public Layer::Props {
 
   Props() : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
 
- protected:
-  auto getParentProps() const -> std::shared_ptr<deckgl::Props> override {
-    return std::shared_ptr<deckgl::Props>(new Layer::Props());
-  }
-  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> * override;
+  auto getPropTypes() const -> const PropTypes * override;
 };
 
 class LineLayer::State : public Layer::State {

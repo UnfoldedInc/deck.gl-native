@@ -89,9 +89,8 @@ class ColorRGBA {
 };
 
 class Layer : public Component {  // : public Component
-  using super = Component;
-
  public:
+  using super = Component;
   class Props;
   class State;
   class Context;
@@ -354,9 +353,12 @@ class Layer::Props : public deckgl::Props {
   std::function<void()> onDrag;
   std::function<void()> onDragEnd;
 
+  // COMPONENT
+  auto getPropTypes() const -> const PropTypes* override;
+
  protected:
-  auto getParentProps() const -> std::shared_ptr<deckgl::Props> override { return nullptr; }
-  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* override;
+  // auto getParentProps() const -> std::shared_ptr<deckgl::Props> override { return nullptr; }
+  // auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* override;
 };
 
 class Layer::State {

@@ -3,23 +3,23 @@
 using namespace deckgl;
 
 //
-// TODO clang does not appear to have C++17 map.merge(), using map.insert()
-auto Props::getPropTypes() -> const std::map<const std::string, const Prop*>* {
-  if (this->_mergedPropTypes.empty()) {
-    const auto* ownPropTypes = this->getOwnPropTypes();
-    this->_mergedPropTypes.insert(ownPropTypes->begin(), ownPropTypes->end());
-    if (auto parentProps = this->getParentProps()) {
-      const auto* parentPropTypes = parentProps->getOwnPropTypes();
-      this->_mergedPropTypes.insert(parentPropTypes->begin(), parentPropTypes->end());
-    }
+PropTypes::PropTypes(const PropTypes* parentPropTypes, const std::map<const std::string, const Prop*>& ownPropTypeMap) {
+  // TODO clang does not appear to have C++17 `map.merge()`, using `map.insert()` instead...
+
+  // insert our prop types
+  this->propTypeMap.insert(ownPropTypeMap.begin(), ownPropTypeMap.end());
+
+  // Insert parent's prop types
+  if (parentPropTypes) {
+    const auto& parentPropTypeMap = parentPropTypes->propTypeMap;
+    this->propTypeMap.insert(parentPropTypeMap.begin(), parentPropTypeMap.end());
   }
-  return &(this->_mergedPropTypes);
 }
 
 auto Props::compare(const Props* oldProps) -> bool {
   auto propTypes = this->getPropTypes();
 
-  for (auto element : *propTypes) {
+  for (auto element : propTypes->propTypeMap) {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.

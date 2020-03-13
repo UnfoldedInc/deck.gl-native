@@ -6,7 +6,7 @@ using namespace deckgl;
 // TODO - auto generate from language-independent prop definition schema
 // TODO - just use member pointer?
 
-static const std::map<const std::string, const Prop*> propTypes = {
+static const std::map<const std::string, const Prop*> propTypeMap = {
     {"visible",
      new PropType<Layer, bool>{[](const Layer::Props* props) { return props->visible; },
                                [](Layer::Props* props, bool value) { return props->visible = value; }, true}},
@@ -34,7 +34,10 @@ static const std::map<const std::string, const Prop*> propTypes = {
      new PropType<Layer, bool>{[](const Layer::Props* props) { return props->wrapLongitude; },
                                [](Layer::Props* props, bool value) { return props->wrapLongitude = value; }, false}}};
 
-auto Layer::Props::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* { return &propTypes; }
+auto Layer::Props::getPropTypes() const -> const PropTypes* {
+  static PropTypes propTypes{PropTypes::from<Layer>(propTypeMap)};
+  return &propTypes;
+}
 
 /*
 class LayerPropTypes {
