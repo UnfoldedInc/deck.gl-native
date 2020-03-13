@@ -26,6 +26,8 @@
 
 using namespace deckgl;
 
+namespace {
+
 TEST(ScatterplotLayer, Props) {
   auto layerProps1 = std::unique_ptr<ScatterplotLayerProps>(new ScatterplotLayerProps());
   auto layerProps2 = std::unique_ptr<ScatterplotLayerProps>(new ScatterplotLayerProps());
@@ -34,3 +36,5 @@ TEST(ScatterplotLayer, Props) {
   layerProps2->opacity = 0.5;
   EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
 }
+
+}  // namespace

@@ -27,8 +27,8 @@
 // import GL from '@luma.gl/constants';
 // import {Model, Geometry} from '@luma.gl/core';
 
-#include "./line-layer-fragment.glsl.h"
-#include "./line-layer-vertex.glsl.h"
+//#include "./line-layer-fragment.glsl.h"
+//#include "./line-layer-vertex.glsl.h"
 
 namespace deckgl {
 
