@@ -1,5 +1,7 @@
 #include "./scatterplot-layer.h"
 
+#include "./scatterplot-layer-fragment.glsl.h"
+#include "./scatterplot-layer-vertex.glsl.h"
 #include "deck.gl/core.h"
 
 using namespace deckgl;
