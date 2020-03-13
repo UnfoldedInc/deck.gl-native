@@ -116,9 +116,10 @@ void ScatterplotLayer::initializeState() {
       defaultValue: 1
     }
   });
+  */
 }
 
-void updateState(const Props* props, const Props* oldProps, const ChangeFlags& changeFlags) {
+void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
   /*
   super.updateState({props, oldProps, changeFlags});
   if (changeFlags.extensionsChanged) {
@@ -131,6 +132,8 @@ void updateState(const Props* props, const Props* oldProps, const ChangeFlags& c
   }
   */
 }
+
+void ScatterplotLayer::finalizeState() {}
 
 void ScatterplotLayer::draw() {  // uniforms
   /*
@@ -168,7 +171,7 @@ void ScatterplotLayer::draw() {  // uniforms
 
 auto ScatterplotLayer::_getModel(void* gl) -> std::shared_ptr<Model> {
   // a square that minimally cover the unit circle
-  const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
+  // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
   return std::shared_ptr<Model>(new Model(gl));
   // Object.assign(this->getShaders(), {

@@ -37,10 +37,10 @@ class LineLayer : public Layer {
   class State;
 
  protected:
-  void initializeLayer();
-  void updateLayer();
-  void finalizeLayer();
-  void draw();
+  void initializeState() override;
+  void updateState(const Layer::ChangeFlags &, const Layer::Props *oldProps) override;
+  void finalizeState() override;
+  void draw() override;
 
  private:
   auto _getModel(void *gl) -> std::shared_ptr<Model>;
@@ -67,8 +67,10 @@ class LineLayer::Props : public Layer::Props {
   Props() : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
 
  protected:
-  auto getParentProps() const -> std::shared_ptr<Props> { return std::shared_ptr<Props>(new Layer::Props()); }
-  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> *;
+  auto getParentProps() const -> std::shared_ptr<deckgl::Props> override {
+    return std::shared_ptr<deckgl::Props>(new Layer::Props());
+  }
+  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> * override;
 };
 
 class LineLayer::State : public Layer::State {

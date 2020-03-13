@@ -41,7 +41,7 @@ const defaultProps = {
 //   return super.getShaders({vs, fs, modules: [project32, picking]});
 // }
 
-LineLayer::initializeState() {
+void LineLayer::initializeState() {
   /*
   const attributeManager = this->getAttributeManager();
 
@@ -78,9 +78,8 @@ LineLayer::initializeState() {
   */
 }
 
-LineLayer::updateState(const Props* props, const Props* oldProps, const ChangeFlags& changeFlags
-}) {
-  super::updateState(props, oldProps, changeFlags);
+void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  // super::updateState(props, oldProps, changeFlags);
 
   // if (changeFlags.extensionsChanged) {
   //   const {gl} = this->context;
@@ -92,13 +91,14 @@ LineLayer::updateState(const Props* props, const Props* oldProps, const ChangeFl
   // }
 }
 
-draw({uniforms}) {
+void LineLayer::finalizeState() {}
+
+void LineLayer::draw() {  // {uniforms}
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;
 
   const widthMultiplier = widthUnits === 'pixels' ? viewport.metersPerPixel :
-1;
 
   this->state.model
     .setUniforms(
@@ -112,7 +112,8 @@ draw({uniforms}) {
   */
 }
 
-_getModel(gl) {
+auto LineLayer::_getModel(void* gl) -> std::shared_ptr<Model> {
+  return std::shared_ptr<Model>{nullptr};
   //
   //  (0, -1)-------------_(1, -1)
   //       |          _,-"  |
@@ -137,5 +138,4 @@ _getModel(gl) {
     })
   );
   */
-}
 }

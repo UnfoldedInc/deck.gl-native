@@ -28,7 +28,7 @@ using namespace deckgl;
 
 namespace {
 
-TEST(LineLayer, Props) {
+TEST(LineLayer, PropComparison) {
   auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
   auto layerProps2 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
 
@@ -36,16 +36,15 @@ TEST(LineLayer, Props) {
   layerProps2->opacity = 0.5;
   layerProps2->widthScale = 0.5;
   EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+}
+
+TEST(LineLayer, PropAccess) {
+  auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
 
   auto propTypes = layerProps1->getPropTypes();
   EXPECT_TRUE(propTypes->count("opacity") == 1);
+  EXPECT_TRUE(propTypes->count("widthScale") == 1);
   EXPECT_TRUE(propTypes->count("radiusScale") == 0);
-  EXPECT_TRUE(propTypes->count("radiusScale") == 1);
-}
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }
 
 }  // namespace

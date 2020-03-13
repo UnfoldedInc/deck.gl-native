@@ -106,7 +106,7 @@ in deck.gl
 
 // Sets the redraw flag for this layer, will trigger a redraw next animation
 // frame
-void Layer::setNeedsRedraw(bool redraw = true) {
+void Layer::setNeedsRedraw(bool redraw) {
   if (this->internalState) {
     this->internalState->needsRedraw = redraw;
   }
@@ -135,7 +135,7 @@ void Layer::setNeedsUpdate() {
 // }
 
 // Returns true if the layer is pickable and visible.
-auto Layer::isPickable() -> bool { return this->props->pickable && this->props->visible; }
+auto Layer::isPickable() const -> bool { return this->props->pickable && this->props->visible; }
 
 auto Layer::getAttributeManager() -> AttributeManager* { return this->internalState->attributeManager; }
 
@@ -258,14 +258,13 @@ decodePickingColor(color) {
 // }
 
 // Let"s layer control if updateState should be called
-// auto Layer::shouldUpdateState(Layer::Props* oldProps, LayerContext* context,
-//                               const LayerChangeFlags& changeFlags) -> bool {
-//   return changeFlags.propsOrDataChanged;
-// }
+auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) -> bool {
+  return changeFlags.propsOrDataChanged;
+}
 
 // Default implementation, all attributes will be invalidated and updated
 // when data changes
-void Layer::updateState(Layer::Props* oldProps, LayerContext* context, const LayerChangeFlags& changeFlags) {
+void Layer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
   /*
   const auto attributeManager = this->getAttributeManager();
   if (changeFlags.dataChanged && attributeManager) {
@@ -320,7 +319,7 @@ void Layer::draw() {
 // INTERNAL METHODS
 
 // Default implementation of attribute invalidation, can be redefined
-void invalidateAttribute(const std::string& name = "all", const std::string& diffReason = "") {
+void Layer::invalidateAttribute(const std::string& name, const std::string& diffReason) {
   const auto attributeManager = this->getAttributeManager();
   if (!attributeManager) {
     return;
@@ -340,34 +339,34 @@ void invalidateAttribute(const std::string& name = "all", const std::string& dif
 // }
 
 // Calls attribute manager to update any WebGL attributes
-void _updateAttributes(Layer::Props* props) {
-  const auto attributeManager = this->getAttributeManager();
-  if (!attributeManager) {
-    return;
-  }
+// void Layer::_updateAttributes() {
+//   const auto attributeManager = this->getAttributeManager();
+//   if (!attributeManager) {
+//     return;
+//   }
 
-  // Figure out data length
-  // auto numInstances = this->getNumInstances(props);
-  // auto startIndices = this->getStartIndices(props);
+// Figure out data length
+// auto numInstances = this->getNumInstances(props);
+// auto startIndices = this->getStartIndices(props);
 
-  /*
-    attributeManager->update({
-      data: props.data,
-      numInstances,
-      startIndices,
-      props,
-      transitions: props.transitions,
-      buffers: props.data.attributes,
-      context: this,
-      // Don"t worry about non-attribute props
-      ignoreUnknownAttributes: true
-    });
-  */
+/*
+  attributeManager->update({
+    data: props.data,
+    numInstances,
+    startIndices,
+    props,
+    transitions: props.transitions,
+    buffers: props.data.attributes,
+    context: this,
+    // Don"t worry about non-attribute props
+    ignoreUnknownAttributes: true
+  });
+*/
 
-  // const auto changedAttributes =
-  // attributeManager->getChangedAttributes({clearChangedFlags: true});
-  // this->updateAttributes(changedAttributes);
-}
+// const auto changedAttributes =
+// attributeManager->getChangedAttributes({clearChangedFlags: true});
+// this->updateAttributes(changedAttributes);
+// }
 
 // Update attribute transitions. This is called in drawLayer, no model
 // updates required.
