@@ -40,11 +40,14 @@ include(CTest)
 ## math.gl
 set(MATHGL_CORE_HEADER_FILES
     cpp/src/math.gl/core.h
+    cpp/src/math.gl/web-mercator/web-mercator-utils.h
     )
 set(MATHGL_CORE_SOURCE_FILES
+    cpp/src/math.gl/web-mercator/web-mercator-utils.cpp
     )
 set(MATHGL_CORE_TEST_FILES
     cpp/tests/math.gl/core-test.cpp
+    cpp/tests/math.gl/web-mercator/web-mercator-utils-test.cpp
     )
 
 ## deck.gl/core

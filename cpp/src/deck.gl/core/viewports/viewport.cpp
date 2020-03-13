@@ -18,22 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "deck.gl/core/viewports/viewport.h"
+#include "./viewport.h"
 
 using namespace std;
 using namespace mathgl;
-
-ViewMatrixOptions::ViewMatrixOptions() : viewMatrix{Matrix4d() /*identity*/}, focalDistance{1} {}
-
-ProjectionMatrixOptions::ProjectionMatrixOptions()
-    : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
 
 Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
                    const ProjectionMatrixOptions& projectionMatrixOptions, double x, double y, double width,
                    double height)
     : id{id}, x{x}, y{y}, width{width}, height{height} {}
 
-auto Viewport::metersPerPixel() -> double { return this->distanceScaleMetersPerUnit.z / this->scale; }
+auto Viewport::metersPerPixel() -> double { return this->distanceScales.metersPerUnit.z / this->scale; }
 
 auto Viewport::projectionMode() -> PROJECTION_MODE {
   if (this->isGeospatial) {
