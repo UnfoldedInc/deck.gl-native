@@ -1,4 +1,7 @@
 /*
+
+// PSEUDO CODE TO ILLUSTRATE HOW ATTRIBUTE MANAGER SHOULD WORK
+
 struct Row { string name; float value; };
 Row table[1000];
 

@@ -136,7 +136,7 @@ class LayerManager {
   }
 
   // Check if a redraw is needed
-  needsRedraw(bool clearRedrawFlags = false) {
+  bool needsRedraw(bool clearRedrawFlags = false) {
     let redraw = this->_needsRedraw;
     if (clearRedrawFlags) {
       this->_needsRedraw = false;
