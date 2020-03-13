@@ -6,24 +6,25 @@
 
 using namespace deckgl;
 
-const std::map<const std::string, const Prop*> propTypes = {
+const std::map<const std::string, const Prop*> propTypeMap = {
     // {"widthUnits", new PropType<LineLayer, std::string>{
     //                    [](const LineLayer::Props* props) { return props->widthUnits; },
     //                    [](LineLayer::Props* props, bool value) { return props->widthUnits = value; }, true}},
-    {"widthScale",
-     new PropType<LineLayer, float>{[](const LineLayer::Props* props) { return props->widthScale; },
-                                    [](LineLayer::Props* props, float value) { return props->widthScale = value; },
-                                    1.0}},
-    {"widthMinPixels",
-     new PropType<LineLayer, float>{[](const LineLayer::Props* props) { return props->widthMinPixels; },
-                                    [](LineLayer::Props* props, float value) { return props->widthMinPixels = value; },
-                                    0.0}},
+    {"widthScale", new PropType<LineLayer, float>{
+                       [](const LineLayer::Props* props) { return props->widthScale; },
+                       [](LineLayer::Props* props, float value) { return props->widthScale = value; }, 1.0}},
+    {"widthMinPixels", new PropType<LineLayer, float>{
+                           [](const LineLayer::Props* props) { return props->widthMinPixels; },
+                           [](LineLayer::Props* props, float value) { return props->widthMinPixels = value; }, 0.0}},
     {"widthMaxPixels",
      new PropType<LineLayer, float>{[](const LineLayer::Props* props) { return props->widthMaxPixels; },
                                     [](LineLayer::Props* props, float value) { return props->widthMaxPixels = value; },
                                     std::numeric_limits<float>::max()}}};
 
-auto LineLayer::Props::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* { return &propTypes; }
+auto LineLayer::Props::getPropTypes() const -> const PropTypes* {
+  static PropTypes propTypes{PropTypes::from<LineLayer>(propTypeMap)};
+  return &propTypes;
+}
 
 /*
 const defaultProps = {

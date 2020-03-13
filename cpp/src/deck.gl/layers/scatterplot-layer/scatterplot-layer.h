@@ -31,9 +31,8 @@
 namespace deckgl {
 
 class ScatterplotLayer : public Layer {
-  using super = Layer;
-
  public:
+  using super = Layer;
   class Props;
   class State;
 
@@ -83,11 +82,7 @@ class ScatterplotLayer::Props : public Layer::Props {
         radiusMinPixels{1},
         radiusMaxPixels{0} {}
 
- protected:
-  auto getParentProps() const -> std::shared_ptr<deckgl::Props> override {
-    return std::shared_ptr<deckgl::Props>(new Layer::Props());
-  }
-  auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> * override;
+  auto getPropTypes() const -> const PropTypes * override;
 };
 
 class ScatterplotLayer::State : public Layer::State {};

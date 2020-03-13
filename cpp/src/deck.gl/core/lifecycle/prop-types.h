@@ -14,6 +14,7 @@ class Props;
 
 class Prop {
  public:
+  virtual ~Prop() {}
   virtual bool equals(const Props*, const Props*) const { return false; }
 };
 
@@ -35,20 +36,41 @@ struct PropType : public Prop {
   }
 };
 
+class PropTypes {
+  friend class Props;
+
+ public:
+  // static methods
+  template <typename ComponentT>
+  static auto from(const std::map<const std::string, const Prop*>& propTypeMap) -> deckgl::PropTypes {
+    typename ComponentT::super::Props parentProps;
+    return PropTypes{parentProps.getPropTypes(), propTypeMap};
+  }
+
+  // public members
+  // TODO - make private / iterable
+  std::map<const std::string, const Prop*> propTypeMap;
+
+  // methods
+  PropTypes(const PropTypes* parentProps, const std::map<const std::string, const Prop*>&);
+
+  bool hasProperty(const std::string& key) const { return this->propTypeMap.count(key) == 1; }
+  // getProperty(const std::string &prop) const { return this->propTypeMap.count() == 1; }
+  // setProperty(const std::string &prop) const { return this->propTypeMap.count() == 1; }
+};
+
 class Props {
  public:
   Props() {}
   virtual ~Props() {}
 
-  auto getPropTypes() -> const std::map<const std::string, const Prop*>*;
+  virtual auto getPropTypes() const -> const PropTypes* {
+    return new PropTypes(nullptr, std::map<const std::string, const Prop*>{});
+  }
   auto compare(const Props* oldProps) -> bool;
 
- protected:
-  virtual auto getParentProps() const -> std::shared_ptr<Props> { return nullptr; }
-  virtual auto getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* = 0;
-
  private:
-  std::map<const std::string, const Prop*> _mergedPropTypes;
+  std::unique_ptr<PropTypes> _propTypes;
 };
 
 }  // namespace deckgl

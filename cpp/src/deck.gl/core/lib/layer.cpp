@@ -6,7 +6,7 @@ using namespace deckgl;
 // TODO - auto generate from language-independent prop definition schema
 // TODO - just use member pointer?
 
-static const std::map<const std::string, const Prop*> propTypes = {
+static const std::map<const std::string, const Prop*> propTypeMap = {
     {"visible",
      new PropType<Layer, bool>{[](const Layer::Props* props) { return props->visible; },
                                [](Layer::Props* props, bool value) { return props->visible = value; }, true}},
@@ -21,11 +21,10 @@ static const std::map<const std::string, const Prop*> propTypes = {
          [](const Layer::Props* props) { return props->coordinateSystem; },
          [](Layer::Props* props, COORDINATE_SYSTEM value) { return props->coordinateSystem = value; },
          COORDINATE_SYSTEM::DEFAULT}},
-    {"coordinateOrigin",
-     new PropType<Layer, Vector3<double>>{
-         [](const Layer::Props* props) { return props->coordinateOrigin; },
-         [](Layer::Props* props, Vector3<double> value) { return props->coordinateOrigin = value; },
-         Vector3<double>()}},
+    {"coordinateOrigin", new PropType<Layer, Vector3<double>>{
+                             [](const Layer::Props* props) { return props->coordinateOrigin; },
+                             [](Layer::Props* props, Vector3<double> value) { return props->coordinateOrigin = value; },
+                             Vector3<double>()}},
     {"modelMatrix",
      new PropType<Layer, Matrix4<double>>{
          [](const Layer::Props* props) { return props->modelMatrix; },
@@ -34,7 +33,10 @@ static const std::map<const std::string, const Prop*> propTypes = {
      new PropType<Layer, bool>{[](const Layer::Props* props) { return props->wrapLongitude; },
                                [](Layer::Props* props, bool value) { return props->wrapLongitude = value; }, false}}};
 
-auto Layer::Props::getOwnPropTypes() const -> const std::map<const std::string, const Prop*>* { return &propTypes; }
+auto Layer::Props::getPropTypes() const -> const PropTypes* {
+  static PropTypes propTypes{PropTypes::from<Layer>(propTypeMap)};
+  return &propTypes;
+}
 
 /*
 class LayerPropTypes {

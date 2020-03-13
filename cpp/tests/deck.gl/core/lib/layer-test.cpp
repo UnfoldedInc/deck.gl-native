@@ -38,8 +38,8 @@ TEST(Layer, Props) {
 
   auto propTypes = layerProps1->getPropTypes();
 
-  EXPECT_TRUE(propTypes->count("opacity"));
-  EXPECT_FALSE(propTypes->count("radiusScale"));
+  EXPECT_TRUE(propTypes->hasProperty("opacity"));
+  EXPECT_FALSE(propTypes->hasProperty("radiusScale"));
 }
 
 }  // namespace
