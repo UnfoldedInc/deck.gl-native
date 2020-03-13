@@ -97,80 +97,30 @@ class LayerManager {
   std::list<Layer *> layers;
   std::list<Layer *> lastRenderedLayers;
 
-  bool _needsUpdate;
+  std::string _needsRedraw;
+  std::string _needsUpdate;
   bool _debug;
 
-  LayerManager(Deck *deck)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
-      : context(deck, this)
-  // gl,
-  // // Enabling luma.gl Program caching using private API (_cachePrograms)
-  // programManager: gl && createProgramManager(gl),
-  // stats: stats || new Stats({id: 'deck.gl'}),
-  // // Make sure context.viewport is not empty on the first layer
-  // initialization viewport: viewport || new Viewport({id:
-  // 'DEFAULT-INITIAL-VIEWPORT'}), // Current viewport, exposed to layers for
-  // project* function timeline: timeline || new Timeline()
-  {
-    // Currently deck.gl expects the DeckGL.layers array to be different
-    // whenever React rerenders. If the same layers array is used, the
-    // LayerManager's diffing algorithm will generate a fatal error and
-    // break the rendering.
-
-    // `this->lastRenderedLayers` stores the UNFILTERED layers sent
-    // down to LayerManager, so that `layers` reference can be compared.
-    // If it's the same across two React render calls, the diffing logic
-    // will be skipped.
-
-    // this->_needsRedraw = 'Initial render';
-    this->_needsUpdate = false;
-    this->_debug = false;
-    // this->_onError = null;
-  }
+  LayerManager(Deck *deck);
 
   // Method to call when the layer manager is not needed anymore.
-  ~LayerManager() {
-    // Finalize all layers
-    for (const layer of this->layers) {
-      this->_finalizeLayer(layer);
-    }
-  }
+  ~LayerManager();
 
   // Check if a redraw is needed
-  bool needsRedraw(bool clearRedrawFlags = false) {
-    let redraw = this->_needsRedraw;
-    if (clearRedrawFlags) {
-      this->_needsRedraw = false;
-    }
-
-    // This layers list doesn't include sublayers, relying on composite
-    // layers
-    for (const layer of this->layers) {
-      // Call every layer to clear their flags
-      const layerNeedsRedraw = layer.getNeedsRedraw(opts);
-      redraw = redraw || layerNeedsRedraw;
-    }
-
-    return redraw;
-  }
+  auto needsRedraw(bool clearRedrawFlags = false) -> std::string;
 
   // Check if a deep update of all layers is needed
-  bool needsUpdate() { return this->_needsUpdate; }
+  auto needsUpdate() -> std::string;  // { return this->_needsUpdate; }
 
   // Layers will be redrawn (in next animation frame)
-  void setNeedsRedraw(const std::string &reason) { this->_needsRedraw = this->_needsRedraw || reason; }
+  void setNeedsRedraw(const std::string &reason);  // { this->_needsRedraw = this->_needsRedraw || reason; }
 
   // Layers will be updated deeply (in next animation frame)
   // Potentially regenerating attributes and sub layers
-  void setNeedsUpdate(const std::string &reason) { this->_needsUpdate = this->_needsUpdate || reason; }
+  void setNeedsUpdate(const std::string &reason);  // { this->_needsUpdate = this->_needsUpdate || reason; }
 
   // Gets an (optionally) filtered list of layers
-  auto getLayers({layerIds = null} = {}) : std::list<Layer *> {
-    // Filtering by layerId compares beginning of strings, so that sublayers
-    // will be included Dependes on the convention of adding suffixes to the
-    // parent's layer name
-    return layerIds ? this->layers.filter(layer = > layerIds.find(layerId = > layer.id.indexOf(layerId) == = 0))
-                    : this->layers;
-  }
+  auto getLayers(const std::list<std::string> &layerIds = std::list<std::string>{}) -> std::list<Layer *>;
 
   // Set props needed for layer rendering and picking.
   /*
@@ -197,41 +147,10 @@ class LayerManager {
 
   // Supply a new layer list, initiating sublayer generation and layer
   // matching
-  void setLayers(newLayers, bool forceUpdate = false) {
-    // TODO - something is generating state updates that cause rerender of
-    // the same
-    const shouldUpdate = forceUpdate || newLayers != = this->lastRenderedLayers;
-    debug(TRACE_SET_LAYERS, this, shouldUpdate, newLayers);
-
-    if (!shouldUpdate) {
-      return this;
-    }
-    this->lastRenderedLayers = newLayers;
-
-    newLayers = flatten(newLayers, {filter : Boolean});
-
-    for (const layer of newLayers) {
-      layer.context = this->context;
-    }
-
-    this->_updateLayers(this->layers, newLayers);
-
-    return this;
-  }
+  void setLayers(const std::list<Layer *> newLayers, bool forceUpdate = false);
 
   // Update layers from last cycle if `setNeedsUpdate()` has been called
-  void updateLayers() {
-    // NOTE: For now, even if only some layer has changed, we update all
-    // layers to ensure that layer id maps etc remain consistent even if
-    // different sublayers are rendered
-    const reason = this->needsUpdate();
-    if (reason) {
-      this->setNeedsRedraw(`updating layers : $ { reason }`);
-      // Force a full update
-      const forceUpdate = true;
-      this->setLayers(this->lastRenderedLayers, forceUpdate);
-    }
-  }
+  void updateLayers();
 
   //
   // PRIVATE METHODS
@@ -239,74 +158,19 @@ class LayerManager {
 
   // Make a viewport "current" in layer context, updating viewportChanged
   // flags
+  /*
   void activateViewport(viewport) {
-    assert(viewport, 'LayerManager: viewport not set');
-
-    const oldViewport = this->context.viewport;
-    const viewportChanged = !oldViewport || !viewport.equals(oldViewport);
-
-    if (viewportChanged) {
-      debug(TRACE_ACTIVATE_VIEWPORT, this, viewport);
-
-      this->context.viewport = viewport;
-      const changeFlags = {viewportChanged : true};
-
-      // Update layers states
-      // Let screen space layers update their state based on viewport
-      for (const layer of this->layers) {
-        layer.setChangeFlags(changeFlags);
-        this->_updateLayer(layer);
-      }
-    }
-
-    return this;
-  }
 
   void _handleError(stage, error, layer) {
-    if (this->_onError) {
-      this->_onError(error, layer);
-    } else {
-      log.error(`error during ${stage} of $ { layerName(layer) }`, error)();
-    }
-  }
+  */
 
   // Match all layers, checking for caught errors
   // To avoid having an exception in one layer disrupt other layers
   // TODO - mark layers with exceptions as bad and remove from rendering
   // cycle?
-  void _updateLayers(oldLayers, newLayers) {
-    // Create old layer map
-    const oldLayerMap = {};
-    for (const oldLayer of oldLayers) {
-      if (oldLayerMap[oldLayer.id]) {
-        log.warn(`Multiple old layers with same id $ { layerName(oldLayer) }`)();
-      } else {
-        oldLayerMap[oldLayer.id] = oldLayer;
-      }
-    }
+  void _updateLayers(const std::list<Layer *> &oldLayers, const std::list<Layer *> &newLayers);
 
-    // Allocate array for generated layers
-    const generatedLayers = [];
-
-    // Match sublayers
-    this->_updateSublayersRecursively(newLayers, oldLayerMap, generatedLayers);
-
-    // Finalize unmatched layers
-    this->_finalizeOldLayers(oldLayerMap);
-
-    let needsUpdate = false;
-    for (const layer of generatedLayers) {
-      if (layer.hasUniformTransition()) {
-        needsUpdate = true;
-        break;
-      }
-    }
-
-    this->_needsUpdate = needsUpdate;
-    this->layers = generatedLayers;
-  }
-
-  /* eslint-disable complexity,max-statements */
+  /*
   // Note: adds generated layers to `generatedLayers` array parameter
   void _updateSublayersRecursively(newLayers, oldLayerMap, generatedLayers) {
     for (const newLayer of newLayers) {
@@ -353,65 +217,24 @@ class LayerManager {
       }
     }
   }
-  /* eslint-enable complexity,max-statements */
+  */
 
   // Finalize any old layers that were not matched
-  void _finalizeOldLayers(oldLayerMap) {
-    for (const layerId in oldLayerMap) {
-      const layer = oldLayerMap[layerId];
-      if (layer) {
-        this->_finalizeLayer(layer);
-      }
-    }
-  }
+  void _finalizeOldLayers(const std::map<std::string, Layer *> &oldLayerMap);
 
   // EXCEPTION SAFE LAYER ACCESS
 
   // Initializes a single layer, calling layer methods
-  void _initializeLayer(layer) {
-    try {
-      layer._initialize();
-      layer.lifecycle = LIFECYCLE.INITIALIZED;
-    } catch (err) {
-      this->_handleError('initialization', err, layer);
-      // TODO - what should the lifecycle state be here?
-      // LIFECYCLE.INITIALIZATION_FAILED?
-    }
-  }
+  void _initializeLayer(Layer *);
 
-  void _transferLayerState(oldLayer, newLayer) {
-    newLayer._transferState(oldLayer);
-    newLayer.lifecycle = LIFECYCLE.MATCHED;
-
-    if (newLayer != = oldLayer) {
-      oldLayer.lifecycle = LIFECYCLE.AWAITING_GC;
-    }
-  }
+  void _transferLayerState(Layer *oldLayer, Layer *newLayer);
 
   // Updates a single layer, cleaning all flags
-  void _updateLayer(layer) {
-    try {
-      layer._update();
-    } catch (err) {
-      this->_handleError('update', err, layer);
-    }
-  }
+  void _updateLayer(Layer *);
 
   // Finalizes a single layer
-  void _finalizeLayer(layer) {
-    this->_needsRedraw = this->_needsRedraw || `finalized $ { layerName(layer) }
-    `;
-
-    layer.lifecycle = LIFECYCLE.AWAITING_FINALIZATION;
-
-    try {
-      layer._finalize();
-      layer.lifecycle = LIFECYCLE.FINALIZED;
-    } catch (err) {
-      this->_handleError('finalization', err, layer);
-    }
-  }
-}
+  void _finalizeLayer(Layer *);
+};
 
 }  // namespace deckgl
 

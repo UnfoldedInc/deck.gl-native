@@ -133,10 +133,10 @@ class Layer : public Component {  // : public Component
   void setNeedsUpdate();
 
   // Checks state of attributes and model
-  // auto getNeedsRedraw(opts = {clearRedrawFlags: false}) -> bool {
+  auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::string;
 
   // Checks if layer attributes needs updating
-  // auto needsUpdate() -> bool {
+  auto needsUpdate() -> std::string;
 
   // Returns true if the layer is pickable and visible.
   auto isPickable() const -> bool;
@@ -293,7 +293,7 @@ class Layer : public Component {  // : public Component
 
   void _onAsyncPropUpdated();
   */
-};
+};  // namespace deckgl
 
 class Layer::Props : public deckgl::Props {
  public:
@@ -361,8 +361,8 @@ class Layer::Props : public deckgl::Props {
 class Layer::State {
  public:  // friend class Layer;
   AttributeManager* attributeManager;
-  bool needsRedraw;
-  bool needsUpdate;
+  std::string needsRedraw;
+  std::string needsUpdate;
 };
 
 class Layer::Context {};
