@@ -30,7 +30,24 @@
 
 namespace deckgl {
 
-class ScatterplotLayerProps : public LayerProps {
+class ScatterplotLayer : public Layer {
+  using super = Layer;
+
+ public:
+  class Props;
+  class State;
+
+ protected:
+  void initializeLayer();
+  void updateLayer();
+  void finalizeLayer();
+  void draw();
+
+ private:
+  auto _getModel(void *gl) -> std::shared_ptr<Model>;
+};
+
+class ScatterplotLayer::Props : public Layer::Props {
  public:
   bool filled;
   bool stroked;
@@ -44,15 +61,16 @@ class ScatterplotLayerProps : public LayerProps {
   float radiusMinPixels;  // min point radius in pixels
   float radiusMaxPixels;  // max point radius in pixels
 
-  // std::function<(auto row) -> Vector3<double>> getPosition, // {type:
-  // 'accessor', value: x => x.position}, std::function<(auto row) -> float>
-  // getRadius, // {type: 'accessor', value: 1}, std::function<(auto row) ->
+  // std::function<(auto row) -> Vector3<double>> getPosition,
+  // {type: 'accessor', value: x => x.position}, std::function<(auto row) -> float>
+  // getRadius,
+  // {type: 'accessor', value: 1}, std::function<(auto row) ->
   // ColorRGBA> getFillColor, // {type: 'accessor', value: DEFAULT_COLOR},
   // std::function<(auto row) -> ColorRGBA> getLineColor, // {type: 'accessor',
   // value: DEFAULT_COLOR}, std::function<(auto row) -> float> getLineWidth, //
   // {type: 'accessor', value: 1},
 
-  ScatterplotLayerProps()
+  Props()
       : filled{true},
         stroked{false},
 
@@ -70,124 +88,7 @@ class ScatterplotLayerProps : public LayerProps {
   auto getOwnPropTypes() const -> const std::map<const std::string, const Prop *> *;
 };
 
-class ScatterplotLayerState : public LayerState {};
-
-class ScatterplotLayer : public Layer {
- public:
-  using Props = ScatterplotLayerProps;
-};
-
-/*
-class ScatterplotLayer : Layer {
-  // getShaders(id) {
-  //   return super.getShaders({vs, fs, modules: [project32, picking]});
-  // }
-
-  void initializeState() {
-    this->getAttributeManager()->addInstanced({
-      instancePositions: {
-        size: 3,
-        type: GL.DOUBLE,
-        fp64: this->use64bitPositions(),
-        transition: true,
-        accessor: 'getPosition'
-      },
-      instanceRadius: {
-        size: 1,
-        transition: true,
-        accessor: 'getRadius',
-        defaultValue: 1
-      },
-      instanceFillColors: {
-        size: this->props.colorFormat.length,
-        transition: true,
-        normalized: true,
-        type: GL.UNSIGNED_BYTE,
-        accessor: 'getFillColor',
-        defaultValue: [0, 0, 0, 255]
-      },
-      instanceLineColors: {
-        size: this->props.colorFormat.length,
-        transition: true,
-        normalized: true,
-        type: GL.UNSIGNED_BYTE,
-        accessor: 'getLineColor',
-        defaultValue: [0, 0, 0, 255]
-      },
-      instanceLineWidths: {
-        size: 1,
-        transition: true,
-        accessor: 'getLineWidth',
-        defaultValue: 1
-      }
-    });
-  }
-
-  updateState({props, oldProps, changeFlags}) {
-    super.updateState({props, oldProps, changeFlags});
-    if (changeFlags.extensionsChanged) {
-      const {gl} = this->context;
-      if (this->state.model) {
-        this->state.model.delete();
-      }
-      this->setState({model: this->_getModel(gl)});
-      this->getAttributeManager().invalidateAll();
-    }
-  }
-
-  draw({uniforms}) {
-    const {viewport} = this->context;
-    const {
-      radiusScale,
-      radiusMinPixels,
-      radiusMaxPixels,
-      stroked,
-      filled,
-      lineWidthUnits,
-      lineWidthScale,
-      lineWidthMinPixels,
-      lineWidthMaxPixels
-    } = this->props;
-
-    const widthMultiplier = lineWidthUnits === 'pixels' ?
-viewport.metersPerPixel : 1;
-
-    this->state.model
-      .setUniforms(uniforms)
-      .setUniforms({
-        stroked: stroked ? 1 : 0,
-        filled,
-        radiusScale,
-        radiusMinPixels,
-        radiusMaxPixels,
-        lineWidthScale: lineWidthScale * widthMultiplier,
-        lineWidthMinPixels,
-        lineWidthMaxPixels
-      })
-      .draw();
-  }
-
-  _getModel(gl) {
-    // a square that minimally cover the unit circle
-    const positions = [-1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0];
-
-    return new Model(
-      gl,
-      Object.assign(this->getShaders(), {
-        id: this->props.id,
-        geometry: new Geometry({
-          drawMode: GL.TRIANGLE_FAN,
-          vertexCount: 4,
-          attributes: {
-            positions: {size: 3, value: new Float32Array(positions)}
-          }
-        }),
-        isInstanced: true
-      })
-    );
-  }
-}
-*/
+class ScatterplotLayer::State : public Layer::State {};
 
 }  // namespace deckgl
 
