@@ -28,8 +28,9 @@ ViewMatrixOptions::ViewMatrixOptions() : viewMatrix{Matrix4d() /*identity*/}, fo
 ProjectionMatrixOptions::ProjectionMatrixOptions()
     : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
 
-Viewport::Viewport(string id, ViewMatrixOptions viewMatrixOptions, ProjectionMatrixOptions projectionMatrixOptions,
-                   double x, double y, double width, double height)
+Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
+                   const ProjectionMatrixOptions& projectionMatrixOptions, double x, double y, double width,
+                   double height)
     : id{id}, x{x}, y{y}, width{width}, height{height} {}
 
 double Viewport::metersPerPixel() { return this->distanceScaleMetersPerUnit.z / this->scale; }

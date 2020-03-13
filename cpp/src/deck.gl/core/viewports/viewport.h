@@ -102,7 +102,8 @@ class Viewport {
   mathgl::Matrix4d viewportMatrix;
   mathgl::Matrix4d pixelUnrpojectionMatrix;
 
-  Viewport(std::string id, ViewMatrixOptions viewMatrixOptions, ProjectionMatrixOptions projectionMatrixOptions,
+  Viewport(const std::string& id, const ViewMatrixOptions& viewMatrixOptions,
+           const ProjectionMatrixOptions& projectionMatrixOptions,
            // Window width/height in pixels (for pixel projection)
            double x = 0, double y = 0, double width = 1, double height = 1);
 
