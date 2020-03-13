@@ -23,14 +23,14 @@
 using namespace std;
 using namespace mathgl;
 
-ViewMatrixOptions::ViewMatrixOptions() : viewMatrix(Matrix4d() /*identity*/), focalDistance(1) {}
+ViewMatrixOptions::ViewMatrixOptions() : viewMatrix{Matrix4d() /*identity*/}, focalDistance{1} {}
 
 ProjectionMatrixOptions::ProjectionMatrixOptions()
-    : orthographic(false), fovy(75), near(0.1), far(1000), focalDistance(1) {}
+    : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
 
 Viewport::Viewport(string id, ViewMatrixOptions viewMatrixOptions, ProjectionMatrixOptions projectionMatrixOptions,
-                   int x, int y, int width, int height)
-    : id(id), x(x), y(y), width(width), height(height) {}
+                   double x, double y, double width, double height)
+    : id{id}, x{x}, y{y}, width{width}, height{height} {}
 
 double Viewport::metersPerPixel() { return this->distanceScaleMetersPerUnit.z / this->scale; }
 
@@ -42,7 +42,7 @@ PROJECTION_MODE Viewport::projectionMode() {
 }
 
 bool Viewport::containsPixel(double x, double y, double width, double height) {
-  return x < this->x + this->width && this->x < x + width && y < this->y + this->height && this->y < y + height;
+  return (x < this->x + this->width) && (this->x < x + width) && (y < this->y + this->height) && (this->y < y + height);
 }
 
 mathgl::Vector3d Viewport::getCameraPosition() { return this->cameraPosition; }
@@ -53,7 +53,7 @@ mathgl::Vector3d Viewport::getCameraUp() { return this->cameraUp; }
 
 bool operator==(const Viewport& v1, const Viewport& v2) {
   return v1.width == v2.width && v1.height == v2.height && v1.scale == v2.scale &&
-         v1.porjectionMatrix == v2.porjectionMatrix && v1.viewMatrix == v2.viewMatrix;
+         v1.projectionMatrix == v2.projectionMatrix && v1.viewMatrix == v2.viewMatrix;
 }
 
 bool operator!=(const Viewport& v1, const Viewport& v2) { return !(v1 == v2); }

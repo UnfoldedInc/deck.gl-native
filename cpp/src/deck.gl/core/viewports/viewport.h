@@ -90,7 +90,7 @@ class Viewport {
   double projectionNear;
   double projectionFar;
 
-  mathgl::Matrix4d porjectionMatrix;
+  mathgl::Matrix4d projectionMatrix;
   mathgl::Matrix4d viewProjectionMatrix;
   mathgl::Matrix4d viewMatrixInverse;
   mathgl::Vector3d cameraPosition;
@@ -104,7 +104,7 @@ class Viewport {
 
   Viewport(std::string id, ViewMatrixOptions viewMatrixOptions, ProjectionMatrixOptions projectionMatrixOptions,
            // Window width/height in pixels (for pixel projection)
-           int x = 0, int y = 0, int width = 1, int height = 1);
+           double x = 0, double y = 0, double width = 1, double height = 1);
 
   double metersPerPixel();
   PROJECTION_MODE projectionMode();
