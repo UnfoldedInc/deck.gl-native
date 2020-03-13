@@ -22,24 +22,8 @@
 
 #include <gtest/gtest.h>
 
-Json::Value hello() {
-  // Json::StreamWriterBuilder builder;
-  // const std::unique_ptr<Json::StreamWriter>
-  // writer(builder.newStreamWriter());
+namespace {
 
-  Json::Value root;
-  root["hello"] = "world";
-  return root;
-}
+TEST(SuiteName1, TestName1) { EXPECT_EQ(42, 42); }
 
-Json::Value hello();
-
-TEST(SuiteName1, TestName1) {
-  Json::Value val = hello();
-  EXPECT_EQ(val["hello"], "world");
-}
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+}  // namespace

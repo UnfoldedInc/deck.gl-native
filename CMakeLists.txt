@@ -44,6 +44,7 @@ set(MATHGL_CORE_HEADER_FILES
 set(MATHGL_CORE_SOURCE_FILES
     )
 set(MATHGL_CORE_TEST_FILES
+    cpp/tests/math.gl/core-test.cpp
     )
 
 ## deck.gl/core
@@ -104,6 +105,7 @@ set(LIB_SOURCE_FILES
 set(TEST_SOURCE_FILES
     ${MATHGL_CORE_TEST_FILES}
     ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES} ${DECKGL_JSON_TEST_FILES}
+    cpp/tests/main.cpp
     )
 SET(TEST_HEADER_FILES
     )
@@ -153,6 +155,7 @@ endif()
 enable_testing()
 include(TestWrapValgrind)
 find_package(GTest CONFIG REQUIRED)
+include(GoogleTest)
 
 option(ENABLE_COVERAGE "Enable coverage instrumentation" ON)
 if(ENABLE_COVERAGE)
@@ -171,10 +174,17 @@ if(ENABLE_COVERAGE)
         )
 endif()
 
-# Add each source file as a test executable
-foreach(test_src ${TEST_SOURCE_FILES})
-    get_filename_component(test ${test_src} NAME_WE)
-    add_executable(${test} ${test_src})
-    target_link_libraries(${test} PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main deck.gl)
-    add_test(NAME ${test} COMMAND ${TEST_WRAPPER} "$<TARGET_FILE:${test}>")
-endforeach()
+# Add 'tests' executable
+add_executable(tests ${TEST_SOURCE_FILES})
+
+target_compile_options(tests PRIVATE ${DECK_COMPILE_FLAGS})
+if(BUILD_SHARED_LIBS)
+    set_target_properties(tests PROPERTIES SOVERSION 1)
+endif()
+
+target_link_libraries(tests PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib)
+target_link_libraries(tests PRIVATE GTest::gtest deck.gl)
+
+# Extract registered Google Tests from the executable and add them to ctest
+# https://cmake.org/cmake/help/v3.10/module/GoogleTest.html
+gtest_discover_tests(tests)

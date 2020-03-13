@@ -26,6 +26,8 @@
 
 using namespace deckgl;
 
+namespace {
+
 TEST(Layer, Props) {
   auto layerProps1 = std::unique_ptr<LayerProps>(new LayerProps());
   auto layerProps2 = std::unique_ptr<LayerProps>(new LayerProps());
@@ -40,7 +42,4 @@ TEST(Layer, Props) {
   EXPECT_FALSE(propTypes->count("radiusScale"));
 }
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+}  // namespace

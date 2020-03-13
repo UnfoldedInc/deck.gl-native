@@ -55,6 +55,5 @@ make
 
 ## Test
 
-```
-ctest
-```
+For Google Test formatted output, run `./tests`.
+For CTest formatted output, run `ctest`.
