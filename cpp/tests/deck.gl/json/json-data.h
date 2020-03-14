@@ -1,4 +1,4 @@
-static auto jsonData = R"JSON(
+static auto jsonDataFull = R"JSON(
 {
   "description": "Test",
   "initialViewState": {
@@ -84,6 +84,46 @@ static auto jsonData = R"JSON(
       "pointSize": 10,
       "coordinateSystem": "@@#COORDINATE_SYSTEM.METER_OFFSETS",
       "coordinateOrigin": [-122.4, 37.74]
+    }
+  ]
+}
+)JSON";
+
+static auto jsonDataSimple = R"JSON(
+{
+  "@@type": "Deck",
+  "description": "Test",
+  "layers": [
+    {
+      "@@type": "ScatterplotLayer",
+      "data": [
+          [
+            -122.45,
+            37.8
+          ]
+      ],
+      "getFillColor": [
+        255,
+        0,
+        0,
+        255
+      ],
+      "getRadius": 1000
+    },
+    {
+      "@@type": "LineLayer",
+      "data": [
+        {
+          "position1": [
+            -122.45,
+            37.8
+          ],
+          "position2": [
+            -122.45,
+            37.8
+          ]
+        }
+      ]
     }
   ]
 }

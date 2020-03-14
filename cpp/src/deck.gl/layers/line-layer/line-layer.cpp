@@ -6,23 +6,29 @@
 
 using namespace deckgl;
 
-const std::map<const std::string, const Prop*> propTypeMap = {
-    // {"widthUnits", new PropType<LineLayer, std::string>{
-    //                    [](const LineLayer::Props* props) { return props->widthUnits; },
-    //                    [](LineLayer::Props* props, bool value) { return props->widthUnits = value; }, true}},
-    {"widthScale", new PropType<LineLayer, float>{
-                       [](const LineLayer::Props* props) { return props->widthScale; },
-                       [](LineLayer::Props* props, float value) { return props->widthScale = value; }, 1.0}},
-    {"widthMinPixels", new PropType<LineLayer, float>{
-                           [](const LineLayer::Props* props) { return props->widthMinPixels; },
-                           [](LineLayer::Props* props, float value) { return props->widthMinPixels = value; }, 0.0}},
+const std::map<const std::string, const PropType*> propTypeMap = {
+    // {"widthUnits",
+    //  new PropTypeT<std::string>{
+    //      [](const LineLayer::Props* props) { return dynamic_cast<const LineLayer*>(props)->widthUnits; },
+    //      [](LineLayer::Props* props, bool value) { return dynamic_cast<LineLayer*>(props)->widthUnits = value; },
+    //      true}},
+    {"widthScale",
+     new PropTypeT<float>{
+         [](const Props* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthScale; },
+         [](Props* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthScale = value; }, 1.0}},
+    {"widthMinPixels",
+     new PropTypeT<float>{
+         [](const Props* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMinPixels; },
+         [](Props* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMinPixels = value; },
+         0.0}},
     {"widthMaxPixels",
-     new PropType<LineLayer, float>{[](const LineLayer::Props* props) { return props->widthMaxPixels; },
-                                    [](LineLayer::Props* props, float value) { return props->widthMaxPixels = value; },
-                                    std::numeric_limits<float>::max()}}};
+     new PropTypeT<float>{
+         [](const Props* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMaxPixels; },
+         [](Props* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMaxPixels = value; },
+         std::numeric_limits<float>::max()}}};
 
 auto LineLayer::Props::getPropTypes() const -> const PropTypes* {
-  static PropTypes propTypes{PropTypes::from<LineLayer>(propTypeMap)};
+  static PropTypes propTypes{PropTypes::from<LineLayer>("LineLayer", propTypeMap)};
   return &propTypes;
 }
 

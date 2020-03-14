@@ -4,6 +4,7 @@
 #define DECKGL_CORE_PROP_TYPES_H
 
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <string>
@@ -12,28 +13,24 @@ namespace deckgl {
 
 class Props;
 
-class Prop {
+class PropType {
  public:
-  virtual ~Prop() {}
-  virtual bool equals(const Props*, const Props*) const { return false; }
+  virtual ~PropType() {}
+  virtual bool equals(const Props*, const Props*) const = 0;
 };
 
-template <class ComponentT, class T>
-struct PropType : public Prop {
+template <class T>
+struct PropTypeT : public PropType {
  public:
-  std::function<auto(typename ComponentT::Props const*)->T> get;
-  std::function<void(typename ComponentT::Props*, T)> set;
+  std::function<auto(Props const*)->T> get;
+  std::function<void(Props*, T)> set;
   T defaultValue;
 
-  PropType<ComponentT, T>(const std::function<auto(typename ComponentT::Props const*)->T>& get_,
-                          const std::function<void(typename ComponentT::Props*, T)>& set_, T defaultValue_)
+  PropTypeT<T>(const std::function<auto(Props const*)->T>& get_, const std::function<void(Props*, T)>& set_,
+               const T& defaultValue_)
       : get{get_}, set{set_}, defaultValue{defaultValue_} {}
 
-  bool equals(const Props* props1, const Props* props2) const {
-    auto componentProps1 = dynamic_cast<const typename ComponentT::Props*>(props1);
-    auto componentProps2 = dynamic_cast<const typename ComponentT::Props*>(props2);
-    return this->get(componentProps1) == this->get(componentProps2);
-  }
+  bool equals(const Props* props1, const Props* props2) const { return this->get(props1) == this->get(props2); }
 };
 
 class PropTypes {
@@ -42,21 +39,25 @@ class PropTypes {
  public:
   // static methods
   template <typename ComponentT>
-  static auto from(const std::map<const std::string, const Prop*>& propTypeMap) -> deckgl::PropTypes {
+  static auto from(const std::string& className, const std::map<const std::string, const PropType*>& propTypeMap)
+      -> deckgl::PropTypes {
     typename ComponentT::super::Props parentProps;
-    return PropTypes{parentProps.getPropTypes(), propTypeMap};
+    return PropTypes{className, parentProps.getPropTypes(), propTypeMap};
   }
 
   // public members
-  // TODO - make private / iterable
-  std::map<const std::string, const Prop*> propTypeMap;
+  const std::string className;
 
   // methods
-  PropTypes(const PropTypes* parentProps, const std::map<const std::string, const Prop*>&);
+  PropTypes(const std::string& className, const PropTypes* parentProps,
+            const std::map<const std::string, const PropType*>&);
 
-  bool hasProperty(const std::string& key) const { return this->propTypeMap.count(key) == 1; }
-  // getProperty(const std::string &prop) const { return this->propTypeMap.count() == 1; }
-  // setProperty(const std::string &prop) const { return this->propTypeMap.count() == 1; }
+  bool hasProp(const std::string& key) const { return this->propTypeMap.count(key) == 1; }
+  auto getPropType(const std::string& key) const -> const PropType* { return this->propTypeMap.at(key); }
+
+  // protected:
+  // TODO - make private
+  std::map<const std::string, const PropType*> propTypeMap;
 };
 
 class Props {
@@ -64,10 +65,25 @@ class Props {
   Props() {}
   virtual ~Props() {}
 
-  virtual auto getPropTypes() const -> const PropTypes* {
-    return new PropTypes(nullptr, std::map<const std::string, const Prop*>{});
-  }
+  virtual auto getPropTypes() const -> const PropTypes*;
   auto compare(const Props* oldProps) -> bool;
+
+  template <class T>
+  void setProperty(const std::string& key, const T& value) {
+    std::cout << "setProperty: getPropTypes" << std::endl;
+    auto propTypes = this->getPropTypes();
+    if (!propTypes) {
+      throw std::logic_error("Props: No prop types found");
+    }
+    std::cout << "setProperty: getPropType" << std::endl;
+    if (auto propType = this->getPropTypes()->getPropType(key)) {
+      std::cout << "setProperty: dynamic_cast" << std::endl;
+      if (auto propTypeT = dynamic_cast<const PropTypeT<T>*>(propType)) {
+        std::cout << "setting prop" << std::endl;
+        propTypeT->set(this, value);
+      }
+    }
+  }
 
  private:
   std::unique_ptr<PropTypes> _propTypes;
