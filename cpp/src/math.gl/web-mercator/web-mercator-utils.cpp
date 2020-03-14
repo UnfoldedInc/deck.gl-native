@@ -20,9 +20,38 @@
 
 #include "./web-mercator-utils.h"
 
-using namespace mathgl;
+namespace mathgl {
 
 ViewMatrixOptions::ViewMatrixOptions() : viewMatrix{Matrix4d() /*identity*/}, focalDistance{1} {}
 
 ProjectionMatrixOptions::ProjectionMatrixOptions()
     : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
+
+auto zoomToScale(double zoom) -> double { return pow(2, zoom); }
+
+auto scaleToZoom(double scale) -> double { return log2(scale); }
+
+auto lngLatToWorld(Vector2d lngLat) -> Vector2d {
+  if (lngLat.y < -90 || lngLat.y > 90) {
+    throw std::logic_error("invalid latitude");
+  }
+
+  auto lambda2 = lngLat.x * DEGREES_TO_RADIANS;
+  auto phi2 = lngLat.y * DEGREES_TO_RADIANS;
+  auto x = (TILE_SIZE * (lambda2 + PI)) / (2 * PI);
+  auto y = (TILE_SIZE * (PI + log(tan(PI_4 + phi2 * 0.5)))) / (2 * PI);
+  return {x, y};
+}
+
+auto worldToLngLat(Vector2d xy) -> Vector2d {
+  auto lambda2 = (xy.x / TILE_SIZE) * (2 * PI) - PI;
+  auto phi2 = 2 * (atan(exp((xy.y / TILE_SIZE) * (2 * PI) - PI)) - PI_4);
+  return {lambda2 * RADIANS_TO_DEGREES, phi2 * RADIANS_TO_DEGREES};
+}
+
+auto getMeterZoom(double latitude) -> double {
+  auto latCosine = cos(latitude * DEGREES_TO_RADIANS);
+  return scaleToZoom(EARTH_CIRCUMFERENCE * latCosine) - 9;
+}
+
+}  // namespace mathgl
