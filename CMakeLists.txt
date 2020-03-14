@@ -60,9 +60,9 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/src/deck.gl/core/viewports/viewport.h
     )
 set(DECKGL_CORE_SOURCE_FILES
-   cpp/src/deck.gl/core/lib/layer.cpp
-   cpp/src/deck.gl/core/lib/layer-manager.cpp
-   cpp/src/deck.gl/core/lifecycle/prop-types.cpp
+    cpp/src/deck.gl/core/lib/layer.cpp
+    cpp/src/deck.gl/core/lib/layer-manager.cpp
+    cpp/src/deck.gl/core/lifecycle/prop-types.cpp
     cpp/src/deck.gl/core/viewports/viewport.cpp
     )
 set(DECKGL_CORE_TEST_FILES
@@ -89,12 +89,13 @@ set(DECKGL_LAYERS_TEST_FILES
 ## deck.gl/json
 set(DECKGL_JSON_HEADER_FILES
     cpp/src/deck.gl/json.h
+    cpp/src/deck.gl/json/json-configuration.h
     )
 set(DECKGL_JSON_SOURCE_FILES
-    cpp/src/deck.gl/json/json.cpp
+    cpp/src/deck.gl/json/json-configuration.cpp
     )
 set(DECKGL_JSON_TEST_FILES
-    cpp/tests/deck.gl/json/json-test.cpp
+    cpp/tests/deck.gl/json/json-configuration-test.cpp
     )
 
 # Define source file lists per type
