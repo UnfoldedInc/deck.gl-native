@@ -66,7 +66,7 @@ const std::map<const std::string, const PropType*> propTypeMap = {
 
 // TODO - this could be auto-injected?
 
-auto Props::getPropTypes() const -> const PropTypes* {
+auto ScatterplotLayer::Props::getPropTypes() const -> const PropTypes* {
   static PropTypes propTypes{PropTypes::from<ScatterplotLayer>("ScatterplotLayer", propTypeMap)};
   return &propTypes;
 }
