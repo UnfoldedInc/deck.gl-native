@@ -42,14 +42,3 @@ auto Props::compare(const Props* oldProps) -> bool {
 
   return true;
 }
-
-// void Props::setProperty(const std::string& key, double value) {
-//   auto propTypes = this->getPropTypes();
-//   if (!propTypes->hasProp(key)) {
-//     throw std::runtime_error("no such property " + key);
-//     // TODO - warn?
-//     // return;
-//   }
-//   // auto propType = propTypes->getPropType(key);
-//   // propType->set(this, value);
-// }

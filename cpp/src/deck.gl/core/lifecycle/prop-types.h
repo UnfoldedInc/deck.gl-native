@@ -65,9 +65,13 @@ class Props {
   Props() {}
   virtual ~Props() {}
 
+  // Returns the shared static PropTypes for this Prop object.
   virtual auto getPropTypes() const -> const PropTypes*;
+
+  // Compares the contents of this prop object against another prop object
   auto compare(const Props* oldProps) -> bool;
 
+  // Sets one property on this prop object
   template <class T>
   void setProperty(const std::string& key, const T& value) {
     std::cout << "setProperty: getPropTypes" << std::endl;
