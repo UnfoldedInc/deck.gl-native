@@ -22,8 +22,6 @@
 #define DECKGL_CORE_H
 
 // #include "./lib/constants.h" // COORDINATE_SYSTEM
-#include "./core/lifecycle/component.h" // Component
-
 #include "./core/lib/layer.h" // Layer, Layer::Props, Layer::State
 
 #include "./core/viewports/viewport.h"

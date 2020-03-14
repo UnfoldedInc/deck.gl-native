@@ -50,6 +50,26 @@ set(MATHGL_CORE_TEST_FILES
     cpp/tests/math.gl/web-mercator/web-mercator-utils-test.cpp
     )
 
+## deck.gl/json
+set(DECKGL_JSON_HEADER_FILES
+    cpp/src/deck.gl/json.h
+    cpp/src/deck.gl/json/json-types.h
+    cpp/src/deck.gl/json/json-types-mathgl.h
+    cpp/src/deck.gl/json/converter/json-converter.h
+    cpp/src/deck.gl/json/lifecycle/component.h
+    cpp/src/deck.gl/json/lifecycle/prop-types.h
+)
+
+set(DECKGL_JSON_SOURCE_FILES
+    cpp/src/deck.gl/json/json-types.cpp
+    cpp/src/deck.gl/json/converter/json-converter.cpp
+    cpp/src/deck.gl/json/lifecycle/prop-types.cpp
+)
+set(DECKGL_JSON_TEST_FILES
+    cpp/tests/deck.gl/json/json-converter-test.cpp
+    cpp/tests/deck.gl/json/json-types-test.cpp
+)
+
 ## deck.gl/core
 set(DECKGL_CORE_HEADER_FILES
     cpp/src/deck.gl/core/lib/constants.h
@@ -58,14 +78,11 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/src/deck.gl/core/lib/layer-manager.h
     cpp/src/deck.gl/core/lib/layer-state.h
     cpp/src/deck.gl/core/lib/view-manager.h
-    cpp/src/deck.gl/core/lifecycle/component.h
-    cpp/src/deck.gl/core/lifecycle/prop-types.h
     cpp/src/deck.gl/core/viewports/viewport.h
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/src/deck.gl/core/lib/layer.cpp
     cpp/src/deck.gl/core/lib/layer-manager.cpp
-    cpp/src/deck.gl/core/lifecycle/prop-types.cpp
     cpp/src/deck.gl/core/viewports/viewport.cpp
     )
 set(DECKGL_CORE_TEST_FILES
@@ -87,18 +104,6 @@ set(DECKGL_LAYERS_SOURCE_FILES
 set(DECKGL_LAYERS_TEST_FILES
     cpp/tests/deck.gl/layers/line-layer-test.cpp
     cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
-    )
-
-## deck.gl/json
-set(DECKGL_JSON_HEADER_FILES
-    cpp/src/deck.gl/json.h
-    cpp/src/deck.gl/json/json-converter.h
-    )
-set(DECKGL_JSON_SOURCE_FILES
-    cpp/src/deck.gl/json/json-converter.cpp
-    )
-set(DECKGL_JSON_TEST_FILES
-    cpp/tests/deck.gl/json/json-converter-test.cpp
     )
 
 # Define source file lists per type

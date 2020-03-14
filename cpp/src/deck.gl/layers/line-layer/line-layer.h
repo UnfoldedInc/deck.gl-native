@@ -65,7 +65,7 @@ class LineLayer::Props : public Layer::Props {
 
   Props() : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
 
-  auto getPropTypes() const -> const PropTypes * override;
+  auto getPropertyTypes() const -> const PropertyTypes * override;
 };
 
 class LineLayer::State : public Layer::State {

@@ -41,10 +41,10 @@ TEST(LineLayer, PropComparison) {
 TEST(LineLayer, PropAccess) {
   auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
 
-  auto propTypes = layerProps1->getPropTypes();
-  EXPECT_TRUE(propTypes->hasProp("opacity"));
-  EXPECT_TRUE(propTypes->hasProp("widthScale"));
-  EXPECT_FALSE(propTypes->hasProp("radiusScale"));
+  auto propertyTypes = layerProps1->getPropertyTypes();
+  EXPECT_TRUE(propertyTypes->hasProp("opacity"));
+  EXPECT_TRUE(propertyTypes->hasProp("widthScale"));
+  EXPECT_FALSE(propertyTypes->hasProp("radiusScale"));
 }
 
 }  // namespace
