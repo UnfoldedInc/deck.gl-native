@@ -3,5 +3,5 @@
 cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..
 make
-ctest
+ctest # --verbose
 # make test #  same output as `ctest`?

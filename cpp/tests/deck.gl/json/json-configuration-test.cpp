@@ -18,12 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "deck.gl/json.h"
-
 #include <gtest/gtest.h>
+#include <stdio.h>
+
+#include <string>
+
+#include "./json-data.h"
+#include "deck.gl/json.h"
+#include "deck.gl/layers.h"
+
+using namespace deckgl;
 
 namespace {
 
-TEST(DeckJsonTests, DummyTest) { EXPECT_EQ(42, 42); }
+TEST(DeckJsonTests, JSONParse) {
+  auto jsonConfiguration = std::unique_ptr<JSONConfiguration>(new JSONConfiguration());
+  EXPECT_NO_THROW({ Json::Value rootValue = jsonConfiguration->parseJson(jsonData); });
+}
+
+TEST(DeckJsonTests, JSONConfiguration) {
+  auto jsonConfiguration = std::unique_ptr<JSONConfiguration>(new JSONConfiguration());
+  //  jsonConfiguration->classes.insert("LineLayer", LineLayer);
+
+  Json::Value rootValue;
+  EXPECT_NO_THROW({ rootValue = jsonConfiguration->parseJson(jsonData); });
+  auto result = jsonConfiguration->convertJson(rootValue);
+
+  std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
+}
 
 }  // namespace
