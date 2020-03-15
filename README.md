@@ -1,9 +1,38 @@
-# deck-native-renderer
+# deck.gl-native
 
-This is a C++ implementation of deck.gl 
+> Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, `deck.gl-native` is highly unlikely to meet the requirements of most applications. Asking for additional features without contributing implementation or providing funding is not helpful.
+
+This is an open-source C++ implementation of deck.gl 
+
+## Scope
+
+- Render to texture (not screen)
+- Only `ScatterplotLayer`, `LineLayer`, `SolidPolygonLayer`
+- Apache Arrow tables only.
+- loader support will be limited to CSV and line-delimited JSON. 
 
 
-## Dev env
+## Not Planned
+
+Many features normally considered fundamental by deck.gl applications are not even being addressed at this stage
+
+- No Render to screen
+- No Transitions
+- No Base map support (e.g. Mapbox integration)
+- No Interactivity (event handling, picking etc)
+- No Extensive layer catalog
+- No etc etc etc
+
+## Supporting this Effort
+
+The ongoing port is led by Unfolded, Inc through funding provided by a customer and external contributions. At this stage, this is not an independenly resourced project set up to address feature requests. 
+
+We would love to see this project grow into a living part of the main deck.gl project, potentially transferring this to a foundation/open governance setup. 
+
+However, at this stage additional work will happen only through direct engineering contributions or by providing additional funding. 
+
+
+## Setting up Development Environment
 
 ### gcc
 
@@ -44,7 +73,7 @@ Notes:
 
 Notes: See `vcpkg` install above.
 
-## Build
+## Building
 
 ```
 mkdir build
@@ -55,7 +84,7 @@ make -j
 
 To use different compilers, set the build options `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER` on the `cmake` command line.
 
-## Test
+## Testing
 
 For Google Test formatted output, run `./tests`.
 For CTest formatted output, run `ctest`.
