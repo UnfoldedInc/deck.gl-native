@@ -56,4 +56,86 @@ auto getMeterZoom(double latitude) -> double {
   return scaleToZoom(EARTH_CIRCUMFERENCE * latCosine) - 9;
 }
 
+auto getDistanceScales(Vector2<double> latLng, bool highPrecision) -> DistanceScales {
+  auto worldSize = TILE_SIZE;
+  auto latCosine = cos(latLng.x * DEGREES_TO_RADIANS);
+
+  /**
+   * Number of pixels occupied by one degree longitude around current lat/lon:
+     unitsPerDegreeX = d(lngLatToWorld([lng, lat])[0])/d(lng)
+       = scale * TILE_SIZE * DEGREES_TO_RADIANS / (2 * PI)
+     unitsPerDegreeY = d(lngLatToWorld([lng, lat])[1])/d(lat)
+       = -scale * TILE_SIZE * DEGREES_TO_RADIANS / cos(lat * DEGREES_TO_RADIANS)  / (2 * PI)
+   */
+  auto unitsPerDegreeX = worldSize / 360.0;
+  auto unitsPerDegreeY = unitsPerDegreeX / latCosine;
+
+  /**
+   * Number of pixels occupied by one meter around current lat/lon:
+   */
+  auto altUnitsPerMeter = worldSize / EARTH_CIRCUMFERENCE / latCosine;
+  auto inverseAltUnitsPerMeter = 1.0 / altUnitsPerMeter;
+
+  /**
+   * LngLat: longitude -> east and latitude -> north (bottom left)
+   * UTM meter offset: x -> east and y -> north (bottom left)
+   * World space: x -> east and y -> south (top left)
+   *
+   * Y needs to be flipped when converting delta degree/meter to delta pixels
+   */
+  DistanceScales result;
+  result.unitsPerMeter = Vector3(altUnitsPerMeter, altUnitsPerMeter, altUnitsPerMeter);
+  result.metersPerUnit = Vector3(inverseAltUnitsPerMeter, inverseAltUnitsPerMeter, inverseAltUnitsPerMeter);
+
+  result.unitsPerDegree = Vector3(unitsPerDegreeX, unitsPerDegreeY, altUnitsPerMeter);
+  result.degreesPerUnit = Vector3(1.0 / unitsPerDegreeX, 1.0 / unitsPerDegreeY, 1.0 / altUnitsPerMeter);
+
+  /**
+   * Taylor series 2nd order for 1/latCosine
+     f'(a) * (x - a)
+       = d(1/cos(lat * DEGREES_TO_RADIANS))/d(lat) * dLat
+       = DEGREES_TO_RADIANS * tan(lat * DEGREES_TO_RADIANS) / cos(lat * DEGREES_TO_RADIANS) * dLat
+   */
+  if (highPrecision) {
+    auto latCosine2 = (DEGREES_TO_RADIANS * tan(latLng.x * DEGREES_TO_RADIANS)) / latCosine;
+    auto unitsPerDegreeY2 = (unitsPerDegreeX * latCosine2) / 2.0;
+    auto altUnitsPerDegree2 = (worldSize / EARTH_CIRCUMFERENCE) * latCosine2;
+    auto altUnitsPerMeter2 = (altUnitsPerDegree2 / unitsPerDegreeY) * altUnitsPerMeter;
+
+    result.unitsPerDegree2 = Vector3(0.0, unitsPerDegreeY2, altUnitsPerDegree2);
+    result.unitsPerMeter2 = Vector3(altUnitsPerMeter2, 0.0, altUnitsPerMeter2);
+  }
+
+  // Main results, used for converting meters to latlng deltas and scaling offsets
+  return result;
+}
+
+/**
+ * Offset a lng/lat position by meterOffset (northing, easting)
+ */
+auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double> {
+  auto distanceScales = getDistanceScales(lngLatZ.ToVector2(), true);
+
+  auto worldspace = lngLatToWorld(lngLatZ.ToVector2());
+  worldspace.x += xyz.x * (distanceScales.unitsPerMeter.x + distanceScales.unitsPerMeter2.x * xyz.x);
+  worldspace.y += xyz.y * (distanceScales.unitsPerMeter.y + distanceScales.unitsPerMeter2.y * xyz.y);
+
+  auto newLngLat = worldToLngLat(worldspace);
+  auto newZ = lngLatZ.z + xyz.z;
+
+  return Vector3(newLngLat.x, newLngLat.y, newZ);
+}
+
+auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<double> {
+  auto distanceScales = getDistanceScales(lngLat, true);
+
+  auto worldspace = lngLatToWorld(lngLat);
+  worldspace.x += xy.x * (distanceScales.unitsPerMeter.x + distanceScales.unitsPerMeter2.x * xy.x);
+  worldspace.y += xy.y * (distanceScales.unitsPerMeter.y + distanceScales.unitsPerMeter2.y * xy.y);
+
+  auto newLngLat = worldToLngLat(worldspace);
+
+  return newLngLat;
+}
+
 }  // namespace mathgl

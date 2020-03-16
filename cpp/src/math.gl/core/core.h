@@ -125,8 +125,9 @@ class Vector3 {
     return *this;
   }
 
-  coord Length() const;
-  coord Length2() const;
+  auto Length() const -> coord;
+  auto Length2() const -> coord;
+  auto ToVector2() const -> Vector2<coord>;
 
   void Normalize();
 
@@ -415,6 +416,16 @@ auto operator<<(std::ostream &os, const Vector2<coord> &v) -> std::ostream & {
 template <typename coord>
 auto Vector3<coord>::Length() const -> coord {
   return static_cast<coord>(sqrt(x * x + y * y + z * z));
+}
+
+template <typename coord>
+auto Vector3<coord>::Length2() const -> coord {
+  return static_cast<coord>(x * x + y * y + z * z);
+}
+
+template <typename coord>
+auto Vector3<coord>::ToVector2() const -> Vector2<coord> {
+  return Vector2<coord>(this->x, this->y);
 }
 
 template <typename coord>

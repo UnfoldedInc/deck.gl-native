@@ -41,6 +41,13 @@ namespace mathgl {
 struct DistanceScales {
   Vector3<double> metersPerUnit;
   Vector3<double> unitsPerMeter;
+
+  Vector3<double> unitsPerDegree;
+  Vector3<double> degreesPerUnit;
+
+  // High precision values (optional)
+  Vector3<double> unitsPerDegree2;
+  Vector3<double> unitsPerMeter2;
 };
 
 struct ViewMatrixOptions {
@@ -119,8 +126,8 @@ auto getDistanceScales(Vector2<double> latLng, bool highPrecision = false) -> Di
 /**
  * Offset a lng/lat position by meterOffset (northing, easting)
  */
-auto addMetersToLngLat(Vector3<double> lngLatZ) -> Vector3<double>;
-auto addMetersToLngLat(Vector2<double> lngLat) -> Vector2<double>;
+auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double>;
+auto addMetersToLngLat(Vector2<double> lngLat, Vector3<double> xy) -> Vector2<double>;
 
 // ATTRIBUTION:
 // view and projection matrix creation is intentionally kept compatible with
