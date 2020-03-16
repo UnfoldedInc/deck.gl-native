@@ -27,9 +27,8 @@
 #include <map>
 #include <string>
 
-#include "../lifecycle/component.h"
-#include "../lifecycle/prop-types.h"
 #include "constants.h"
+#include "deck.gl/json.h"  // {Component, PropTypes}
 #include "math.gl/core.h"
 
 namespace deckgl {
@@ -303,6 +302,7 @@ class Layer::Props : public deckgl::Props {
         pickable{false},
         opacity{1.0},
         coordinateSystem{COORDINATE_SYSTEM::DEFAULT},
+        wrapLongitude{false},
         positionFormat{"XYZ"},
         colorFormat{"RGBA"},
         autoHighlight{false},
@@ -355,7 +355,7 @@ class Layer::Props : public deckgl::Props {
   // std::function<void()> onDragEnd;
 
   // implement Component::Props interface
-  auto getPropTypes() const -> const PropTypes* override;
+  auto getPropertyTypes() const -> const PropertyTypes* override;
 };
 
 class Layer::State {

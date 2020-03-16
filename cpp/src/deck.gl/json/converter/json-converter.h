@@ -25,14 +25,14 @@
 #include <map>
 #include <memory>  // {std::shared_ptr}
 
-#include "deck.gl/core.h"  // {Component} // TODO - this is a "circular" dependency
-#include "json/json.h"     // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
+#include "../lifecycle/component.h"  // {Component}
+#include "json/json.h"               // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
 
 namespace deckgl {
 
 class JSONConverter {
  public:
-  using JsonValueToComponentConverter = std::function<auto(const Json::Value &)->std::shared_ptr<deckgl::Props>>;
+  using JsonValueToComponentConverter = std::function<auto(const Json::Value &)->std::shared_ptr<Props>>;
 
   // public members
   std::map<std::string, JsonValueToComponentConverter> classes;
@@ -45,14 +45,14 @@ class JSONConverter {
   auto parseJson(const std::string &rawJson) -> Json::Value;
 
   // Convert parsed JSON into registered classes
-  auto convertJson(const Json::Value &) -> std::shared_ptr<deckgl::Props>;
+  auto convertJson(const Json::Value &) -> std::shared_ptr<Props>;
 
  private:
-  using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<deckgl::Props>;
+  using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<Props>;
 
   auto _traverseJson(const Json::Value &, std::function<Visitor>, const std::string &key = "", int level = 0)
-      -> std::shared_ptr<deckgl::Props>;
-  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) -> std::shared_ptr<deckgl::Props>;
+      -> std::shared_ptr<Props>;
+  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) -> std::shared_ptr<Props>;
 };
 
 }  // namespace deckgl

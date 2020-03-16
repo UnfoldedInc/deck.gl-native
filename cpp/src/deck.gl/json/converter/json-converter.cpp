@@ -1,18 +1,11 @@
 #include "./json-converter.h"
 
-#include <arrow/api.h>
-#include <arrow/json/api.h>
-
 #include <iostream>
 #include <memory>
 
 using namespace deckgl;
 
 auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
-  // Json::Reader reader;
-  // bool parsingSuccessful = reader.parse(jsonData, root);  // parse process
-  // std::cout << "Failed to parse JSON" << reader.getFormattedErrorMessages();
-
   Json::CharReaderBuilder builder;
   const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
@@ -20,7 +13,7 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
   JSONCPP_STRING err;
   bool parsingSuccessful = reader->parse(rawJson.c_str(), rawJson.c_str() + rawJson.length(), &rootValue, &err);
   if (!parsingSuccessful) {
-    throw new std::runtime_error("JSON parsing failed");
+    throw std::runtime_error("JSON parsing failed: " + err);
   }
   return rootValue;
 }
@@ -57,17 +50,11 @@ auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visito
         throw std::runtime_error("JSON contains object with non-string type at " + key);
       }
       return this->_convertClassProps(value, visitor, level);
-      break;
-    //   for (auto iter : value) {
-    //     const wstring &k = iter.first;
-    //     const Json::Calue &val = iter.second;
-    //     traverseJson(val, visitor, k, level + 1);
-    //   }
-    //   break;
     case Json::ValueType::arrayValue:
       for (auto it : value) {
         this->_traverseJson(it, visitor, key, level + 1);
       }
+      // TODO - return std::list
       break;
     case Json::ValueType::nullValue:
       break;
@@ -104,8 +91,6 @@ void setPropToJsonValue(std::shared_ptr<Component::Props> props, const std::stri
 auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor> visitor, int level)
     -> std::shared_ptr<Props> {
   auto className = object["@@type"].asString();
-
-  // std::cout << "Converting class \"" << className << "\"" << std::endl;
 
   auto classConverter = this->classes[className];
   if (!classConverter) {

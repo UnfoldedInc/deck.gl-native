@@ -82,7 +82,7 @@ class ScatterplotLayer::Props : public Layer::Props {
         radiusMinPixels{1},
         radiusMaxPixels{0} {}
 
-  auto getPropTypes() const -> const PropTypes * override;
+  auto getPropertyTypes() const -> const PropertyTypes * override;
 };
 
 class ScatterplotLayer::State : public Layer::State {};

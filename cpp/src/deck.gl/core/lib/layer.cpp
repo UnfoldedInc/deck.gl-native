@@ -6,66 +6,57 @@ using namespace deckgl;
 // TODO - auto generate from language-independent prop definition schema
 // TODO - just use member pointer?
 
-static const std::map<const std::string, const PropType*> propTypeMap = {
-    {"visible",
-     new PropTypeT<bool>{[](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
-                         [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; },
-                         true}},
-    {"pickable",
-     new PropTypeT<bool>{[](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->pickable; },
-                         [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->pickable = value; },
-                         false}},
-    {"opacity",
-     new PropTypeT<float>{[](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->opacity; },
-                          [](Props* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; },
-                          1.0}},
-    {"coordinateSystem",
-     new PropTypeT<COORDINATE_SYSTEM>{
-         [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateSystem; },
-         [](Props* props, COORDINATE_SYSTEM value) {
-           return dynamic_cast<Layer::Props*>(props)->coordinateSystem = value;
-         },
-         COORDINATE_SYSTEM::DEFAULT}},
-    {"coordinateOrigin",
-     new PropTypeT<Vector3<double>>{
-         [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateOrigin; },
-         [](Props* props, Vector3<double> value) {
-           return dynamic_cast<Layer::Props*>(props)->coordinateOrigin = value;
-         },
-         Vector3<double>()}},
-    {"modelMatrix",
-     new PropTypeT<Matrix4<double>>{
-         [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->modelMatrix; },
-         [](Props* props, Matrix4<double> value) { return dynamic_cast<Layer::Props*>(props)->modelMatrix = value; },
-         Matrix4<double>()}},
-    {"wrapLongitude",
-     new PropTypeT<bool>{
-         [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->wrapLongitude; },
-         [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; }, false}}};
+static const std::vector<const PropertyType*> propTypeDefs = {
+    new PropertyTypeT<bool>{
+        "visible", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
+        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true},
+    new PropertyTypeT<bool>{
+        "pickable", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->pickable; },
+        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->pickable = value; }, false},
+    new PropertyTypeT<float>{
+        "opacity", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->opacity; },
+        [](Props* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; }, 1.0},
+    new PropertyTypeT<COORDINATE_SYSTEM>{
+        "coordinateSystem",
+        [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateSystem; },
+        [](Props* props, COORDINATE_SYSTEM value) {
+          return dynamic_cast<Layer::Props*>(props)->coordinateSystem = value;
+        },
+        COORDINATE_SYSTEM::DEFAULT},
+    new PropertyTypeT<Vector3<double>>{
+        "coordinateOrigin",
+        [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateOrigin; },
+        [](Props* props, Vector3<double> value) {
+          return dynamic_cast<Layer::Props*>(props)->coordinateOrigin = value;
+        },
+        Vector3<double>()},
+    new PropertyTypeT<Matrix4<double>>{
+        "modelMatrix", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->modelMatrix; },
+        [](Props* props, Matrix4<double> value) { return dynamic_cast<Layer::Props*>(props)->modelMatrix = value; },
+        Matrix4<double>()},
+    new PropertyTypeT<bool>{
+        "wrapLongitude", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->wrapLongitude; },
+        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; }, false}};
 
-auto Layer::Props::getPropTypes() const -> const PropTypes* {
-  static PropTypes propTypes{PropTypes::from<Layer>("Layer", propTypeMap)};
+auto Layer::Props::getPropertyTypes() const -> const PropertyTypes* {
+  static PropertyTypes propTypes{PropertyTypes::from<Layer>("Layer", propTypeDefs)};
   return &propTypes;
 }
 
 /*
-class LayerPropTypes {
+class LayerPropertyTypes {
   // data: Special handling for null, see below
   // data: {type: 'data', value: EMPTY_ARRAY, async: true},
   // dataComparator: null,
-  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare:
-false, optional: true},
-  // dataTransform: {type: 'function', value: null, compare: false, optional:
-true},
-  // onDataLoad: {type: 'function', value: null, compare: false, optional:
-true},
+  // _dataDiff: {type: 'function', value: data => data && data.__diff, compare: false, optional: true},
+  // dataTransform: {type: 'function', value: null, compare: false, optional: true},
+  // onDataLoad: {type: 'function', value: null, compare: false, optional: true},
   // fetch: {
   //   type: 'function',
   //   value: (url, {layer}) => load(url, layer.getLoadOptions()),
   //   compare: false
   // },
-  // updateTriggers: {}, // Update triggers: a core change detection mechanism
-in deck.gl
+  // updateTriggers: {}, // Update triggers: a core change detection mechanism in deck.gl
 
   opacity: {type: 'number', min: 0, max: 1, value: 1},
 
