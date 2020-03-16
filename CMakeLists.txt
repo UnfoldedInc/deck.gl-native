@@ -101,18 +101,29 @@ set(DECKGL_JSON_TEST_FILES
     cpp/tests/deck.gl/json/json-converter-test.cpp
     )
 
+## deck.gl/csv
+set(DECKGL_CSV_HEADER_FILES
+    cpp/src/deck.gl/csv/csv-converter.h
+    )
+set(DECKGL_CSV_SOURCE_FILES
+    cpp/src/deck.gl/csv/csv-converter.cc
+    )
+set(DECKGL_CSV_TEST_FILES
+    cpp/tests/deck.gl/csv/csv-converter-test.cc
+    )
+
 # Define source file lists per type
 set(LIB_HEADER_FILES
     ${MATHGL_CORE_HEADER_FILES}
-    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES} ${DECKGL_JSON_HEADER_FILES}
+    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES} ${DECKGL_JSON_HEADER_FILES} ${DECKGL_CSV_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
     ${MATHGL_CORE_SOURCE_FILES}
-    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES} ${DECKGL_JSON_SOURCE_FILES}
+    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES} ${DECKGL_JSON_SOURCE_FILES} ${DECKGL_CSV_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
     ${MATHGL_CORE_TEST_FILES}
-    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES} ${DECKGL_JSON_TEST_FILES}
+    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES} ${DECKGL_JSON_TEST_FILES} ${DECKGL_CSV_TEST_FILES}
     cpp/tests/main.cpp
     )
 SET(TEST_HEADER_FILES
@@ -124,11 +135,16 @@ set(ALL_SOURCE_FILES
 # Dependencies
 find_package(jsoncpp CONFIG REQUIRED)
 
+# TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
+include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
+link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
+find_package(arrow CONFIG REQUIRED)
+
 # Build the actual library file
 add_library(deck.gl ${LIB_SOURCE_FILES})
 
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib)
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib arrow)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)
@@ -186,12 +202,7 @@ endif()
 add_executable(tests ${TEST_SOURCE_FILES})
 
 target_compile_options(tests PRIVATE ${DECK_COMPILE_FLAGS})
-if(BUILD_SHARED_LIBS)
-    set_target_properties(tests PROPERTIES SOVERSION 1)
-endif()
-
-target_link_libraries(tests PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib)
-target_link_libraries(tests PRIVATE GTest::gtest deck.gl)
+target_link_libraries(tests PRIVATE ${DECK_LINK_FLAGS} GTest::gtest deck.gl)
 
 # Extract registered Google Tests from the executable and add them to ctest
 # https://cmake.org/cmake/help/v3.10/module/GoogleTest.html

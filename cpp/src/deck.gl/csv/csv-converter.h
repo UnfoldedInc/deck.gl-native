@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Unfolded Inc
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,33 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
-#include <stdio.h>
+#ifndef DECKGL_CSV_CSV_CONVERTER_H
+#define DECKGL_CSV_CSV_CONVERTER_H
 
-#include <string>
+#include <arrow/io/interfaces.h>
+#include <arrow/table.h>
 
-#include "./json-data.h"
-#include "deck.gl/json.h"
-#include "deck.gl/layers.h"
+#include <memory>
 
-using namespace deckgl;
+namespace deckgl {
 
-namespace {
+class CSVConverter {
+ public:
+  CSVConverter() {}
 
-TEST(DeckJsonTests, JSONParse) {
-  auto jsonConfiguration = std::unique_ptr<JSONConfiguration>(new JSONConfiguration());
-  EXPECT_NO_THROW({ Json::Value rootValue = jsonConfiguration->parseJson(jsonData); });
-}
+  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
+};
 
-TEST(DeckJsonTests, JSONConfiguration) {
-  auto jsonConfiguration = std::unique_ptr<JSONConfiguration>(new JSONConfiguration());
-  //  jsonConfiguration->classes.insert("LineLayer", LineLayer);
+}  // namespace deckgl
 
-  Json::Value rootValue;
-  EXPECT_NO_THROW({ rootValue = jsonConfiguration->parseJson(jsonData); });
-  auto result = jsonConfiguration->convertJson(rootValue);
-
-  std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
-}
-
-}  // namespace
+#endif  // DECKGL_JSON_JSON_CONVERTER_H

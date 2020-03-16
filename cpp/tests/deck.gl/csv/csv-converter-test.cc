@@ -18,11 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "deck.gl/csv/csv-converter.h"
+
+#include <arrow/array.h>
+#include <arrow/io/memory.h>
 #include <gtest/gtest.h>
 
-#include "math.gl/core.h"
+#include <iostream>
+#include <string>
+
+#include "csv-data.h"
+
+using namespace deckgl;
 
 namespace {
 
-// TODO
+/**
+ * The fixture for testing class CSVConvertet.
+ */
+class CSVConverterTest : public ::testing::Test {
+ protected:
+  CSVConverterTest() { csvConverter = std::unique_ptr<CSVConverter>(new CSVConverter()); }
+
+  std::unique_ptr<CSVConverter> csvConverter;
+};
+
+TEST_F(CSVConverterTest, ArrowTable) {
+  auto input = std::shared_ptr<arrow::io::BufferReader>(new arrow::io::BufferReader(csvDataStates));
+
+  std::shared_ptr<arrow::Table> table;
+  ASSERT_NO_THROW({ table = csvConverter->loadTable(input); });
+
+  EXPECT_EQ(table->num_rows(), 110);
+  EXPECT_EQ(table->num_columns(), 3);
+
+  auto aliases = std::static_pointer_cast<arrow::StringArray>(table->GetColumnByName("alias")->chunk(0));
+  EXPECT_EQ(aliases->GetString(0), "AK");
 }
+
+}  // namespace

@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <arrow/array.h>
+#include <arrow/io/memory.h>
 #include <gtest/gtest.h>
 
 #include <iostream>
@@ -32,16 +34,11 @@ using namespace deckgl;
 namespace {
 
 /**
- * The fixture for testing class Foo.
+ * The fixture for testing class JSONConverter.
  */
 class JSONConverterTest : public ::testing::Test {
  protected:
-  // You can remove any or all of the following functions if their bodies would
-  // be empty.
-  std::unique_ptr<JSONConverter> jsonConverter;
-
   JSONConverterTest() {
-    // You can do set-up work for each test here.
     jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
 
     jsonConverter->classes["Deck"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
@@ -53,25 +50,7 @@ class JSONConverterTest : public ::testing::Test {
     };
   }
 
-  ~JSONConverterTest() override {
-    // You can do clean-up work that doesn't throw exceptions here.
-  }
-
-  // If the constructor and destructor are not enough for setting up
-  // and cleaning up each test, you can define the following methods:
-
-  void SetUp() override {
-    // Code here will be called immediately after the constructor (right
-    // before each test).
-  }
-
-  void TearDown() override {
-    // Code here will be called immediately after each test (right
-    // before the destructor).
-  }
-
-  // Class members declared here can be used by all tests in the test suite
-  // for Foo.
+  std::unique_ptr<JSONConverter> jsonConverter;
 };
 
 TEST_F(JSONConverterTest, JSONParse) {
@@ -92,6 +71,19 @@ TEST_F(JSONConverterTest, JSONConverter) {
   auto result = jsonConverter->convertJson(rootValue);
 
   std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
+}
+
+TEST_F(JSONConverterTest, ArrowTable) {
+  auto input = std::shared_ptr<arrow::io::BufferReader>(new arrow::io::BufferReader(ndjsonDataSimple));
+
+  std::shared_ptr<arrow::Table> table;
+  ASSERT_NO_THROW({ table = jsonConverter->loadTable(input); });
+
+  EXPECT_EQ(table->num_rows(), 1);
+  EXPECT_EQ(table->num_columns(), 3);
+
+  auto descriptions = std::static_pointer_cast<arrow::StringArray>(table->GetColumnByName("description")->chunk(0));
+  EXPECT_EQ(descriptions->GetString(0), "Test");
 }
 
 }  // namespace
