@@ -22,6 +22,7 @@
 #define MATHGL_WEB_MERCATOR_H
 
 #include <cmath>
+
 #include "math.gl/core.h"
 
 namespace mathgl {
