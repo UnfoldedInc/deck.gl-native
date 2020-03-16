@@ -23,7 +23,7 @@
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 
-using namespace deckgl;
+using namespace loadersgl;
 
 auto CSVConverter::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();

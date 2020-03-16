@@ -18,16 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CSV_CSV_CONVERTER_H
-#define DECKGL_CSV_CSV_CONVERTER_H
+#ifndef LOADERSGL_CSV_CSV_CONVERTER_H
+#define LOADERSGL_CSV_CSV_CONVERTER_H
 
 #include <arrow/io/interfaces.h>
 #include <arrow/table.h>
 
 #include <memory>
 
-namespace deckgl {
+namespace loadersgl {
 
+// TODO: Rename to CSVLoader
 class CSVConverter {
  public:
   CSVConverter() {}
@@ -35,6 +36,6 @@ class CSVConverter {
   auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
 };
 
-}  // namespace deckgl
+}  // namespace loadersgl
 
-#endif  // DECKGL_JSON_JSON_CONVERTER_H
+#endif  // LOADERSGL_JSON_JSON_CONVERTER_H

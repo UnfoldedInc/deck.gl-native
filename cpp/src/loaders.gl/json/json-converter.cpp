@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 
+using namespace loadersgl;
 using namespace deckgl;
 
 auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {

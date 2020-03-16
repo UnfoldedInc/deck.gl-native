@@ -26,9 +26,10 @@
 #include <string>
 
 #include "./json-data.h"
-#include "deck.gl/json.h"
 #include "deck.gl/layers.h"
+#include "loaders.gl/json.h"
 
+using namespace loadersgl;
 using namespace deckgl;
 
 namespace {

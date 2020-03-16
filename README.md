@@ -71,6 +71,12 @@ Notes:
 ../vcpkg install gtest
 ```
 
+### Arrow
+
+- [Arrow](https://arrow.apache.org/install/)
+
+You need to install `libarrow-dev` on Linux.
+
 Notes: See `vcpkg` install above.
 
 ## Building

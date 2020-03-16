@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "deck.gl/csv/csv-converter.h"
+#include "loaders.gl/csv/csv-converter.h"
 
 #include <arrow/array.h>
 #include <arrow/io/memory.h>
@@ -29,7 +29,7 @@
 
 #include "csv-data.h"
 
-using namespace deckgl;
+using namespace loadersgl;
 
 namespace {
 
