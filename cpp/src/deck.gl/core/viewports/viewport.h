@@ -165,7 +165,7 @@ class Viewport {
   void _initPixelMatrices();
 };
 
-} // namespace deckgl
+}  // namespace deckgl
 
 auto operator==(const deckgl::Viewport& v1, const deckgl::Viewport& v2) -> bool;
 auto operator!=(const deckgl::Viewport& v1, const deckgl::Viewport& v2) -> bool;
