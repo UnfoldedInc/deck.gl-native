@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 #include "./json-data.h"
@@ -73,6 +74,8 @@ class JSONConverterTest : public ::testing::Test {
   // Class members declared here can be used by all tests in the test suite
   // for Foo.
 };
+
+TEST_F(JSONConverterTest, JSONParseFail) { EXPECT_THROW(jsonConverter->parseJson(" ** BAD JSON"), std::runtime_error); }
 
 TEST_F(JSONConverterTest, JSONParse) {
   EXPECT_NO_THROW({ Json::Value rootValue = jsonConverter->parseJson(jsonDataFull); });

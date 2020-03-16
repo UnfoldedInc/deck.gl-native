@@ -44,6 +44,7 @@ enum class COORDINATE_SYSTEM {
                        // elevation]. elevation+distances are meters.
 };
 
+// TODO - decide how to deserialize enum constants
 template <>
 inline auto fromJson<COORDINATE_SYSTEM>(const Json::Value &jsonValue) -> COORDINATE_SYSTEM {
   return static_cast<COORDINATE_SYSTEM>(fromJson<int>(jsonValue));

@@ -19,6 +19,8 @@ class Props;
 
 class PropertyType {
  public:
+  // The name of the field (this string matches the name of the field in the C++ Prop class)
+  // Note: This is intended to be initialized with string constants that have static linkage.
   const char* name;
 
   PropertyType(const char* name_) : name{name_} {}
