@@ -11,7 +11,7 @@ dist: bionic
 
 compiler:
   - gcc
-  # - clang
+  - clang
 
 addons:
   homebrew:
@@ -79,7 +79,8 @@ before_script:
   # Build out of source
   - mkdir build
   - cd build
-  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake ..
+  #  -DWARNINGS_AS_ERRORS=ON
+  - cmake -DCMAKE_TOOLCHAIN_FILE=${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake ..
 
 script:
   - make
