@@ -39,10 +39,8 @@ matrix:
     - name: "Mac OSX (Xcode 10)"
       os: osx
       osx_image: xcode10.1
-      addons:
-        homebrew:
-          packages:
-            - apache-arrow
+      before_install:
+        - brew install apache-arrow
 
 before_install:
   # Install arrow
