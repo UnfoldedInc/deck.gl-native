@@ -21,6 +21,10 @@
 #ifndef DECKGL_CORE_CONSTANTS_H
 #define DECKGL_CORE_CONSTANTS_H
 
+#import "deck.gl/json.h"
+
+namespace deckgl {
+
 // Note: The numeric values here are matched by shader code in the
 // "project" and "project64" shader modules. Both places need to be updated.
 
@@ -40,6 +44,12 @@ enum class COORDINATE_SYSTEM {
                        // elevation]. elevation+distances are meters.
 };
 
+// TODO - decide how to deserialize enum constants
+template <>
+inline auto fromJson<COORDINATE_SYSTEM>(const Json::Value &jsonValue) -> COORDINATE_SYSTEM {
+  return static_cast<COORDINATE_SYSTEM>(fromJson<int>(jsonValue));
+}
+
 // Describes the common space
 enum class PROJECTION_MODE {
   IDENTITY = 0,
@@ -47,11 +57,6 @@ enum class PROJECTION_MODE {
   WEB_MERCATOR_AUTO_OFFSET = 4  // This is automatically assigned by the project module
 };
 
-// export const EVENTS = {
-//   click: {handler: 'onClick'},
-//   panstart: {handler: 'onDragStart'},
-//   panmove: {handler: 'onDrag'},
-//   panend: {handler: 'onDragEnd'}
-// };
+}  // namespace deckgl
 
 #endif

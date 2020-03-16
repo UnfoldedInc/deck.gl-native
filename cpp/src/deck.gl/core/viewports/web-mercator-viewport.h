@@ -18,7 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_CORE_VIEWPORTS_WEB_MERCATOR_VIEWPORT_H
+#define DECKGL_CORE_VIEWPORTS_WEB_MERCATOR_VIEWPORT_H
+
 #include <cmath>
+
+namespace deckgl {
 
 // View and Projection Matrix calculations for mapbox-js style
 // map view properties
@@ -203,3 +208,7 @@ public:
 }
 
 WebMercatorViewport.displayName = 'WebMercatorViewport';
+
+} // namespace deckgl
+
+#endif // DECKGL_CORE_VIEWPORTS_WEB_MERCATOR_VIEWPORT_H

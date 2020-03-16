@@ -22,6 +22,7 @@
 
 using namespace std;
 using namespace mathgl;
+using namespace deckgl;
 
 Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
                    const ProjectionMatrixOptions& projectionMatrixOptions, double x, double y, double width,

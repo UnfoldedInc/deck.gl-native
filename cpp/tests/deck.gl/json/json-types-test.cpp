@@ -21,12 +21,10 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <stdexcept>
 #include <string>
 
 #include "./json-data.h"
 #include "deck.gl/json.h"
-#include "deck.gl/layers.h"
 
 using namespace deckgl;
 
@@ -35,26 +33,18 @@ namespace {
 /**
  * The fixture for testing class Foo.
  */
-class JSONConverterTest : public ::testing::Test {
+class JSONTypeConverterTest : public ::testing::Test {
  protected:
   // You can remove any or all of the following functions if their bodies would
   // be empty.
   std::unique_ptr<JSONConverter> jsonConverter;
 
-  JSONConverterTest() {
+  JSONTypeConverterTest() {
     // You can do set-up work for each test here.
     jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
-
-    jsonConverter->classes["Deck"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::shared_ptr<Component::Props>{nullptr};
-    };
-
-    jsonConverter->classes["LineLayer"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::shared_ptr<Component::Props>{new LineLayer::Props()};
-    };
   }
 
-  ~JSONConverterTest() override {
+  ~JSONTypeConverterTest() override {
     // You can do clean-up work that doesn't throw exceptions here.
   }
 
@@ -75,26 +65,12 @@ class JSONConverterTest : public ::testing::Test {
   // for Foo.
 };
 
-TEST_F(JSONConverterTest, JSONParseFail) { EXPECT_THROW(jsonConverter->parseJson(" ** BAD JSON"), std::runtime_error); }
-
-TEST_F(JSONConverterTest, JSONParse) {
-  EXPECT_NO_THROW({ Json::Value rootValue = jsonConverter->parseJson(jsonDataFull); });
-}
-
-TEST_F(JSONConverterTest, JSONConfig) {
-  EXPECT_NO_THROW({
-    Json::Value rootValue = jsonConverter->parseJson(jsonDataSimple);
-    auto classConverter = jsonConverter->classes["LineLayer"];
-    auto props = classConverter(rootValue);
-  });
-}
-
-TEST_F(JSONConverterTest, JSONConverter) {
-  Json::Value rootValue;
-  EXPECT_NO_THROW({ rootValue = jsonConverter->parseJson(jsonDataSimple); });
-  auto result = jsonConverter->convertJson(rootValue);
-
-  std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
+TEST_F(JSONTypeConverterTest, JSONParse) {
+  Json::Value jsonValue = jsonConverter->parseJson("[1, 2, 3]");
+  auto vector3 = fromJson<mathgl::Vector3<double>>(jsonValue);
+  EXPECT_TRUE(vector3.x == 1);
+  EXPECT_TRUE(vector3.y == 2);
+  EXPECT_TRUE(vector3.z == 3);
 }
 
 }  // namespace

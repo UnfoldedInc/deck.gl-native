@@ -18,14 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWPORT_H
-#define DECKGL_CORE_VIEWPORT_H
+#ifndef DECKGL_CORE_VIEWPORTS_VIEWPORT_H
+#define DECKGL_CORE_VIEWPORTS_VIEWPORT_H
 
 #include <string>
 
 #include "deck.gl/core/lib/constants.h"
 #include "math.gl/core.h"
 #include "math.gl/web-mercator/web-mercator-utils.h"
+
+namespace deckgl {
 
 class Viewport {
  public:
@@ -163,7 +165,9 @@ class Viewport {
   void _initPixelMatrices();
 };
 
-auto operator==(const Viewport& v1, const Viewport& v2) -> bool;
-auto operator!=(const Viewport& v1, const Viewport& v2) -> bool;
+}  // namespace deckgl
+
+auto operator==(const deckgl::Viewport& v1, const deckgl::Viewport& v2) -> bool;
+auto operator!=(const deckgl::Viewport& v1, const deckgl::Viewport& v2) -> bool;
 
 #endif

@@ -6,68 +6,61 @@
 
 using namespace deckgl;
 
-const std::map<const std::string, const PropType*> propTypeMap = {
-    {"filled",
-     new PropTypeT<bool>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->filled; },
-         [](Props* props, bool value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->filled = value; }, true}},
-    {"stroked",
-     new PropTypeT<bool>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->stroked; },
-         [](Props* props, bool value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->stroked = value; },
-         false}},
+const std::vector<const PropertyType*> propTypeDefs = {
+    new PropertyTypeT<bool>{
+        "filled", [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->filled; },
+        [](Props* props, bool value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->filled = value; }, true},
+    new PropertyTypeT<bool>{
+        "stroked", [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->stroked; },
+        [](Props* props, bool value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->stroked = value; }, false},
+    // new PropertyTypeT<std::string>{"lineWidthUnits",
+    //     [](const Props* props) { return dynamic_cast<ScatterplotLayer::Props *>(props)->widthUnits; },
+    //     [](Props* props, bool value) { return dynamic_cast<ScatterplotLayer::Props
+    //     *>(props)->widthUnits = value; }, true}},
+    new PropertyTypeT<float>{
+        "lineWidthScale",
+        [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthScale; },
+        [](Props* props, float value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthScale = value; },
+        1.0},
+    new PropertyTypeT<float>{
+        "lineWidthMinPixels",
+        [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthMinPixels; },
+        [](Props* props, float value) {
+          return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthMinPixels = value;
+        },
+        0.0},
+    new PropertyTypeT<float>{
+        "lineWidthMaxPixels",
+        [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthMaxPixels; },
+        [](Props* props, float value) {
+          return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthMaxPixels = value;
+        },
+        std::numeric_limits<float>::max()},
+    new PropertyTypeT<float>{
+        "radiusScale",
+        [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->radiusScale; },
+        [](Props* props, float value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->radiusScale = value; },
+        1.0},
+    new PropertyTypeT<float>{
+        "radiusMinPixels",
+        [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->radiusMinPixels; },
+        [](Props* props, float value) {
+          return dynamic_cast<ScatterplotLayer::Props*>(props)->radiusMinPixels = value;
+        },
+        0.0},
 
-    // {"lineWidthUnits", new PropTypeT<std::string>{
-    //                    [](const Props* props) { return dynamic_cast<ScatterplotLayer::Props *>(props)->widthUnits; },
-    //                    [](Props* props, bool value) { return dynamic_cast<ScatterplotLayer::Props
-    //                    *>(props)->widthUnits = value; }, true}},
-
-    {"lineWidthScale",
-     new PropTypeT<float>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthScale; },
-         [](Props* props, float value) {
-           return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthScale = value;
-         },
-         1.0}},
-    {"lineWidthMinPixels",
-     new PropTypeT<float>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthMinPixels; },
-         [](Props* props, float value) {
-           return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthMinPixels = value;
-         },
-         0.0}},
-    {"lineWidthMaxPixels",
-     new PropTypeT<float>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthMaxPixels; },
-         [](Props* props, float value) {
-           return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthMaxPixels = value;
-         },
-         std::numeric_limits<float>::max()}},
-
-    {"radiusScale",
-     new PropTypeT<float>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->radiusScale; },
-         [](Props* props, float value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->radiusScale = value; },
-         1.0}},
-    {"radiusMinPixels",
-     new PropTypeT<float>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->radiusMinPixels; },
-         [](Props* props, float value) {
-           return dynamic_cast<ScatterplotLayer::Props*>(props)->radiusMinPixels = value;
-         },
-         0.0}},
-    {"radiusMaxPixels",
-     new PropTypeT<float>{
-         [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->radiusMaxPixels; },
-         [](Props* props, float value) {
-           return dynamic_cast<ScatterplotLayer::Props*>(props)->radiusMaxPixels = value;
-         },
-         std::numeric_limits<float>::max()}}};
+    new PropertyTypeT<float>{
+        "radiusMaxPixels",
+        [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->radiusMaxPixels; },
+        [](Props* props, float value) {
+          return dynamic_cast<ScatterplotLayer::Props*>(props)->radiusMaxPixels = value;
+        },
+        std::numeric_limits<float>::max()}};
 
 // TODO - this could be auto-injected?
 
-auto ScatterplotLayer::Props::getPropTypes() const -> const PropTypes* {
-  static PropTypes propTypes{PropTypes::from<ScatterplotLayer>("ScatterplotLayer", propTypeMap)};
+auto ScatterplotLayer::Props::getPropertyTypes() const -> const PropertyTypes* {
+  static PropertyTypes propTypes{PropertyTypes::from<ScatterplotLayer>("ScatterplotLayer", propTypeDefs)};
   return &propTypes;
 }
 

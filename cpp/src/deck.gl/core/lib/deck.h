@@ -125,7 +125,7 @@ class DeckProps {
 
   const getCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
 
-  function getPropTypes(PropTypes) {
+  function getPropertyTypes(PropTypes) {
     // Note: Arrays (layers, views, ) can contain falsy values
     return {
       id: PropTypes.string,

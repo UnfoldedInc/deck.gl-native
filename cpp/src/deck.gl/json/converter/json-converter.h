@@ -5,8 +5,8 @@
 #include <map>
 #include <memory>  // {std::shared_ptr}
 
-#include "deck.gl/core.h"  // {Component} // TODO - this is a "circular" dependency
-#include "json/json.h"     // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
+#include "../lifecycle/component.h"  // {Component}
+#include "json/json.h"               // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
 
 namespace deckgl {
 
