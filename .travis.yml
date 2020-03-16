@@ -52,7 +52,7 @@ before_install:
   - wget https://apache.bintray.com/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
   - sudo apt install -y -V ./apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
   - sudo apt update
-  - sudo install libarrow-dev
+  - sudo apt install libarrow-dev
   - popd
 
 install:
