@@ -13,6 +13,11 @@ compiler:
   - gcc
   # - clang
 
+addons:
+  homebrew:
+    packages:
+    - apache-arrow
+
 matrix:
   include:
       # Check that clang-format doesn't detect some files are not formatted.
@@ -36,11 +41,10 @@ matrix:
     #   script:
     #     - make
     #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    - name: "Mac OSX (Xcode 10)"
-      os: osx
-      osx_image: xcode10.1
-      before_install:
-        - brew install apache-arrow
+    # - name: "Mac OSX (Xcode 10)"
+    #   os: osx
+    #   osx_image: xcode10.1
+    #   before_install: []
 
 before_install:
   # Install arrow
