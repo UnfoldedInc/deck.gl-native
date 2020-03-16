@@ -11,7 +11,7 @@ dist: bionic
 
 compiler:
   - gcc
-  - clang
+  # - clang
 
 matrix:
   include:
@@ -36,18 +36,27 @@ matrix:
     #   script:
     #     - make
     #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    # - name: "Mac OSX (Xcode 10)"
-    #   os: osx
-    #   osx_image: xcode10.1
+    - name: "Mac OSX (Xcode 10)"
+      os: osx
+      osx_image: xcode10.1
+      before_install: []
+      addons:
+        homebrew:
+          packages:
+            - apache-arrow
 
-install:
+before_install:
   # Install arrow
   - pushd $HOME
   - wget https://apache.bintray.com/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
   - sudo apt install -y -V ./apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
   - sudo apt update
   - sudo install libarrow-dev
+  - popd
+
+install:
   # Install vcpkg and dependencies
+  - pushd $HOME
   - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
   - cd vcpkg
   - git checkout .
