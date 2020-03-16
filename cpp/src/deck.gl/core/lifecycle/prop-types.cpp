@@ -2,8 +2,11 @@
 
 using namespace deckgl;
 
-//
-PropTypes::PropTypes(const PropTypes* parentPropTypes, const std::map<const std::string, const Prop*>& ownPropTypeMap) {
+// PropTypes
+
+PropTypes::PropTypes(const std::string& className_, const PropTypes* parentPropTypes,
+                     const std::map<const std::string, const PropType*>& ownPropTypeMap)
+    : className{className_} {
   // TODO clang does not appear to have C++17 `map.merge()`, using `map.insert()` instead...
 
   // insert our prop types
@@ -16,6 +19,13 @@ PropTypes::PropTypes(const PropTypes* parentPropTypes, const std::map<const std:
   }
 }
 
+// Props
+
+auto Props::getPropTypes() const -> const PropTypes* {
+  static PropTypes propTypes{"Component", nullptr, std::map<const std::string, const PropType*>{}};
+  return &propTypes;
+}
+
 auto Props::compare(const Props* oldProps) -> bool {
   auto propTypes = this->getPropTypes();
 
@@ -23,7 +33,7 @@ auto Props::compare(const Props* oldProps) -> bool {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.
-    const Prop* propType = element.second;
+    const PropType* propType = element.second;
     // std::cout<<word<<" :: "<<count<<std::endl;
     if (!propType->equals(this, oldProps)) {
       return false;

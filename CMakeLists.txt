@@ -89,13 +89,13 @@ set(DECKGL_LAYERS_TEST_FILES
 ## deck.gl/json
 set(DECKGL_JSON_HEADER_FILES
     cpp/src/deck.gl/json.h
-    cpp/src/deck.gl/json/json-configuration.h
+    cpp/src/deck.gl/json/json-converter.h
     )
 set(DECKGL_JSON_SOURCE_FILES
-    cpp/src/deck.gl/json/json-configuration.cpp
+    cpp/src/deck.gl/json/json-converter.cpp
     )
 set(DECKGL_JSON_TEST_FILES
-    cpp/tests/deck.gl/json/json-configuration-test.cpp
+    cpp/tests/deck.gl/json/json-converter-test.cpp
     )
 
 # Define source file lists per type

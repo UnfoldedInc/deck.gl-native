@@ -367,7 +367,7 @@ class Layer::State {
 
 class Layer::Context {};
 
-// Prop diffing results
+// PropType diffing results
 class Layer::ChangeFlags {
  public:
   // Primary changeFlags, can be strings stating reason for change
