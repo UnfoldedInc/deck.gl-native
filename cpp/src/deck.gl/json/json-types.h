@@ -5,6 +5,8 @@
 
 namespace deckgl {
 
+// TODO - mathgl types
+
 // template <typename T>
 // struct Type {};
 

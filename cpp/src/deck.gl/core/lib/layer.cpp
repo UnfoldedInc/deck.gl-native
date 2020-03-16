@@ -1,5 +1,6 @@
 #include "./layer.h"
 
+using namespace mathgl;
 using namespace deckgl;
 
 // Setters and getters for properties
@@ -7,6 +8,12 @@ using namespace deckgl;
 // TODO - just use member pointer?
 
 static const std::vector<const PropertyType*> propTypeDefs = {
+    new PropertyTypeT<std::list<std::shared_ptr<Layer>>>{
+        "subLayers", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->subLayers; },
+        [](Props* props, std::list<std::shared_ptr<Layer>> value) {
+          return dynamic_cast<Layer::Props*>(props)->subLayers = value;
+        },
+        true},
     new PropertyTypeT<bool>{
         "visible", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
         [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true},

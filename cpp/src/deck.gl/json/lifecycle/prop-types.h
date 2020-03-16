@@ -5,12 +5,13 @@
 
 #include <functional>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
 
-#include "../json-types-mathgl.h"  // {fromJson<T>}
-#include "../json-types.h"         // {fromJson<T>}
+#include "../json-types-mathgl.h"  // {fromJson<T>(math.gl types)}
+#include "../json-types.h"         // {fromJson<T>(std types)}
 #include "json/json.h"             // {Json::Value}
 
 namespace deckgl {
@@ -33,7 +34,7 @@ class PropertyType {
 template <class T>
 struct PropertyTypeT : public PropertyType {
  public:
-  std::function<auto(Props const*)->T> get;
+  std::function<auto(Props const*)->T> get;  // TODO return const T& ?
   std::function<void(Props*, T)> set;
   T defaultValue;
 
@@ -42,8 +43,28 @@ struct PropertyTypeT : public PropertyType {
       : PropertyType{name_}, get{get_}, set{set_}, defaultValue{defaultValue_} {}
 
   bool equals(const Props* props1, const Props* props2) const override {
-    // TODO: Seems like this needs an epsilon for floating point comparisons
-    return this->get(props1) == this->get(props2);
+    // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
+    return mathgl::equalsT(this->get(props1), this->get(props2));
+  }
+  void setPropertyFromJson(Props* props, const Json::Value& jsonValue) const override {
+    this->set(props, fromJson<T>(jsonValue));
+  }
+};
+
+template <class T>
+struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
+ public:
+  std::function<auto(Props const*)->T> get;  // TODO return const T& ?
+  std::function<void(Props*, T)> set;
+  T defaultValue;
+
+  PropertyTypeT<T>(const char* name_, const std::function<auto(Props const*)->T>& get_,
+                   const std::function<void(Props*, T)>& set_)
+      : PropertyType{name_}, get{get_}, set{set_} {}
+
+  bool equals(const Props* props1, const Props* props2) const override {
+    // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
+    return mathgl::equalsT(this->get(props1), this->get(props2));
   }
 
   void setPropertyFromJson(Props* props, const Json::Value& jsonValue) const override {

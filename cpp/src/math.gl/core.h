@@ -10,6 +10,20 @@
 
 namespace mathgl {
 
+// Approx equals for floating point
+template <typename T>
+inline bool equalsT(const T &a, const T &b) {
+  return a == b;
+}
+template <>
+inline bool equalsT<float>(const float &a, const float &b) {
+  return std::abs(a - b) < std::numeric_limits<float>::epsilon();
+}
+template <>
+inline bool equalsT<double>(const double &a, const double &b) {
+  return std::abs(a - b) < std::numeric_limits<float>::epsilon();
+}
+
 // Templates
 template <typename coord>
 class Vector2;

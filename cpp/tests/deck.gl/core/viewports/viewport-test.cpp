@@ -24,6 +24,7 @@
 
 #include "deck.gl/core.h"
 
+using namespace mathgl;
 using namespace deckgl;
 
 TEST(Viewport, Simple) {
