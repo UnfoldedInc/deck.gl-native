@@ -25,7 +25,7 @@
 
 #include "deck.gl/core/lib/constants.h"
 #include "math.gl/core.h"
-#include "math.gl/web-mercator/web-mercator-utils.h"
+#include "math.gl/web-mercator.h"
 
 namespace deckgl {
 
@@ -42,14 +42,14 @@ class Viewport {
   double scale;
   mathgl::DistanceScales distanceScales;
   double focalDistance;
-  mathgl::Vector3d position;
-  mathgl::Vector3d meterOffset;
-  mathgl::Matrix4d modelMatrix;
+  mathgl::Vector3<double> position;
+  mathgl::Vector3<double> meterOffset;
+  mathgl::Matrix4<double> modelMatrix;
   double longitude;
   double latitude;
-  mathgl::Vector3d center;
-  mathgl::Matrix4d viewMatrixUncentered;
-  mathgl::Matrix4d viewMatrix;
+  mathgl::Vector3<double> center;
+  mathgl::Matrix4<double> viewMatrixUncentered;
+  mathgl::Matrix4<double> viewMatrix;
 
   // projectionProps in JS
   bool projectionOrthographic;
@@ -59,17 +59,17 @@ class Viewport {
   double projectionNear;
   double projectionFar;
 
-  mathgl::Matrix4d projectionMatrix;
-  mathgl::Matrix4d viewProjectionMatrix;
-  mathgl::Matrix4d viewMatrixInverse;
-  mathgl::Vector3d cameraPosition;
-  mathgl::Vector3d cameraDirection;
-  mathgl::Vector3d cameraUp;
-  mathgl::Vector3d cameraRight;
+  mathgl::Matrix4<double> projectionMatrix;
+  mathgl::Matrix4<double> viewProjectionMatrix;
+  mathgl::Matrix4<double> viewMatrixInverse;
+  mathgl::Vector3<double> cameraPosition;
+  mathgl::Vector3<double> cameraDirection;
+  mathgl::Vector3<double> cameraUp;
+  mathgl::Vector3<double> cameraRight;
 
-  mathgl::Matrix4d pixelProjectionMatrix;
-  mathgl::Matrix4d viewportMatrix;
-  mathgl::Matrix4d pixelUnrpojectionMatrix;
+  mathgl::Matrix4<double> pixelProjectionMatrix;
+  mathgl::Matrix4<double> viewportMatrix;
+  mathgl::Matrix4<double> pixelUnrpojectionMatrix;
 
   Viewport(const std::string& id, const mathgl::ViewMatrixOptions& viewMatrixOptions,
            const mathgl::ProjectionMatrixOptions& projectionMatrixOptions,
@@ -91,8 +91,8 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether projected coords are top left
    * @return {Array} - [x, y] or [x, y, z] in top left coords
    */
-  auto project(const mathgl::Vector2d& latlng, bool topLeft = true) -> mathgl::Vector2d;
-  auto project(const mathgl::Vector3d& latlng, bool topLeft = true) -> mathgl::Vector3d;
+  auto project(const mathgl::Vector2<double>& latlng, bool topLeft = true) -> mathgl::Vector2<double>;
+  auto project(const mathgl::Vector3<double>& latlng, bool topLeft = true) -> mathgl::Vector3<double>;
 
   /**
    * Unproject pixel coordinates on screen onto world coordinates,
@@ -104,17 +104,17 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
-  auto unproject(const mathgl::Vector2d& xy, bool topLeft = true) -> mathgl::Vector2d;
-  auto unproject(const mathgl::Vector3d& xy, bool topLeft = true) -> mathgl::Vector3d;
+  auto unproject(const mathgl::Vector2<double>& xy, bool topLeft = true) -> mathgl::Vector2<double>;
+  auto unproject(const mathgl::Vector3<double>& xy, bool topLeft = true) -> mathgl::Vector3<double>;
 
   // NON_LINEAR PROJECTION HOOKS
   // Used for web meractor projection
 
-  auto projectPosition(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
-  auto projectPosition(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
+  auto projectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
+  auto projectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
-  auto unprojectPosition(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
-  auto unprojectPosition(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
+  auto unprojectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
+  auto unprojectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
   /**
    * Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
@@ -125,8 +125,8 @@ class Viewport {
    *   Specifies a point on the sphere to project onto the map.
    * @return {Array} [x,y] coordinates.
    */
-  auto projectFlat(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
-  auto projectFlat(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
+  auto projectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
+  auto projectFlat(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
   /**
    * Unproject world point [x,y] on map onto {lat, lon} on sphere
@@ -136,10 +136,10 @@ class Viewport {
    *   Has toArray method if you need a GeoJSON Array.
    *   Per cartographic tradition, lat and lon are specified as degrees.
    */
-  auto unprojectFlat(const mathgl::Vector2d& xy) -> mathgl::Vector2d;
-  auto unprojectFlat(const mathgl::Vector3d& xyz) -> mathgl::Vector3d;
+  auto unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
+  auto unprojectFlat(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
-  auto getDistancceScales(const mathgl::Vector2d* coordinateOrigin) -> double;
+  auto getDistancceScales(const mathgl::Vector2<double>* coordinateOrigin) -> double;
   auto containsPixel(double x, double y, double width = 1, double height = 1) -> bool;
 
   // Extract frustum planes in common space
@@ -148,17 +148,17 @@ class Viewport {
 
   // EXPERIMENTAL METHODS
 
-  auto getCameraPosition() -> mathgl::Vector3d;
-  auto getCameraDirection() -> mathgl::Vector3d;
-  auto getCameraUp() -> mathgl::Vector3d;
+  auto getCameraPosition() -> mathgl::Vector3<double>;
+  auto getCameraDirection() -> mathgl::Vector3<double>;
+  auto getCameraUp() -> mathgl::Vector3<double>;
 
  private:
   auto _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance, double near,
-                               double far) -> mathgl::Matrix4d;
+                               double far) -> mathgl::Matrix4<double>;
 
   void _initViewMatrix(/* opts */);
 
-  auto _getCenterInWorld(double longitude, double latitude) -> mathgl::Vector3d;
+  auto _getCenterInWorld(double longitude, double latitude) -> mathgl::Vector3<double>;
 
   void _initProjectionMatrix(/* opts */);
 

@@ -21,10 +21,11 @@
 #ifndef DECKGL_CORE_H
 #define DECKGL_CORE_H
 
-// #include "./lib/constants.h" // COORDINATE_SYSTEM
-#include "./core/lib/layer.h" // Layer, Layer::Props, Layer::State
+#include "./core/lib/constants.h" // {COORDINATE_SYSTEM}
+#include "./core/lib/deck.h" // {Deck}
+#include "./core/lib/layer.h" // {Layer, Layer::Props, Layer::State}
 
-#include "./core/viewports/viewport.h"
+#include "./core/viewports/viewport.h" // {Viewport}
 
 /*
 // Intialize globals, check version

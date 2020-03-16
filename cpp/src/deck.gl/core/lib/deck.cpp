@@ -54,6 +54,122 @@ import {EVENTS} from './constants';
 
 using namespace deckgl;
 
+// Setters and getters for properties
+// TODO - auto generate from language-independent prop definition schema
+// TODO - just use member pointer?
+
+static const std::vector<const PropertyType*> propTypeDefs = {new PropertyTypeT<std::list<std::shared_ptr<Layer>>>{
+    "layers", [](const Props* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
+    [](Props* props, std::list<std::shared_ptr<Layer>> value) {
+      return dynamic_cast<Deck::Props*>(props)->layers = value;
+    }}};
+
+auto Deck::Props::getPropertyTypes() const -> const PropertyTypes* {
+  static PropertyTypes propTypes{PropertyTypes::from<Deck>("Deck", propTypeDefs)};
+  return &propTypes;
+}
+
+// Deck::Props
+
+Deck::Props::Props()
+    : id{"deckgl-overlay"},
+      width{100},
+      height{100},
+      // layerFilter{nullptr},
+      // glOptions{},
+      // gl{nullptr},
+      layers{},
+      // effects{},
+      views{},
+      pickingRadius{0}  // controller{nullptr},
+                        // useDevicePixels{true},
+                        // touchAction{"none"},
+                        // _framebuffer{nullptr},
+                        // _animate{false},
+                        // onWebGLInitialized{noop}, onResize{noop}, onViewStateChange{noop}, onBeforeRender{noop},
+                        // onAfterRender{noop}, onLoad{noop}, onError{nullptr}, _onMetrics{nullptr},
+                        // getCursor{nullptr},
+                        // debug{false}, drawPickingColors{fals}
+{}
+
+/*
+,
+    pickingRadius{0}, layerFilter{nullptr}, glOptions{{}}, gl{nullptr}, layers{[]}, effects{[]}, views{nullptr},
+    controller{nullptr,  // Rely on external controller, e.g. react-map-g}
+               ,
+               useDevicePixels{true},
+               touchAction{'none'},
+               _framebuffer{nullptr},
+               _animate{false}
+
+               ,
+               onWebGLInitialized{noop},
+               onResize{noop},
+               onViewStateChange{noop},
+               onBeforeRender{noop},
+               onAfterRender{noop},
+               onLoad{noop},
+               onError{nullptr},
+               _onMetrics{nullptr}
+
+               ,
+               getCursor,
+
+               ,
+               debug{false},
+               drawPickingColors{fals} {}};
+
+function noop() {}
+
+const getCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
+
+function getPropTypes(PropTypes) {
+  // Note: Arrays (layers, views, ) can contain falsy values
+  return {
+    id: PropTypes.string,
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+
+    // layer/view/controller settings
+    layers: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    layerFilter: PropTypes.func,
+    views: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    viewState: PropTypes.object,
+    effects: PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
+    controller: PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
+PropTypes.object]),
+
+    // GL settings
+    gl: PropTypes.object,
+    glOptions: PropTypes.object,
+    parameters: PropTypes.object,
+    pickingRadius: PropTypes.number,
+    useDevicePixels: PropTypes.oneOfType([PropTypes.bool,
+PropTypes.number]), touchAction: PropTypes.string,
+
+    // Callbacks
+    onWebGLInitialized: PropTypes.func,
+    onResize: PropTypes.func,
+    onViewStateChange: PropTypes.func,
+    onBeforeRender: PropTypes.func,
+    onAfterRender: PropTypes.func,
+    onLoad: PropTypes.func,
+    onError: PropTypes.func,
+
+    // Debug settings
+    debug: PropTypes.bool,
+    drawPickingColors: PropTypes.bool,
+
+    // Experimental props
+    _framebuffer: PropTypes.object,
+    // Forces a redraw every animation frame
+    _animate: PropTypes.bool
+  };
+}
+*/
+
+// Deck class
+
 Deck::Deck(Deck::Props* props_)
     : props{props_},
       width{0},   // "read-only", auto-updated from canvas
@@ -520,7 +636,6 @@ this->stats, viewport, timeline
   this->_updateCanvasSize();
   this->props->onLoad();
 */
-}
 
 /*
 void Deck::_drawLayers() {  // redrawReason, renderOptions) {
@@ -681,104 +796,5 @@ void Deck::_getMetrics() {
   // metrics.textureMemory = memoryStats.get('Texture Memory').count;
   // metrics.renderbufferMemory = memoryStats.get('Renderbuffer
   // Memory').count; metrics.gpuMemory = memoryStats.get('GPU Memory').count;
-}
-*/
-
-// Deck::Props
-
-deckgl::Deck::Props::Props()
-    : id{"deckgl-overlay"},
-      width{100},
-      height{100},
-      // layerFilter{nullptr},
-      // glOptions{},
-      // gl{nullptr},
-      layers{},
-      // effects{},
-      views{},
-      pickingRadius{0}  // controller{nullptr},
-                        // useDevicePixels{true},
-                        // touchAction{"none"},
-                        // _framebuffer{nullptr},
-                        // _animate{false},
-                        // onWebGLInitialized{noop}, onResize{noop}, onViewStateChange{noop}, onBeforeRender{noop},
-                        // onAfterRender{noop}, onLoad{noop}, onError{nullptr}, _onMetrics{nullptr},
-                        // getCursor{nullptr},
-                        // debug{false}, drawPickingColors{fals}
-{}
-
-/*
-,
-    pickingRadius{0}, layerFilter{nullptr}, glOptions{{}}, gl{nullptr}, layers{[]}, effects{[]}, views{nullptr},
-    controller{nullptr,  // Rely on external controller, e.g. react-map-g}
-               ,
-               useDevicePixels{true},
-               touchAction{'none'},
-               _framebuffer{nullptr},
-               _animate{false}
-
-               ,
-               onWebGLInitialized{noop},
-               onResize{noop},
-               onViewStateChange{noop},
-               onBeforeRender{noop},
-               onAfterRender{noop},
-               onLoad{noop},
-               onError{nullptr},
-               _onMetrics{nullptr}
-
-               ,
-               getCursor,
-
-               ,
-               debug{false},
-               drawPickingColors{fals} {}};
-
-function noop() {}
-
-const getCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
-
-function getPropTypes(PropTypes) {
-  // Note: Arrays (layers, views, ) can contain falsy values
-  return {
-    id: PropTypes.string,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-
-    // layer/view/controller settings
-    layers: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    layerFilter: PropTypes.func,
-    views: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    viewState: PropTypes.object,
-    effects: PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
-    controller: PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
-PropTypes.object]),
-
-    // GL settings
-    gl: PropTypes.object,
-    glOptions: PropTypes.object,
-    parameters: PropTypes.object,
-    pickingRadius: PropTypes.number,
-    useDevicePixels: PropTypes.oneOfType([PropTypes.bool,
-PropTypes.number]), touchAction: PropTypes.string,
-
-    // Callbacks
-    onWebGLInitialized: PropTypes.func,
-    onResize: PropTypes.func,
-    onViewStateChange: PropTypes.func,
-    onBeforeRender: PropTypes.func,
-    onAfterRender: PropTypes.func,
-    onLoad: PropTypes.func,
-    onError: PropTypes.func,
-
-    // Debug settings
-    debug: PropTypes.bool,
-    drawPickingColors: PropTypes.bool,
-
-    // Experimental props
-    _framebuffer: PropTypes.object,
-    // Forces a redraw every animation frame
-    _animate: PropTypes.bool
-  };
 }
 */

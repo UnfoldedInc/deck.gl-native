@@ -18,6 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_CORE_DECK_H
+#define DECKGL_CORE_DECK_H
+
 #include "./layer-manager.h"
 #include "deck.gl/json.h"
 
@@ -58,6 +61,7 @@ class View;
 
 class Deck : public Component {
  public:
+  using super = Component;
   class Props;
 
   Props* props;
@@ -189,7 +193,7 @@ class Deck : public Component {
   */
 };
 
-class Deck::Props {
+class Deck::Props : public Component::Props {
  public:
   std::string id;  // PropTypes.string,
   int width;       // PropTypes.oneOfType([PropTypes.number,
@@ -198,11 +202,11 @@ class Deck::Props {
                    // PropTypes.string]),
 
   // layer/view/controller settings
-  std::list<Layer*> layers;  // PropTypes.oneOfType([PropTypes.object,
-                             // PropTypes.array]),
+  std::list<std::shared_ptr<Layer>> layers;  // PropTypes.oneOfType([PropTypes.object,
+                                             // PropTypes.array]),
   // std::function<> layerFilter, // PropTypes.func,
-  std::list<View*> views;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  ViewState* viewState;    // PropTypes.object,
+  std::list<std::shared_ptr<View>> views;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::shared_ptr<ViewState> viewState;    // PropTypes.object,
   // effects, // PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
   // controller, // PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
   // PropTypes.object]),
@@ -233,6 +237,7 @@ class Deck::Props {
   bool _animate;       // PropTypes.bool // Forces a redraw every animation frame
 
   Props();
+  auto getPropertyTypes() const -> const PropertyTypes*;
 };
 
 /*
@@ -284,3 +289,7 @@ PropTypes.number]), touchAction: PropTypes.string,
   };
 }
 */
+
+}  // namespace deckgl
+
+#endif  // DECK_CORE_DECK_H

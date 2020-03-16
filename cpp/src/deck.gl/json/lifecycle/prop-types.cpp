@@ -9,13 +9,13 @@ PropertyTypes::PropertyTypes(const std::string& className_, const PropertyTypes*
     : className{className_}, parent{parentPropertyTypes} {
   // insert our prop types
   for (auto element : ownPropertyTypeDefs) {
-    this->propTypeMap.insert({element->name, element});
+    this->_propTypeMap.insert({element->name, element});
   }
 
   // Insert parent's prop types
   if (parentPropertyTypes) {
-    const auto& parentPropertyTypeMap = parentPropertyTypes->propTypeMap;
-    this->propTypeMap.insert(parentPropertyTypeMap.begin(), parentPropertyTypeMap.end());
+    const auto& parentPropertyTypeMap = parentPropertyTypes->_propTypeMap;
+    this->_propTypeMap.insert(parentPropertyTypeMap.begin(), parentPropertyTypeMap.end());
   }
 }
 
@@ -26,9 +26,10 @@ auto Props::getPropertyTypes() const -> const PropertyTypes* {
   return &propTypes;
 }
 
-void Props::setPropertyFromJson(const std::string& key, const Json::Value& jsonValue) {
+void Props::setPropertyFromJson(const std::string& key, const Json::Value& jsonValue,
+                                const JSONConverter* jsonConverter) {
   auto propertyType = this->getPropertyType(key);
-  propertyType->setPropertyFromJson(this, jsonValue);
+  propertyType->setPropertyFromJson(this, jsonValue, jsonConverter);
 }
 
 auto Props::getPropertyType(const std::string& key) const -> const PropertyType* {
@@ -50,7 +51,7 @@ auto Props::getPropertyType(const std::string& key) const -> const PropertyType*
 auto Props::compare(const Props* oldProps) -> bool {
   auto propTypes = this->getPropertyTypes();
 
-  for (auto element : propTypes->propTypeMap) {
+  for (auto element : propTypes->_propTypeMap) {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.

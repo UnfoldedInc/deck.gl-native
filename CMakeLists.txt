@@ -53,15 +53,15 @@ set(MATHGL_CORE_TEST_FILES
 ## deck.gl/json
 set(DECKGL_JSON_HEADER_FILES
     cpp/src/deck.gl/json.h
-    cpp/src/deck.gl/json/json-types.h
-    cpp/src/deck.gl/json/json-types-mathgl.h
+    cpp/src/deck.gl/json/converter/json-types.h
+    cpp/src/deck.gl/json/converter/json-types-mathgl.h
     cpp/src/deck.gl/json/converter/json-converter.h
     cpp/src/deck.gl/json/lifecycle/component.h
     cpp/src/deck.gl/json/lifecycle/prop-types.h
 )
 
 set(DECKGL_JSON_SOURCE_FILES
-    cpp/src/deck.gl/json/json-types.cpp
+    cpp/src/deck.gl/json/converter/json-types.cpp
     cpp/src/deck.gl/json/converter/json-converter.cpp
     cpp/src/deck.gl/json/lifecycle/prop-types.cpp
 )

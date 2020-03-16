@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 
+#include "../lifecycle/prop-types.h"  // TODO - circular?
+
 using namespace deckgl;
 
 auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
@@ -18,14 +20,14 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
   return rootValue;
 }
 
-auto JSONConverter::convertJson(const Json::Value &value) -> std::shared_ptr<Props> {
+auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<Props> {
   this->_traverseJson(value,
                       [=](const std::string &key, const Json::Value) -> std::shared_ptr<Props> { return nullptr; });
   return nullptr;
 }
 
 auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visitor> visitor, const std::string &key,
-                                  int level) -> std::shared_ptr<Props> {
+                                  int level) const -> std::shared_ptr<Props> {
   switch (value.type()) {
     case Json::ValueType::realValue:
       return visitor(key, value.asDouble());
@@ -88,11 +90,11 @@ void setPropToJsonValue(std::shared_ptr<Component::Props> props, const std::stri
   }
 }
 
-auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor> visitor, int level)
+auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor> visitor, int level) const
     -> std::shared_ptr<Props> {
   auto className = object["@@type"].asString();
 
-  auto classConverter = this->classes[className];
+  auto classConverter = this->classes.at(className);
   if (!classConverter) {
     throw std::runtime_error("JSON contains unknown class with @@type: \"" + className + "\"");
   }

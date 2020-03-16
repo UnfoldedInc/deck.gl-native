@@ -42,11 +42,11 @@ auto Viewport::containsPixel(double x, double y, double width, double height) ->
   return (x < this->x + this->width) && (this->x < x + width) && (y < this->y + this->height) && (this->y < y + height);
 }
 
-auto Viewport::getCameraPosition() -> mathgl::Vector3d { return this->cameraPosition; }
+auto Viewport::getCameraPosition() -> mathgl::Vector3<double> { return this->cameraPosition; }
 
-auto Viewport::getCameraDirection() -> mathgl::Vector3d { return this->cameraDirection; }
+auto Viewport::getCameraDirection() -> mathgl::Vector3<double> { return this->cameraDirection; }
 
-auto Viewport::getCameraUp() -> mathgl::Vector3d { return this->cameraUp; }
+auto Viewport::getCameraUp() -> mathgl::Vector3<double> { return this->cameraUp; }
 
 auto operator==(const Viewport& v1, const Viewport& v2) -> bool {
   return v1.width == v2.width && v1.height == v2.height && v1.scale == v2.scale &&
