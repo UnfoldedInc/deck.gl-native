@@ -18,14 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "csv-converter.h"
+#include "csv-loader.h"
 
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 
 using namespace loadersgl;
 
-auto CSVConverter::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table> {
+auto CSVLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 
   auto readOptions = arrow::csv::ReadOptions::Defaults();

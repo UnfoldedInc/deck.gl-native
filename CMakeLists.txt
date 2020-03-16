@@ -89,43 +89,57 @@ set(DECKGL_LAYERS_TEST_FILES
     cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
     )
 
+## deck.gl/json
+set(DECKGL_JSON_HEADER_FILES
+    cpp/src/deck.gl/json.h
+    cpp/src/deck.gl/json/json-converter.h
+    )
+set(DECKGL_JSON_SOURCE_FILES
+    cpp/src/deck.gl/json/json-converter.cpp
+    )
+set(DECKGL_JSON_TEST_FILES
+    cpp/tests/deck.gl/json/json-converter-test.cpp
+    )
+
 ## loaders.gl/json
 set(LOADERSGL_JSON_HEADER_FILES
-    cpp/src/loaders.gl/json.h
-    cpp/src/loaders.gl/json/json-converter.h
+    cpp/src/loaders.gl/json/json-loader.h
     )
 set(LOADERSGL_JSON_SOURCE_FILES
-    cpp/src/loaders.gl/json/json-converter.cpp
+    cpp/src/loaders.gl/json/json-loader.cpp
     )
 set(LOADERSGL_JSON_TEST_FILES
-    cpp/tests/loaders.gl/json/json-converter-test.cpp
+    cpp/tests/loaders.gl/json/json-loader-test.cpp
     )
 
 ## loaders.gl/csv
 set(LOADERSGL_CSV_HEADER_FILES
-    cpp/src/loaders.gl/csv/csv-converter.h
+    cpp/src/loaders.gl/csv/csv-loader.h
     )
 set(LOADERSGL_CSV_SOURCE_FILES
-    cpp/src/loaders.gl/csv/csv-converter.cc
+    cpp/src/loaders.gl/csv/csv-loader.cpp
     )
 set(LOADERSGL_CSV_TEST_FILES
-    cpp/tests/loaders.gl/csv/csv-converter-test.cc
+    cpp/tests/loaders.gl/csv/csv-loader-test.cpp
     )
 
 # Define source file lists per type
 set(LIB_HEADER_FILES
     ${MATHGL_CORE_HEADER_FILES}
     ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
+    ${DECKGL_JSON_HEADER_FILES}
     ${LOADERSGL_JSON_HEADER_FILES} ${LOADERSGL_CSV_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
     ${MATHGL_CORE_SOURCE_FILES}
     ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
+    ${DECKGL_JSON_SOURCE_FILES}
     ${LOADERSGL_JSON_SOURCE_FILES} ${LOADERSGL_CSV_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
     ${MATHGL_CORE_TEST_FILES}
     ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
+    ${DECKGL_JSON_TEST_FILES}
     ${LOADERSGL_JSON_TEST_FILES} ${LOADERSGL_CSV_TEST_FILES}
     cpp/tests/main.cpp
     )

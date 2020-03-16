@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020, Unfolded Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,24 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LOADERSGL_CSV_CSV_CONVERTER_H
-#define LOADERSGL_CSV_CSV_CONVERTER_H
+#include <arrow/array.h>
+#include <arrow/io/memory.h>
+#include <gtest/gtest.h>
 
-#include <arrow/io/interfaces.h>
-#include <arrow/table.h>
+#include <iostream>
+#include <string>
 
-#include <memory>
+#include "./json-loader-data.h"
+#include "deck.gl/layers.h"
+#include "loaders.gl/json/json-loader.h"
 
-namespace loadersgl {
+using namespace loadersgl;
 
-// TODO: Rename to CSVLoader
-class CSVConverter {
- public:
-  CSVConverter() {}
+namespace {
 
-  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
+/**
+ * The fixture for testing class JSONLoader.
+ */
+class JSONLoaderTest : public ::testing::Test {
+ protected:
+  JSONLoaderTest() { jsonLoader = std::unique_ptr<JSONLoader>(new JSONLoader()); }
+
+  std::unique_ptr<JSONLoader> jsonLoader;
 };
 
-}  // namespace loadersgl
+TEST_F(JSONLoaderTest, ArrowTable) {
+  auto input = std::shared_ptr<arrow::io::BufferReader>(new arrow::io::BufferReader(ndjsonDataSimple));
 
-#endif  // LOADERSGL_JSON_JSON_CONVERTER_H
+  std::shared_ptr<arrow::Table> table;
+  ASSERT_NO_THROW({ table = jsonLoader->loadTable(input); });
+
+  EXPECT_EQ(table->num_rows(), 1);
+  EXPECT_EQ(table->num_columns(), 3);
+
+  auto descriptions = std::static_pointer_cast<arrow::StringArray>(table->GetColumnByName("description")->chunk(0));
+  EXPECT_EQ(descriptions->GetString(0), "Test");
+}
+
+}  // namespace

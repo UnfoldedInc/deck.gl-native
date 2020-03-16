@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "loaders.gl/csv/csv-converter.h"
+#include "loaders.gl/csv/csv-loader.h"
 
 #include <arrow/array.h>
 #include <arrow/io/memory.h>
@@ -36,18 +36,18 @@ namespace {
 /**
  * The fixture for testing class CSVConvertet.
  */
-class CSVConverterTest : public ::testing::Test {
+class CSVLoaderTest : public ::testing::Test {
  protected:
-  CSVConverterTest() { csvConverter = std::unique_ptr<CSVConverter>(new CSVConverter()); }
+  CSVLoaderTest() { csvLoader = std::unique_ptr<CSVLoader>(new CSVLoader()); }
 
-  std::unique_ptr<CSVConverter> csvConverter;
+  std::unique_ptr<CSVLoader> csvLoader;
 };
 
-TEST_F(CSVConverterTest, ArrowTable) {
+TEST_F(CSVLoaderTest, ArrowTable) {
   auto input = std::shared_ptr<arrow::io::BufferReader>(new arrow::io::BufferReader(csvDataStates));
 
   std::shared_ptr<arrow::Table> table;
-  ASSERT_NO_THROW({ table = csvConverter->loadTable(input); });
+  ASSERT_NO_THROW({ table = csvLoader->loadTable(input); });
 
   EXPECT_EQ(table->num_rows(), 110);
   EXPECT_EQ(table->num_columns(), 3);

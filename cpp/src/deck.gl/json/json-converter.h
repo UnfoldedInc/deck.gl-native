@@ -18,11 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LOADERSGL_JSON_JSON_CONVERTER_H
-#define LOADERSGL_JSON_JSON_CONVERTER_H
-
-#include <arrow/io/interfaces.h>
-#include <arrow/table.h>
+#ifndef DECKGL_JSON_JSON_CONVERTER_H
+#define DECKGL_JSON_JSON_CONVERTER_H
 
 #include <functional>  // {std::function}
 #include <map>
@@ -31,7 +28,7 @@
 #include "deck.gl/core.h"  // {Component} // TODO - this is a "circular" dependency
 #include "json/json.h"     // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
 
-namespace loadersgl {
+namespace deckgl {
 
 class JSONConverter {
  public:
@@ -50,8 +47,6 @@ class JSONConverter {
   // Convert parsed JSON into registered classes
   auto convertJson(const Json::Value &) -> std::shared_ptr<deckgl::Props>;
 
-  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
-
  private:
   using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<deckgl::Props>;
 
@@ -60,6 +55,6 @@ class JSONConverter {
   auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) -> std::shared_ptr<deckgl::Props>;
 };
 
-}  // namespace loadersgl
+}  // namespace deckgl
 
-#endif  // LOADERSGL_JSON_JSON_CONVERTER_H
+#endif  // DECKGL_JSON_JSON_CONVERTER_H

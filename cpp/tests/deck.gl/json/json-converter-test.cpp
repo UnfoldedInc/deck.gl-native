@@ -26,10 +26,9 @@
 #include <string>
 
 #include "./json-data.h"
+#include "deck.gl/json.h"
 #include "deck.gl/layers.h"
-#include "loaders.gl/json.h"
 
-using namespace loadersgl;
 using namespace deckgl;
 
 namespace {
@@ -72,19 +71,6 @@ TEST_F(JSONConverterTest, JSONConverter) {
   auto result = jsonConverter->convertJson(rootValue);
 
   std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
-}
-
-TEST_F(JSONConverterTest, ArrowTable) {
-  auto input = std::shared_ptr<arrow::io::BufferReader>(new arrow::io::BufferReader(ndjsonDataSimple));
-
-  std::shared_ptr<arrow::Table> table;
-  ASSERT_NO_THROW({ table = jsonConverter->loadTable(input); });
-
-  EXPECT_EQ(table->num_rows(), 1);
-  EXPECT_EQ(table->num_columns(), 3);
-
-  auto descriptions = std::static_pointer_cast<arrow::StringArray>(table->GetColumnByName("description")->chunk(0));
-  EXPECT_EQ(descriptions->GetString(0), "Test");
 }
 
 }  // namespace
