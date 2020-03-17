@@ -9,9 +9,10 @@ language: c
 os: linux
 dist: bionic
 
-compiler:
-  - gcc
-  # - clang
+addons:
+  homebrew:
+    packages:
+    - apache-arrow
 
 matrix:
   include:
@@ -36,9 +37,23 @@ matrix:
     #   script:
     #     - make
     #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    - name: "Mac OSX (Xcode 10)"
-      os: osx
-      osx_image: xcode10.1
+    # TODO: Doesn't install arrow correctly on OSX
+    # - name: "Mac OSX (Xcode 11.3)"
+    #   os: osx
+    #   osx_image: xcode11.3
+    #   before_install: []
+    - name: "Linux (Clang)"
+      os: linux
+      compiler: clang
+
+before_install:
+  # Install arrow
+  - pushd $HOME
+  - wget https://apache.bintray.com/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
+  - sudo apt install -y -V ./apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
+  - sudo apt update
+  - sudo apt install libarrow-dev
+  - popd
 
 install:
   # Install vcpkg and dependencies

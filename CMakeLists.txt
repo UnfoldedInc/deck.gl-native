@@ -1,7 +1,7 @@
 # Inspired by https://github.com/uber/h3/blob/master/CMakeLists.txt
 # and by https://github.com/google/s2geometry/blob/master/CMakeLists.txt
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -107,18 +107,46 @@ set(DECKGL_LAYERS_TEST_FILES
     cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
     )
 
+## loaders.gl/json
+set(LOADERSGL_JSON_HEADER_FILES
+    cpp/src/loaders.gl/json/json-loader.h
+    )
+set(LOADERSGL_JSON_SOURCE_FILES
+    cpp/src/loaders.gl/json/json-loader.cpp
+    )
+set(LOADERSGL_JSON_TEST_FILES
+    cpp/tests/loaders.gl/json/json-loader-test.cpp
+    )
+
+## loaders.gl/csv
+set(LOADERSGL_CSV_HEADER_FILES
+    cpp/src/loaders.gl/csv/csv-loader.h
+    )
+set(LOADERSGL_CSV_SOURCE_FILES
+    cpp/src/loaders.gl/csv/csv-loader.cpp
+    )
+set(LOADERSGL_CSV_TEST_FILES
+    cpp/tests/loaders.gl/csv/csv-loader-test.cpp
+    )
+
 # Define source file lists per type
 set(LIB_HEADER_FILES
     ${MATHGL_CORE_HEADER_FILES}
-    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES} ${DECKGL_JSON_HEADER_FILES}
+    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
+    ${DECKGL_JSON_HEADER_FILES}
+    ${LOADERSGL_JSON_HEADER_FILES} ${LOADERSGL_CSV_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
     ${MATHGL_CORE_SOURCE_FILES}
-    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES} ${DECKGL_JSON_SOURCE_FILES}
+    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
+    ${DECKGL_JSON_SOURCE_FILES}
+    ${LOADERSGL_JSON_SOURCE_FILES} ${LOADERSGL_CSV_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
     ${MATHGL_CORE_TEST_FILES}
-    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES} ${DECKGL_JSON_TEST_FILES}
+    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
+    ${DECKGL_JSON_TEST_FILES}
+    ${LOADERSGL_JSON_TEST_FILES} ${LOADERSGL_CSV_TEST_FILES}
     cpp/tests/main.cpp
     )
 SET(TEST_HEADER_FILES
@@ -130,11 +158,16 @@ set(ALL_SOURCE_FILES
 # Dependencies
 find_package(jsoncpp CONFIG REQUIRED)
 
+# TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
+#include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
+#link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
+find_package(Arrow CONFIG REQUIRED)
+
 # Build the actual library file
 add_library(deck.gl ${LIB_SOURCE_FILES})
 
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib)
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib arrow)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)
@@ -192,12 +225,7 @@ endif()
 add_executable(tests ${TEST_SOURCE_FILES})
 
 target_compile_options(tests PRIVATE ${DECK_COMPILE_FLAGS})
-if(BUILD_SHARED_LIBS)
-    set_target_properties(tests PROPERTIES SOVERSION 1)
-endif()
-
-target_link_libraries(tests PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib)
-target_link_libraries(tests PRIVATE GTest::gtest deck.gl)
+target_link_libraries(tests PRIVATE ${DECK_LINK_FLAGS} GTest::gtest deck.gl)
 
 # Extract registered Google Tests from the executable and add them to ctest
 # https://cmake.org/cmake/help/v3.10/module/GoogleTest.html

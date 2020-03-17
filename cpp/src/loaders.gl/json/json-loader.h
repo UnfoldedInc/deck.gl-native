@@ -18,43 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_JSON_JSON_CONVERTER_H
-#define DECKGL_JSON_JSON_CONVERTER_H
+#ifndef LOADERSGL_JSON_JSON_CONVERTER_H
+#define LOADERSGL_JSON_JSON_CONVERTER_H
+
+#include <arrow/io/interfaces.h>
+#include <arrow/table.h>
 
 #include <functional>  // {std::function}
 #include <map>
 #include <memory>  // {std::shared_ptr}
 
-#include "../lifecycle/component.h"  // {Component}
-#include "json/json.h"               // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
+#include "deck.gl/core.h"  // {Component} // TODO - this is a "circular" dependency
+#include "json/json.h"     // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
 
-namespace deckgl {
+namespace loadersgl {
 
-class JSONConverter {
+class JSONLoader {
  public:
-  using JsonValueToComponentConverter = std::function<auto(const Json::Value &)->std::shared_ptr<Props>>;
-
-  // public members
-  std::map<std::string, JsonValueToComponentConverter> classes;
-
   // methods
-  JSONConverter() {}
-  JSONConverter(const std::map<std::string, JsonValueToComponentConverter> &classes_) : classes{classes_} {}
+  JSONLoader() {}
 
-  // parse JSON string using jsoncpp
-  auto parseJson(const std::string &rawJson) -> Json::Value;
-
-  // Convert parsed JSON into registered classes
-  auto convertJson(const Json::Value &) -> std::shared_ptr<Props>;
-
- private:
-  using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<Props>;
-
-  auto _traverseJson(const Json::Value &, std::function<Visitor>, const std::string &key = "", int level = 0)
-      -> std::shared_ptr<Props>;
-  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) -> std::shared_ptr<Props>;
+  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
 };
 
-}  // namespace deckgl
+}  // namespace loadersgl
 
-#endif  // DECKGL_JSON_JSON_CONVERTER_H
+#endif  // LOADERSGL_JSON_JSON_CONVERTER_H

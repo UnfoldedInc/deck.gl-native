@@ -302,6 +302,7 @@ class Layer::Props : public deckgl::Props {
         pickable{false},
         opacity{1.0},
         coordinateSystem{COORDINATE_SYSTEM::DEFAULT},
+        wrapLongitude{false},
         positionFormat{"XYZ"},
         colorFormat{"RGBA"},
         autoHighlight{false},

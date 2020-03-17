@@ -55,8 +55,8 @@ auto Props::compare(const Props* oldProps) -> bool {
     std::string name = element.first;
     // Accessing VALUE from element.
     const PropertyType* propType = element.second;
-    // std::cout<<word<<" :: "<<count<<std::endl;
     if (!propType->equals(this, oldProps)) {
+      std::cerr << propType->name << " compared false\n";
       return false;
     }
   }

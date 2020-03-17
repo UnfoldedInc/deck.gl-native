@@ -219,7 +219,6 @@ class Matrix2 {
  public:
   // Template types
   typedef coord Coord;
-  typedef Vector2<coord> Vector2;
 
   Matrix2(coord m11, coord m12, coord m21, coord m22);
   Matrix2(const Matrix2<coord> &);

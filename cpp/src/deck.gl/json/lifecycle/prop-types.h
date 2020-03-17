@@ -42,8 +42,10 @@ struct PropertyTypeT : public PropertyType {
       : PropertyType{name_}, get{get_}, set{set_}, defaultValue{defaultValue_} {}
 
   bool equals(const Props* props1, const Props* props2) const override {
+    // TODO: Seems like this needs an epsilon for floating point comparisons
     return this->get(props1) == this->get(props2);
   }
+
   void setPropertyFromJson(Props* props, const Json::Value& jsonValue) const override {
     this->set(props, fromJson<T>(jsonValue));
   }
