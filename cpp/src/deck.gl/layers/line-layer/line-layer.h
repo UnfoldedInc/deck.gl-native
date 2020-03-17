@@ -33,16 +33,15 @@ class LineLayer : public Layer {
  public:
   using super = Layer;
   class Props;
-  class State;
 
  protected:
   void initializeState() override;
   void updateState(const Layer::ChangeFlags &, const Layer::Props *oldProps) override;
   void finalizeState() override;
-  void draw() override;
+  void drawState() override;
 
  private:
-  auto _getModel(void *gl) -> std::shared_ptr<Model>;
+  auto _getModel(void *gl) -> std::shared_ptr<lumagl::Model>;
 };
 
 class LineLayer::Props : public Layer::Props {
@@ -66,10 +65,6 @@ class LineLayer::Props : public Layer::Props {
   Props() : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
 
   auto getPropertyTypes() const -> const PropertyTypes * override;
-};
-
-class LineLayer::State : public Layer::State {
- public:
 };
 
 }  // namespace deckgl

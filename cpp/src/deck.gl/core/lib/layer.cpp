@@ -1,5 +1,7 @@
 #include "./layer.h"
 
+#include "./layer-manager.h"
+
 using namespace mathgl;
 using namespace deckgl;
 
@@ -110,45 +112,52 @@ class LayerPropertyTypes {
 //   this->setNeedsRedraw();
 // }
 
-// Sets the redraw flag for this layer, will trigger a redraw next animation
-// frame
-void Layer::setNeedsRedraw(bool redraw) {
-  if (this->internalState) {
-    this->internalState->needsRedraw = redraw;
-  }
+void Layer::setProps(Layer::Props* newProps) {
+  this->props = newProps;
+  this->setNeedsUpdate("Props updated");
+  this->setNeedsRedraw("Props updated");
 }
 
+void Layer::triggerUpdate(const std::string& gpuColumnName) {
+  this->attributeManager->invalidate(gpuColumnName);
+  this->setNeedsUpdate(gpuColumnName);
+}
+
+// Sets the redraw flag for this layer, will trigger a redraw next animation frame
+void Layer::setNeedsRedraw(const std::string& reason) { this->needsRedraw = reason; }
+
 // This layer needs a deep update
-void Layer::setNeedsUpdate() {
-  // this->context->layerManager->setNeedsUpdate(String(this));
-  this->internalState->needsUpdate = true;
+void Layer::setNeedsUpdate(const std::string& reason) {
+  this->context->layerManager->setNeedsUpdate(reason);
+  this->needsUpdate = reason;
 }
 
 // Checks state of attributes and model
-// auto getNeedsRedraw(opts = {clearRedrawFlags: false}) -> bool {
-//   return this->_getNeedsRedraw(opts);
-// }
+auto Layer::getNeedsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
+  return "not implemented";  // this->_getNeedsRedraw(clearRedrawFlags);
+}
 
 // Checks if layer attributes needs updating
-// auto needsUpdate() -> bool {
-//   // Call subclass lifecycle method
-//   return (
-//     this->internalState->needsUpdate ||
-//     this->hasUniformTransition() ||
-//     this->shouldUpdateState(this->_getUpdateParams())
-//   );
-//   // End lifecycle method
-// }
+auto Layer::getNeedsUpdate() -> std::optional<std::string> {
+  return "not implemented";
+  //   // Call subclass lifecycle method
+  //   return (
+  //     this->internalState->needsUpdate ||
+  //     this->hasUniformTransition() ||
+  //     this->shouldUpdateState(this->_getUpdateParams())
+  //   );
+  //   // End lifecycle method
+}
 
 // Returns true if the layer is pickable and visible.
 auto Layer::isPickable() const -> bool { return this->props->pickable && this->props->visible; }
 
-auto Layer::getAttributeManager() -> AttributeManager* { return this->internalState->attributeManager; }
+// auto Layer::getAttributeManager() -> std::shared_ptr<AttributeManager> { return this->attributeManager; }
 
 // Return an array of models used by this layer, can be overriden by layer
 // subclass
-auto Layer::getModels() -> std::list<Model*> {
-  return std::list<Model*>();
+auto Layer::getModels() -> std::list<std::shared_ptr<lumagl::Model>> {
+  return this->models;
   // return this->state && (this->state.models || (this->state.model ?
   // [this->state.model] : []));
 }
@@ -264,7 +273,8 @@ decodePickingColor(color) {
 // }
 
 // Let"s layer control if updateState should be called
-auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) -> bool {
+auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps)
+    -> const std::optional<std::string>& {
   return changeFlags.propsOrDataChanged;
 }
 
@@ -289,16 +299,10 @@ void Layer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Prop
 
 // Called once when layer is no longer matched and state will be discarded
 // App can destroy WebGL resources here
-void Layer::finalizeState() {
-  for (const auto model : this->getModels()) {
-    delete model;
-  }
-  delete this->getAttributeManager();
-  // TODO this->internalState->uniformTransitions.clear();
-}
+void Layer::finalizeState() {}
 
 // If state has a model, draw it with supplied uniforms
-void Layer::draw() {
+void Layer::drawState() {
   for (const auto model : this->getModels()) {
     model->draw();
   }
@@ -326,218 +330,48 @@ void Layer::draw() {
 
 // Default implementation of attribute invalidation, can be redefined
 void Layer::invalidateAttribute(const std::string& name, const std::string& diffReason) {
-  const auto attributeManager = this->getAttributeManager();
-  if (!attributeManager) {
-    return;
-  }
-
   if (name == "all") {
-    attributeManager->invalidateAll();
+    this->attributeManager->invalidateAll();
   } else {
-    attributeManager->invalidate(name);
+    this->attributeManager->invalidate(name);
   }
 }
 
 // void updateAttributes(changedAttributes) {
 //   for (const model of this->getModels()) {
-//     this->_setModelAttributes(model, changedAttributes);
+//     model.setAttributes(shaderAttributes);
 //   }
 // }
-
-// Calls attribute manager to update any WebGL attributes
-// void Layer::_updateAttributes() {
-//   const auto attributeManager = this->getAttributeManager();
-//   if (!attributeManager) {
-//     return;
-//   }
-
-// Figure out data length
-// auto numInstances = this->getNumInstances(props);
-// auto startIndices = this->getStartIndices(props);
-
-/*
-  attributeManager->update({
-    data: props.data,
-    numInstances,
-    startIndices,
-    props,
-    transitions: props.transitions,
-    buffers: props.data.attributes,
-    context: this,
-    // Don"t worry about non-attribute props
-    ignoreUnknownAttributes: true
-  });
-*/
-
-// const auto changedAttributes =
-// attributeManager->getChangedAttributes({clearChangedFlags: true});
-// this->updateAttributes(changedAttributes);
-// }
-
-// Update attribute transitions. This is called in drawLayer, no model
-// updates required.
-/*
-void _updateAttributeTransition() {
-  const auto attributeManager = this->getAttributeManager();
-  if (attributeManager) {
-    attributeManager->updateTransition();
-  }
-}
-
-// Update uniform (prop) transitions. This is called in updateState, may
-result in model updates. void _updateUniformTransition() { const
-{uniformTransitions} = this->internalState; if (uniformTransitions.active) {
-    // clone props
-    const propsInTransition = uniformTransitions.update();
-    const props = Object.create(this->props);
-    for (const key in propsInTransition) {
-      Object.defineProperty(props, key, {value: propsInTransition[key]});
-    }
-    return props;
-  }
-  return this->props;
-}
-*/
-
-/*
-void calculateInstancePickingColors(attribute, {numInstances}) {
-  // calculateInstancePickingColors always generates the same sequence.
-  // pickingColorCache saves the largest generated sequence for reuse
-  const cacheSize = pickingColorCache.length / 3;
-
-  if (cacheSize < numInstances) {
-    pickingColorCache = typedArrayManager.allocate(pickingColorCache,
-numInstances, { size: 3, copy: true
-    });
-    // If the attribute is larger than the cache, resize the cache and
-populate the missing chunk const newCacheSize = pickingColorCache.length /
-3; const pickingColor = [];
-    // assert(newCacheSize < 16777215, "index out of picking color range");
-
-    for (let i = cacheSize; i < newCacheSize; i++) {
-      this->encodePickingColor(i, pickingColor);
-      pickingColorCache[i * 3 + 0] = pickingColor[0];
-      pickingColorCache[i * 3 + 1] = pickingColor[1];
-      pickingColorCache[i * 3 + 2] = pickingColor[2];
-    }
-  }
-
-  attribute.value = pickingColorCache.subarray(0, numInstances * 3);
-}
-
-_setModelAttributes(model, changedAttributes) {
-  const attributeManager = this->getAttributeManager();
-  const excludeAttributes = model.userData.excludeAttributes || {};
-  const shaderAttributes = attributeManager->getShaderAttributes(
-    changedAttributes,
-    excludeAttributes
-  );
-
-  model.setAttributes(shaderAttributes);
-}
-
-// Sets the specified instanced picking color to null picking color. Used
-for multi picking. clearPickingColor(color) { const {pickingColors,
-instancePickingColors} = this->getAttributeManager().attributes; const
-colors = pickingColors || instancePickingColors;
-
-  const i = this->decodePickingColor(color);
-  const start = colors.getVertexOffset(i);
-  const end = colors.getVertexOffset(i + 1);
-
-  // Fill the sub buffer with 0s
-  colors.buffer.subData({
-    data: new Uint8Array(end - start),
-    offset: start // 1 byte per element
-  });
-}
-
-restorePickingColors() {
-  const {pickingColors, instancePickingColors} =
-this->getAttributeManager().attributes; const colors = pickingColors ||
-instancePickingColors; colors.updateSubBuffer({startOffset: 0});
-}
-*/
-
-// Deduces numer of instances. Intention is to support:
-// - Explicit setting of numInstances
-// - Auto-deduction for ES6 containers that define a size member
-// - Auto-deduction for Classic Arrays via the built-in length attribute
-// - Auto-deduction via arrays
-auto getNumInstances(Layer::Props* props) -> int {
-  return 0;
-  // props = props || this->props;
-
-  // // First Check if app has provided an explicit value
-  // if (props.numInstances >= 0) {
-  //   return props.numInstances;
-  // }
-
-  // // Second check if the layer has set its own value
-  // if (this->state && this->state.numInstances !== undefined) {
-  //   return this->state.numInstances;
-  // }
-
-  // // Use container library to get a count for any ES6 container or
-  // object return count(props.data);
-}
-
-// Buffer layout describes how many attribute values are packed for each
-// data object The default (null) is one value each object. Some data
-// formats (e.g. paths, polygons) have various length. Their buffer layout
-//  is in the form of [L0, L1, L2, ...]
-/*
-getStartIndices(props) {
-  props = props || this->props;
-
-  // First Check if startIndices is provided as an explicit value
-  if (props.startIndices !== undefined) {
-    return props.startIndices;
-  }
-
-  // Second check if the layer has set its own value
-  if (this->state && this->state.startIndices) {
-    return this->state.startIndices;
-  }
-
-  return null;
-}
 
 // LAYER MANAGER API
 // Should only be called by the deck.gl LayerManager class
 
 // Called by layer manager when a new layer is found
-_initialize() {
-  debug(TRACE_INITIALIZE, this);
+void Layer::initialize(const LayerContext* context) {
+  // debug(TRACE_INITIALIZE, this);
 
-  this->_initState();
+  this->context = context;
 
-  // Call subclass lifecycle methods
-  this->initializeState(this->context);
-  // Initialize extensions
-  for (const extension of this->props.extensions) {
-    extension.initializeState.call(this, this->context, extension);
-  }
-  // End subclass lifecycle methods
+  // Call subclass lifecycle method
+  this->initializeState();
+  // End subclass lifecycle method
 
-  // initializeState callback tends to clear state
-  this->setChangeFlags({
-    dataChanged: true,
-    propsChanged: true,
-    viewportChanged: true,
-    extensionsChanged: true
-  });
+  auto reason = "Layer initialization";
+  this->setDataChangedFlag(reason);
+  this->setPropsChangedFlag(reason);
+  this->setViewportChangedFlag(reason);
 
   this->_updateState();
 }
 
 // Called by layer manager
-// if this layer is new (not matched with an existing layer) oldProps will
-be empty object _update() {
+// if this layer is new (not matched with an existing layer) oldProps will be empty object
+void Layer::update() {
   // Call subclass lifecycle method
-  const stateNeedsUpdate = this->needsUpdate();
+  auto stateNeedsUpdate = this->getNeedsUpdate();
   // End lifecycle method
-  debug(TRACE_UPDATE, this, stateNeedsUpdate);
+
+  // debug(TRACE_UPDATE, this, stateNeedsUpdate);
 
   if (stateNeedsUpdate) {
     this->_updateState();
@@ -545,146 +379,141 @@ be empty object _update() {
 }
 
 // Common code for _initialize and _update
-_updateState() {
-  const currentProps = this->props;
-  const propsInTransition = this->_updateUniformTransition();
-  this->internalState->propsInTransition = propsInTransition;
-  // Overwrite this->props during update to use in-transition prop values
-  this->props = propsInTransition;
-
-  const updateParams = this->_getUpdateParams();
-
+void Layer::_updateState() {
   // Safely call subclass lifecycle methods
-  if (this->context->gl) {
-    this->updateState(updateParams);
-  } else {
-    try {
-      this->updateState(updateParams);
-    } catch (error) {
-      // ignore error if gl context is missing
-    }
+  if (!this->context->gl) {
+    return;
   }
-  // Execute extension updates
-  for (const extension of this->props.extensions) {
-    extension.updateState.call(this, updateParams, extension);
-  }
-  this->_updateModules(updateParams);
+
+  this->updateState(this->_changeFlags, this->oldProps);
   // End subclass lifecycle methods
 
-  if (this->isComposite) {
-    // Render or update previously rendered sublayers
-    this->_renderLayers(updateParams);
-  } else {
-    this->setNeedsRedraw();
-    // Add any subclass attributes
-    this->_updateAttributes(this->props);
+  // if (this->isComposite) {
+  //   // Render or update previously rendered sublayers
+  //   this->_renderLayers();
+  // } else {
 
-    // Note: Automatic instance count update only works for single layers
-    if (this->state.model) {
-      this->state.model.setInstanceCount(this->getNumInstances());
-    }
-  }
+  this->setNeedsRedraw("Update state");
+  // Add any subclass attributes
+  this->_updateAttributes();
 
-  this->props = currentProps;
+  // this->props = currentProps;
+  // this->oldProps = nullptr;
   this->clearChangeFlags();
-  this->internalState->needsUpdate = false;
-  this->internalState->resetOldProps();
+  this->needsUpdate = false;
+  this->needsRedraw = true;
 }
 
 // Called by manager when layer is about to be disposed
 // Note: not guaranteed to be called on application shutdown
-_finalize() {
-  debug(TRACE_FINALIZE, this);
-  assert(this->internalState && this->state);
+void Layer::finalize() {
+  // debug(TRACE_FINALIZE, this);
 
   // Call subclass lifecycle method
-  this->finalizeState(this->context);
-  // Finalize extensions
-  for (const extension of this->props.extensions) {
-    extension.finalizeState.call(this, extension);
-  }
+  this->finalizeState();
+  // End subclass lifecycle method
 }
 
 // Calculates uniforms
-drawLayer({moduleParameters = null, uniforms = {}, parameters = {}}) {
-  this->_updateAttributeTransition();
-
-  const currentProps = this->props;
-  // Overwrite this->props during redraw to use in-transition prop values
-  // `internalState->propsInTransition` could be missing if `updateState`
-failed this->props = this->internalState->propsInTransition || currentProps;
-
-  const {opacity} = this->props;
-  // apply gamma to opacity to make it visually "linear"
-  uniforms.opacity = Math.pow(opacity, 1 / 2.2);
-
-  // TODO/ib - hack move to luma Model.draw
-  if (moduleParameters) {
-    this->setModuleParameters(moduleParameters);
-  }
-
-  // Apply polygon offset to avoid z-fighting
-  // TODO - move to draw-layers
-  const {getPolygonOffset} = this->props;
-  const offsets = (getPolygonOffset && getPolygonOffset(uniforms)) || [0,
-0];
-
-  setParameters(this->context->gl, {polygonOffset: offsets});
-
+void Layer::draw() {
   // Call subclass lifecycle method
-  withParameters(this->context->gl, parameters, () => {
-    this->draw({moduleParameters, uniforms, parameters, context:
-this->context});
-  });
-
+  this->drawState();
   // End lifecycle method
-
-  this->props = currentProps;
 }
 
 // Helper methods
-getChangeFlags() {
-  return this->internalState->changeFlags;
+auto Layer::getChangeFlags() -> Layer::ChangeFlags { return this->_changeFlags; }
+
+void Layer::setDataChangedFlag(const std::string& reason) {
+  if (!this->_changeFlags.dataChanged) {
+    this->_changeFlags.dataChanged = reason;
+  }
+  this->_updateChangeFlags();
 }
 
 // Dirty some change flags, will be handled by updateLayer
-setChangeFlags(flags) {
-  const {changeFlags} = this->internalState;
-
-  for (const key in changeFlags) {
-    if (flags[key] && !changeFlags[key]) {
-      changeFlags[key] = flags[key];
-      debug(TRACE_CHANGE_FLAG, this, key, flags);
-    }
+void Layer::setPropsChangedFlag(const std::string& reason) {
+  if (!this->_changeFlags.dataChanged) {
+    this->_changeFlags.dataChanged = reason;
   }
+  this->_updateChangeFlags();
+}
 
-  // Update composite flags
-  const propsOrDataChanged =
-    changeFlags.dataChanged ||
-    changeFlags.updateTriggersChanged ||
-    changeFlags.propsChanged ||
-    changeFlags.extensionsChanged;
-  changeFlags.propsOrDataChanged = propsOrDataChanged;
-  changeFlags.somethingChanged =
-    propsOrDataChanged || flags.viewportChanged || flags.stateChanged;
+// Dirty some change flags, will be handled by updateLayer
+void Layer::setViewportChangedFlag(const std::string& reason) {
+  if (!this->_changeFlags.dataChanged) {
+    this->_changeFlags.dataChanged = reason;
+  }
+  this->_updateChangeFlags();
 }
 
 // Clear all changeFlags, typically after an update
-clearChangeFlags() {
-  this->internalState->changeFlags = {
-    // Primary changeFlags, can be strings stating reason for change
-    dataChanged: false,
-    propsChanged: false,
-    updateTriggersChanged: false,
-    viewportChanged: false,
-    stateChanged: false,
-    extensionsChanged: false,
+void Layer::clearChangeFlags() {
+  // Primary changeFlags, can be strings stating reason for change
+  this->_changeFlags.dataChanged = std::nullopt;
+  this->_changeFlags.propsChanged = std::nullopt;
+  this->_changeFlags.viewportChanged = std::nullopt;
+  // this->_changeFlags.updateTriggersChanged = std::nullopt;
+  // this->_changeFlags.stateChanged = std::nullopt;
+  // this->_changeFlags.extensionsChanged = std::nullopt;
 
-    // Derived changeFlags
-    propsOrDataChanged: false,
-    somethingChanged: false
-  };
+  this->_changeFlags.propsOrDataChanged = std::nullopt;
+  this->_changeFlags.somethingChanged = std::nullopt;
 }
+
+void Layer::_updateChangeFlags() {
+  // Update composite flags
+  if (!this->_changeFlags.propsOrDataChanged) {
+    if (this->_changeFlags.dataChanged) {
+      this->_changeFlags.propsOrDataChanged = this->_changeFlags.dataChanged;
+    } else if (this->_changeFlags.propsChanged) {
+      this->_changeFlags.propsOrDataChanged = this->_changeFlags.propsChanged;
+    }
+
+    // changeFlags.updateTriggersChanged
+    // changeFlags.extensionsChanged;
+  }
+
+  if (!this->_changeFlags.propsOrDataChanged) {
+    if (this->_changeFlags.propsOrDataChanged) {
+      this->_changeFlags.propsOrDataChanged = this->_changeFlags.dataChanged;
+    } else if (this->_changeFlags.viewportChanged) {
+      this->_changeFlags.propsOrDataChanged = this->_changeFlags.viewportChanged;
+    }
+    // flags.stateChanged
+  }
+}
+
+// Calls attribute manager to update any WebGL attributes
+void Layer::_updateAttributes() {
+  /*
+    const auto attributeManager = this->getAttributeManager();
+    if (!attributeManager) {
+      return;
+    }
+
+    // Figure out data length
+    auto numInstances = this->getNumInstances(props);
+    auto startIndices = 0; this->getStartIndices(props);
+
+    attributeManager->update({
+      data: props.data,
+      numInstances,
+      startIndices,
+      transitions: props.transitions,
+      buffers: props.data.attributes,
+      context: this,
+      // Don"t worry about non-attribute props
+      ignoreUnknownAttributes: true
+    });
+
+  // const auto changedAttributes =
+  // attributeManager->getChangedAttributes({clearChangedFlags: true});
+  // this->updateAttributes(changedAttributes);
+  */
+}
+
+/*
 
 // Compares the layers props with old props from a matched older layer
 // and extracts change flags that describe what has change so that state
@@ -705,12 +534,7 @@ diffProps(newProps, oldProps) {
   if (changeFlags.transitionsChanged) {
     for (const key in changeFlags.transitionsChanged) {
       // prop changed and transition is enabled
-      this->internalState->uniformTransitions.add(
-        key,
-        oldProps[key],
-        newProps[key],
-        newProps.transitions[key]
-      );
+      this->internalState->uniformTransitions.add(key, oldProps[key], newProps[key], newProps.transitions[key]);
     }
   }
 
@@ -718,9 +542,7 @@ diffProps(newProps, oldProps) {
 }
 
 // Called by layer manager to validate props (in development)
-validateProps() {
-  validateProps(this->props);
-}
+validateProps() { validateProps(this->props); }
 
 setModuleParameters(moduleParameters) {
   for (const model of this->getModels()) {
@@ -732,11 +554,8 @@ setModuleParameters(moduleParameters) {
 _updateModules({props, oldProps}) {
   // Picking module parameters
   const {autoHighlight, highlightedObjectIndex, highlightColor} = props;
-  if (
-    oldProps.autoHighlight !== autoHighlight ||
-    oldProps.highlightedObjectIndex !== highlightedObjectIndex ||
-    oldProps.highlightColor !== highlightColor
-  ) {
+  if (oldProps.autoHighlight != = autoHighlight || oldProps.highlightedObjectIndex !=
+      = highlightedObjectIndex || oldProps.highlightColor != = highlightColor) {
     const parameters = {};
     if (!autoHighlight) {
       parameters.pickingSelectedColor = null;
@@ -746,10 +565,9 @@ _updateModules({props, oldProps}) {
     parameters.pickingHighlightColor = highlightColor;
 
     // highlightedObjectIndex will overwrite any settings from auto
-highlighting. if (Number.isInteger(highlightedObjectIndex)) {
+    highlighting.if (Number.isInteger(highlightedObjectIndex)) {
       parameters.pickingSelectedColor =
-        highlightedObjectIndex >= 0 ?
-this->encodePickingColor(highlightedObjectIndex) : null;
+          highlightedObjectIndex >= 0 ? this->encodePickingColor(highlightedObjectIndex) : null;
     }
 
     this->setModuleParameters(parameters);
@@ -758,10 +576,10 @@ this->encodePickingColor(highlightedObjectIndex) : null;
 
 _getUpdateParams() {
   return {
-    props: this->props,
-    oldProps: this->internalState->getOldProps(),
-    context: this->context,
-    changeFlags: this->internalState->changeFlags
+    props : this->props,
+    oldProps : this->internalState->getOldProps(),
+    context : this->context,
+    changeFlags : this->internalState->changeFlags
   };
 }
 
@@ -775,31 +593,25 @@ _getNeedsRedraw(opts) {
 
   let redraw = false;
   redraw = redraw || (this->internalState->needsRedraw && this->id);
-  this->internalState->needsRedraw = this->internalState->needsRedraw &&
-!opts.clearRedrawFlags;
+  this->internalState->needsRedraw = this->internalState->needsRedraw && !opts.clearRedrawFlags;
 
   // TODO - is attribute manager needed? - Model should be enough.
   const attributeManager = this->getAttributeManager();
-  const attributeManagerNeedsRedraw = attributeManager &&
-attributeManager->getNeedsRedraw(opts); redraw = redraw ||
-attributeManagerNeedsRedraw;
+  const attributeManagerNeedsRedraw = attributeManager && attributeManager->getNeedsRedraw(opts);
+  redraw = redraw || attributeManagerNeedsRedraw;
 
   return redraw;
 }
 
 // Create new attribute manager
 _getAttributeManager() {
-  return new AttributeManager(this->context->gl, {
-    id: this->props.id,
-    stats: this->context->stats,
-    timeline: this->context->timeline
-  });
+  return new AttributeManager(this->context->gl,
+                              {id : this->props.id, stats : this->context->stats, timeline : this->context->timeline});
 }
 
 _initState() {
   assert(!this->internalState && !this->state);
-  assert(isFinite(this->props.coordinateSystem), `${this->id}: invalid
-coordinateSystem`);
+  assert(isFinite(this->props.coordinateSystem), `${this->id} : invalid coordinateSystem`);
 
   const attributeManager = this->_getAttributeManager();
 
@@ -808,20 +620,13 @@ coordinateSystem`);
     // Their shaders can use it to render a picking scene
     // TODO - this slightly slows down non instanced layers
     attributeManager->addInstanced({
-      instancePickingColors: {
-        type: GL.UNSIGNED_BYTE,
-        size: 3,
-        noAlloc: true,
-        update: this->calculateInstancePickingColors
-      }
+      instancePickingColors :
+          {type : GL.UNSIGNED_BYTE, size : 3, noAlloc : true, update : this->calculateInstancePickingColors}
     });
   }
 
-  this->internalState = new LayerState({
-    attributeManager,
-    layer: this
-  });
-  this->clearChangeFlags(); // populate this->internalState->changeFlags
+  this->internalState = new LayerState({attributeManager, layer : this});
+  this->clearChangeFlags();  // populate this->internalState->changeFlags
 
   this->state = {};
   // for backwards compatibility with older layers
@@ -830,17 +635,15 @@ coordinateSystem`);
     get: () => {
       log.deprecated("layer.state.attributeManager",
 "layer.getAttributeManager()"); return attributeManager;
-    }
-  });
+}
+});
 
-  this->internalState->layer = this;
-  this->internalState->uniformTransitions = new
-UniformTransitionManager(this->context->timeline);
-  this->internalState->onAsyncPropUpdated =
-this->_onAsyncPropUpdated.bind(this);
+this->internalState->layer = this;
+this->internalState->uniformTransitions = new UniformTransitionManager(this->context->timeline);
+this->internalState->onAsyncPropUpdated = this->_onAsyncPropUpdated.bind(this);
 
-  // Ensure any async props are updated
-  this->internalState->setAsyncProps(this->props);
+// Ensure any async props are updated
+this->internalState->setAsyncProps(this->props);
 }
 
 // Called by layer manager to transfer state from an old layer
@@ -873,9 +676,4 @@ _onAsyncPropUpdated() {
   this->diffProps(this->props, this->internalState->getOldProps());
   this->setNeedsUpdate();
 }
-}
-
-Layer.layerName = "Layer";
-Layer.defaultProps = defaultProps;
-
 */

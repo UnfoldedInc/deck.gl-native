@@ -101,7 +101,7 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 
 void LineLayer::finalizeState() {}
 
-void LineLayer::draw() {  // {uniforms}
+void LineLayer::drawState() {  // {uniforms}
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;
@@ -120,8 +120,8 @@ void LineLayer::draw() {  // {uniforms}
   */
 }
 
-auto LineLayer::_getModel(void* gl) -> std::shared_ptr<Model> {
-  return std::shared_ptr<Model>{nullptr};
+auto LineLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
+  return std::shared_ptr<lumagl::Model>{nullptr};
   //
   //  (0, -1)-------------_(1, -1)
   //       |          _,-"  |
@@ -132,7 +132,7 @@ auto LineLayer::_getModel(void* gl) -> std::shared_ptr<Model> {
   /*
   const positions = [0, -1, 0, 0, 1, 0, 1, -1, 0, 1, 1, 0];
 
-  return new Model(
+  return new lumagl::Model(
     gl,
     Object.assign({}, this->getShaders(), {
       id: this->props.id,
