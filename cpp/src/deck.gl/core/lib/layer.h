@@ -33,8 +33,6 @@
 
 namespace deckgl {
 
-using namespace mathgl;
-
 /* eslint-disable react/no-direct-mutation-state */
 // import {COORDINATE_SYSTEM} from "./constants";
 // import AttributeManager from "./attribute/attribute-manager";
@@ -328,12 +326,13 @@ class Layer::Props : public deckgl::Props {
   float opacity;
 
   COORDINATE_SYSTEM coordinateSystem;
-  Vector3<double> coordinateOrigin;
-  Matrix4<double> modelMatrix;
+  mathgl::Vector3<double> coordinateOrigin;
+  mathgl::Matrix4<double> modelMatrix;
   bool wrapLongitude;
 
   std::string positionFormat;
   std::string colorFormat;
+  std::list<std::shared_ptr<Layer>> subLayers;
 
   // Offset depth based on layer index to avoid z-fighting. Negative values
   // pull layer towards the camera

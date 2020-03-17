@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 
+#include "../lifecycle/prop-types.h"  // TODO - circular?
+
 using namespace deckgl;
 
 auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
@@ -18,15 +20,25 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
   return rootValue;
 }
 
-auto JSONConverter::convertJson(const Json::Value &value) -> std::shared_ptr<Props> {
+auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<Props> {
   this->_traverseJson(value,
                       [=](const std::string &key, const Json::Value) -> std::shared_ptr<Props> { return nullptr; });
   return nullptr;
 }
 
 auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visitor> visitor, const std::string &key,
-                                  int level) -> std::shared_ptr<Props> {
+                                  int level) const -> std::shared_ptr<Props> {
   switch (value.type()) {
+    case Json::ValueType::objectValue:
+      return this->_convertClassProps(value, visitor, level);
+
+    /*
+    case Json::ValueType::arrayValue:
+      for (auto it : value) {
+        this->_traverseJson(it, visitor, key, level + 1);
+      }
+      // TODO - return std::list
+      break;
     case Json::ValueType::realValue:
       return visitor(key, value.asDouble());
       break;
@@ -42,72 +54,38 @@ auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visito
     case Json::ValueType::stringValue:
       return visitor(key, value.asString());
       break;
-    case Json::ValueType::objectValue:
-      if (!value.isMember("@@type")) {
-        throw std::runtime_error("JSON contains non-typed object at " + key);
-      }
-      if (!value["@@type"].isString()) {
-        throw std::runtime_error("JSON contains object with non-string type at " + key);
-      }
-      return this->_convertClassProps(value, visitor, level);
-    case Json::ValueType::arrayValue:
-      for (auto it : value) {
-        this->_traverseJson(it, visitor, key, level + 1);
-      }
-      // TODO - return std::list
-      break;
     case Json::ValueType::nullValue:
       break;
-  }
-
-  return nullptr;
-}
-
-void setPropToJsonValue(std::shared_ptr<Component::Props> props, const std::string &key, Json::Value &value) {
-  switch (value.type()) {
-    case Json::ValueType::realValue:
-      props->setProperty(key, value.asDouble());
-      break;
-    case Json::ValueType::intValue:
-      props->setProperty(key, value.asInt());
-      break;
-    case Json::ValueType::uintValue:
-      props->setProperty(key, value.asUInt());
-      break;
-    case Json::ValueType::booleanValue:
-      props->setProperty(key, value.asBool());
-      break;
-    case Json::ValueType::stringValue:
-      props->setProperty(key, value.asString());
-      break;
-    case Json::ValueType::objectValue:
-    case Json::ValueType::arrayValue:
-    case Json::ValueType::nullValue:
-      // TODO
-      break;
+    */
+    default:
+      throw std::runtime_error("JSON style is not an object");
   }
 }
 
-auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor> visitor, int level)
+auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor>, int level) const
     -> std::shared_ptr<Props> {
   auto className = object["@@type"].asString();
 
-  auto classConverter = this->classes[className];
-  if (!classConverter) {
+  auto findIterator = this->classes.find(className);
+  if (findIterator == this->classes.end()) {
     throw std::runtime_error("JSON contains unknown class with @@type: \"" + className + "\"");
   }
 
+  auto classConverter = findIterator->second;
   auto props = classConverter(object);
   if (!props) {
-    // throw std::runtime_error("JSON class conversion failed for @@type: \"" + className + "\"");
-    return nullptr;
+    throw std::runtime_error("JSON class conversion failed for @@type: \"" + className + "\"");
   }
 
   for (auto it = object.begin(); it != object.end(); ++it) {
     auto key = it.key();
     auto value = *it;  // Json::Value
     if (key != "@@type") {
-      setPropToJsonValue(props, key.asString(), value);
+      if (props->hasProperty(key.asString())) {
+        props->setPropertyFromJson(key.asString(), value, this);
+      } else {
+        std::cout << "ignoring prop " << key << std::endl;
+      }
     }
   }
 

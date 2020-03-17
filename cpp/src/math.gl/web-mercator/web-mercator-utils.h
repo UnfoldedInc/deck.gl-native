@@ -25,8 +25,6 @@
 
 #include "math.gl/core.h"
 
-namespace mathgl {
-
 #define PI M_PI
 #define PI_4 (M_PI / 4.0)
 #define DEGREES_TO_RADIANS (PI / 180.0)
@@ -38,21 +36,23 @@ namespace mathgl {
 // Mapbox default altitude
 #define DEFAULT_ALTITUDE 1.5
 
+namespace mathgl {
+
 struct DistanceScales {
-  Vector3d metersPerUnit;
-  Vector3d unitsPerMeter;
+  Vector3<double> metersPerUnit;
+  Vector3<double> unitsPerMeter;
 };
 
 struct ViewMatrixOptions {
-  Matrix4d viewMatrix;
+  Matrix4<double> viewMatrix;
   // Anchor: lng lat zoom makes viewport work w/ geospatial coordinate systems
   double longitude;
   double latitude;
   double zoom;
   // Anchor position offset (in meters for geospatial viewports)
-  Vector3d position;
+  Vector3<double> position;
   // A model matrix to be applied to position, to match the layer props API
-  Matrix4d modelMatrix;
+  Matrix4<double> modelMatrix;
   // Only needed for orthographic views
   double focalDistance;
   DistanceScales distanceScales;
@@ -62,7 +62,7 @@ struct ViewMatrixOptions {
 
 struct ProjectionMatrixOptions {
   // Projection matrix
-  Matrix4d projectionMatrix;
+  Matrix4<double> projectionMatrix;
 
   // Projection matrix parameters, used if projectionMatrix not supplied
   bool orthographic;
@@ -91,7 +91,7 @@ auto scaleToZoom(double scale) -> double;
  *   Specifies a point on the sphere to project onto the map.
  * @return {Array} [x,y] coordinates.
  */
-auto lngLatToWorld(Vector2d lngLat) -> Vector2d;
+auto lngLatToWorld(Vector2<double> lngLat) -> Vector2<double>;
 
 /**
  * Unproject world point [x,y] on map onto {lat, lon} on sphere
@@ -102,7 +102,7 @@ auto lngLatToWorld(Vector2d lngLat) -> Vector2d;
  *   Has toArray method if you need a GeoJSON Array.
  *   Per cartographic tradition, lat and lon are specified as degrees.
  */
-auto worldToLngLat(Vector2d xy) -> Vector2d;
+auto worldToLngLat(Vector2<double> xy) -> Vector2<double>;
 
 // Returns the zoom level that gives a 1 meter pixel at a certain latitude
 // 1 = C*cos(y)/2^z/TILE_SIZE = C*cos(y)/2^(z+9)
@@ -114,21 +114,21 @@ auto getMeterZoom(double latitude) -> double;
  * In mercator projection mode, the distance scales vary significantly
  * with latitude.
  */
-auto getDistanceScales(Vector2d latLng, bool highPrecision = false) -> DistanceScales;
+auto getDistanceScales(Vector2<double> latLng, bool highPrecision = false) -> DistanceScales;
 
 /**
  * Offset a lng/lat position by meterOffset (northing, easting)
  */
-auto addMetersToLngLat(Vector3d lngLatZ) -> Vector3d;
-auto addMetersToLngLat(Vector2d lngLat) -> Vector2d;
+auto addMetersToLngLat(Vector3<double> lngLatZ) -> Vector3<double>;
+auto addMetersToLngLat(Vector2<double> lngLat) -> Vector2<double>;
 
 // ATTRIBUTION:
 // view and projection matrix creation is intentionally kept compatible with
 // mapbox-gl's implementation to ensure that seamless interoperation
 // with mapbox and react-map-gl. See: https://github.com/mapbox/mapbox-gl-js
 
-auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale, Vector3d center)
-    -> Matrix4d;
+auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale, Vector3<double> center)
+    -> Matrix4<double>;
 
 // PROJECTION MATRIX PARAMETERS
 // Variable fov (in radians)
@@ -141,7 +141,7 @@ auto getProjectionParameters(double width, double height, double altitude = DEFA
 // >= 0.29 - nearZMultiplier: 1 / height, farZMultiplier: 1.01
 
 auto getProjectionMatrix(double width, double height, double pitch, double altitude, double nearZMultiplier,
-                         double farZMultipler) -> Matrix4d;
+                         double farZMultipler) -> Matrix4<double>;
 
 /**
  * Project flat coordinates to pixels on screen.
@@ -150,8 +150,9 @@ auto getProjectionMatrix(double width, double height, double pitch, double altit
  * @param {Matrix4} pixelProjectionMatrix - projection matrix
  * @return {Array} [x, y, depth] pixel coordinate on screen.
  */
-auto worldToPixels(Vector3d xyz, Matrix4d pixelProjectionMatrix) -> Vector3d;
-auto worldToPixels(Vector2d xy, Matrix4d pixelProjectionMatrix) -> Vector2d;
+
+auto worldToPixels(Vector3<double> xyz, Matrix4<double> pixelProjectionMatrix) -> Vector3<double>;
+auto worldToPixels(Vector2<double> xy, Matrix4<double> pixelProjectionMatrix) -> Vector2<double>;
 
 /**
  * Unproject pixels on screen to flat coordinates.
@@ -162,8 +163,8 @@ auto worldToPixels(Vector2d xy, Matrix4d pixelProjectionMatrix) -> Vector2d;
  *    targetZ is used as the elevation plane to unproject onto
  * @return {Array} [x, y, Z] flat coordinates on 512*512 Mercator Zoom 0 tile.
  */
-auto pixelsToWorld(Vector3d xyz, Matrix4d pixelUnprojectionMatrix, double targetZ) -> Vector3d;
-auto pixelsToWorld(Vector2d xy, Matrix4d pixelUnprojectionMatrix, double targetZ) -> Vector2d;
+auto pixelsToWorld(Vector3<double> xyz, Matrix4<double> pixelUnprojectionMatrix, double targetZ) -> Vector3<double>;
+auto pixelsToWorld(Vector2<double> xy, Matrix4<double> pixelUnprojectionMatrix, double targetZ) -> Vector2<double>;
 
 }  // namespace mathgl
 

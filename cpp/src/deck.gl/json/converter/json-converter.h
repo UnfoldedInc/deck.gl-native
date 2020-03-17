@@ -45,14 +45,14 @@ class JSONConverter {
   auto parseJson(const std::string &rawJson) -> Json::Value;
 
   // Convert parsed JSON into registered classes
-  auto convertJson(const Json::Value &) -> std::shared_ptr<Props>;
+  auto convertJson(const Json::Value &) const -> std::shared_ptr<Props>;
 
  private:
   using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<Props>;
 
-  auto _traverseJson(const Json::Value &, std::function<Visitor>, const std::string &key = "", int level = 0)
+  auto _traverseJson(const Json::Value &, std::function<Visitor>, const std::string &key = "", int level = 0) const
       -> std::shared_ptr<Props>;
-  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) -> std::shared_ptr<Props>;
+  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) const -> std::shared_ptr<Props>;
 };
 
 }  // namespace deckgl

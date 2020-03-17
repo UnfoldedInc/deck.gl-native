@@ -22,7 +22,9 @@
 
 namespace mathgl {
 
-ViewMatrixOptions::ViewMatrixOptions() : viewMatrix{Matrix4d() /*identity*/}, focalDistance{1} {}
+ViewMatrixOptions::ViewMatrixOptions()
+    : viewMatrix{Matrix4<double>()},  // identity
+      focalDistance{1} {}
 
 ProjectionMatrixOptions::ProjectionMatrixOptions()
     : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
@@ -31,7 +33,7 @@ auto zoomToScale(double zoom) -> double { return pow(2, zoom); }
 
 auto scaleToZoom(double scale) -> double { return log2(scale); }
 
-auto lngLatToWorld(Vector2d lngLat) -> Vector2d {
+auto lngLatToWorld(Vector2<double> lngLat) -> Vector2<double> {
   if (lngLat.y < -90 || lngLat.y > 90) {
     throw std::logic_error("invalid latitude");
   }
@@ -43,7 +45,7 @@ auto lngLatToWorld(Vector2d lngLat) -> Vector2d {
   return {x, y};
 }
 
-auto worldToLngLat(Vector2d xy) -> Vector2d {
+auto worldToLngLat(Vector2<double> xy) -> Vector2<double> {
   auto lambda2 = (xy.x / TILE_SIZE) * (2 * PI) - PI;
   auto phi2 = 2 * (atan(exp((xy.y / TILE_SIZE) * (2 * PI) - PI)) - PI_4);
   return {lambda2 * RADIANS_TO_DEGREES, phi2 * RADIANS_TO_DEGREES};

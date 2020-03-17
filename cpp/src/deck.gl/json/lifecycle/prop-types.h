@@ -1,17 +1,17 @@
-//
-
-#ifndef DECKGL_CORE_PROP_TYPES_H
-#define DECKGL_CORE_PROP_TYPES_H
+#ifndef DECKGL_JSON_PROP_TYPES_H
+#define DECKGL_JSON_PROP_TYPES_H
 
 #include <functional>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
 
-#include "../json-types-mathgl.h"  // {fromJson<T>}
-#include "../json-types.h"         // {fromJson<T>}
-#include "json/json.h"             // {Json::Value}
+#include "../converter/json-converter.h"     // {JSONConverter}
+#include "../converter/json-types-mathgl.h"  // {fromJson<T>(math.gl types)}
+#include "../converter/json-types.h"         // {fromJson<T>(std types)}
+#include "json/json.h"                       // {Json::Value}
 
 namespace deckgl {
 
@@ -26,14 +26,16 @@ class PropertyType {
   PropertyType(const char* name_) : name{name_} {}
   virtual ~PropertyType() {}
 
+  auto getName() const -> std::string { return this->name; }
+
   virtual bool equals(const Props*, const Props*) const = 0;
-  virtual void setPropertyFromJson(Props*, const Json::Value&) const {}
+  virtual void setPropertyFromJson(Props*, const Json::Value&, const JSONConverter*) const {}
 };
 
 template <class T>
 struct PropertyTypeT : public PropertyType {
  public:
-  std::function<auto(Props const*)->T> get;
+  std::function<auto(Props const*)->T> get;  // TODO return const T& ?
   std::function<void(Props*, T)> set;
   T defaultValue;
 
@@ -42,12 +44,44 @@ struct PropertyTypeT : public PropertyType {
       : PropertyType{name_}, get{get_}, set{set_}, defaultValue{defaultValue_} {}
 
   bool equals(const Props* props1, const Props* props2) const override {
-    // TODO: Seems like this needs an epsilon for floating point comparisons
-    return this->get(props1) == this->get(props2);
+    // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
+    return mathgl::equalsT(this->get(props1), this->get(props2));
+  }
+  void setPropertyFromJson(Props* props, const Json::Value& jsonValue, const JSONConverter*) const override {
+    this->set(props, fromJson<T>(jsonValue));
+  }
+};
+
+template <class T>
+struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
+ public:
+  std::function<auto(Props const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO return const T& ?
+  std::function<void(Props*, const std::list<std::shared_ptr<T>>&)> set;
+  std::list<std::shared_ptr<T>> defaultValue;
+
+  PropertyTypeT<T>(const char* name_,
+                   const std::function<auto(Props const*)->const std::list<std::shared_ptr<T>>&>& get_,
+                   const std::function<void(Props*, const std::list<std::shared_ptr<T>>&)>& set_)
+      : PropertyType{name_}, get{get_}, set{set_} {}
+
+  bool equals(const Props* props1, const Props* props2) const override {
+    // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
+    return mathgl::equalsT(this->get(props1), this->get(props2));
   }
 
-  void setPropertyFromJson(Props* props, const Json::Value& jsonValue) const override {
-    this->set(props, fromJson<T>(jsonValue));
+  void setPropertyFromJson(Props* props, const Json::Value& jsonValue,
+                           const JSONConverter* jsonConverter) const override {
+    if (jsonValue.isArray()) {
+      std::list<std::shared_ptr<T>> list;
+      for (int i = 0; i < jsonValue.size(); ++i) {
+        std::shared_ptr<Props> props = {jsonConverter->convertJson(jsonValue[1])};
+        auto ptr = dynamic_cast<T*>(props.get());
+        list.push_back(std::shared_ptr<T>{ptr});
+      }
+      this->set(props, list);
+      return;
+    }
+    throw std::runtime_error("Cannot convert JSON to list: " + this->getName());
   }
 };
 
@@ -68,14 +102,20 @@ class PropertyTypes {
   const PropertyTypes* parent;
 
   // methods
-  bool hasProp(const std::string& key) const { return this->propTypeMap.count(key) == 1; }
-  auto getPropertyType(const std::string& key) const -> const PropertyType* { return this->propTypeMap.at(key); }
+  bool hasProp(const std::string& key) const { return this->_propTypeMap.count(key) == 1; }
+  auto getPropertyType(const std::string& key) const -> const PropertyType* {
+    auto searchIterator = this->_propTypeMap.find(key);
+    if (searchIterator == this->_propTypeMap.end()) {
+      throw std::runtime_error("No such property: " + className + "." + key);
+    }
+    return searchIterator->second;
+  }
 
  private:
   PropertyTypes(const std::string& className, const PropertyTypes* parentProps,
                 const std::vector<const PropertyType*>&);
 
-  std::map<const std::string, const PropertyType*> propTypeMap;
+  std::map<const std::string, const PropertyType*> _propTypeMap;
 };
 
 class Props {
@@ -89,12 +129,14 @@ class Props {
   // Compares the contents of this prop object against another prop object
   auto compare(const Props* oldProps) -> bool;
 
+  bool hasProperty(const std::string& key) const { return this->getPropertyTypes()->hasProp(key); }
+
   // Sets one property on this prop object
   template <class T>
   void setProperty(const std::string& key, const T& value);
 
   // Set a property from a JSON value
-  void setPropertyFromJson(const std::string& key, const Json::Value& jsonValue);
+  void setPropertyFromJson(const std::string& key, const Json::Value& jsonValue, const JSONConverter*);
 
   // Gets the general property type object for a key
   auto getPropertyType(const std::string& key) const -> const PropertyType*;
@@ -136,4 +178,4 @@ auto Props::getPropertyTypeT(const std::string& key) const -> const PropertyType
 
 }  // namespace deckgl
 
-#endif  // DECKGL_CORE_PROP_TYPES_H
+#endif  // DECKGL_JSON_PROP_TYPES_H

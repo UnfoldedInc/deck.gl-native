@@ -25,6 +25,7 @@
 #include <string>
 
 #include "./json-data.h"
+#include "deck.gl/core.h"
 #include "deck.gl/json.h"
 #include "deck.gl/layers.h"
 
@@ -41,7 +42,7 @@ class JSONConverterTest : public ::testing::Test {
     jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
 
     jsonConverter->classes["Deck"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::shared_ptr<Component::Props>{nullptr};
+      return std::shared_ptr<Component::Props>{new Deck::Props()};
     };
 
     jsonConverter->classes["LineLayer"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
@@ -68,10 +69,9 @@ TEST_F(JSONConverterTest, JSONConfig) {
 
 TEST_F(JSONConverterTest, JSONConverter) {
   Json::Value rootValue;
-  EXPECT_NO_THROW({ rootValue = jsonConverter->parseJson(jsonDataSimple); });
-  auto result = jsonConverter->convertJson(rootValue);
-
+  rootValue = jsonConverter->parseJson(jsonDataSimple);
   std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
+  auto result = jsonConverter->convertJson(rootValue);
 }
 
 }  // namespace

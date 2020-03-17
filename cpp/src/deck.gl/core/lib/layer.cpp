@@ -1,10 +1,10 @@
 #include "./layer.h"
 
+using namespace mathgl;
 using namespace deckgl;
 
 // Setters and getters for properties
 // TODO - auto generate from language-independent prop definition schema
-// TODO - just use member pointer?
 
 static const std::vector<const PropertyType*> propTypeDefs = {
     new PropertyTypeT<bool>{

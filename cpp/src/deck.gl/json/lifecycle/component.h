@@ -1,11 +1,11 @@
-#ifndef DECKGL_CORE_COMPONENT_H
-#define DECKGL_CORE_COMPONENT_H
+#ifndef DECKGL_JSON_COMPONENT_H
+#define DECKGL_JSON_COMPONENT_H
 
 #include <functional>
 
-#include "./prop-types.h"
-
 namespace deckgl {
+
+class Props;
 
 class Component {
  public:
@@ -15,4 +15,4 @@ class Component {
 
 }  // namespace deckgl
 
-#endif  // DECKGL_CORE_COMPONENT_H
+#endif  // DECKGL_JSON_COMPONENT_H
