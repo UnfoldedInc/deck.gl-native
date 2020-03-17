@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Note when switching compiler: `rm -fr build`
+
 mkdir -p build/clang
 cd build/clang
 cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ../..
