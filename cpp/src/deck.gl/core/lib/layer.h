@@ -292,7 +292,7 @@ class Layer : public Component {  // : public Component
   */
 };  // namespace deckgl
 
-class Layer::Props : public deckgl::Props {
+class Layer::Props : public Component::Props {
  public:
   Props()
       // TODO - how to deal with data ?

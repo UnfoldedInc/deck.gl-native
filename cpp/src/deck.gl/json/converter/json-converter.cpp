@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-#include "../lifecycle/prop-types.h"  // TODO - circular?
+#include "../lifecycle/component.h"
 
 using namespace deckgl;
 
@@ -20,14 +20,14 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
   return rootValue;
 }
 
-auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<Props> {
-  this->_traverseJson(value,
-                      [=](const std::string &key, const Json::Value) -> std::shared_ptr<Props> { return nullptr; });
+auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<Component::Props> {
+  this->_traverseJson(
+      value, [=](const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props> { return nullptr; });
   return nullptr;
 }
 
 auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visitor> visitor, const std::string &key,
-                                  int level) const -> std::shared_ptr<Props> {
+                                  int level) const -> std::shared_ptr<Component::Props> {
   switch (value.type()) {
     case Json::ValueType::objectValue:
       return this->_convertClassProps(value, visitor, level);
@@ -63,7 +63,7 @@ auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visito
 }
 
 auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor>, int level) const
-    -> std::shared_ptr<Props> {
+    -> std::shared_ptr<Component::Props> {
   auto className = object["@@type"].asString();
 
   auto findIterator = this->classes.find(className);

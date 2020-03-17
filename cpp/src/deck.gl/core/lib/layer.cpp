@@ -6,6 +6,8 @@ using namespace deckgl;
 // Setters and getters for properties
 // TODO - auto generate from language-independent prop definition schema
 
+using Props = Component::Props;
+
 static const std::vector<const PropertyType*> propTypeDefs = {
     new PropertyTypeT<bool>{
         "visible", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },

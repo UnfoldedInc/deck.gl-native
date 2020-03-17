@@ -6,6 +6,8 @@
 
 using namespace deckgl;
 
+using Props = Component::Props;
+
 const std::vector<const PropertyType*> propTypeDefs = {
     new PropertyTypeT<bool>{
         "filled", [](const Props* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->filled; },

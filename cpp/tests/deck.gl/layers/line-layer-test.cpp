@@ -32,10 +32,10 @@ TEST(LineLayer, PropComparison) {
   auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
   auto layerProps2 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
 
-  EXPECT_TRUE(layerProps1->compare(layerProps2.get()));
+  EXPECT_TRUE(layerProps1->equals(layerProps2.get()));
   layerProps2->opacity = 0.5;
   layerProps2->widthScale = 0.5;
-  EXPECT_FALSE(layerProps1->compare(layerProps2.get()));
+  EXPECT_FALSE(layerProps1->equals(layerProps2.get()));
 }
 
 TEST(LineLayer, PropAccess) {

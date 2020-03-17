@@ -50,6 +50,29 @@ set(MATHGL_CORE_TEST_FILES
     cpp/tests/math.gl/web-mercator/web-mercator-utils-test.cpp
     )
 
+## loaders.gl/csv
+set(LOADERSGL_CSV_HEADER_FILES
+    cpp/src/loaders.gl/csv/csv-loader.h
+)
+set(LOADERSGL_CSV_SOURCE_FILES
+    cpp/src/loaders.gl/csv/csv-loader.cpp
+)
+set(LOADERSGL_CSV_TEST_FILES
+    cpp/tests/loaders.gl/csv/csv-loader-test.cpp
+)
+
+## loaders.gl/json
+set(LOADERSGL_JSON_HEADER_FILES
+    cpp/src/loaders.gl/json/json-loader.h
+)
+set(LOADERSGL_JSON_SOURCE_FILES
+    cpp/src/loaders.gl/json/json-loader.cpp
+)
+set(LOADERSGL_JSON_TEST_FILES
+    cpp/tests/loaders.gl/json/json-loader-test.cpp
+)
+
+
 ## deck.gl/json
 set(DECKGL_JSON_HEADER_FILES
     cpp/src/deck.gl/json.h
@@ -57,13 +80,12 @@ set(DECKGL_JSON_HEADER_FILES
     cpp/src/deck.gl/json/converter/json-types-mathgl.h
     cpp/src/deck.gl/json/converter/json-converter.h
     cpp/src/deck.gl/json/lifecycle/component.h
-    cpp/src/deck.gl/json/lifecycle/prop-types.h
 )
 
 set(DECKGL_JSON_SOURCE_FILES
     cpp/src/deck.gl/json/converter/json-types.cpp
     cpp/src/deck.gl/json/converter/json-converter.cpp
-    cpp/src/deck.gl/json/lifecycle/prop-types.cpp
+    cpp/src/deck.gl/json/lifecycle/component.cpp
 )
 set(DECKGL_JSON_TEST_FILES
     cpp/tests/deck.gl/json/json-converter-test.cpp
@@ -107,46 +129,21 @@ set(DECKGL_LAYERS_TEST_FILES
     cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
     )
 
-## loaders.gl/json
-set(LOADERSGL_JSON_HEADER_FILES
-    cpp/src/loaders.gl/json/json-loader.h
-    )
-set(LOADERSGL_JSON_SOURCE_FILES
-    cpp/src/loaders.gl/json/json-loader.cpp
-    )
-set(LOADERSGL_JSON_TEST_FILES
-    cpp/tests/loaders.gl/json/json-loader-test.cpp
-    )
-
-## loaders.gl/csv
-set(LOADERSGL_CSV_HEADER_FILES
-    cpp/src/loaders.gl/csv/csv-loader.h
-    )
-set(LOADERSGL_CSV_SOURCE_FILES
-    cpp/src/loaders.gl/csv/csv-loader.cpp
-    )
-set(LOADERSGL_CSV_TEST_FILES
-    cpp/tests/loaders.gl/csv/csv-loader-test.cpp
-    )
-
 # Define source file lists per type
 set(LIB_HEADER_FILES
     ${MATHGL_CORE_HEADER_FILES}
-    ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
-    ${DECKGL_JSON_HEADER_FILES}
-    ${LOADERSGL_JSON_HEADER_FILES} ${LOADERSGL_CSV_HEADER_FILES}
+    ${LOADERSGL_CSV_HEADER_FILES} ${LOADERSGL_JSON_HEADER_FILES}
+    ${DECKGL_JSON_HEADER_FILES} ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
     ${MATHGL_CORE_SOURCE_FILES}
-    ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
-    ${DECKGL_JSON_SOURCE_FILES}
-    ${LOADERSGL_JSON_SOURCE_FILES} ${LOADERSGL_CSV_SOURCE_FILES}
+    ${LOADERSGL_CSV_SOURCE_FILES} ${LOADERSGL_JSON_SOURCE_FILES}
+    ${DECKGL_JSON_SOURCE_FILES} ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
     ${MATHGL_CORE_TEST_FILES}
-    ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
-    ${DECKGL_JSON_TEST_FILES}
-    ${LOADERSGL_JSON_TEST_FILES} ${LOADERSGL_CSV_TEST_FILES}
+    ${LOADERSGL_CSV_TEST_FILES} ${LOADERSGL_JSON_TEST_FILES}
+    ${DECKGL_JSON_TEST_FILES} ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
     cpp/tests/main.cpp
     )
 SET(TEST_HEADER_FILES
@@ -167,7 +164,7 @@ find_package(Arrow CONFIG REQUIRED)
 add_library(deck.gl ${LIB_SOURCE_FILES})
 
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} jsoncpp_lib arrow)
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib arrow)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)
