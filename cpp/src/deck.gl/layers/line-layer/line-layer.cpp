@@ -6,6 +6,8 @@
 
 using namespace deckgl;
 
+using Props = Component::Props;
+
 const std::vector<const PropertyType*> propTypeDefs = {
     //  new PropertyTypeT<std::string>{"widthUnits",
     //      [](const LineLayer::Props* props) { return dynamic_cast<const LineLayer*>(props)->widthUnits; },

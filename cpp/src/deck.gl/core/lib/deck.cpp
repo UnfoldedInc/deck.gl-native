@@ -59,8 +59,8 @@ using namespace deckgl;
 // TODO - just use member pointer?
 
 static const std::vector<const PropertyType*> propTypeDefs = {new PropertyTypeT<std::list<std::shared_ptr<Layer>>>{
-    "layers", [](const Props* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
-    [](Props* props, std::list<std::shared_ptr<Layer>> value) {
+    "layers", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
+    [](Component::Props* props, std::list<std::shared_ptr<Layer>> value) {
       return dynamic_cast<Deck::Props*>(props)->layers = value;
     }}};
 

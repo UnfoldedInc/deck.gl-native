@@ -32,7 +32,7 @@ namespace deckgl {
 
 class JSONConverter {
  public:
-  using JsonValueToComponentConverter = std::function<auto(const Json::Value &)->std::shared_ptr<Props>>;
+  using JsonValueToComponentConverter = std::function<auto(const Json::Value &)->std::shared_ptr<Component::Props>>;
 
   // public members
   std::map<std::string, JsonValueToComponentConverter> classes;
@@ -45,14 +45,15 @@ class JSONConverter {
   auto parseJson(const std::string &rawJson) -> Json::Value;
 
   // Convert parsed JSON into registered classes
-  auto convertJson(const Json::Value &) const -> std::shared_ptr<Props>;
+  auto convertJson(const Json::Value &) const -> std::shared_ptr<Component::Props>;
 
  private:
-  using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<Props>;
+  using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props>;
 
   auto _traverseJson(const Json::Value &, std::function<Visitor>, const std::string &key = "", int level = 0) const
-      -> std::shared_ptr<Props>;
-  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) const -> std::shared_ptr<Props>;
+      -> std::shared_ptr<Component::Props>;
+  auto _convertClassProps(const Json::Value &, std::function<Visitor>, int level) const
+      -> std::shared_ptr<Component::Props>;
 };
 
 }  // namespace deckgl

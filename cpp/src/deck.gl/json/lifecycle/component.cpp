@@ -1,6 +1,9 @@
-#include "./prop-types.h"  // {Props}
+#include "./component.h"  // {Props}
 
+#include "../converter/json-converter.h"  // {JSONConverter}
 using namespace deckgl;
+
+using Props = Component::Props;
 
 // PropertyTypes
 
@@ -48,7 +51,7 @@ auto Props::getPropertyType(const std::string& key) const -> const PropertyType*
   return propertyType;
 }
 
-auto Props::compare(const Props* oldProps) -> bool {
+auto Component::Props::equals(const Props* oldProps) -> bool {
   auto propTypes = this->getPropertyTypes();
 
   for (auto element : propTypes->_propTypeMap) {
@@ -57,10 +60,23 @@ auto Props::compare(const Props* oldProps) -> bool {
     // Accessing VALUE from element.
     const PropertyType* propType = element.second;
     if (!propType->equals(this, oldProps)) {
-      std::cerr << propType->name << " compared false\n";
       return false;
     }
   }
 
   return true;
+}
+
+auto PropertyType::_getPropListFromJson(Component::Props* props, const Json::Value& jsonValue,
+                                        const JSONConverter* jsonConverter) const
+    -> std::list<std::shared_ptr<Component::Props>> {
+  if (jsonValue.isArray()) {
+    std::list<std::shared_ptr<Component::Props>> propsList;
+    for (int i = 0; i < jsonValue.size(); ++i) {
+      std::shared_ptr<Props> props = {jsonConverter->convertJson(jsonValue[1])};
+      propsList.push_back(props);
+    }
+    return propsList;
+  }
+  throw std::runtime_error("Cannot convert JSON to list: " + this->getName());
 }
