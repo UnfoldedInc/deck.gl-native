@@ -9,10 +9,6 @@ language: c
 os: linux
 dist: bionic
 
-compiler: clang
-  # - gcc
-  # - clang
-
 addons:
   homebrew:
     packages:
@@ -45,6 +41,9 @@ matrix:
       os: osx
       osx_image: xcode10.1
       before_install: []
+    - name: "Linux (Clang)"
+      os: linux
+      compiler: clang
 
 before_install:
   # Install arrow
