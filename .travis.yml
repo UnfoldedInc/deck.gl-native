@@ -9,6 +9,11 @@ language: c
 os: linux
 dist: bionic
 
+addons:
+  homebrew:
+    packages:
+    - apache-arrow
+
 matrix:
   include:
       # Check that clang-format doesn't detect some files are not formatted.
@@ -32,11 +37,11 @@ matrix:
     #   script:
     #     - make
     #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    - name: "Mac OSX (Xcode 11.3)"
-      os: osx
-      osx_image: xcode11.3
-      before_install:
-        - brew install apache-arrow
+    # TODO: Doesn't install arrow correctly on OSX
+    # - name: "Mac OSX (Xcode 11.3)"
+    #   os: osx
+    #   osx_image: xcode11.3
+    #   before_install: []
     - name: "Linux (Clang)"
       os: linux
       compiler: clang
