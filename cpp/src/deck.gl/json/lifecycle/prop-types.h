@@ -59,9 +59,8 @@ struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
   std::function<void(Props*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
 
-  PropertyTypeT<T>(const char* name_,
-                   const std::function<auto(Props const*)->const std::list<std::shared_ptr<T>>&>& get_,
-                   const std::function<void(Props*, const std::list<std::shared_ptr<T>>&)>& set_)
+  PropertyTypeT(const char* name_, const std::function<auto(Props const*)->const std::list<std::shared_ptr<T>>&>& get_,
+                const std::function<void(Props*, const std::list<std::shared_ptr<T>>&)>& set_)
       : PropertyType{name_}, get{get_}, set{set_} {}
 
   bool equals(const Props* props1, const Props* props2) const override {
@@ -73,7 +72,7 @@ struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
                            const JSONConverter* jsonConverter) const override {
     if (jsonValue.isArray()) {
       std::list<std::shared_ptr<T>> list;
-      for (int i = 0; i < jsonValue.size(); ++i) {
+      for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
         std::shared_ptr<Props> props = {jsonConverter->convertJson(jsonValue[1])};
         auto ptr = dynamic_cast<T*>(props.get());
         list.push_back(std::shared_ptr<T>{ptr});

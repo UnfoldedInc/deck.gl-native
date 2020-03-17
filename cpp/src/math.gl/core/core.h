@@ -215,7 +215,6 @@ class Matrix2 {
  public:
   // Template types
   typedef coord Coord;
-  typedef Vector2<coord> Vector2;
 
   Matrix2(coord m11, coord m12, coord m21, coord m22);
   Matrix2(const Matrix2<coord> &);
@@ -227,7 +226,7 @@ class Matrix2 {
   static auto MakeScale(coord sx, coord sy) -> Matrix2;
   static auto MakeRotation(coord angle) -> Matrix2;  // counterclockwise
 
-  auto Invert() const -> Matrix2;
+  auto Invert() const -> Matrix2<coord>;
 
   auto operator()(unsigned row, unsigned col) -> coord & { return m[row][col]; }
   auto operator()(unsigned row, unsigned col) const -> const coord { return m[row][col]; }
