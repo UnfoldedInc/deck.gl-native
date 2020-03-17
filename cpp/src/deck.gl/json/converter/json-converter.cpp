@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-#include "../lifecycle/component.h"  // TODO - circular?
+#include "../lifecycle/component.h"
 
 using namespace deckgl;
 
