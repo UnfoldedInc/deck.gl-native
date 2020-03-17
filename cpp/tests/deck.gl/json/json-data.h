@@ -1,5 +1,6 @@
 static auto jsonDataFull = R"JSON(
 {
+  "@@type": "Deck",
   "description": "Test",
   "initialViewState": {
     "longitude": -122.45,
@@ -102,27 +103,11 @@ static auto jsonDataSimple = R"JSON(
             37.8
           ]
       ],
-      "getFillColor": [
-        255,
-        0,
-        0,
-        255
-      ],
       "getRadius": 1000
     },
     {
       "@@type": "LineLayer",
       "data": [
-        {
-          "position1": [
-            -122.45,
-            37.8
-          ],
-          "position2": [
-            -122.45,
-            37.8
-          ]
-        }
       ]
     }
   ]

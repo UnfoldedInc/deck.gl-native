@@ -67,12 +67,11 @@ TEST_F(JSONConverterTest, JSONConfig) {
   });
 }
 
-// TEST_F(JSONConverterTest, JSONConverter) {
-//   Json::Value rootValue;
-//   EXPECT_NO_THROW({ rootValue = jsonConverter->parseJson(jsonDataFull); });
-//   auto result = jsonConverter->convertJson(rootValue);
-
-//   std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
-// }
+TEST_F(JSONConverterTest, JSONConverter) {
+  Json::Value rootValue;
+  rootValue = jsonConverter->parseJson(jsonDataSimple);
+  std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
+  auto result = jsonConverter->convertJson(rootValue);
+}
 
 }  // namespace

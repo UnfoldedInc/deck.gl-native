@@ -26,6 +26,8 @@ class PropertyType {
   PropertyType(const char* name_) : name{name_} {}
   virtual ~PropertyType() {}
 
+  auto getName() const -> std::string { return this->name; }
+
   virtual bool equals(const Props*, const Props*) const = 0;
   virtual void setPropertyFromJson(Props*, const Json::Value&, const JSONConverter*) const {}
 };
@@ -77,8 +79,9 @@ struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
         list.push_back(std::shared_ptr<T>{ptr});
       }
       this->set(props, list);
+      return;
     }
-    throw std::runtime_error("Cannot convert JSON to list");
+    throw std::runtime_error("Cannot convert JSON to list: " + this->getName());
   }
 };
 
@@ -100,7 +103,13 @@ class PropertyTypes {
 
   // methods
   bool hasProp(const std::string& key) const { return this->_propTypeMap.count(key) == 1; }
-  auto getPropertyType(const std::string& key) const -> const PropertyType* { return this->_propTypeMap.at(key); }
+  auto getPropertyType(const std::string& key) const -> const PropertyType* {
+    auto searchIterator = this->_propTypeMap.find(key);
+    if (searchIterator == this->_propTypeMap.end()) {
+      throw std::runtime_error("No such property: " + className + "." + key);
+    }
+    return searchIterator->second;
+  }
 
  private:
   PropertyTypes(const std::string& className, const PropertyTypes* parentProps,
@@ -119,6 +128,8 @@ class Props {
 
   // Compares the contents of this prop object against another prop object
   auto compare(const Props* oldProps) -> bool;
+
+  bool hasProperty(const std::string& key) const { return this->getPropertyTypes()->hasProp(key); }
 
   // Sets one property on this prop object
   template <class T>
