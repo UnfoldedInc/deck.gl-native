@@ -84,6 +84,7 @@ struct ProjectionMatrixOptions {
   double focalDistance;
 
   ProjectionMatrixOptions();
+  ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near, double far);
 };
 
 auto zoomToScale(double zoom) -> double;
@@ -150,6 +151,8 @@ auto getProjectionParameters(double width, double height, double altitude = DEFA
 
 auto getProjectionMatrix(double width, double height, double pitch, double altitude, double nearZMultiplier,
                          double farZMultipler) -> Matrix4<double>;
+
+auto transformVector(Matrix4<double>, Vector4<double>) -> Vector4<double>;
 
 /**
  * Project flat coordinates to pixels on screen.
