@@ -37,9 +37,9 @@ matrix:
     #   script:
     #     - make
     #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    - name: "Mac OSX (Xcode 10)"
+    - name: "Mac OSX (Xcode 11.3)"
       os: osx
-      osx_image: xcode10.1
+      osx_image: xcode11.3
       before_install: []
     - name: "Linux (Clang)"
       os: linux
