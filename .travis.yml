@@ -9,11 +9,6 @@ language: c
 os: linux
 dist: bionic
 
-addons:
-  homebrew:
-    packages:
-    - apache-arrow
-
 matrix:
   include:
       # Check that clang-format doesn't detect some files are not formatted.
@@ -40,7 +35,8 @@ matrix:
     - name: "Mac OSX (Xcode 11.3)"
       os: osx
       osx_image: xcode11.3
-      before_install: []
+      before_install:
+        - brew install apache-arrow
     - name: "Linux (Clang)"
       os: linux
       compiler: clang
