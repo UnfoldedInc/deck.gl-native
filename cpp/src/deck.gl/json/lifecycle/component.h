@@ -9,7 +9,7 @@ class Props;
 
 class Component {
  public:
-  using Props = Props;
+  using Props = deckgl::Props;
   virtual ~Component() {}
 };
 
