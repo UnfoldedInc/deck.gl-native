@@ -1,7 +1,7 @@
 #include "./line-layer.h"
 
-#include "./line-layer-fragment.glsl.h"
-#include "./line-layer-vertex.glsl.h"
+//#include "./line-layer-fragment.glsl.h"
+//#include "./line-layer-vertex.glsl.h"
 #include "deck.gl/core.h"
 
 using namespace deckgl;

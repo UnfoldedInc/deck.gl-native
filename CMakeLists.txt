@@ -167,7 +167,7 @@ find_package(Arrow CONFIG REQUIRED)
 add_library(deck.gl ${LIB_SOURCE_FILES})
 
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib arrow)
+target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} jsoncpp_lib arrow)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)

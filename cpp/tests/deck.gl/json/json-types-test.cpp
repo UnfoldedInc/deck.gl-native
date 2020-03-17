@@ -23,7 +23,6 @@
 #include <iostream>
 #include <string>
 
-#include "./json-data.h"
 #include "deck.gl/json.h"
 
 using namespace deckgl;

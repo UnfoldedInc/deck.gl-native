@@ -9,7 +9,7 @@ namespace deckgl {
 
 class Component {
  public:
-  using Props = Props;
+  using Props = deckgl::Props;
   virtual ~Component() {}
 };
 

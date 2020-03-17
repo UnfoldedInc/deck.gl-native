@@ -21,7 +21,7 @@
 #ifndef DECKGL_CORE_CONSTANTS_H
 #define DECKGL_CORE_CONSTANTS_H
 
-#import "deck.gl/json.h"
+#include "deck.gl/json.h"
 
 namespace deckgl {
 
