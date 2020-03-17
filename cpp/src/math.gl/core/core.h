@@ -127,7 +127,7 @@ class Vector3 {
 
   auto Length() const -> coord;
   auto Length2() const -> coord;
-  auto ToVector2() const -> Vector2<coord>;
+  auto toVector2() const -> Vector2<coord>;
 
   void Normalize();
 
@@ -424,7 +424,7 @@ auto Vector3<coord>::Length2() const -> coord {
 }
 
 template <typename coord>
-auto Vector3<coord>::ToVector2() const -> Vector2<coord> {
+auto Vector3<coord>::toVector2() const -> Vector2<coord> {
   return Vector2<coord>(this->x, this->y);
 }
 

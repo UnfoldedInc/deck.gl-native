@@ -114,9 +114,9 @@ auto getDistanceScales(Vector2<double> latLng, bool highPrecision) -> DistanceSc
  * Offset a lng/lat position by meterOffset (northing, easting)
  */
 auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double> {
-  auto distanceScales = getDistanceScales(lngLatZ.ToVector2(), true);
+  auto distanceScales = getDistanceScales(lngLatZ.toVector2(), true);
 
-  auto worldspace = lngLatToWorld(lngLatZ.ToVector2());
+  auto worldspace = lngLatToWorld(lngLatZ.toVector2());
   worldspace.x += xyz.x * (distanceScales.unitsPerMeter.x + distanceScales.unitsPerMeter2.x * xyz.x);
   worldspace.y += xyz.y * (distanceScales.unitsPerMeter.y + distanceScales.unitsPerMeter2.y * xyz.y);
 
@@ -136,6 +136,36 @@ auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<do
   auto newLngLat = worldToLngLat(worldspace);
 
   return newLngLat;
+}
+
+auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale,
+                   std::optional<Vector3<double>> center) -> Matrix4<double> {
+  // VIEW MATRIX: PROJECTS MERCATOR WORLD COORDINATES
+  // Note that mercator world coordinates typically need to be flipped
+  //
+  // Note: As usual, matrix operation orders should be read in reverse
+  // since vectors will be multiplied from the right during transformation
+  auto vm = Matrix4<double>();
+
+  // Move camera to altitude (along the pitch & bearing direction)
+  auto translation = Vector3<double>(0.0, 0.0, -altitude);
+  // TODO: Doesn't apply - replaces!
+  vm = vm.MakeTranslation(translation);
+
+  // Rotate by bearing, and then by pitch (which tilts the view)
+  vm = vm.MakeRotationX(-pitch * DEGREES_TO_RADIANS);
+  vm = vm.MakeRotationY(bearing * DEGREES_TO_RADIANS);
+
+  scale /= height;
+  // TODO: ADD CORRECT SCALE OPERATION
+  vm = vm.Scale(Vector3<double>(scale, scale, scale));
+
+  if (center) {
+    auto centerTranslation = -center.value();
+    vm = vm.MakeTranslation(centerTranslation);
+  }
+
+  return vm;
 }
 
 }  // namespace mathgl
