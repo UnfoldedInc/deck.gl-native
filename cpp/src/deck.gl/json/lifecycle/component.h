@@ -69,9 +69,9 @@ struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
   std::function<void(Component::Props*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
 
-  PropertyTypeT<T>(const char* name_,
-                   const std::function<auto(Component::Props const*)->const std::list<std::shared_ptr<T>>&>& get_,
-                   const std::function<void(Component::Props*, const std::list<std::shared_ptr<T>>&)>& set_)
+  PropertyTypeT(const char* name_,
+                const std::function<auto(Component::Props const*)->const std::list<std::shared_ptr<T>>&>& get_,
+                const std::function<void(Component::Props*, const std::list<std::shared_ptr<T>>&)>& set_)
       : PropertyType{name_}, get{get_}, set{set_} {}
 
   bool equals(const Component::Props* props1, const Component::Props* props2) const override {

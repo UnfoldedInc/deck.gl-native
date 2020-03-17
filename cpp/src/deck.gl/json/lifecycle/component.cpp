@@ -72,7 +72,7 @@ auto PropertyType::_getPropListFromJson(Component::Props* props, const Json::Val
     -> std::list<std::shared_ptr<Component::Props>> {
   if (jsonValue.isArray()) {
     std::list<std::shared_ptr<Component::Props>> propsList;
-    for (int i = 0; i < jsonValue.size(); ++i) {
+    for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
       std::shared_ptr<Props> props = {jsonConverter->convertJson(jsonValue[1])};
       propsList.push_back(props);
     }
