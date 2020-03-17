@@ -331,6 +331,8 @@ class Matrix4 {
   auto MultiplyVector(const Vector3<coord> &) const -> Vector3<coord>;
   auto MultiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
 
+  auto scale(const Vector3<coord> &) const -> Matrix4<coord>;
+
   coord m[4][4];
 };
 
@@ -760,6 +762,16 @@ auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coo
   return Vector3<coord>(m[0][0] * s.x + m[0][1] * s.y + m[0][2] * s.z + m[0][3] * static_cast<coord>(1),
                         m[1][0] * s.x + m[1][1] * s.y + m[1][2] * s.z + m[1][3] * static_cast<coord>(1),
                         m[2][0] * s.x + m[2][1] * s.y + m[2][2] * s.z + m[2][3] * static_cast<coord>(1));
+}
+
+template <typename coord>
+auto Matrix4<coord>::scale(const Vector3<coord> &s) const -> Matrix4<coord> {
+  return Matrix4<coord>(
+    m[0][0] * s.x, m[0][1] * s.x, m[0][2] * s.x, m[0][3] * s.x,
+    m[1][0] * s.y, m[1][1] * s.y, m[1][2] * s.y, m[1][3] * s.y,
+    m[2][0] * s.z, m[2][1] * s.z, m[2][2] * s.z, m[2][3] * s.z,
+    m[3][0], m[3][1], m[3][2], m[3][3]
+  );
 }
 
 template <typename coord>

@@ -149,20 +149,20 @@ auto getViewMatrix(double height, double pitch, double bearing, double altitude,
 
   // Move camera to altitude (along the pitch & bearing direction)
   auto translation = Vector3<double>(0.0, 0.0, -altitude);
-  // TODO: Doesn't apply - replaces!
-  vm = vm.MakeTranslation(translation);
-
-  // Rotate by bearing, and then by pitch (which tilts the view)
-  vm = vm.MakeRotationX(-pitch * DEGREES_TO_RADIANS);
-  vm = vm.MakeRotationY(bearing * DEGREES_TO_RADIANS);
+  vm = vm *
+       Matrix4<double>::MakeTranslation(translation)
+       // Rotate by bearing, and then by pitch (which tilts the view)
+       * Matrix4<double>::MakeRotationX(-pitch * DEGREES_TO_RADIANS) *
+       Matrix4<double>::MakeRotationY(bearing * DEGREES_TO_RADIANS);
 
   scale /= height;
   // TODO: ADD CORRECT SCALE OPERATION
-  vm = vm.Scale(Vector3<double>(scale, scale, scale));
+  Vector3<double> scaleVector = Vector3<double>(scale, scale, scale);
+  vm = vm.scale(scaleVector);
 
   if (center) {
     auto centerTranslation = -center.value();
-    vm = vm.MakeTranslation(centerTranslation);
+    vm = vm * Matrix4<double>::MakeTranslation(centerTranslation);
   }
 
   return vm;
