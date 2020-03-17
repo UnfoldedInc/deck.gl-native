@@ -9,9 +9,9 @@ language: c
 os: linux
 dist: bionic
 
-compiler:
-  - gcc
-  - clang
+compiler: clang
+  # - gcc
+  # - clang
 
 addons:
   homebrew:
@@ -41,10 +41,10 @@ matrix:
     #   script:
     #     - make
     #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    # - name: "Mac OSX (Xcode 10)"
-    #   os: osx
-    #   osx_image: xcode10.1
-    #   before_install: []
+    - name: "Mac OSX (Xcode 10)"
+      os: osx
+      osx_image: xcode10.1
+      before_install: []
 
 before_install:
   # Install arrow
