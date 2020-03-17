@@ -159,8 +159,8 @@ set(ALL_SOURCE_FILES
 find_package(jsoncpp CONFIG REQUIRED)
 
 # TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
-#include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
-#link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
+include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
+link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
 find_package(Arrow CONFIG REQUIRED)
 
 # Build the actual library file

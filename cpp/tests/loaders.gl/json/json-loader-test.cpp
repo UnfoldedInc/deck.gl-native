@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "loaders.gl/json/json-loader.h"
+
 #include <arrow/array.h>
 #include <arrow/io/memory.h>
 #include <gtest/gtest.h>
@@ -27,7 +29,6 @@
 
 #include "./json-loader-data.h"
 #include "deck.gl/layers.h"
-#include "loaders.gl/json/json-loader.h"
 
 using namespace loadersgl;
 
