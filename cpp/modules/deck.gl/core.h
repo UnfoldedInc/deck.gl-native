@@ -23,8 +23,11 @@
 
 #include "./core/src/lib/constants.h"       // {COORDINATE_SYSTEM, PROJECTION_MODE}
 #include "./core/src/lib/deck.h"            // {Deck}
-#include "./core/src/lib/layer.h"           // {Layer, Layer::Props, Layer::State}
+#include "./core/src/lib/layer.h"           // {Layer, Layer::Props}
 #include "./core/src/viewports/viewport.h"  // {Viewport}
+#include "./core/src/views/map-view.h"      // {MapView, MapView::Props}
+#include "./core/src/views/view-state.h"    // {ViewState, ViewState::Props}
+#include "./core/src/views/view.h"          // {View, View::Props}
 
 /*
 // Intialize globals, check version

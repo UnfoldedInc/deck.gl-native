@@ -18,30 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./view.h"; // View
-#include "../viewports/web-mercator-viewport"; // WebMercatorViewport
-#include '../controllers/map-controller'; // MapController
+#ifndef DECKGL_CORE_VIEWS_MAP_VIEW_H
+#define DECKGL_CORE_VIEWS_MAP_VIEW_H
+
+#include "./view.h" // {View}
+// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
+
+namespace deckgl {
 
 class MapView : public View {
-  MapView(Value: props) {
-    super(
-      Object.assign({}, props, {
-        type: WebMercatorViewport
-      })
-    );
-  }
+  public: 
+  using super = View;
+  class Props : public View::Props {};
 
-  // TODO - get controller()
-  getController() {
-    throw new std::exception('Not implemented');
-    // return this->_getControllerProps({
-    //   type: MapController
-    // });
-  }
-}
-
-MapView.displayName = 'MapView';
+  MapView(Props* props) : View(props) {}
+};
 
 } // namespace deckgl
 
-#endif // DECKGL_CORE_VIEWS_VIEW_H
+#endif // DECKGL_CORE_VIEWS_MAP_VIEW_H
