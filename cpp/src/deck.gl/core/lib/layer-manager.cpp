@@ -24,15 +24,6 @@
 
 using namespace deckgl;
 
-/*
-import {Timeline} from '@luma.gl/core';
-import {LIFECYCLE} from '../lifecycle/constants';
-import Viewport from '../viewports/viewport';
-import {createProgramManager} from '../shaderlib';
-const TRACE_SET_LAYERS = 'layerManager.setLayers';
-const TRACE_ACTIVATE_VIEWPORT = 'layerManager.activateViewport';
-*/
-
 LayerManager::LayerManager(LayerContext *_context)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
     : context{_context}                             // gl,
 {
@@ -347,10 +338,8 @@ void LayerManager::_updateSublayersRecursively(newLayers, oldLayerMap, generated
       }
       generatedLayers.push(newLayer);
 
-      // Call layer lifecycle method: render sublayers
       sublayers = newLayer.isComposite && newLayer.getSubLayers();
-      // End layer lifecycle method: render sublayers
-    } catch (err) {
+      catch (err) {
       this->_handleError('matching', err,
                          newLayer);  // Record first exception
     }

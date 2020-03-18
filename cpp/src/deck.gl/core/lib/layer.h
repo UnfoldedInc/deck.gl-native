@@ -38,10 +38,8 @@
 /* eslint-disable react/no-direct-mutation-state */
 // import {COORDINATE_SYSTEM} from "./constants";
 // import AttributeManager from "./attribute/attribute-manager";
-// import {diffProps, validateProps} from "../lifecycle/props";
 // import GL from "@luma.gl/constants";
 // import {withParameters, setParameters} from "@luma.gl/core";
-// import assert from "../utils/assert";
 // import {mergeShaders} from "../utils/shader";
 // import {projectPosition, getWorldPosition} from "../shaderlib/project/project-functions";
 // import {worldToPixels} from "@math.gl/web-mercator";
