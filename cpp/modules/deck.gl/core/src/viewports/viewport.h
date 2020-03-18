@@ -34,19 +34,30 @@ class Viewport {
   std::string id;
   double x;
   double y;
+  // NEEDED
   double width;
+  // NEEDED
   double height;
+  // Not needed
   double _frustumPlanes;  // TODO: actually an object
+  // NEEDED
   bool isGeospatial;
   double zoom;
+  // NEEDED
   double scale;
+  // NEEDED
   mathgl::DistanceScales distanceScales;
+  // NEEDED
   double focalDistance;
+  // NEEDED
   mathgl::Vector3<double> position;
   mathgl::Vector3<double> meterOffset;
   mathgl::Matrix4<double> modelMatrix;
+  // NEEDED
   double longitude;
+  // NEEDED
   double latitude;
+  // NEEDED
   mathgl::Vector3<double> center;
   mathgl::Matrix4<double> viewMatrixUncentered;
   mathgl::Matrix4<double> viewMatrix;
@@ -62,6 +73,7 @@ class Viewport {
   mathgl::Matrix4<double> projectionMatrix;
   mathgl::Matrix4<double> viewProjectionMatrix;
   mathgl::Matrix4<double> viewMatrixInverse;
+  // NEEDED
   mathgl::Vector3<double> cameraPosition;
   mathgl::Vector3<double> cameraDirection;
   mathgl::Vector3<double> cameraUp;
@@ -110,9 +122,11 @@ class Viewport {
   // NON_LINEAR PROJECTION HOOKS
   // Used for web meractor projection
 
+  // NEEDED
   auto projectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
   auto projectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
+  // NEEDED
   auto unprojectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
   auto unprojectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
@@ -139,7 +153,8 @@ class Viewport {
   auto unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
   auto unprojectFlat(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
-  auto getDistancceScales(const mathgl::Vector2<double>* coordinateOrigin) -> double;
+  // NEEDED
+  auto getDistanceScales(const mathgl::Vector2<double>* coordinateOrigin) -> double;
   auto containsPixel(double x, double y, double width = 1, double height = 1) -> bool;
 
   // Extract frustum planes in common space

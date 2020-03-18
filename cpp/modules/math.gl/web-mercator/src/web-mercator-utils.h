@@ -41,6 +41,13 @@ namespace mathgl {
 struct DistanceScales {
   Vector3<double> metersPerUnit;
   Vector3<double> unitsPerMeter;
+
+  Vector3<double> unitsPerDegree;
+  Vector3<double> degreesPerUnit;
+
+  // High precision values (optional)
+  Vector3<double> unitsPerDegree2;
+  Vector3<double> unitsPerMeter2;
 };
 
 struct ViewMatrixOptions {
@@ -76,6 +83,7 @@ struct ProjectionMatrixOptions {
   double focalDistance;
 
   ProjectionMatrixOptions();
+  ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near, double far);
 };
 
 auto zoomToScale(double zoom) -> double;
@@ -114,21 +122,21 @@ auto getMeterZoom(double latitude) -> double;
  * In mercator projection mode, the distance scales vary significantly
  * with latitude.
  */
-auto getDistanceScales(Vector2<double> latLng, bool highPrecision = false) -> DistanceScales;
+auto getDistanceScales(Vector2<double> lngLat, bool highPrecision = false) -> DistanceScales;
 
 /**
  * Offset a lng/lat position by meterOffset (northing, easting)
  */
-auto addMetersToLngLat(Vector3<double> lngLatZ) -> Vector3<double>;
-auto addMetersToLngLat(Vector2<double> lngLat) -> Vector2<double>;
+auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double>;
+auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<double>;
 
 // ATTRIBUTION:
 // view and projection matrix creation is intentionally kept compatible with
 // mapbox-gl's implementation to ensure that seamless interoperation
 // with mapbox and react-map-gl. See: https://github.com/mapbox/mapbox-gl-js
 
-auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale, Vector3<double> center)
-    -> Matrix4<double>;
+auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale,
+                   Vector3<double> = Vector3<double>(0, 0, 0)) -> Matrix4<double>;
 
 // PROJECTION MATRIX PARAMETERS
 // Variable fov (in radians)
@@ -142,6 +150,8 @@ auto getProjectionParameters(double width, double height, double altitude = DEFA
 
 auto getProjectionMatrix(double width, double height, double pitch, double altitude, double nearZMultiplier,
                          double farZMultipler) -> Matrix4<double>;
+
+auto transformVector(Matrix4<double>, Vector4<double>) -> Vector4<double>;
 
 /**
  * Project flat coordinates to pixels on screen.

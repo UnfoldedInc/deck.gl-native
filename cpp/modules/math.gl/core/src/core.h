@@ -72,6 +72,8 @@ class Vector2 {
 
   void Normalize();
 
+  auto lerp(const Vector2<coord> &, coord t) -> Vector2<coord>;
+
   coord x, y;
 };
 
@@ -106,6 +108,7 @@ class Vector3 {
  public:
   Vector3() : x(0), y(0), z(0) {}
   Vector3(coord x1, coord y1, coord z1) : x(x1), y(y1), z(z1) {}
+  Vector3(Vector2<coord> xy, coord z1) : x(xy.x), y(xy.y), z(z1) {}
 
   auto operator-() const -> Vector3<coord> { return Vector3<coord>(-x, -y, -z); }
   auto operator+=(const Vector3<coord> &v) -> Vector3<coord> {
@@ -125,8 +128,9 @@ class Vector3 {
     return *this;
   }
 
-  coord Length() const;
-  coord Length2() const;
+  auto Length() const -> coord;
+  auto Length2() const -> coord;
+  auto toVector2() const -> Vector2<coord>;
 
   void Normalize();
 
@@ -165,40 +169,42 @@ auto operator!=(const Vector3<coord> &v1, const Vector3<coord> &v2) -> bool {
 template <typename coord>
 class Vector4 {
  public:
-  Vector4() : x(0), y(0), z(0) {}
-  Vector4(coord x1, coord y1, coord z1) : x(x1), y(y1), z(z1) {}
+  Vector4() : x(0), y(0), z(0), w(0) {}
+  Vector4(coord x1, coord y1, coord z1, coord w1) : x(x1), y(y1), z(z1), w(w1) {}
+  Vector4(Vector3<coord> xyz, coord w1) : x(xyz.x), y(xyz.y), z(xyz.z), w(w1) {}
 
-  auto operator-() const -> Vector4<coord> { return Vector4<coord>(-x, -y, -z); }
+  auto operator-() const -> Vector4<coord> { return Vector4<coord>(-x, -y, -z, -w); }
 
   auto operator+=(const Vector4<coord> &v) -> Vector4<coord> {
-    x += v.x, y += v.y, z += v.z;
+    x += v.x, y += v.y, z += v.z, w += v.w;
     return *this;
   }
   auto operator-=(const Vector4<coord> &v) -> Vector4<coord> {
-    x -= v.x, y -= v.y, z -= v.z;
+    x -= v.x, y -= v.y, z -= v.z, w -= v.w;
     return *this;
   }
   auto operator*=(coord a) -> Vector4<coord> {
-    x *= a, y *= a, z *= a;
+    x *= a, y *= a, z *= a, w *= a;
     return *this;
   }
   auto operator/=(coord a) -> Vector4<coord> {
-    x /= a, y /= a, z /= a;
+    x /= a, y /= a, z /= a, w /= a;
     return *this;
   }
 
-  auto operator+(const Vector4<coord> &v) const -> Vector4<coord> { return Vector4<coord>(x + v.x, y + v.y, z + v.z); }
+  auto operator+(const Vector4<coord> &v) const -> Vector4<coord> { return Vector4<coord>(x + v.x, y + v.y, z + v.z, w + v.w); }
 
-  auto operator-(const Vector4<coord> &v) const -> Vector4<coord> { return Vector4<coord>(x - v.x, y - v.y, z - v.z); }
+  auto operator-(const Vector4<coord> &v) const -> Vector4<coord> { return Vector4<coord>(x - v.x, y - v.y, z - v.z, w - v.w); }
 
-  auto operator==(const Vector4<coord> &v) const -> bool { return x == v.x && y == v.y && z == v.z; }
+  auto operator==(const Vector4<coord> &v) const -> bool { return x == v.x && y == v.y && z == v.z && w == v.w; }
 
   coord Length() const;
   coord Length2() const;
+  auto toVector3() const -> Vector3<coord>;
 
   void Normalize();
 
-  coord x, y, z;
+  coord x, y, z, w;
 };
 
 template <typename coord>
@@ -206,6 +212,11 @@ Vector4<coord> VectorProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
 Vector4<coord> ElementProduct(const Vector4<coord> &, const Vector4<coord> &);
+
+template <typename coord>
+auto Vector4<coord>::toVector3() const -> Vector3<coord> {
+  return Vector3<coord>(x, y, z);
+}
 
 ///////////////////////////////////////////////////////////
 //  Two-dimensional matrix support
@@ -318,6 +329,7 @@ class Matrix4 {
   static auto MakeShearXZ(coord factorX, coord factorZ) -> Matrix4<coord>;
   static auto MakeShearYX(coord factorY, coord factorZ) -> Matrix4<coord>;
   static auto MakeProjection(coord distance) -> Matrix4<coord>;
+  static auto makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord>;
 
   auto operator()(int row, int col) -> coord & { return m[row][col]; }
   auto operator()(int row, int col) const -> const coord { return m[row][col]; }
@@ -329,6 +341,9 @@ class Matrix4 {
   bool IsHomogenous() const;
   auto MultiplyVector(const Vector3<coord> &) const -> Vector3<coord>;
   auto MultiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
+
+  auto scale(const Vector3<coord> &) const -> Matrix4<coord>;
+  auto transform(const Vector4<coord> &) const -> Vector4<coord>;
 
   coord m[4][4];
 };
@@ -374,6 +389,11 @@ void Vector2<coord>::Normalize() {
 }
 
 template <typename coord>
+auto Vector2<coord>::lerp(const Vector2<coord> &v, coord t) -> Vector2<coord> {
+  return Vector2<coord>(x + t * (v.x - x), y + t * (v.y - y));
+}
+
+template <typename coord>
 auto ElementProduct(const Vector2<coord> &u, const Vector2<coord> &v) -> Vector2<coord> {
   return Vector2<coord>(u.x * v.x, u.y * v.y);
 }
@@ -415,6 +435,16 @@ auto operator<<(std::ostream &os, const Vector2<coord> &v) -> std::ostream & {
 template <typename coord>
 auto Vector3<coord>::Length() const -> coord {
   return static_cast<coord>(sqrt(x * x + y * y + z * z));
+}
+
+template <typename coord>
+auto Vector3<coord>::Length2() const -> coord {
+  return static_cast<coord>(x * x + y * y + z * z);
+}
+
+template <typename coord>
+auto Vector3<coord>::toVector2() const -> Vector2<coord> {
+  return Vector2<coord>(this->x, this->y);
 }
 
 template <typename coord>
@@ -729,6 +759,19 @@ auto Matrix4<coord>::MakeShearXY(coord shx, coord shy) -> Matrix4<coord> {
 }
 
 template <typename coord>
+auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord> {
+  auto f = 1.0 / tan(fovy / 2.0);
+  auto nf = 1.0 / (near - far);
+  // TODO: Doesn't support far not being set or far being Infinity
+  return Matrix4<coord>(
+    f / aspect, 0, 0, 0,
+    0, f, 0, 0,
+    0, 0, (far + near) * nf, -1,
+    0, 0, 2.0 * far * near * nf, 0
+  );
+}
+
+template <typename coord>
 auto Matrix4<coord>::IsHomogenous() const -> bool {
   return m[3][0] == 0 && m[3][1] == 0 && m[3][2] == 0 && m[3][3] == 1;
 }
@@ -749,6 +792,26 @@ auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coo
   return Vector3<coord>(m[0][0] * s.x + m[0][1] * s.y + m[0][2] * s.z + m[0][3] * static_cast<coord>(1),
                         m[1][0] * s.x + m[1][1] * s.y + m[1][2] * s.z + m[1][3] * static_cast<coord>(1),
                         m[2][0] * s.x + m[2][1] * s.y + m[2][2] * s.z + m[2][3] * static_cast<coord>(1));
+}
+
+template <typename coord>
+auto Matrix4<coord>::scale(const Vector3<coord> &s) const -> Matrix4<coord> {
+  return Matrix4<coord>(
+    m[0][0] * s.x, m[0][1] * s.x, m[0][2] * s.x, m[0][3] * s.x,
+    m[1][0] * s.y, m[1][1] * s.y, m[1][2] * s.y, m[1][3] * s.y,
+    m[2][0] * s.z, m[2][1] * s.z, m[2][2] * s.z, m[2][3] * s.z,
+    m[3][0], m[3][1], m[3][2], m[3][3]
+  );
+}
+
+template <typename coord>
+auto Matrix4<coord>::transform(const Vector4<coord> &xyzw) const -> Vector4<coord> {
+  return Vector4<coord>(
+    m[0][0] * xyzw.x + m[1][0] * xyzw.y + m[2][0] * xyzw.z + m[3][0] * xyzw.w,
+    m[0][1] * xyzw.x + m[1][1] * xyzw.y + m[2][1] * xyzw.z + m[3][1] * xyzw.w,
+    m[0][2] * xyzw.x + m[1][2] * xyzw.y + m[2][2] * xyzw.z + m[3][2] * xyzw.w,
+    m[0][3] * xyzw.x + m[1][3] * xyzw.y + m[2][3] * xyzw.z + m[3][3] * xyzw.w
+  );
 }
 
 template <typename coord>
