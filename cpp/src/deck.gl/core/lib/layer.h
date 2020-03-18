@@ -23,38 +23,31 @@
 
 #include <exception>
 #include <functional>
+#include <iostream>
 #include <list>
 #include <map>
+#include <optional>
 #include <string>
 
-#include "constants.h"
+#include "./constants.h"
+#include "./layer-context.h"
 #include "deck.gl/json.h"  // {Component, PropTypes}
+#include "luma.gl/core.h"
 #include "math.gl/core.h"
-
-namespace deckgl {
 
 /* eslint-disable react/no-direct-mutation-state */
 // import {COORDINATE_SYSTEM} from "./constants";
 // import AttributeManager from "./attribute/attribute-manager";
-// import UniformTransitionManager from "./wip/uniform-transition-manager";
 // import {diffProps, validateProps} from "../lifecycle/props";
-// import {count} from "../utils/count";
-// import log from "../utils/log";
-// import debug from "../wip/debug";
 // import GL from "@luma.gl/constants";
 // import {withParameters, setParameters} from "@luma.gl/core";
 // import assert from "../utils/assert";
 // import {mergeShaders} from "../utils/shader";
-// import {projectPosition, getWorldPosition} from
-// "../shaderlib/project/project-functions"; import typedArrayManager from
-// "../utils/typed-array-manager";
-
-// import Component from "../lifecycle/component";
-// import LayerState from "./layer-state";
-
+// import {projectPosition, getWorldPosition} from "../shaderlib/project/project-functions";
 // import {worldToPixels} from "@math.gl/web-mercator";
-
 // import {load} from "@loaders.gl/core";
+
+namespace deckgl {
 
 // const TRACE_CHANGE_FLAG = "layer.changeFlag";
 // const TRACE_INITIALIZE = "layer.initialize";
@@ -62,20 +55,14 @@ namespace deckgl {
 // const TRACE_FINALIZE = "layer.finalize";
 // const TRACE_MATCHED = "layer.matched";
 
-// const EMPTY_ARRAY = Object.freeze([]);
-
 // TODO - these should be imported from other files
-
-class Model {
- public:
-  Model(void* gl) {}
-  void draw() {}
-};
 
 class AttributeManager {
  public:
-  void invalidate(const std::string&) {}
-  void invalidateAll() {}
+  void invalidate(const std::string& attributeName) {
+    std::cout << "AttributeManager: invalidating attribute " << attributeName << std::endl;
+  }
+  void invalidateAll() { std::cout << "AttributeManager: invalidating all attributes" << std::endl; }
 };
 
 // let pickingColorCache = new Uint8ClampedArray(0);
@@ -85,71 +72,62 @@ class ColorRGBA {
   float r, g, b, a;
 };
 
-class Layer : public Component {  // : public Component
+class Layer : public Component {
  public:
   using super = Component;
   class Props;
-  class State;
-  class Context;
   class ChangeFlags;
 
-  Layer::Props* props;
-  Layer::State* state;
-  Layer::State* internalState;
-  Layer::Context* context;
+  const Layer::Props* props;
+  const Layer::Props* oldProps;
+  const LayerContext* context;
 
-  Layer(Layer::Props* props_, Layer::State* state_ = nullptr) : props{props_}, state{state_} {}
+  std::string needsRedraw;
+  std::string needsUpdate;
+  std::shared_ptr<AttributeManager> attributeManager;
+  std::list<std::shared_ptr<lumagl::Model>> models;
 
-  // Called once to set up the initial state: App can create WebGL resources
-  virtual void initializeState() = 0;
+  Layer(Layer::Props* props_) : props{props_}, attributeManager{new AttributeManager()} {}
 
-  // Check if update cycle should run. Default returns changeFlags.propsOrDataChanged.
-  virtual auto shouldUpdateState(const ChangeFlags&, const Layer::Props* oldProps) -> bool;
+  // Update all props
+  void setProps(Layer::Props* newProps);
 
-  // Default implementation: all attributes will be invalidated and updated when data changes
-  virtual void updateState(const ChangeFlags&, const Layer::Props* oldProps);
-
-  // Called once when layer is no longer matched and state will be discarded: App can destroy WebGL resources here
-  virtual void finalizeState();
-
-  // If state has a model, draw it with supplied uniforms
-  virtual void draw();
+  void triggerUpdate(const std::string& attributeName);
 
   // auto toString() {
 
   // Public API
 
-  // Updates selected state members and marks the object for redraw
-  // auto setState(updateObject) -> void {
+  // CHANGE MANAGEMENT
 
-  // Sets the redraw flag for this layer, will trigger a redraw next animation
-  // frame
-  void setNeedsRedraw(bool redraw = true);
+  // Sets the redraw flag for this layer, will trigger a redraw next animation frame
+  void setNeedsRedraw(const std::string& reason);
 
   // This layer needs a deep update
-  void setNeedsUpdate();
+  void setNeedsUpdate(const std::string& reason);
 
   // Checks state of attributes and model
-  auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::string;
+  auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
   // Checks if layer attributes needs updating
-  auto needsUpdate() -> std::string;
+  auto getNeedsUpdate() -> std::optional<std::string>;
+
+  // CHANGE MANAGEMENT
+  void setDataChangedFlag(const std::string& reason);
+  void setPropsChangedFlag(const std::string& reason);
+  void setViewportChangedFlag(const std::string& reason);
+  auto getChangeFlags() -> ChangeFlags;
+  void clearChangeFlags();
+  void _updateChangeFlags();
 
   // Returns true if the layer is pickable and visible.
   auto isPickable() const -> bool;
 
-  auto getAttributeManager() -> AttributeManager*;
+  auto getAttributeManager() -> std::shared_ptr<AttributeManager>;
 
   // Return an array of models used by this layer, can be overriden by layer
   // subclass
-  auto getModels() -> std::list<Model*>;
-
-  // Returns the most recent layer that matched to this state
-  // (When reacting to an async event, this layer may no longer be the latest)
-  // getCurrentLayer() {
-
-  // Returns the default parse options for async props
-  // getLoadOptions() {
+  auto getModels() -> std::list<std::shared_ptr<lumagl::Model>>;
 
   // PROJECTION METHODS
 
@@ -157,7 +135,6 @@ class Layer : public Component {  // : public Component
   // From the current layer"s coordinate system to screen
   /*
   project(xyz)
-  // Note: this does not reverse `project`. Always unprojects to the viewport"s coordinate system
   unproject(xy);
   projectPosition(xyz);
   use64bitPositions();
@@ -173,25 +150,29 @@ class Layer : public Component {  // : public Component
 
   // Returns the picking color that doesn"t match any subfeature
   // Use if some graphics do not belong to any pickable subfeature
-  encodePickingColor(i, target = []) {
-    target[0] = (i + 1) & 255;
-    target[1] = ((i + 1) >> 8) & 255;
-    target[2] = (((i + 1) >> 8) >> 8) & 255;
-    return target;
-  }
+  encodePickingColor(i, target = []);
 
-  // Returns the index corresponding to a picking color that doesn"t match any
-  subfeature
-  // @param {Uint8Array} color - color array to be decoded
-  // @return {Array} - the decoded picking color
-  decodePickingColor(color) {
-    assert(color instanceof Uint8Array);
-    const [i1, i2, i3] = color;
-    // 1 was added to seperate from no selection
-    const index = i1 + i2 * 256 + i3 * 65536 - 1;
-    return index;
-  }
+  // Returns the index corresponding to a picking color that doesn"t match any subfeature
+  decodePickingColor(color);
   */
+  // protected:
+  // LIFECYCLE METHODS - redefined by subclasses
+
+  // Called once to set up the initial state: App can create WebGL resources
+  virtual void initializeState() = 0;
+
+  // Check if update cycle should run. Default returns changeFlags.propsOrDataChanged.
+  virtual auto shouldUpdateState(const ChangeFlags&, const Layer::Props* oldProps) -> const std::optional<std::string>&;
+
+  // Default implementation: all attributes will be invalidated and updated when data changes
+  virtual void updateState(const ChangeFlags&, const Layer::Props* oldProps);
+
+  // Called once when layer is no longer matched and state will be discarded: App can destroy WebGL resources here
+  virtual void finalizeState();
+
+  // If state has a model, draw it with supplied uniforms
+  virtual void drawState();
+
  protected:
   // INTERNAL METHODS
 
@@ -201,7 +182,7 @@ class Layer : public Component {  // : public Component
   // void updateAttributes(changedAttributes) {
 
   // Calls attribute manager to update any WebGL attributes
-  void _updateAttributes(Layer::Props* props);
+  void _updateAttributes();
 
   // Update attribute transitions. This is called in drawLayer, no model
   // updates required.
@@ -211,11 +192,7 @@ class Layer : public Component {  // : public Component
   // result in model updates.
   // void _updateUniformTransition() { const
 
-  // Deduces numer of instances. Intention is to support:
-  // - Explicit setting of numInstances
-  // - Auto-deduction for ES6 containers that define a size member
-  // - Auto-deduction for Classic Arrays via the built-in length attribute
-  // - Auto-deduction via arrays
+  // Deduces numer of instances.
   auto getNumInstances() -> int;
 
   // Buffer layout describes how many attribute values are packed for each
@@ -223,6 +200,9 @@ class Layer : public Component {  // : public Component
   // formats (e.g. paths, polygons) have various length. Their buffer layout
   //  is in the form of [L0, L1, L2, ...]
   auto getStartIndices();
+
+  // Common code for _initialize and _update
+  // void _updateState();
 
   /*
   void calculateInstancePickingColors(attribute, {numInstances}) {
@@ -232,44 +212,15 @@ class Layer : public Component {  // : public Component
   // for multi picking.
   void clearPickingColor(color)
   void restorePickingColors()
+  */
 
-  // LAYER MANAGER API
-  // Should only be called by the deck.gl LayerManager class
-
-  // Called by layer manager when a new layer is found
-  void _initialize();
-
-  // Called by layer manager
-  // if this layer is new (not matched with an existing layer) oldProps will
-  // be empty object
-  void _update();
-
-  // Common code for _initialize and _update
-  void _updateState();
-
-  // Called by manager when layer is about to be disposed
-  // Note: not guaranteed to be called on application shutdown
-  void _finalize();
-
-  // Calculates uniforms
-  // void drawLayer({moduleParameters = null, uniforms = {}, parameters = {}});
-
-  // Helper methods
-  // getChangeFlags()
-
-  // Dirty some change flags, will be handled by updateLayer
-  // setChangeFlags(flags) {
-
-  // Clear all changeFlags, typically after an update
-  // clearChangeFlags() {
-
+  /*
   // Compares the layers props with old props from a matched older layer
   // and extracts change flags that describe what has change so that state
   // can be update correctly with minimal effort
   // diffProps(newProps, oldProps) {
 
   // Called by layer manager to validate props (in development)
-  void validateProps();
   void setModuleParameters(); // moduleParameters
 
   // PRIVATE METHODS
@@ -283,14 +234,61 @@ class Layer : public Component {  // : public Component
   // Create new attribute manager
   void _getAttributeManager();
 
-  void _initState();
-
-  // Called by layer manager to transfer state from an old layer
-  void _transferState(Layer *oldLayer);
-
   void _onAsyncPropUpdated();
   */
-};  // namespace deckgl
+
+ private:
+  // LAYER MANAGER API (Should only be called by the deck.gl LayerManager class)
+  friend class LayerManager;
+
+  // Called by layer manager when a new layer is found
+  void initialize(const LayerContext*);
+
+  // if this layer is new (not matched with an existing layer) oldProps will be empty object
+  void update();
+
+  // Called by manager when layer is about to be disposed
+  // Note: not guaranteed to be called on application shutdown
+  void finalize();
+
+  void draw();  // {moduleParameters = null, uniforms = {}, parameters = {}});
+
+  // Helpers
+  void _initState();
+  void _updateState();
+
+ public:
+  // PropType diffing results
+  class ChangeFlags {
+   public:
+    // Primary changeFlags, can be strings stating reason for change
+    std::optional<std::string> dataChanged;
+    std::optional<std::string> propsChanged;
+    std::optional<std::string> viewportChanged;
+    // std::optional<std::string> updateTriggersChanged;
+    // std::optional<std::string> stateChanged;
+    // std::optional<std::string> extensionsChanged;
+
+    // Derived changeFlags
+    std::optional<std::string> propsOrDataChanged;
+    std::optional<std::string> somethingChanged;
+
+    ChangeFlags()
+        : dataChanged{std::nullopt},
+          propsChanged{std::nullopt},
+          viewportChanged{std::nullopt},
+          // updateTriggersChanged{std::nullopt},
+          // stateChanged{std::nullopt},
+          // extensionsChanged{std::nullopt},
+
+          // Derived changeFlags
+          propsOrDataChanged{std::nullopt},
+          somethingChanged{std::nullopt} {}
+  };
+
+ private:
+  ChangeFlags _changeFlags;
+};
 
 class Layer::Props : public Component::Props {
  public:
@@ -332,7 +330,6 @@ class Layer::Props : public Component::Props {
 
   std::string positionFormat;
   std::string colorFormat;
-  std::list<std::shared_ptr<Layer>> subLayers;
 
   // Offset depth based on layer index to avoid z-fighting. Negative values
   // pull layer towards the camera
@@ -355,44 +352,6 @@ class Layer::Props : public Component::Props {
 
   // implement Component::Props interface
   auto getPropertyTypes() const -> const PropertyTypes* override;
-};
-
-class Layer::State {
- public:  // friend class Layer;
-  AttributeManager* attributeManager;
-  std::string needsRedraw;
-  std::string needsUpdate;
-};
-
-class Layer::Context {};
-
-// PropType diffing results
-class Layer::ChangeFlags {
- public:
-  // Primary changeFlags, can be strings stating reason for change
-  bool dataChanged;
-  bool propsChanged;
-  bool updateTriggersChanged;
-  bool viewportChanged;
-  bool stateChanged;
-  bool extensionsChanged;
-
-  // Derived changeFlags
-  bool propsOrDataChanged;
-  bool somethingChanged;
-
-  ChangeFlags()
-      : dataChanged{false},
-        propsChanged{false},
-        updateTriggersChanged{false},
-        viewportChanged{false},
-        stateChanged{false},
-        extensionsChanged{false}
-
-        // Derived changeFlags
-        ,
-        propsOrDataChanged{false},
-        somethingChanged{false} {}
 };
 
 }  // namespace deckgl

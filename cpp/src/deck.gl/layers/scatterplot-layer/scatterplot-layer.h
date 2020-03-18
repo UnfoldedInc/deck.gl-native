@@ -34,16 +34,15 @@ class ScatterplotLayer : public Layer {
  public:
   using super = Layer;
   class Props;
-  class State;
 
  protected:
   void initializeState() override;
   void updateState(const ChangeFlags &, const Layer::Props *oldProps) override;
   void finalizeState() override;
-  void draw() override;
+  void drawState() override;
 
  private:
-  auto _getModel(void *gl) -> std::shared_ptr<Model>;
+  auto _getModel(void *gl) -> std::shared_ptr<lumagl::Model>;
 };
 
 class ScatterplotLayer::Props : public Layer::Props {
@@ -84,8 +83,6 @@ class ScatterplotLayer::Props : public Layer::Props {
 
   auto getPropertyTypes() const -> const PropertyTypes * override;
 };
-
-class ScatterplotLayer::State : public Layer::State {};
 
 }  // namespace deckgl
 

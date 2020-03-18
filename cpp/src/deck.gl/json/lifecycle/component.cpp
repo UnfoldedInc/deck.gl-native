@@ -3,7 +3,21 @@
 #include "../converter/json-converter.h"  // {JSONConverter}
 using namespace deckgl;
 
-using Props = Component::Props;
+// PropertyType
+
+auto PropertyType::_getPropListFromJson(Component::Props* props, const Json::Value& jsonValue,
+                                        const JSONConverter* jsonConverter) const
+    -> std::list<std::shared_ptr<Component::Props>> {
+  if (jsonValue.isArray()) {
+    std::list<std::shared_ptr<Component::Props>> propsList;
+    for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
+      std::shared_ptr<Component::Props> props = {jsonConverter->convertJson(jsonValue[1])};
+      propsList.push_back(props);
+    }
+    return propsList;
+  }
+  throw std::runtime_error("Cannot convert JSON to list: " + this->getName());
+}
 
 // PropertyTypes
 
@@ -24,18 +38,18 @@ PropertyTypes::PropertyTypes(const std::string& className_, const PropertyTypes*
 
 // Props
 
-auto Props::getPropertyTypes() const -> const PropertyTypes* {
+auto Component::Props::getPropertyTypes() const -> const PropertyTypes* {
   static PropertyTypes propTypes{"Component", nullptr, std::vector<const PropertyType*>{}};
   return &propTypes;
 }
 
-void Props::setPropertyFromJson(const std::string& key, const Json::Value& jsonValue,
-                                const JSONConverter* jsonConverter) {
+void Component::Props::setPropertyFromJson(const std::string& key, const Json::Value& jsonValue,
+                                           const JSONConverter* jsonConverter) {
   auto propertyType = this->getPropertyType(key);
   propertyType->setPropertyFromJson(this, jsonValue, jsonConverter);
 }
 
-auto Props::getPropertyType(const std::string& key) const -> const PropertyType* {
+auto Component::Props::getPropertyType(const std::string& key) const -> const PropertyType* {
   // std::cout << "getPropertyTypes" << std::endl;
   auto propTypes = this->getPropertyTypes();
   if (!propTypes) {
@@ -67,16 +81,18 @@ auto Component::Props::equals(const Props* oldProps) -> bool {
   return true;
 }
 
-auto PropertyType::_getPropListFromJson(Component::Props* props, const Json::Value& jsonValue,
-                                        const JSONConverter* jsonConverter) const
-    -> std::list<std::shared_ptr<Component::Props>> {
-  if (jsonValue.isArray()) {
-    std::list<std::shared_ptr<Component::Props>> propsList;
-    for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
-      std::shared_ptr<Props> props = {jsonConverter->convertJson(jsonValue[1])};
-      propsList.push_back(props);
+auto Component::Props::compare(const Props* oldProps) -> std::optional<std::string> {
+  auto propTypes = this->getPropertyTypes();
+
+  for (auto element : propTypes->_propTypeMap) {
+    // Accessing KEY from element
+    std::string name = element.first;
+    // Accessing VALUE from element.
+    const PropertyType* propType = element.second;
+    if (!propType->equals(this, oldProps)) {
+      return std::string{propTypes->className} + propType->name + " changed";
     }
-    return propsList;
   }
-  throw std::runtime_error("Cannot convert JSON to list: " + this->getName());
+
+  return std::nullopt;
 }

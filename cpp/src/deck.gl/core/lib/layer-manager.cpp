@@ -25,67 +25,20 @@
 using namespace deckgl;
 
 /*
-import assert from '../utils/assert';
 import {Timeline} from '@luma.gl/core';
-import Layer from './layer';
 import {LIFECYCLE} from '../lifecycle/constants';
-import log from '../utils/log';
-import debug from '../debug';
-import {flatten} from '../utils/flatten';
-import {Stats} from 'probe.gl';
-
 import Viewport from '../viewports/viewport';
 import {createProgramManager} from '../shaderlib';
-
 const TRACE_SET_LAYERS = 'layerManager.setLayers';
 const TRACE_ACTIVATE_VIEWPORT = 'layerManager.activateViewport';
-
-// CONTEXT IS EXPOSED TO LAYERS
-const INITIAL_CONTEXT = Object.seal({
-layerManager: null,
-deck: null,
-gl: null,
-
-// General resources
-stats: null, // for tracking lifecycle performance
-
-// GL Resources
-shaderCache: null,
-pickingFBO: null, // Screen-size framebuffer that layers can reuse
-
-mousePosition: null,
-
-userData: {} // Place for any custom app `context`
-});
-
-const layerName = layer => (layer instanceof Layer ? `${layer}` : !layer ?
-'null' : 'invalid');
 */
 
-LayerManager::LayerManager(Deck *deck)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
-    : context(deck, this)
-// gl,
-// // Enabling luma.gl Program caching using private API (_cachePrograms)
-// programManager: gl && createProgramManager(gl),
-// stats: stats || new Stats({id: 'deck.gl'}),
-// // Make sure context.viewport is not empty on the first layer
-// initialization viewport: viewport || new Viewport({id:
-// 'DEFAULT-INITIAL-VIEWPORT'}), // Current viewport, exposed to layers for
-// project* function timeline: timeline || new Timeline()
+LayerManager::LayerManager(LayerContext *_context)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
+    : context{_context}                             // gl,
 {
-  // Currently deck.gl expects the DeckGL.layers array to be different
-  // whenever React rerenders. If the same layers array is used, the
-  // LayerManager's diffing algorithm will generate a fatal error and
-  // break the rendering.
-
-  // `this->lastRenderedLayers` stores the UNFILTERED layers sent
-  // down to LayerManager, so that `layers` reference can be compared.
-  // If it's the same across two React render calls, the diffing logic
-  // will be skipped.
-
   // this->_needsRedraw = 'Initial render';
-  this->_needsUpdate = false;
-  this->_debug = false;
+  // this->_needsUpdate = false;
+  // this->_debug = false;
   // this->_onError = null;
 }
 
@@ -93,36 +46,36 @@ LayerManager::LayerManager(Deck *deck)  // (gl, {deck, stats, viewport = null, t
 LayerManager::~LayerManager() {
   // Finalize all layers
   for (auto layer : this->layers) {
-    this->_finalizeLayer(layer);
+    layer->finalize();
   }
 }
 
 // Check if a redraw is needed
-auto LayerManager::needsRedraw(bool clearRedrawFlags) -> std::string {
-  return "TODO: redraw checking not implemented so we always redraw";
+auto LayerManager::needsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
+  return "TODO: redraw checking not implemented, so we always redraw";
 
-  // auto redraw = this->_needsRedraw;
-  // if (clearRedrawFlags) {
-  //   this->_needsRedraw = "";
-  // }
+  auto redraw = this->_needsRedraw;
+  if (clearRedrawFlags) {
+    this->_needsRedraw = "";
+  }
 
-  // // This layers list doesn't include sublayers, relying on composite
-  // // layers
-  // for (auto layer : this->layers) {
-  //   // Call every layer to clear their flags
-  //   auto layerNeedsRedraw = layer->getNeedsRedraw(clearRedrawFlags);
-  //   redraw = redraw || layerNeedsRedraw;
-  // }
+  // This layers list doesn't include sublayers, relying on composite
+  // layers
+  for (auto layer : this->layers) {
+    // Call every layer to clear their flags
+    auto layerNeedsRedraw = layer->getNeedsRedraw(clearRedrawFlags);
+    // redraw = redraw || layerNeedsRedraw;
+  }
 
-  // return redraw;
+  return redraw;
 }
 
 // Check if a deep update of all layers is needed
-auto LayerManager::needsUpdate() -> std::string { return this->_needsUpdate; }
+// auto LayerManager::needsUpdate() -> std::string { return this->_needsUpdate; }
 
 // Layers will be redrawn (in next animation frame)
 void LayerManager::setNeedsRedraw(const std::string &reason) {
-  if (this->_needsRedraw.empty()) {
+  if (this->_needsRedraw) {
     this->_needsRedraw = reason;
   }
 }
@@ -130,8 +83,80 @@ void LayerManager::setNeedsRedraw(const std::string &reason) {
 // Layers will be updated deeply (in next animation frame)
 // Potentially regenerating attributes and sub layers
 void LayerManager::setNeedsUpdate(const std::string &reason) {
-  if (!this->_needsUpdate.empty()) {
+  if (!this->_needsUpdate) {
     this->_needsUpdate = reason;
+  }
+}
+
+// Props
+
+void LayerManager::setDebug(bool debug) {}
+void LayerManager::setUserData(void *userData) {}
+void LayerManager::setOnError() {}
+
+// Layer API
+
+void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
+  // if (this->findLayerById(const std::string &id)) {
+  //   throw std::runtime_error("Layer with id already exists");
+  // }
+  // this->addLayer();
+}
+
+// Gets an (optionally) filtered list of layers
+// auto LayerManager::getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
+//     -> std::list<std::shared_ptr<Layer>>;
+
+// auto LayerManager::findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
+
+void LayerManager::removeAllLayers() {
+  // TODO - exception handling
+  for (auto layer : this->layers) {
+    layer->finalize();
+  }
+  this->layers.clear();
+}
+
+void LayerManager::removeLayer(std::shared_ptr<Layer> layer) { throw std::logic_error("Not implemented"); }
+
+void LayerManager::removeLayerById(const std::string &id) { throw std::logic_error("Not implemented"); }
+
+// For JSON: Supply a new layer prop list, match against existing layers
+void LayerManager::setLayerProps(const std::list<Layer::Props> layerPropsList) {
+  /*
+  // Create a map of old layers
+  std::map<std::string, Layer *> oldLayerMap;
+  for (auto oldLayer : this->layers) {
+    oldLayerMap[oldLayer->props->id] = oldLayer.get();
+  }
+
+  //
+  for (auto layerProps : layerPropsList) {
+    const oldLayerIterator = oldLayerMap.find(layerProps.id);
+    if (oldLayerIterator != oldLayerMap.end()) {
+      // If a layer with this id is present, set the props
+      // TODO - catch exceptions and continue
+      auto(*oldLayerIterator)->setProps(layerProps);
+      oldLayerMap.erase(oldLayerIterator);
+    } else {
+      // TODO - handle exceptions
+      this->addLayer(layerProps->newObject());
+    }
+  }
+
+  // Remove any unmatched layers
+  for (const iterator : oldLayerMap) {
+    // TODO - handle exceptions
+    this->removeLayer(*iterator);
+  }
+  */
+}
+
+// Update layers from last cycle if `setNeedsUpdate()` has been called
+void LayerManager::updateLayers() {
+  for (auto layer : this->layers) {
+    // TODO - handle exceptions
+    layer->update();
   }
 }
 
@@ -348,50 +373,3 @@ void LayerManager::_finalizeOldLayers(oldLayerMap) {
   // }
 }
 */
-
-// EXCEPTION SAFE LAYER ACCESS
-
-// Initializes a single layer, calling layer methods
-void LayerManager::_initializeLayer(Layer *layer) {
-  // try {
-  //   layer->_initialize();
-  //   layer->lifecycle = LIFECYCLE.INITIALIZED;
-  // } catch (err) {
-  //   this->_handleError('initialization', err, layer);
-  //   // TODO - what should the lifecycle state be here?
-  //   // LIFECYCLE.INITIALIZATION_FAILED?
-  // }
-}
-
-void LayerManager::_transferLayerState(Layer *oldLayer, Layer *newLayer) {
-  // newLayer._transferState(oldLayer);
-  // newLayer.lifecycle = LIFECYCLE.MATCHED;
-
-  // if (newLayer != = oldLayer) {
-  //   oldLayer.lifecycle = LIFECYCLE.AWAITING_GC;
-  // }
-}
-
-// Updates a single layer, cleaning all flags
-void LayerManager::_updateLayer(Layer *layer) {
-  // try {
-  //   layer->_update();
-  // } catch (err) {
-  //   this->_handleError('update', err, layer);
-  // }
-}
-
-// Finalizes a single layer
-void LayerManager::_finalizeLayer(Layer *layer) {
-  // this->_needsRedraw = this->_needsRedraw || `finalized $ { layerName(layer) }
-  // `;
-
-  // layer->lifecycle = LIFECYCLE.AWAITING_FINALIZATION;
-
-  // try {
-  //   layer->_finalize();
-  //   layer->lifecycle = LIFECYCLE.FINALIZED;
-  // } catch (err) {
-  //   this->_handleError('finalization', err, layer);
-  // }
-}

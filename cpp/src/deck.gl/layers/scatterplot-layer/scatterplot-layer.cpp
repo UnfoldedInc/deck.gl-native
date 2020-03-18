@@ -153,7 +153,7 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
 
 void ScatterplotLayer::finalizeState() {}
 
-void ScatterplotLayer::draw() {  // uniforms
+void ScatterplotLayer::drawState() {  // uniforms
   /*
     const {viewport} = this->context;
     const {
@@ -187,11 +187,11 @@ void ScatterplotLayer::draw() {  // uniforms
     */
 }
 
-auto ScatterplotLayer::_getModel(void* gl) -> std::shared_ptr<Model> {
+auto ScatterplotLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
   // a square that minimally cover the unit circle
   // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
-  return std::shared_ptr<Model>(new Model(gl));
+  return std::shared_ptr<lumagl::Model>(new lumagl::Model(gl));
   // Object.assign(this->getShaders(), {
   //   id: this->props.id,
   //   geometry: new Geometry({

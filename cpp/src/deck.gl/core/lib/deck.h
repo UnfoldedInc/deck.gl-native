@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_DECK_H
 #define DECKGL_CORE_DECK_H
 
+#include <optional>
+
 #include "./layer-manager.h"
 #include "deck.gl/json.h"
 
@@ -192,6 +194,57 @@ class Deck : public Component {
   void _getMetrics();
   */
 };
+
+/*
+using opt = std::optional;
+
+class Deck::Props2 : public Component::Props {
+ public:
+  // opt<std::string> id;  // PropTypes.string,
+  opt<int> width;   // PropTypes.oneOfType([PropTypes.number,
+                    // PropTypes.string]),
+  opt<int> height;  // PropTypes.oneOfType([PropTypes.number,
+                    // PropTypes.string]),
+
+  // layer/view/controller settings
+  opt<std::list<std::shared_ptr<Layer>>> layers;  // PropTypes.oneOfType([PropTypes.object,
+                                                  // PropTypes.array]),
+  // std::function<> layerFilter, // PropTypes.func,
+  std::list<std::shared_ptr<View>> views;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::shared_ptr<ViewState> viewState;    // PropTypes.object,
+  // effects, // PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
+  // controller, // PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
+  // PropTypes.object]),
+
+  // GL settings
+  // gl, // PropTypes.object,
+  // glOptions, // PropTypes.object,
+  // parameters, // PropTypes.object,
+  opt<float> pickingRadius;   // PropTypes.number,
+  opt<bool> useDevicePixels;  // PropTypes.oneOfType([PropTypes.bool,
+                              // PropTypes.number]),
+  // std::string touchAction, // PropTypes.string,
+
+  // Callbacks
+  // std::function<> onWebGLInitialized;  // PropTypes.func;
+  // std::function<> onResize;            // PropTypes.func;
+  // std::function<> onViewStateChange;   // PropTypes.func;
+  // std::function<> onBeforeRender;      // PropTypes.func;
+  // std::function<> onAfterRender;       // PropTypes.func;
+  // std::function<> onLoad;              // PropTypes.func;
+  // std::function<> onError;             // PropTypes.func;
+
+  // Debug settings
+  bool debug;              // PropTypes.bool;
+  bool drawPickingColors;  // PropTypes.bool;
+
+  void* _framebuffer;  // PropTypes.object, // Experimental props
+  bool _animate;       // PropTypes.bool // Forces a redraw every animation frame
+
+  Props();
+  auto getPropertyTypes() const -> const PropertyTypes*;
+};
+*/
 
 class Deck::Props : public Component::Props {
  public:
