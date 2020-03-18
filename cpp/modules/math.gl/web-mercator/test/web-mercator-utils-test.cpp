@@ -23,7 +23,7 @@
 #include <tuple>
 
 #include "math.gl/core.h"
-#include "math.gl/web-mercator/web-mercator-utils.h"
+#include "math.gl/web-mercator.h"
 
 #include "./sample-viewports.h"
 
