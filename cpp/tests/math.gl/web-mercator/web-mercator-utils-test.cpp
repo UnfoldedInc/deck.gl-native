@@ -21,8 +21,24 @@
 #include <gtest/gtest.h>
 
 #include "math.gl/core.h"
+#include "math.gl/web-mercator/web-mercator-utils.h"
+
+using namespace mathgl;
 
 namespace {
+/**
+ * The fixture for testing class JSONConverter.
+ */
+class WebMercatorUtilsTest : public ::testing::Test {
+ protected:
+  WebMercatorUtilsTest() {}
+};
 
-// TODO
+TEST_F(WebMercatorUtilsTest, lngLatToWorld) {
+  auto input = Vector2<double>(-122, 38);
+  auto output = lngLatToWorld(input);
+  EXPECT_FLOAT_EQ(output.x, 82.4888888888889);
+  EXPECT_FLOAT_EQ(output.y, 314.50692551385134);
 }
+
+}  // namespace
