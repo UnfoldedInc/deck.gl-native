@@ -57,25 +57,24 @@ auto getDiff(Vector3<double> value, Vector3<double> baseValue, double scale)
 TEST_F(WebMercatorUtilsTest, lngLatToWorld) {
   auto input = Vector2<double>(-122, 38);
   auto output = lngLatToWorld(input);
-  EXPECT_FLOAT_EQ(output.x, 82.4888888888889);
-  EXPECT_FLOAT_EQ(output.y, 314.50692551385134);
+  EXPECT_DOUBLE_EQ(output.x, 82.4888888888889);
+  EXPECT_DOUBLE_EQ(output.y, 314.50692551385134);
 }
 
 TEST_F(WebMercatorUtilsTest, getDistanceScales) {
   for (auto vc : SAMPLE_VIEWPORTS) {
     auto distanceScales = getDistanceScales(Vector2<double>(vc.longitude, vc.latitude));
 
-    EXPECT_FLOAT_EQ(distanceScales.metersPerUnit.x * distanceScales.unitsPerMeter.x, 1);
-    EXPECT_FLOAT_EQ(distanceScales.metersPerUnit.y * distanceScales.unitsPerMeter.y, 1);
-    EXPECT_FLOAT_EQ(distanceScales.metersPerUnit.z * distanceScales.unitsPerMeter.z, 1);
+    EXPECT_DOUBLE_EQ(distanceScales.metersPerUnit.x * distanceScales.unitsPerMeter.x, 1);
+    EXPECT_DOUBLE_EQ(distanceScales.metersPerUnit.y * distanceScales.unitsPerMeter.y, 1);
+    EXPECT_DOUBLE_EQ(distanceScales.metersPerUnit.z * distanceScales.unitsPerMeter.z, 1);
 
-    EXPECT_FLOAT_EQ(distanceScales.degreesPerUnit.x * distanceScales.unitsPerDegree.x, 1);
-    EXPECT_FLOAT_EQ(distanceScales.degreesPerUnit.y * distanceScales.unitsPerDegree.y, 1);
-    EXPECT_FLOAT_EQ(distanceScales.degreesPerUnit.z * distanceScales.unitsPerDegree.z, 1);
+    EXPECT_DOUBLE_EQ(distanceScales.degreesPerUnit.x * distanceScales.unitsPerDegree.x, 1);
+    EXPECT_DOUBLE_EQ(distanceScales.degreesPerUnit.y * distanceScales.unitsPerDegree.y, 1);
+    EXPECT_DOUBLE_EQ(distanceScales.degreesPerUnit.z * distanceScales.unitsPerDegree.z, 1);
   }
 }
 
-// TODO: This test doesn't work
 TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
   auto scale = pow(2, DISTANCE_SCALE_TEST_ZOOM);
   auto z = 1000.0;
@@ -88,9 +87,9 @@ TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
     for (auto delta : TEST_DELTAS) {
       // To pixels
       auto coordsAdjusted =
-          Vector3<double>(delta * distanceScales.unitsPerDegree.x + (distanceScales.unitsPerDegree2.x * delta),
-                          delta * distanceScales.unitsPerDegree.y + (distanceScales.unitsPerDegree2.y * delta),
-                          z * distanceScales.unitsPerDegree.z + (distanceScales.unitsPerDegree2.z * delta));
+          Vector3<double>(delta * (distanceScales.unitsPerDegree.x + distanceScales.unitsPerDegree2.x * delta),
+                          delta * (distanceScales.unitsPerDegree.y + distanceScales.unitsPerDegree2.y * delta),
+                          z * (distanceScales.unitsPerDegree.z + distanceScales.unitsPerDegree2.z * delta));
       auto pt = Vector2<double>(vc.longitude + delta, vc.latitude + delta);
       auto ptDistanceScales = getDistanceScales(pt);
 
@@ -125,8 +124,8 @@ TEST_F(WebMercatorUtilsTest, addMetersToLngLat) {
       auto result = addMetersToLngLat(origin, Vector2<double>(delta, delta));
 
       // Extracted expected values from JS and test against those
-      EXPECT_FLOAT_EQ(result.x, vc.addMetersToLngLatResults[i].x);
-      EXPECT_FLOAT_EQ(result.y, vc.addMetersToLngLatResults[i].y);
+      EXPECT_NEAR(result.x, vc.addMetersToLngLatResults[i].x, DISTANCE_TOLERANCE);
+      EXPECT_NEAR(result.y, vc.addMetersToLngLatResults[i].y, DISTANCE_TOLERANCE);
     }
   }
 }
@@ -141,9 +140,9 @@ TEST_F(WebMercatorUtilsTest, getMeterZoom) {
     auto distanceScales = getDistanceScales(Vector2<double>(0, latitude));
 
     // zoom yields 1 pixel per meter
-    EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.x * scale, 1);
-    EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.y * scale, 1);
-    EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.z * scale, 1);
+    EXPECT_NEAR(distanceScales.unitsPerMeter.x * scale, 1, DISTANCE_TOLERANCE);
+    EXPECT_NEAR(distanceScales.unitsPerMeter.y * scale, 1, DISTANCE_TOLERANCE);
+    EXPECT_NEAR(distanceScales.unitsPerMeter.z * scale, 1, DISTANCE_TOLERANCE);
   }
 }
 
