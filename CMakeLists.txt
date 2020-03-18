@@ -39,42 +39,42 @@ include(CTest)
 
 ## math.gl
 set(MATHGL_CORE_HEADER_FILES
-    cpp/src/math.gl/core.h
-    cpp/src/math.gl/web-mercator/web-mercator-utils.h
+    cpp/modules/math.gl/core.h
+    cpp/modules/math.gl/web-mercator/src/web-mercator-utils.h
     )
 set(MATHGL_CORE_SOURCE_FILES
-    cpp/src/math.gl/web-mercator/web-mercator-utils.cpp
+    cpp/modules/math.gl/web-mercator/src/web-mercator-utils.cpp
     )
 set(MATHGL_CORE_TEST_FILES
-    cpp/tests/math.gl/core-test.cpp
-    cpp/tests/math.gl/web-mercator/web-mercator-utils-test.cpp
+    cpp/modules/math.gl/core/test/core-test.cpp
+    cpp/modules/math.gl/web-mercator/test/web-mercator-utils-test.cpp
     )
 
 ## loaders.gl/csv
 set(LOADERSGL_CSV_HEADER_FILES
-    cpp/src/loaders.gl/csv/csv-loader.h
+    cpp/modules/loaders.gl/csv/src/csv-loader.h
 )
 set(LOADERSGL_CSV_SOURCE_FILES
-    cpp/src/loaders.gl/csv/csv-loader.cpp
+    cpp/modules/loaders.gl/csv/src/csv-loader.cpp
 )
 set(LOADERSGL_CSV_TEST_FILES
-    cpp/tests/loaders.gl/csv/csv-loader-test.cpp
+    cpp/modules/loaders.gl/csv/test/csv-loader-test.cpp
 )
 
 ## loaders.gl/json
 set(LOADERSGL_JSON_HEADER_FILES
-    cpp/src/loaders.gl/json/json-loader.h
+    cpp/modules/loaders.gl/json/src/json-loader.h
 )
 set(LOADERSGL_JSON_SOURCE_FILES
-    cpp/src/loaders.gl/json/json-loader.cpp
+    cpp/modules/loaders.gl/json/src/json-loader.cpp
 )
 set(LOADERSGL_JSON_TEST_FILES
-    cpp/tests/loaders.gl/json/json-loader-test.cpp
+    cpp/modules/loaders.gl/json/test/json-loader-test.cpp
 )
 
 ## luma.gl
 set(LUMAGL_CORE_HEADER_FILES
-    cpp/src/luma.gl/core.h
+    cpp/modules/luma.gl/core.h
     )
 set(LUMAGL_CORE_SOURCE_FILES
     )
@@ -83,58 +83,59 @@ set(LUMAGL_CORE_TEST_FILES
 
 ## deck.gl/json
 set(DECKGL_JSON_HEADER_FILES
-    cpp/src/deck.gl/json.h
-    cpp/src/deck.gl/json/converter/json-types.h
-    cpp/src/deck.gl/json/converter/json-types-mathgl.h
-    cpp/src/deck.gl/json/converter/json-converter.h
-    cpp/src/deck.gl/json/component/component.h
+    cpp/modules/deck.gl/json.h
+    cpp/modules/deck.gl/json/src/converter/json-types.h
+    cpp/modules/deck.gl/json/src/converter/json-types-mathgl.h
+    cpp/modules/deck.gl/json/src/converter/json-converter.h
+    cpp/modules/deck.gl/json/src/component/component.h
 )
 
 set(DECKGL_JSON_SOURCE_FILES
-    cpp/src/deck.gl/json/converter/json-types.cpp
-    cpp/src/deck.gl/json/converter/json-converter.cpp
-    cpp/src/deck.gl/json/component/component.cpp
+    cpp/modules/deck.gl/json/src/converter/json-types.cpp
+    cpp/modules/deck.gl/json/src/converter/json-converter.cpp
+    cpp/modules/deck.gl/json/src/component/component.cpp
 )
 set(DECKGL_JSON_TEST_FILES
-    cpp/tests/deck.gl/json/json-converter-test.cpp
-    cpp/tests/deck.gl/json/json-types-test.cpp
+    cpp/modules/deck.gl/json/test/json-converter-test.cpp
+    cpp/modules/deck.gl/json/test/json-types-test.cpp
 )
 
 ## deck.gl/core
 set(DECKGL_CORE_HEADER_FILES
-    cpp/src/deck.gl/core/lib/constants.h
-    cpp/src/deck.gl/core/lib/deck.h
-    cpp/src/deck.gl/core/lib/layer.h
-    cpp/src/deck.gl/core/lib/layer-manager.h
-    cpp/src/deck.gl/core/lib/layer-state.h
-    cpp/src/deck.gl/core/lib/view-manager.h
-    cpp/src/deck.gl/core/viewports/viewport.h
+    cpp/modules/deck.gl/core.h
+    cpp/modules/deck.gl/core/src/lib/constants.h
+    cpp/modules/deck.gl/core/src/lib/deck.h
+    cpp/modules/deck.gl/core/src/lib/layer.h
+    cpp/modules/deck.gl/core/src/lib/layer-manager.h
+    cpp/modules/deck.gl/core/src/lib/layer-state.h
+    cpp/modules/deck.gl/core/src/lib/view-manager.h
+    cpp/modules/deck.gl/core/src/viewports/viewport.h
     )
 set(DECKGL_CORE_SOURCE_FILES
-    cpp/src/deck.gl/core/lib/deck.cpp
-    cpp/src/deck.gl/core/lib/layer.cpp
-    cpp/src/deck.gl/core/lib/layer-manager.cpp
-    cpp/src/deck.gl/core/viewports/viewport.cpp
+    cpp/modules/deck.gl/core/src/lib/deck.cpp
+    cpp/modules/deck.gl/core/src/lib/layer.cpp
+    cpp/modules/deck.gl/core/src/lib/layer-manager.cpp
+    cpp/modules/deck.gl/core/src/viewports/viewport.cpp
     )
 set(DECKGL_CORE_TEST_FILES
-    cpp/tests/deck.gl/core/lib/layer-test.cpp
-    cpp/tests/deck.gl/core/lib/layer-manager-test.cpp
-    cpp/tests/deck.gl/core/viewports/viewport-test.cpp
+    cpp/modules/deck.gl/core/test/lib/layer-test.cpp
+    cpp/modules/deck.gl/core/test/lib/layer-manager-test.cpp
+    cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
     )
 
 ## deck.gl/layers
 set(DECKGL_LAYERS_HEADER_FILES
-    cpp/src/deck.gl/layers.h
-    cpp/src/deck.gl/layers/line-layer/line-layer.h
-    cpp/src/deck.gl/layers/scatterplot-layer/scatterplot-layer.h
+    cpp/modules/deck.gl/layers.h
+    cpp/modules/deck.gl/layers/src/line-layer/line-layer.h
+    cpp/modules/deck.gl/layers/src/scatterplot-layer/scatterplot-layer.h
     )
 set(DECKGL_LAYERS_SOURCE_FILES
-    cpp/src/deck.gl/layers/line-layer/line-layer.cpp
-    cpp/src/deck.gl/layers/scatterplot-layer/scatterplot-layer.cpp
+    cpp/modules/deck.gl/layers/src/line-layer/line-layer.cpp
+    cpp/modules/deck.gl/layers/src/scatterplot-layer/scatterplot-layer.cpp
     )
 set(DECKGL_LAYERS_TEST_FILES
-    cpp/tests/deck.gl/layers/line-layer-test.cpp
-    cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
+    cpp/modules/deck.gl/layers/test/line-layer-test.cpp
+    cpp/modules/deck.gl/layers/test/scatterplot-layer-test.cpp
     )
 
 # Define source file lists per type
@@ -182,7 +183,7 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 target_include_directories(deck.gl PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/src/>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules/>)
 
 # Automatic code formatting
 find_program(CLANG_FORMAT_PATH clang-format)
