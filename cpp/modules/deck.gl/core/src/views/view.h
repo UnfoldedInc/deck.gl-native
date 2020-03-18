@@ -41,19 +41,19 @@ class View : public Component {
   auto getViewStateId() -> const std::string;
 
   // Allows view to override (or completely define) viewState
-  filterViewState(viewState);
+  // filterViewState(viewState);
 
   // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
-  getDimensions({width, height});
+  // auto getDimensions(int width, int height) -> ;
 
   // Used by sub classes to resolve controller props
-  _getControllerProps(defaultOpts);
+  // _getControllerProps(void *defaultOpts);
 
   // Overridable method
-  _getViewport(props);
+  // _getViewport(void *props);
 
   // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
-  _parseDimensions({x, y, width, height});
+  // _parseDimensions(int x, int y, int width, int height});
 };
 
 class View::Props : public Component::Props {
@@ -67,8 +67,8 @@ class View::Props : public Component::Props {
   const std::string height{"100%"};
 
     // Viewport Options
-  Matrix4<double> projectionMatrix, // Projection matrix
-  Matrix4<double> modelMatrix, // A model matrix to be applied to position, to match the layer props API
+  mathgl::Matrix4<double> projectionMatrix; // Projection matrix
+  mathgl::Matrix4<double> modelMatrix; // A model matrix to be applied to position, to match the layer props API
 
   // Perspective projection parameters, used if projectionMatrix not supplied
   double fovy{50};

@@ -205,9 +205,7 @@ public:
     const {longitude, latitude, zoom} = fitBounds(Object.assign({width, height, bounds}, options));
     return new WebMercatorViewport({width, height, longitude, latitude, zoom});
   }
-}
-
-WebMercatorViewport.displayName = 'WebMercatorViewport';
+};
 
 } // namespace deckgl
 
