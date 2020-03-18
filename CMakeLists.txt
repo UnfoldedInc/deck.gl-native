@@ -137,7 +137,7 @@ set(DECKGL_LAYERS_TEST_FILES
     cpp/tests/deck.gl/layers/scatterplot-layer-test.cpp
     )
 
-    # Define source file lists per type
+# Define source file lists per type
 set(LIB_HEADER_FILES
     ${MATHGL_CORE_HEADER_FILES}
     ${LOADERSGL_CSV_HEADER_FILES} ${LOADERSGL_JSON_HEADER_FILES}

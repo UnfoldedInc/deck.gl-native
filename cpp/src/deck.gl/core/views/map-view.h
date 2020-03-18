@@ -41,3 +41,7 @@ class MapView : public View {
 }
 
 MapView.displayName = 'MapView';
+
+} // namespace deckgl
+
+#endif // DECKGL_CORE_VIEWS_VIEW_H
