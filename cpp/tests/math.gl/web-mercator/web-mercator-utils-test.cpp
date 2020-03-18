@@ -114,30 +114,19 @@ TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
 
 // TODO: port getDistanceScales#unitsPerMeter
 
-// TODO: Doesn't assert
 TEST_F(WebMercatorUtilsTest, addMetersToLngLat) {
-  // config.EPSILON = 1e-7;
-
   for (auto vc : SAMPLE_VIEWPORTS) {
     // Test degree offsets
     const double TEST_DELTAS[] = {10, 100, 1000, 5000};
-    for (auto delta : TEST_DELTAS) {
+    for (auto i = 0; i < 4; i++) {
+      auto delta = TEST_DELTAS[i];
       auto origin = Vector2<double>(vc.longitude, vc.latitude);
-
-      // turf unit is kilometers
-      // let pt = destination(origin, (delta / 1000) * Math.sqrt(2), 45);
-      // pt = pt.geometry.coordinates.concat(delta);
 
       auto result = addMetersToLngLat(origin, Vector2<double>(delta, delta));
 
-      // simple assertion, doesn't test the full logic
-      EXPECT_NE(origin.x, result.x);
-      EXPECT_NE(origin.y, result.y);
-
-      // TODO: compare agaist constants, not a HS lib
-      // t.comment(`Comparing: ${result}, ${pt}`);
-
-      // t.ok(equals(result, pt), 'Returns correct result');
+      // Extracted expected values from JS and test against those
+      EXPECT_FLOAT_EQ(result.x, vc.addMetersToLngLatResults[i].x);
+      EXPECT_FLOAT_EQ(result.y, vc.addMetersToLngLatResults[i].y);
     }
   }
 }
