@@ -45,6 +45,9 @@ set(MATHGL_CORE_HEADER_FILES
 set(MATHGL_CORE_SOURCE_FILES
     cpp/modules/math.gl/web-mercator/src/web-mercator-utils.cpp
     )
+set(MATHGL_CORE_TEST_HEADER_FILES
+    cpp/modules/math.gl/web-mercator/test/sample-viewports.h
+    )
 set(MATHGL_CORE_TEST_FILES
     cpp/modules/math.gl/core/test/core-test.cpp
     cpp/modules/math.gl/web-mercator/test/web-mercator-utils-test.cpp
@@ -159,6 +162,7 @@ set(TEST_SOURCE_FILES
     cpp/tests/main.cpp
     )
 SET(TEST_HEADER_FILES
+    ${MATHGL_CORE_TEST_HEADER_FILES}
     )
 
 set(ALL_SOURCE_FILES

@@ -111,7 +111,37 @@ TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
   }
 }
 
-// TODO: port getDistanceScales#unitsPerMeter
+TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerMeter) {
+  auto scale = pow(2, DISTANCE_SCALE_TEST_ZOOM);
+  auto z = 1000.0;
+
+  for (auto vc : SAMPLE_VIEWPORTS) {
+    auto distanceScales = getDistanceScales(Vector2<double>(vc.longitude, vc.latitude), true);
+
+    // Test degree offsets
+    const double TEST_DELTAS[] = {10, 100, 1000, 5000, 10000, 30000};
+    for (auto i = 0; i < 6; i++) {
+      auto delta = TEST_DELTAS[i];
+
+      // To pixels
+      auto coordsAdjusted =
+          Vector3<double>(delta * (distanceScales.unitsPerMeter.x + distanceScales.unitsPerMeter2.x * delta),
+                          delta * (distanceScales.unitsPerMeter.y + distanceScales.unitsPerMeter2.y * delta),
+                          z * (distanceScales.unitsPerMeter.z + distanceScales.unitsPerMeter2.z * delta));
+      auto realCoords = vc.unitsPerMeterResults[i];
+
+      auto diffAdjusted = getDiff(coordsAdjusted, realCoords, scale);
+
+      EXPECT_LT(get<0>(diffAdjusted).x, DISTANCE_TOLERANCE);
+      EXPECT_LT(get<0>(diffAdjusted).y, DISTANCE_TOLERANCE);
+      EXPECT_LT(get<0>(diffAdjusted).z, DISTANCE_TOLERANCE);
+
+      EXPECT_LT(get<1>(diffAdjusted).x, DISTANCE_TOLERANCE_PIXELS);
+      EXPECT_LT(get<1>(diffAdjusted).y, DISTANCE_TOLERANCE_PIXELS);
+      EXPECT_LT(get<1>(diffAdjusted).z, DISTANCE_TOLERANCE_PIXELS);
+    }
+  }
+}
 
 TEST_F(WebMercatorUtilsTest, addMetersToLngLat) {
   for (auto vc : SAMPLE_VIEWPORTS) {
