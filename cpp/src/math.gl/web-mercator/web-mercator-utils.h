@@ -122,13 +122,13 @@ auto getMeterZoom(double latitude) -> double;
  * In mercator projection mode, the distance scales vary significantly
  * with latitude.
  */
-auto getDistanceScales(Vector2<double> latLng, bool highPrecision = false) -> DistanceScales;
+auto getDistanceScales(Vector2<double> lngLat, bool highPrecision = false) -> DistanceScales;
 
 /**
  * Offset a lng/lat position by meterOffset (northing, easting)
  */
 auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double>;
-auto addMetersToLngLat(Vector2<double> lngLat, Vector3<double> xy) -> Vector2<double>;
+auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<double>;
 
 // ATTRIBUTION:
 // view and projection matrix creation is intentionally kept compatible with

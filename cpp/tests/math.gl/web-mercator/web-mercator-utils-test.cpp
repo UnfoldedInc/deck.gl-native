@@ -19,13 +19,23 @@
 // THE SOFTWARE.
 
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <tuple>
 
 #include "math.gl/core.h"
 #include "math.gl/web-mercator/web-mercator-utils.h"
 
+#include "./sample-viewports.h"
+
 using namespace mathgl;
+using namespace std;
 
 namespace {
+
+auto const DISTANCE_TOLERANCE = 0.0005;
+auto const DISTANCE_TOLERANCE_PIXELS = 2.0;
+auto const DISTANCE_SCALE_TEST_ZOOM = 12.0;
+
 /**
  * The fixture for testing class JSONConverter.
  */
@@ -34,6 +44,16 @@ class WebMercatorUtilsTest : public ::testing::Test {
   WebMercatorUtilsTest() {}
 };
 
+auto getDiff(Vector3<double> value, Vector3<double> baseValue, double scale)
+    -> std::tuple<Vector3<double>, Vector3<double>> {
+  auto errorPixels = Vector3<double>(abs((value.x - baseValue.x) * scale), abs((value.y - baseValue.y) * scale),
+                                     abs((value.z - baseValue.z) * scale));
+  auto error = Vector3<double>(abs(value.x - baseValue.x) / min(abs(value.x), abs(baseValue.x)),
+                               abs(value.y - baseValue.y) / min(abs(value.y), abs(baseValue.y)),
+                               abs(value.z - baseValue.z) / min(abs(value.z), abs(baseValue.z)));
+  return make_tuple(error, errorPixels);
+}
+
 TEST_F(WebMercatorUtilsTest, lngLatToWorld) {
   auto input = Vector2<double>(-122, 38);
   auto output = lngLatToWorld(input);
@@ -41,7 +61,86 @@ TEST_F(WebMercatorUtilsTest, lngLatToWorld) {
   EXPECT_FLOAT_EQ(output.y, 314.50692551385134);
 }
 
-// TODO: VIEWPORT_PROPS tests
+TEST_F(WebMercatorUtilsTest, getDistanceScales) {
+  for (auto vc : SAMPLE_VIEWPORTS) {
+    auto distanceScales = getDistanceScales(Vector2<double>(vc.longitude, vc.latitude));
+
+    EXPECT_FLOAT_EQ(distanceScales.metersPerUnit.x * distanceScales.unitsPerMeter.x, 1);
+    EXPECT_FLOAT_EQ(distanceScales.metersPerUnit.y * distanceScales.unitsPerMeter.y, 1);
+    EXPECT_FLOAT_EQ(distanceScales.metersPerUnit.z * distanceScales.unitsPerMeter.z, 1);
+
+    EXPECT_FLOAT_EQ(distanceScales.degreesPerUnit.x * distanceScales.unitsPerDegree.x, 1);
+    EXPECT_FLOAT_EQ(distanceScales.degreesPerUnit.y * distanceScales.unitsPerDegree.y, 1);
+    EXPECT_FLOAT_EQ(distanceScales.degreesPerUnit.z * distanceScales.unitsPerDegree.z, 1);
+  }
+}
+
+// TODO: This test doesn't work
+TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
+  auto scale = pow(2, DISTANCE_SCALE_TEST_ZOOM);
+  auto z = 1000.0;
+
+  for (auto vc : SAMPLE_VIEWPORTS) {
+    auto distanceScales = getDistanceScales(Vector2<double>(vc.longitude, vc.latitude), true);
+
+    // Test degree offsets
+    const double TEST_DELTAS[] = {0.001, 0.01, 0.05, 0.1, 0.3};
+    for (auto delta : TEST_DELTAS) {
+      // To pixels
+      auto coordsAdjusted =
+          Vector3<double>(delta * distanceScales.unitsPerDegree.x + (distanceScales.unitsPerDegree2.x * delta),
+                          delta * distanceScales.unitsPerDegree.y + (distanceScales.unitsPerDegree2.y * delta),
+                          z * distanceScales.unitsPerDegree.z + (distanceScales.unitsPerDegree2.z * delta));
+      auto pt = Vector2<double>(vc.longitude + delta, vc.latitude + delta);
+      auto ptDistanceScales = getDistanceScales(pt);
+
+      auto lngLatInWorld = lngLatToWorld(Vector2<double>(vc.longitude, vc.latitude));
+      auto ptInWorld = lngLatToWorld(pt);
+      auto realCoords = Vector3<double>(ptInWorld.x - lngLatInWorld.x, ptInWorld.y - lngLatInWorld.y,
+                                        z * ptDistanceScales.unitsPerMeter.z);
+
+      auto diffAdjusted = getDiff(coordsAdjusted, realCoords, scale);
+
+      EXPECT_LT(get<0>(diffAdjusted).x, DISTANCE_TOLERANCE);
+      EXPECT_LT(get<0>(diffAdjusted).y, DISTANCE_TOLERANCE);
+      EXPECT_LT(get<0>(diffAdjusted).z, DISTANCE_TOLERANCE);
+
+      EXPECT_LT(get<1>(diffAdjusted).x, DISTANCE_TOLERANCE_PIXELS);
+      EXPECT_LT(get<1>(diffAdjusted).y, DISTANCE_TOLERANCE_PIXELS);
+      EXPECT_LT(get<1>(diffAdjusted).z, DISTANCE_TOLERANCE_PIXELS);
+    }
+  }
+}
+
+// TODO: port getDistanceScales#unitsPerMeter
+
+// TODO: Doesn't assert
+TEST_F(WebMercatorUtilsTest, addMetersToLngLat) {
+  // config.EPSILON = 1e-7;
+
+  for (auto vc : SAMPLE_VIEWPORTS) {
+    // Test degree offsets
+    const double TEST_DELTAS[] = {10, 100, 1000, 5000};
+    for (auto delta : TEST_DELTAS) {
+      auto origin = Vector2<double>(vc.longitude, vc.latitude);
+
+      // turf unit is kilometers
+      // let pt = destination(origin, (delta / 1000) * Math.sqrt(2), 45);
+      // pt = pt.geometry.coordinates.concat(delta);
+
+      auto result = addMetersToLngLat(origin, Vector2<double>(delta, delta));
+
+      // simple assertion, doesn't test the full logic
+      EXPECT_NE(origin.x, result.x);
+      EXPECT_NE(origin.y, result.y);
+
+      // TODO: compare agaist constants, not a HS lib
+      // t.comment(`Comparing: ${result}, ${pt}`);
+
+      // t.ok(equals(result, pt), 'Returns correct result');
+    }
+  }
+}
 
 TEST_F(WebMercatorUtilsTest, getMeterZoom) {
   const double TEST_LATITUDES[] = {0, 37.5, 75};
@@ -50,7 +149,7 @@ TEST_F(WebMercatorUtilsTest, getMeterZoom) {
     auto zoom = getMeterZoom(latitude);
     auto scale = zoomToScale(zoom);
 
-    auto distanceScales = getDistanceScales(Vector2<double>(latitude, 0));
+    auto distanceScales = getDistanceScales(Vector2<double>(0, latitude));
 
     // zoom yields 1 pixel per meter
     EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.x * scale, 1);

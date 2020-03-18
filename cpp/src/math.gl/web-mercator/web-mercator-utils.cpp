@@ -61,9 +61,9 @@ auto getMeterZoom(double latitude) -> double {
   return scaleToZoom(EARTH_CIRCUMFERENCE * latCosine) - 9;
 }
 
-auto getDistanceScales(Vector2<double> latLng, bool highPrecision) -> DistanceScales {
+auto getDistanceScales(Vector2<double> lngLat, bool highPrecision) -> DistanceScales {
   auto worldSize = TILE_SIZE;
-  auto latCosine = cos(latLng.x * DEGREES_TO_RADIANS);
+  auto latCosine = cos(lngLat.y * DEGREES_TO_RADIANS);
 
   /**
    * Number of pixels occupied by one degree longitude around current lat/lon:
@@ -102,7 +102,7 @@ auto getDistanceScales(Vector2<double> latLng, bool highPrecision) -> DistanceSc
        = DEGREES_TO_RADIANS * tan(lat * DEGREES_TO_RADIANS) / cos(lat * DEGREES_TO_RADIANS) * dLat
    */
   if (highPrecision) {
-    auto latCosine2 = (DEGREES_TO_RADIANS * tan(latLng.x * DEGREES_TO_RADIANS)) / latCosine;
+    auto latCosine2 = (DEGREES_TO_RADIANS * tan(lngLat.y * DEGREES_TO_RADIANS)) / latCosine;
     auto unitsPerDegreeY2 = (unitsPerDegreeX * latCosine2) / 2.0;
     auto altUnitsPerDegree2 = (worldSize / EARTH_CIRCUMFERENCE) * latCosine2;
     auto altUnitsPerMeter2 = (altUnitsPerDegree2 / unitsPerDegreeY) * altUnitsPerMeter;
