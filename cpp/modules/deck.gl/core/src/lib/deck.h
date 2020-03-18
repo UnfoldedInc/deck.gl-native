@@ -24,6 +24,7 @@
 #include <optional>
 
 #include "./layer-manager.h"
+#include "./view-manager.h"
 #include "deck.gl/json.h"
 
 /*
@@ -58,15 +59,12 @@ import {EVENTS} from './constants';
 
 namespace deckgl {
 
-class ViewState;
-class View;
-
 class Deck : public Component {
  public:
   using super = Component;
   class Props;
 
-  Props* props;
+  Props *props;
 
   int width;   // "read-only", auto-updated from canvas
   int height;  // "read-only", auto-updated from canvas
@@ -79,20 +77,20 @@ class Deck : public Component {
   // deckPicker = nullptr;
 
   bool _needsRedraw;
-  void* _pickRequest = nullptr;
+  void *_pickRequest = nullptr;
   // Pick and store the object under the pointer on `pointerdown`.
   // This object is reused for subsequent `onClick` and `onDrag*`
   // callbacks.
-  void* _lastPointerDownInfo = nullptr;
+  void *_lastPointerDownInfo = nullptr;
 
   // viewState = nullptr;  // Internal view state if no callback is supplied
   // this->interactiveState = {
   //   isDragging: false // Whether the cursor is down
 
-  Deck(Deck::Props* props);
+  Deck(Deck::Props *props);
   ~Deck();
 
-  void setProps(Deck::Props*);
+  void setProps(Deck::Props *);
 
   // Public API
 
@@ -104,7 +102,7 @@ class Deck : public Component {
 
   void redraw(bool force = false);
 
-  auto getViews() -> std::list<View*>;  // { return this->viewManager->views; }
+  auto getViews() -> std::list<View *>;  // { return this->viewManager->views; }
 
   /*
   // Get a set of viewports for a given width and height
@@ -136,7 +134,7 @@ class Deck : public Component {
   // shadows internal viewState
   // TODO: For backwards compatibility ensure numeric width and height is
   // added to the viewState
-  auto _getViewState() -> ViewState*;  // { return this->props->viewState || this->viewState; }
+  auto _getViewState() -> ViewState *;  // { return this->props->viewState || this->viewState; }
 
   // Get the view descriptor list
   void _getViews();
@@ -171,10 +169,10 @@ class Deck : public Component {
   void _setGLContext(void *gl);
   */
 
-  void _drawLayers(const std::string& redrawReason);  // , renderOptions);
+  void _drawLayers(const std::string &redrawReason);  // , renderOptions);
   // Callbacks
 
-  void _onRendererInitialized(void* gl);
+  void _onRendererInitialized(void *gl);
 
   void _onRenderFrame();  // animationProps);
 
@@ -198,48 +196,44 @@ class Deck : public Component {
 class Deck::Props : public Component::Props {
  public:
   std::string id;  // PropTypes.string,
-  int width;       // PropTypes.oneOfType([PropTypes.number,
-                   // PropTypes.string]),
-  int height;      // PropTypes.oneOfType([PropTypes.number,
-                   // PropTypes.string]),
+  int width;       // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  int height;      // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 
   // layer/view/controller settings
-  std::list<std::shared_ptr<Layer>> layers;  // PropTypes.oneOfType([PropTypes.object,
-                                             // PropTypes.array]),
-  // std::function<> layerFilter, // PropTypes.func,
-  std::list<std::shared_ptr<View>> views;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  std::shared_ptr<ViewState> viewState;    // PropTypes.object,
+  std::list<std::shared_ptr<Layer>> layers;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::list<std::shared_ptr<View>> views;    // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::shared_ptr<ViewState> viewState;      // PropTypes.object,
+  std::shared_ptr<ViewState> initialViewState;
+
   // effects, // PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
-  // controller, // PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
-  // PropTypes.object]),
+  // controller, // PropTypes.oneOfType([PropTypes.func, PropTypes.bool, PropTypes.object]),
+  // std::string touchAction, // PropTypes.string,
 
   // GL settings
   // gl, // PropTypes.object,
   // glOptions, // PropTypes.object,
   // parameters, // PropTypes.object,
+  void *_framebuffer;    // PropTypes.object, // Experimental props
+  bool _animate;         // PropTypes.bool // Forces a redraw every animation frame
   float pickingRadius;   // PropTypes.number,
-  bool useDevicePixels;  // PropTypes.oneOfType([PropTypes.bool,
-                         // PropTypes.number]),
-  // std::string touchAction, // PropTypes.string,
-
-  // Callbacks
-  // std::function<> onWebGLInitialized;  // PropTypes.func;
-  // std::function<> onResize;            // PropTypes.func;
-  // std::function<> onViewStateChange;   // PropTypes.func;
-  // std::function<> onBeforeRender;      // PropTypes.func;
-  // std::function<> onAfterRender;       // PropTypes.func;
-  // std::function<> onLoad;              // PropTypes.func;
-  // std::function<> onError;             // PropTypes.func;
+  bool useDevicePixels;  // PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
 
   // Debug settings
   bool debug;              // PropTypes.bool;
   bool drawPickingColors;  // PropTypes.bool;
 
-  void* _framebuffer;  // PropTypes.object, // Experimental props
-  bool _animate;       // PropTypes.bool // Forces a redraw every animation frame
+  // Callbacks
+  // std::function<> layerFilter, // PropTypes.func,
+  std::function<void(Deck *, void *gl)> onWebGLInitialized;
+  std::function<void(Deck *, int width, int height)> onResize;
+  std::function<auto(Deck *, const ViewState *)->ViewState *> onViewStateChange;
+  std::function<void(Deck *)> onBeforeRender;
+  std::function<void(Deck *)> onAfterRender;
+  std::function<void(Deck *)> onLoad;
+  std::function<void(Deck *, const std::exception &)> onError;
 
   Props();
-  auto getPropertyTypes() const -> const PropertyTypes*;
+  auto getPropertyTypes() const -> const PropertyTypes *;
 };
 
 /*
@@ -260,16 +254,14 @@ function getPropTypes(PropTypes) {
     views: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
     viewState: PropTypes.object,
     effects: PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
-    controller: PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
-PropTypes.object]),
+    controller: PropTypes.oneOfType([PropTypes.func, PropTypes.bool, PropTypes.object]),
 
     // GL settings
     gl: PropTypes.object,
     glOptions: PropTypes.object,
     parameters: PropTypes.object,
     pickingRadius: PropTypes.number,
-    useDevicePixels: PropTypes.oneOfType([PropTypes.bool,
-PropTypes.number]), touchAction: PropTypes.string,
+    useDevicePixels: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]), touchAction: PropTypes.string,
 
     // Callbacks
     onWebGLInitialized: PropTypes.func,

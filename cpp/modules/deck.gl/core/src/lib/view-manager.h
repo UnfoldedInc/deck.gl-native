@@ -82,8 +82,11 @@ class ViewManager {
 
   void setProps(void *props);
 
+  //
   // PRIVATE METHODS
+  //
 
+  /*
   void _update();
 
   void _setSize(width, height);
@@ -93,10 +96,6 @@ class ViewManager {
   void _setViews(views);
 
   void _setViewState(viewState);
-
-  //
-  // PRIVATE METHODS
-  //
 
   void _onViewStateChange(viewId, event);
 
@@ -112,6 +111,7 @@ class ViewManager {
   // Check if viewport array has changed, returns true if any change
   // Note that descriptors can be the same
   void _diffViews(newViews, oldViews);
+  */
 }
 
 }  // namespace deckgl
