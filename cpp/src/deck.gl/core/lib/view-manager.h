@@ -18,51 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// import assert from '../utils/assert';
-// import {deepEqual} from '../utils/deep-equal';
-// import log from '../utils/log';
-// import {flatten} from '../utils/flatten';
+#ifndef DECKGL_CORE_VIEWS_VIEW_MANAGER_H
+#define DECKGL_CORE_VIEWS_VIEW_MANAGER_H
+
+namespace deckgl {
 
 class ViewManager {
  public:
-  ViewManager(props = {}) {
-    // List of view descriptors, gets re-evaluated when width/height changes
-    this->views = [];
-    this->width = 100;
-    this->height = 100;
-    this->viewState = {};
-    this->controllers = {};
-    this->timeline = props.timeline;
-
-    this->_viewports = [];  // Generated viewports
-    this->_viewportMap = {};
-    this->_isUpdating = false;
-    this->_needsRedraw = 'Initial render';
-    this->_needsUpdate = true;
-
-    this->_eventManager = props.eventManager;
-    this->_eventCallbacks = {
-      onViewStateChange : props.onViewStateChange,
-      onInteractiveStateChange : props.onInteractiveStateChange
-    };
-
-    Object.seal(this);
-
-    // Init with default map viewport
-    this->setProps(props);
-  }
-
-  finalize() {
-    for (const key in this->controllers) {
-      if (this->controllers[key]) {
-        this->controllers[key].finalize();
-      }
-    }
-    this->controllers = {};
-  }
+  ViewManager();
+  virtual ~ViewManager();
 
   // Check if a redraw is needed
-  needsRedraw(opts = {clearRedrawFlags : false}) {
+  needsRedraw(bool clearRedrawFlags = false) {
     const redraw = this->_needsRedraw;
     if (opts.clearRedrawFlags) {
       this->_needsRedraw = false;
@@ -70,22 +37,12 @@ class ViewManager {
     return redraw;
   }
 
-  // Layers will be updated deeply (in next animation frame)
+  // Views will be updated deeply (in next animation frame)
   // Potentially regenerating attributes and sub layers
-  setNeedsUpdate(reason) {
-    this->_needsUpdate = this->_needsUpdate || reason;
-    this->_needsRedraw = this->_needsRedraw || reason;
-  }
+  void setNeedsUpdate(const std::string &reason);
 
   // Checks each viewport for transition updates
-  updateViewStates() {
-    for (const viewId in this->controllers) {
-      const controller = this->controllers[viewId];
-      if (controller) {
-        controller.updateTransition();
-      }
-    }
-  }
+  void updateViewStates();
 
   /** Get a set of viewports for a given width and height
    * TODO - Intention is for deck.gl to autodeduce width and height and drop
@@ -96,37 +53,20 @@ class ViewManager {
    *   + {x, y, width, height} - only return viewports that overlap with this
    * rectangle
    */
-  getViewports(rect) {
-    if (rect) {
-      return this->_viewports.filter(viewport = > viewport.containsPixel(rect));
-    }
-    return this->_viewports;
-  }
+  auto getViewports() -> void;  // (rect)
 
-  getViews() {
-    const viewMap = {};
-    this->views.forEach(view = > { viewMap[view.id] = view; });
-    return viewMap;
-  }
+  auto getViews() -> void;
 
   // Resolves a viewId string to a View, if already a View returns it.
-  getView(viewOrViewId) {
-    return typeof viewOrViewId == = 'string' ? this->views.find(view = > view.id == = viewOrViewId) : viewOrViewId;
-  }
+  auto getView(const std::string &viewOrViewId) -> void;
 
   // Returns the viewState for a specific viewId. Matches the viewState by
   // 1. view.viewStateId
   // 2. view.id
   // 3. root viewState
   // then applies the view's filter if any
-  getViewState(viewId) {
-    const view = this->getView(viewId);
-    // Backward compatibility: view state for single view
-    const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
-    return view ? view.filterViewState(viewState) : viewState;
-  }
-
-  getViewport(viewId) { return this->_viewportMap[viewId]; }
+  auto getViewState(const std::string &viewId) -> void;
+  auto getViewport(viewId) -> std::shared_ptr<Viewport>;
 
   /**
    * Unproject pixel coordinates on screen onto world coordinates,
@@ -138,190 +78,42 @@ class ViewManager {
    * @param {Object} opts.topLeft=true - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
-  unproject(xyz, opts) {
-    const viewports = this->getViewports();
-    const pixel = {x : xyz[0], y : xyz[1]};
-    for (let i = viewports.length - 1; i >= 0; --i) {
-      const viewport = viewports[i];
-      if (viewport.containsPixel(pixel)) {
-        const p = xyz.slice();
-        p[0] -= viewport.x;
-        p[1] -= viewport.y;
-        return viewport.unproject(p, opts);
-      }
-    }
-    return null;
-  }
+  // unproject(xyz, opts);
 
-  setProps(props) {
-    if ('views' in props) {
-      this->_setViews(props.views);
-    }
+  void setProps(void *props);
 
-    // TODO - support multiple view states
-    if ('viewState' in props) {
-      this->_setViewState(props.viewState);
-    }
+  // PRIVATE METHODS
 
-    if ('width' in props || 'height' in props) {
-      this->_setSize(props.width, props.height);
-    }
+  void _update();
 
-    // Important: avoid invoking _update() inside itself
-    // Nested updates result in unexpected side effects inside
-    // _rebuildViewports() when using auto control in pure-js
-    if (!this->_isUpdating) {
-      this->_update();
-    }
-  }
-
-  _update() {
-    this->_isUpdating = true;
-
-    // Only rebuild viewports if the update flag is set
-    if (this->_needsUpdate) {
-      this->_needsUpdate = false;
-      this->_rebuildViewports();
-    }
-
-    // If viewport transition(s) are triggered during viewports update,
-    // controller(s) will immediately call `onViewStateChange` which calls
-    // `viewManager.setProps` again.
-    if (this->_needsUpdate) {
-      this->_needsUpdate = false;
-      this->_rebuildViewports();
-    }
-
-    this->_isUpdating = false;
-  }
-
-  _setSize(width, height) {
-    assert(Number.isFinite(width) && Number.isFinite(height));
-    if (width != = this->width || height != = this->height) {
-      this->width = width;
-      this->height = height;
-      this->setNeedsUpdate('Size changed');
-    }
-  }
+  void _setSize(width, height);
 
   // Update the view descriptor list and set change flag if needed
   // Does not actually rebuild the `Viewport`s until `getViewports` is called
-  _setViews(views) {
-    views = flatten(views, {filter : Boolean});
+  void _setViews(views);
 
-    const viewsChanged = this->_diffViews(views, this->views);
-    if (viewsChanged) {
-      this->setNeedsUpdate('views changed');
-    }
-
-    this->views = views;
-  }
-
-  _setViewState(viewState) {
-    if (viewState) {
-      const viewStateChanged = !deepEqual(viewState, this->viewState);
-
-      if (viewStateChanged) {
-        this->setNeedsUpdate('viewState changed');
-      }
-
-      this->viewState = viewState;
-    } else {
-      log.warn('missing `viewState` or `initialViewState`')();
-    }
-  }
+  void _setViewState(viewState);
 
   //
   // PRIVATE METHODS
   //
 
-  _onViewStateChange(viewId, event) {
-    event.viewId = viewId;
-    this->_eventCallbacks.onViewStateChange(event);
-  }
+  void _onViewStateChange(viewId, event);
 
-  _createController(props) {
-    const Controller = props.type;
+  void _createController(props);
 
-    const controller = new Controller(Object.assign({
-      timeline : this->timeline,
-      eventManager : this->_eventManager,
-      // Set an internal callback that calls the prop callback if provided
-      onViewStateChange : this->_onViewStateChange.bind(this, props.id),
-      onStateChange : this->_eventCallbacks.onInteractiveStateChange
-    },
-                                                    props));
-
-    return controller;
-  }
-
-  _updateController(view, viewState, viewport, controller) {
-    if (view.controller) {
-      const controllerProps = Object.assign(
-          {}, view.controller, viewState,
-          {id : view.id, x : viewport.x, y : viewport.y, width : viewport.width, height : viewport.height});
-
-      // TODO - check if view / controller type has changed, and replace
-      // the controller
-      if (controller) {
-        controller.setProps(controllerProps);
-      } else {
-        controller = this->_createController(controllerProps);
-      }
-      return controller;
-    }
-    return null;
-  }
+  void _updateController(view, viewState, viewport, controller);
 
   // Rebuilds viewports from descriptors towards a certain window size
-  _rebuildViewports() {
-    const {width, height, views} = this;
+  void _rebuildViewports();
 
-    const oldControllers = this->controllers;
-    this->_viewports = [];
-    this->controllers = {};
-
-    // Create controllers in reverse order, so that views on top receive
-    // events first
-    for (let i = views.length; i--;) {
-      const view = views[i];
-      const viewState = this->getViewState(view);
-      const viewport = view.makeViewport({width, height, viewState});
-
-      // Update the controller
-      this->controllers[view.id] = this->_updateController(view, viewState, viewport, oldControllers[view.id]);
-
-      this->_viewports.unshift(viewport);
-    }
-
-    // Remove unused controllers
-    for (const id in oldControllers) {
-      if (oldControllers[id] && !this->controllers[id]) {
-        oldControllers[id].finalize();
-      }
-    }
-
-    this->_buildViewportMap();
-  }
-
-  _buildViewportMap() {
-    // Build a view id to view index
-    this->_viewportMap = {};
-    this->_viewports.forEach(viewport = > {
-      if (viewport.id) {
-        // TODO - issue warning if multiple viewports use same id
-        this->_viewportMap[viewport.id] = this->_viewportMap[viewport.id] || viewport;
-      }
-    });
-  }
+  void _buildViewportMap();
 
   // Check if viewport array has changed, returns true if any change
   // Note that descriptors can be the same
-  _diffViews(newViews, oldViews) {
-    if (newViews.length != = oldViews.length) {
-      return true;
-    }
-
-    return newViews.some((_, i) = > !newViews[i].equals(oldViews[i]));
-  }
+  void _diffViews(newViews, oldViews);
 }
+
+}  // namespace deckgl
+
+#endif  // DECKGL_CORE_VIEWS_VIEW_MANAGER_H

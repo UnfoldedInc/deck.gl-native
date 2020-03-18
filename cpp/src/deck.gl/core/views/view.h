@@ -18,168 +18,70 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include '../viewports/viewport'; // import Viewport from
-// import {parsePosition, getPosition} from '../utils/positions';
-// import {deepEqual} from '../utils/deep-equal';
-// import assert from '../utils/assert';
+#ifndef DECKGL_CORE_VIEWS_VIEW_H
+#define DECKGL_CORE_VIEWS_VIEW_H
 
-class View {
-  View(Value props) {
-  }
+#include "../viewports/viewport.h" // {Viewport}
 
-  View(
-    id = null,
+namespace deckgl {
 
-    // Window width/height in pixels (for pixel projection)
-    x = 0,
-    y = 0,
-    width = '100%',
-    height = '100%',
+class View : public Component {
+ public:
+  class Props;
 
-    // Viewport Options
-    projectionMatrix = null, // Projection matrix
-    fovy = 50, // Perspective projection parameters, used if projectionMatrix not supplied
-    near = 0.1, // Distance of near clipping plane
-    far = 1000, // Distance of far clipping plane
-    modelMatrix = null, // A model matrix to be applied to position, to match the layer props API
+  View(Props *props);
+  ~View();
 
-    // A View can be a wrapper for a viewport instance
-    viewportInstance = null,
-
-    // Internal: Viewport Type
-    type = Viewport // TODO - default to WebMercator?
-  ) {
-    assert(!viewportInstance || viewportInstance instanceof Viewport);
-    this->viewportInstance = viewportInstance;
-
-    // Id
-    this->id = id || this->constructor.displayName || 'view';
-    this->type = type;
-
-    this->props = Object.assign({}, props, {
-      id: this->id,
-      projectionMatrix,
-      fovy,
-      near,
-      far,
-      modelMatrix
-    });
-
-    // Extents
-    this->_parseDimensions({x, y, width, height});
-
-    // Bind methods for easy access
-    this->equals = this->equals.bind(this);
-
-    Object.seal(this);
-  }
-
-  equals(view) {
-    if (this === view) {
-      return true;
-    }
-
-    // if `viewportInstance` is set, it is the only prop that is used
-    // Delegate to `Viewport.equals`
-    if (this->viewportInstance) {
-      return view.viewportInstance && this->viewportInstance.equals(view.viewportInstance);
-    }
-
-    const viewChanged = deepEqual(this->props, view.props);
-
-    return viewChanged;
-  }
+  bool equals(const View* view);
 
   // Build a `Viewport` from a view descriptor
   // TODO - add support for autosizing viewports using width and height
-  makeViewport({width, height, viewState}) {
-    if (this->viewportInstance) {
-      return this->viewportInstance;
-    }
+  auto makeViewport() -> Viewport *; // {width, height, viewState});
 
-    viewState = this->filterViewState(viewState);
-
-    // Resolve relative viewport dimensions
-    const viewportDimensions = this->getDimensions({width, height});
-    const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
-    return this->_getViewport(props);
-  }
-
-  getViewStateId() {
-    switch (typeof this->props.viewState) {
-      case 'string':
-        // if View.viewState is a string, return it
-        return this->props.viewState;
-
-      case 'object':
-        // If it is an object, return its id component
-        return this->props.viewState && this->props.viewState.id;
-
-      default:
-        return this->id;
-    }
-  }
+  auto getViewStateId() -> const std::string;
 
   // Allows view to override (or completely define) viewState
-  filterViewState(viewState) {
-    if (this->props.viewState && typeof this->props.viewState === 'object') {
-      // If we have specified an id, then intent is to override,
-      // If not, completely specify the view state
-      if (!this->props.viewState.id) {
-        return this->props.viewState;
-      }
-
-      // Merge in all props from View's viewState, except id
-      const newViewState = Object.assign({}, viewState);
-      for (const key in this->props.viewState) {
-        if (key !== 'id') {
-          newViewState[key] = this->props.viewState[key];
-        }
-      }
-      return newViewState;
-    }
-
-    return viewState;
-  }
+  filterViewState(viewState);
 
   // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
-  getDimensions({width, height}) {
-    return {
-      x: getPosition(this->_x, width),
-      y: getPosition(this->_y, height),
-      width: getPosition(this->_width, width),
-      height: getPosition(this->_height, height)
-    };
-  }
+  getDimensions({width, height});
 
   // Used by sub classes to resolve controller props
-  _getControllerProps(defaultOpts) {
-    let opts = this->props.controller;
-
-    if (!opts) {
-      return null;
-    }
-    if (opts === true) {
-      return defaultOpts;
-    }
-    if (typeof opts === 'function') {
-      opts = {type: opts};
-    }
-    return Object.assign({}, defaultOpts, opts);
-  }
+  _getControllerProps(defaultOpts);
 
   // Overridable method
-  _getViewport(props) {
-    // Get the type of the viewport
-    const {type: ViewportType} = this;
-    return new ViewportType(props);
-  }
+  _getViewport(props);
 
   // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
-  _parseDimensions({x, y, width, height}) {
-    this->_x = parsePosition(x);
-    this->_y = parsePosition(y);
-    this->_width = parsePosition(width);
-    this->_height = parsePosition(height);
-  }
-}
+  _parseDimensions({x, y, width, height});
+};
+
+class View::Props : public Component::Props {
+ public:
+  std::string id;
+
+    // Window width/height in pixels (for pixel projection)
+  int x{0};
+  int y{0};
+  const std::string width{"100%"};
+  const std::string height{"100%"};
+
+    // Viewport Options
+  Matrix4<double> projectionMatrix, // Projection matrix
+  Matrix4<double> modelMatrix, // A model matrix to be applied to position, to match the layer props API
+
+  // Perspective projection parameters, used if projectionMatrix not supplied
+  double fovy{50}; 
+  double near{0.1}; // Distance of near clipping plane
+  double far{1000}; // Distance of far clipping plane
+
+  // A View can be a wrapper for a viewport instance
+  // viewportInstance = null,
+
+  // Internal: Viewport Type
+  // type = Viewport // TODO - default to WebMercator?
+}; 
+
+} // namespace deckgl
+
+#endif // DECKGL_CORE_VIEWS_VIEW_H

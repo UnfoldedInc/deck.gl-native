@@ -1,0 +1,3 @@
+class ViewState {
+  virtual ~ViewState() {};
+}
