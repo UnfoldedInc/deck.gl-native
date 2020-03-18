@@ -143,8 +143,8 @@ auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<do
   return newLngLat;
 }
 
-auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale,
-                   std::optional<Vector3<double>> center) -> Matrix4<double> {
+auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale, Vector3<double> center)
+    -> Matrix4<double> {
   // VIEW MATRIX: PROJECTS MERCATOR WORLD COORDINATES
   // Note that mercator world coordinates typically need to be flipped
   //
@@ -161,14 +161,12 @@ auto getViewMatrix(double height, double pitch, double bearing, double altitude,
        Matrix4<double>::MakeRotationY(bearing * DEGREES_TO_RADIANS);
 
   scale /= height;
-  // TODO: ADD CORRECT SCALE OPERATION
+
   Vector3<double> scaleVector = Vector3<double>(scale, scale, scale);
   vm = vm.scale(scaleVector);
 
-  if (center) {
-    auto centerTranslation = -center.value();
-    vm = vm * Matrix4<double>::MakeTranslation(centerTranslation);
-  }
+  auto centerTranslation = -center;
+  vm = vm * Matrix4<double>::MakeTranslation(centerTranslation);
 
   return vm;
 }

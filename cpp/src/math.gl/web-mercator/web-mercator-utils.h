@@ -22,7 +22,6 @@
 #define MATHGL_WEB_MERCATOR_H
 
 #include <cmath>
-#include <optional>
 
 #include "math.gl/core.h"
 
@@ -137,7 +136,7 @@ auto addMetersToLngLat(Vector2<double> lngLat, Vector3<double> xy) -> Vector2<do
 // with mapbox and react-map-gl. See: https://github.com/mapbox/mapbox-gl-js
 
 auto getViewMatrix(double height, double pitch, double bearing, double altitude, double scale,
-                   std::optional<Vector3<double>> = std::optional<Vector3<double>>()) -> Matrix4<double>;
+                   Vector3<double> = Vector3<double>(0, 0, 0)) -> Matrix4<double>;
 
 // PROJECTION MATRIX PARAMETERS
 // Variable fov (in radians)
