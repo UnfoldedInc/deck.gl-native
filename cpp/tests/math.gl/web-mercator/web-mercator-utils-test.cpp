@@ -41,4 +41,22 @@ TEST_F(WebMercatorUtilsTest, lngLatToWorld) {
   EXPECT_FLOAT_EQ(output.y, 314.50692551385134);
 }
 
+// TODO: VIEWPORT_PROPS tests
+
+TEST_F(WebMercatorUtilsTest, getMeterZoom) {
+  const double TEST_LATITUDES[] = {0, 37.5, 75};
+
+  for (auto latitude : TEST_LATITUDES) {
+    auto zoom = getMeterZoom(latitude);
+    auto scale = zoomToScale(zoom);
+
+    auto distanceScales = getDistanceScales(Vector2<double>(latitude, 0));
+
+    // zoom yields 1 pixel per meter
+    EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.x * scale, 1);
+    EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.y * scale, 1);
+    EXPECT_FLOAT_EQ(distanceScales.unitsPerMeter.z * scale, 1);
+  }
+}
+
 }  // namespace
