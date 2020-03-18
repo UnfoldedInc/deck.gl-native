@@ -87,13 +87,13 @@ set(DECKGL_JSON_HEADER_FILES
     cpp/src/deck.gl/json/converter/json-types.h
     cpp/src/deck.gl/json/converter/json-types-mathgl.h
     cpp/src/deck.gl/json/converter/json-converter.h
-    cpp/src/deck.gl/json/lifecycle/component.h
+    cpp/src/deck.gl/json/component/component.h
 )
 
 set(DECKGL_JSON_SOURCE_FILES
     cpp/src/deck.gl/json/converter/json-types.cpp
     cpp/src/deck.gl/json/converter/json-converter.cpp
-    cpp/src/deck.gl/json/lifecycle/component.cpp
+    cpp/src/deck.gl/json/component/component.cpp
 )
 set(DECKGL_JSON_TEST_FILES
     cpp/tests/deck.gl/json/json-converter-test.cpp

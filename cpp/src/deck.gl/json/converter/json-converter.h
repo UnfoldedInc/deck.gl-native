@@ -25,7 +25,7 @@
 #include <map>
 #include <memory>  // {std::shared_ptr}
 
-#include "../lifecycle/component.h"  // {Component}
+#include "../component/component.h"  // {Component}
 #include "json/json.h"               // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
 
 namespace deckgl {

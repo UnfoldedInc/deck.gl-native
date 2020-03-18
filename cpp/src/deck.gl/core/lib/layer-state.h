@@ -1,4 +1,7 @@
-// import ComponentState from '../lifecycle/component-state';
+#ifndef DECKGL_CORE_LAYER_STATE_H
+#define DECKGL_CORE_LAYER_STATE_H
+
+namespace deckgl {
 
 class Layer;
 class AttributeManager;
@@ -22,3 +25,7 @@ class LayerState {  // }: public ComponentState {
 
   set layer(layer) { this->layer = layer; }
 }
+
+}  // namespace deckgl
+
+#endif  // DECKGL_CORE_LAYER_STATE_H

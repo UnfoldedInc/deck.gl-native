@@ -3,8 +3,6 @@
 #include <iostream>
 #include <memory>
 
-#include "../lifecycle/component.h"
-
 using namespace deckgl;
 
 auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {

@@ -92,13 +92,6 @@ export {default as log} from './utils/log';
 export {createIterable} from './utils/iterable-utils';
 export {fp64LowPart} from './utils/math-utils';
 export {default as Tesselator} from './utils/tesselator'; // Export? move to luma.gl or math.gl?
-
-// Experimental utilities
-export {fillArray as _fillArray} from './utils/flatten'; // Export? move to luma.gl or math.gl?
-export {count as _count} from './utils/count';
-export {default as _memoize} from './utils/memoize';
-export {mergeShaders as _mergeShaders} from './utils/shader';
-export {compareProps as _compareProps} from './lifecycle/props';
 */
 
 #endif // DECKGL_CORE_H
