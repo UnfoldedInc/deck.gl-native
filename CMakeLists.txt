@@ -116,6 +116,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/lib/layer-manager.h
     cpp/modules/deck.gl/core/src/lib/layer-state.h
     cpp/modules/deck.gl/core/src/lib/view-manager.h
+    cpp/modules/deck.gl/core/src/shaderlib/project/viewport-uniforms.h
     cpp/modules/deck.gl/core/src/viewports/viewport.h
     cpp/modules/deck.gl/core/src/views/view.h
     cpp/modules/deck.gl/core/src/views/view-state.h
@@ -125,6 +126,7 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/lib/deck.cpp
     cpp/modules/deck.gl/core/src/lib/layer.cpp
     cpp/modules/deck.gl/core/src/lib/layer-manager.cpp
+    cpp/modules/deck.gl/core/src/shaderlib/project/viewport-uniforms.cpp
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
     )
 set(DECKGL_CORE_TEST_FILES
