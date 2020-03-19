@@ -28,7 +28,41 @@ using namespace deckgl;
 Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
                    const ProjectionMatrixOptions& projectionMatrixOptions, double x, double y, double width,
                    double height)
-    : id{id}, x{x}, y{y}, width{width}, height{height} {}
+    : id{id}, x{x}, y{y}, width{width}, height{height} {
+  // _initViewMatrix
+  this->isGeospatial = viewMatrixOptions.isGeospatial;
+  this->zoom = viewMatrixOptions.zoom;
+  // elided: do not support default zoom
+  this->scale = pow(2, this->zoom);
+
+  auto lngLat = Vector2<double>(viewMatrixOptions.longitude, viewMatrixOptions.latitude);
+  // TODO: doesn't support default distance scales
+  this->distanceScales = this->isGeospatial ? getDistanceScales(lngLat) : viewMatrixOptions.distanceScales;
+  this->focalDistance = viewMatrixOptions.focalDistance;
+
+  // elided check for position defined
+  this->position = viewMatrixOptions.position;
+  this->modelMatrix = viewMatrixOptions.modelMatrix;
+  // elided meterOffset
+
+  if (this->isGeospatial) {
+    this->longitude = viewMatrixOptions.longitude;
+    this->latitude = viewMatrixOptions.latitude;
+    this->center = this->_getCenterInWorld(lngLat);
+  } else {
+    // elided check for position defined
+    this->center = this->projectPosition(position);
+  }
+
+  this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
+  // Make a centered version of the matrix for projection modes without an offset
+  // this->viewMatrix = Matrix4<double>()
+  //                        // Apply the uncentered view matrix
+  //                        .multiplyRight(this->viewMatrixUncentered)
+  //                        // And center it
+  //                        .translate(this->center)
+  //                        .negate();
+}
 
 auto Viewport::metersPerPixel() -> double { return this->distanceScales.metersPerUnit.z / this->scale; }
 
@@ -90,6 +124,22 @@ auto Viewport::getCameraPosition() -> mathgl::Vector3<double> { return this->cam
 auto Viewport::getCameraDirection() -> mathgl::Vector3<double> { return this->cameraDirection; }
 
 auto Viewport::getCameraUp() -> mathgl::Vector3<double> { return this->cameraUp; }
+
+auto Viewport::_getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double> {
+  // Make a centered version of the matrix for projection modes without an offset
+  auto center2d = this->projectFlat(lngLat);
+  auto center = Vector3<double>(center2d, 0);
+
+  // elided
+  // if (meterOffset) {
+  //   const commonPosition = new Vector3(meterOffset)
+  //     // Convert to pixels in current zoom
+  //     .scale(distanceScales.unitsPerMeter);
+  //   center.add(commonPosition);
+  // }
+
+  return center;
+}
 
 auto operator==(const Viewport& v1, const Viewport& v2) -> bool {
   return v1.width == v2.width && v1.height == v2.height && v1.scale == v2.scale &&

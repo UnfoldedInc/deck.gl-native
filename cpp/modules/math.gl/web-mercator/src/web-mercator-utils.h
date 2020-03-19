@@ -52,6 +52,7 @@ struct DistanceScales {
 
 struct ViewMatrixOptions {
   Matrix4<double> viewMatrix;
+  bool isGeospatial;
   // Anchor: lng lat zoom makes viewport work w/ geospatial coordinate systems
   double longitude;
   double latitude;

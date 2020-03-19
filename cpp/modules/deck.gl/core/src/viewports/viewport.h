@@ -35,9 +35,7 @@ class Viewport {
   std::string id;
   double x;
   double y;
-  // NEEDED
   double width;
-  // NEEDED
   double height;
   // Not needed
   double _frustumPlanes;  // TODO: actually an object
@@ -169,7 +167,7 @@ class Viewport {
 
   void _initViewMatrix(/* opts */);
 
-  auto _getCenterInWorld(double longitude, double latitude) -> mathgl::Vector3<double>;
+  auto _getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double>;
 
   void _initProjectionMatrix(/* opts */);
 
