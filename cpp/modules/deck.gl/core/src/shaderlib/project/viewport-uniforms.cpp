@@ -25,6 +25,8 @@ using namespace mathgl;
 
 namespace deckgl {
 
+auto const DEFAULT_PIXELS_PER_UNIT2 = Vector3<double>();
+
 auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
     -> OffsetOrigin {
   auto shaderCoordinateOrigin = coordinateOrigin;
@@ -112,6 +114,85 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
           .cameraPosCommon = cameraPosCommon,
           .shaderCoordinateOrigin = offsetOrigin.shaderCoordinateOrigin,
           .geospatialOrigin = offsetOrigin.geospatialOrigin};
+}
+
+auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio, mathgl::Matrix4<double> modelMatrix,
+                             COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin,
+                             bool wrapLongitude) -> ViewportUniforms {
+  if (coordinateSystem == COORDINATE_SYSTEM::DEFAULT) {
+    coordinateSystem = viewport.isGeospatial ? COORDINATE_SYSTEM::LNGLAT : COORDINATE_SYSTEM::CARTESIAN;
+  }
+
+  // Memoized in the JS
+  auto uniforms = calculateViewportUniforms(viewport, devicePixelRatio, coordinateSystem, coordinateOrigin);
+
+  uniforms.project_uWrapLongitude = wrapLongitude;
+  // TODO
+  // uniforms.project_uModelMatrix = modelMatrix || IDENTITY_MATRIX;
+
+  return uniforms;
+}
+
+auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORDINATE_SYSTEM coordinateSystem,
+                               mathgl::Vector3<double> coordinateOrigin) -> ViewportUniforms {
+  auto matrixAndOffset = calculateMatrixAndOffset(viewport, coordinateSystem, coordinateOrigin);
+
+  // Calculate projection pixels per unit
+  auto distanceScales = viewport.getDistanceScales();
+
+  auto viewportSize = Vector2<double>(viewport.width, viewport.height) * devicePixelRatio;
+
+  ViewportUniforms uniforms = {// Projection mode values
+                               .project_uCoordinateSystem = coordinateSystem,
+                               .project_uProjectionMode = viewport.projectionMode(),
+                               .project_uCoordinateOrigin = matrixAndOffset.shaderCoordinateOrigin,
+                               .project_uCenter = matrixAndOffset.projectionCenter,
+                               // TODO: optional longitude: should default to 0
+                               .project_uAntimeridian = viewport.longitude - 180,
+
+                               // Screen size
+                               .project_uViewportSize = viewportSize,
+                               .project_uDevicePixelRatio = devicePixelRatio,
+
+                               // Distance at which screen pixels are projected
+                               // TODO: optional focalDistance
+                               .project_uFocalDistance = viewport.focalDistance || 1,
+                               .project_uCommonUnitsPerMeter = distanceScales.unitsPerMeter,
+                               .project_uCommonUnitsPerWorldUnit = distanceScales.unitsPerMeter,
+                               .project_uCommonUnitsPerWorldUnit2 = DEFAULT_PIXELS_PER_UNIT2,
+                               .project_uScale = viewport.scale,  // This is the mercator scale (2 ** zoom)
+
+                               .project_uViewProjectionMatrix = matrixAndOffset.viewProjectionMatrix,
+
+                               // This is for lighting calculations
+                               .project_uCameraPosition = matrixAndOffset.cameraPosCommon};
+
+  if (matrixAndOffset.geospatialOrigin.has_value()) {
+    auto distanceScalesAtOrigin = viewport.getDistanceScales(matrixAndOffset.geospatialOrigin.value().toVector2());
+    switch (coordinateSystem) {
+      case COORDINATE_SYSTEM::METER_OFFSETS:
+        uniforms.project_uCommonUnitsPerWorldUnit = distanceScalesAtOrigin.unitsPerMeter;
+        uniforms.project_uCommonUnitsPerWorldUnit2 = distanceScalesAtOrigin.unitsPerMeter2;
+        break;
+
+      case COORDINATE_SYSTEM::LNGLAT:
+      case COORDINATE_SYSTEM::LNGLAT_OFFSETS:
+        uniforms.project_uCommonUnitsPerWorldUnit = distanceScalesAtOrigin.unitsPerDegree;
+        uniforms.project_uCommonUnitsPerWorldUnit2 = distanceScalesAtOrigin.unitsPerDegree2;
+        break;
+
+      // a.k.a "preprojected" positions
+      case COORDINATE_SYSTEM::CARTESIAN:
+        uniforms.project_uCommonUnitsPerWorldUnit = Vector3<double>(1, 1, distanceScalesAtOrigin.unitsPerMeter.z);
+        uniforms.project_uCommonUnitsPerWorldUnit2 = Vector3<double>(0, 0, distanceScalesAtOrigin.unitsPerMeter2.z);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return uniforms;
 }
 
 }  // namespace deckgl

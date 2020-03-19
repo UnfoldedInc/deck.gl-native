@@ -148,7 +148,8 @@ class Viewport {
    */
   auto unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
 
-  auto getDistanceScales(const std::optional<mathgl::Vector2<double>>& coordinateOrigin) -> mathgl::DistanceScales;
+  auto getDistanceScales(const std::optional<mathgl::Vector2<double>>& coordinateOrigin =
+                             std::optional<mathgl::Vector2<double>>()) -> mathgl::DistanceScales;
   auto containsPixel(double x, double y, double width = 1, double height = 1) -> bool;
 
   // Extract frustum planes in common space

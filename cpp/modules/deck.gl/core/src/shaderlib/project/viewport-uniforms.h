@@ -31,7 +31,7 @@ struct ViewportUniforms {
   COORDINATE_SYSTEM project_uCoordinateSystem;
   PROJECTION_MODE project_uProjectionMode;
   mathgl::Vector3<double> project_uCoordinateOrigin;
-  mathgl::Vector3<double> project_uCenter;
+  mathgl::Vector4<double> project_uCenter;
   double project_uAntimeridian;
   mathgl::Vector2<double> project_uViewportSize;
   double project_uDevicePixelRatio;
@@ -82,15 +82,13 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
  * @param {WebMercatorViewport} viewport -
  * @return {Float32Array} - 4x4 projection matrix that can be used in shaders
  */
-auto getUniformsFromViewport(Viewport, double devicePixelRatio = 1,
+auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio = 1,
                              mathgl::Matrix4<double> modelMatrix = mathgl::Matrix4<double>(),
                              COORDINATE_SYSTEM coordinateSystem = COORDINATE_SYSTEM::DEFAULT,
                              mathgl::Vector3<double> coordinateOrigin = mathgl::Vector3<double>(),
-                             bool wrapLongitude = false
-                             // deprecated projectionMode, positionOrigin
-                             ) -> ViewportUniforms;
+                             bool wrapLongitude = false) -> ViewportUniforms;
 
-auto calculateViewportUniforms(Viewport, double devicePixelRatio, COORDINATE_SYSTEM coordinateSystem,
+auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORDINATE_SYSTEM coordinateSystem,
                                mathgl::Vector3<double> coordinateOrigin) -> ViewportUniforms;
 
 }  // namespace deckgl
