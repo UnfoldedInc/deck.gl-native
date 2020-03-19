@@ -41,21 +41,8 @@ class JSONConverterTest : public ::testing::Test {
   JSONConverterTest() {
     jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
 
-    jsonConverter->classes["Deck"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::make_shared<Deck::Props>();
-    };
-
-    jsonConverter->classes["ViewState"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::shared_ptr<Component::Props>{new ViewState::Props()};
-    };
-
-    jsonConverter->classes["LineLayer"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::shared_ptr<Component::Props>{new LineLayer::Props()};
-    };
-
-    jsonConverter->classes["ScatterplotLayer"] = [](const Json::Value &) -> std::shared_ptr<Component::Props> {
-      return std::shared_ptr<Component::Props>{new ScatterplotLayer::Props()};
-    };
+    registerJSONConvertersForDeckCore(jsonConverter.get());
+    registerJSONConvertersForDeckLayers(jsonConverter.get());
   }
 
   std::unique_ptr<JSONConverter> jsonConverter;

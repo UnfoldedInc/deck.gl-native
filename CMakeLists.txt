@@ -106,6 +106,7 @@ set(DECKGL_JSON_TEST_FILES
 ## deck.gl/core
 set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core.h
+    cpp/modules/deck.gl/core/src/core.h
     cpp/modules/deck.gl/core/src/lib/constants.h
     cpp/modules/deck.gl/core/src/lib/deck.h
     cpp/modules/deck.gl/core/src/lib/layer.h
@@ -117,6 +118,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/views/view-state.h
     )
 set(DECKGL_CORE_SOURCE_FILES
+    cpp/modules/deck.gl/core/src/core.cpp
     cpp/modules/deck.gl/core/src/lib/deck.cpp
     cpp/modules/deck.gl/core/src/lib/layer.cpp
     cpp/modules/deck.gl/core/src/lib/layer-manager.cpp
@@ -131,10 +133,12 @@ set(DECKGL_CORE_TEST_FILES
 ## deck.gl/layers
 set(DECKGL_LAYERS_HEADER_FILES
     cpp/modules/deck.gl/layers.h
+    cpp/modules/deck.gl/layers/src/layers.h
     cpp/modules/deck.gl/layers/src/line-layer/line-layer.h
     cpp/modules/deck.gl/layers/src/scatterplot-layer/scatterplot-layer.h
     )
 set(DECKGL_LAYERS_SOURCE_FILES
+    cpp/modules/deck.gl/layers/src/layers.cpp
     cpp/modules/deck.gl/layers/src/line-layer/line-layer.cpp
     cpp/modules/deck.gl/layers/src/scatterplot-layer/scatterplot-layer.cpp
     )
