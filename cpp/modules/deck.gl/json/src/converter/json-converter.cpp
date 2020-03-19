@@ -92,6 +92,8 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, const std::str
 
   auto classConverter = findIterator->second;
   auto props = classConverter(object);
+  std::cout << "Created object " << props->getProperties()->className << std::endl;
+
   if (!props) {
     throw std::runtime_error("JSON class conversion failed for @@type: \"" + className + "\"");
   }
@@ -101,12 +103,15 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, const std::str
     auto value = *it;  // Json::Value
     if (key != "@@type") {
       if (props->hasProperty(key.asString())) {
+        std::cout << "converting prop " << key << std::endl;
         props->setPropertyFromJson(key.asString(), value, this);
       } else {
         std::cout << "ignoring prop " << key << std::endl;
       }
     }
   }
+
+  std::cout << "Finalized object " << props->getProperties()->className << std::endl;
 
   return props;
 }

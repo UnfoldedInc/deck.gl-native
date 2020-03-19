@@ -26,8 +26,8 @@ class JSONObject {
  public:
   static constexpr const char* getTypeName() { return "JSONObject"; }
 
-  JSONObject() {}
-  virtual ~JSONObject() {}
+  JSONObject();
+  virtual ~JSONObject();
 
   // Returns the shared static Properties for this Prop object.
   virtual auto getProperties() const -> const Properties*;
@@ -109,7 +109,7 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
   PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::shared_ptr<T>&>& get_,
             const std::function<void(JSONObject*, const std::shared_ptr<T>&)>& set_)
       : Property{name_}, get{get_}, set{set_} {
-    this->typeName = T::Props::getTypeName();
+    this->typeName = T::getTypeName();
   }
 
   bool equals(const JSONObject* props1, const JSONObject* props2) const override {
@@ -136,7 +136,7 @@ struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
   PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&>& get_,
             const std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)>& set_)
       : Property{name_}, get{get_}, set{set_} {
-    this->typeName = T::Props::getTypeName();
+    this->typeName = T::getTypeName();
     this->isList = true;
   }
 
@@ -150,11 +150,14 @@ struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
     auto propsList = this->_getPropListFromJson(props, jsonValue, jsonConverter);
     std::list<std::shared_ptr<T>> list;
     for (auto props : propsList) {
+      std::cout << "List conversion " << props << std::endl;
       auto ptr = dynamic_cast<T*>(props.get());
-      // TODO - throw error if cast fails
+      // TODO(ib): throw error if cast fails
       list.push_back(std::shared_ptr<T>{ptr});
+      std::cout << "List element done " << props << std::endl;
     }
     this->set(props, list);
+    std::cout << "List done " << props << std::endl;
   }
 };
 

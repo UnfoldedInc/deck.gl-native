@@ -59,25 +59,25 @@ using namespace deckgl;
 // TODO - just use member pointer?
 
 static const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<std::list<std::shared_ptr<Layer>>>{
-        "layers", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
-        [](Component::Props* props, std::list<std::shared_ptr<Layer>> value) {
+    new PropertyT<std::list<std::shared_ptr<Layer::Props>>>{
+        "layers", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
+        [](JSONObject* props, std::list<std::shared_ptr<Layer::Props>> value) {
           return dynamic_cast<Deck::Props*>(props)->layers = value;
         }},
-    new PropertyT<std::list<std::shared_ptr<View>>>{
-        "views", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->views; },
-        [](Component::Props* props, std::list<std::shared_ptr<View>> value) {
+    new PropertyT<std::list<std::shared_ptr<View::Props>>>{
+        "views", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->views; },
+        [](JSONObject* props, std::list<std::shared_ptr<View::Props>> value) {
           return dynamic_cast<Deck::Props*>(props)->views = value;
         }},
     new PropertyT<std::shared_ptr<ViewState>>{
-        "viewState", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->viewState; },
-        [](Component::Props* props, std::shared_ptr<ViewState> value) {
+        "viewState", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->viewState; },
+        [](JSONObject* props, std::shared_ptr<ViewState> value) {
           return dynamic_cast<Deck::Props*>(props)->viewState = value;
         }},
     new PropertyT<std::shared_ptr<ViewState>>{
         "initialViewState",
-        [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->initialViewState; },
-        [](Component::Props* props, std::shared_ptr<ViewState> value) {
+        [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->initialViewState; },
+        [](JSONObject* props, std::shared_ptr<ViewState> value) {
           return dynamic_cast<Deck::Props*>(props)->initialViewState = value;
         }}};
 
@@ -95,9 +95,9 @@ Deck::Props::Props()
       // layerFilter{nullptr},
       // glOptions{},
       // gl{nullptr},
-      layers{},
-      // effects{},
-      views{},
+      // layers{},
+      // // effects{},
+      // views{},
       pickingRadius{0}  // controller{nullptr},
                         // useDevicePixels{true},
                         // touchAction{"none"},

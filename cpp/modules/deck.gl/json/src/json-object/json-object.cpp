@@ -20,7 +20,6 @@ auto Property::_getPropListFromJson(JSONObject* props, const Json::Value& jsonVa
                                     const JSONConverter* jsonConverter) const
     -> std::list<std::shared_ptr<JSONObject>> {
   auto typeHint = props->getProperties()->className;
-  std::cout << "getting prop list" << typeHint << std::endl;
   if (jsonValue.isArray()) {
     std::list<std::shared_ptr<JSONObject>> propsList;
     for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
@@ -49,7 +48,11 @@ Properties::Properties(const std::string& className_, const Properties* parentPr
   }
 }
 
-// Props
+// JSONObject
+
+JSONObject::JSONObject() {}
+
+JSONObject::~JSONObject() {}
 
 auto JSONObject::getProperties() const -> const Properties* {
   static Properties propTypes{"Component", nullptr, std::vector<const Property*>{}};
