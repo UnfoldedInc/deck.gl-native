@@ -36,7 +36,7 @@ TEST(Layer, Props) {
   layerProps2->opacity = 0.5;
   EXPECT_FALSE(layerProps1->equals(layerProps2.get()));
 
-  auto propTypes = layerProps1->getPropertyTypes();
+  auto propTypes = layerProps1->getProperties();
 
   EXPECT_TRUE(propTypes->hasProp("opacity"));
   EXPECT_FALSE(propTypes->hasProp("radiusScale"));

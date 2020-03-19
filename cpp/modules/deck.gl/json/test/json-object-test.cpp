@@ -18,34 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWS_VIEW_STATE_H
-#define DECKGL_CORE_VIEWS_VIEW_STATE_H
+#include <gtest/gtest.h>
 
-#include <optional>
+#include <iostream>
+#include <stdexcept>
+#include <string>
 
 #include "deck.gl/json.h"
 
-namespace deckgl {
+using namespace deckgl;
 
-class ViewState : public Component {
- public:
-  using super = Component;
-  class Props;
+namespace {
 
-  virtual ~ViewState() {}
+/**
+ * The fixture for testing class JSONObject.
+ */
+class JSONObjectTest : public ::testing::Test {
+ protected:
+  JSONObjectTest() {}
 };
 
-class ViewState::Props : public Component::Props {
- public:
-  static constexpr const char* getTypeName() { return "ViewState"; }
-  // Map view states
-  std::optional<double> longitude;
-  std::optional<double> latitude;
-  std::optional<double> zoom;
-  std::optional<double> bearing;
-  std::optional<double> pitch;
-};
+TEST_F(JSONObjectTest, JSONConfig) { EXPECT_NO_THROW({}); }
 
-}  // namespace deckgl
-
-#endif  // DECKGL_CORE_VIEWS_VIEW_STATE_H
+}  // namespace

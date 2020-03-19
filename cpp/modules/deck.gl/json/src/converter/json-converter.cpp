@@ -18,27 +18,23 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
   return rootValue;
 }
 
-auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<Component::Props> {
-  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props> {
-    return nullptr;
-  };
+auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<JSONObject> {
+  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<JSONObject> { return nullptr; };
   this->_traverseJson(value, visitor);
   return nullptr;
 }
 
-auto JSONConverter::convertJsonClass(const Json::Value &value, const std::string &typeHint) const
-    -> std::shared_ptr<Component::Props> {
+auto JSONConverter::convertClass(const Json::Value &value, const std::string &typeHint) const
+    -> std::shared_ptr<JSONObject> {
   if (value.type() != Json::ValueType::objectValue) {
     throw std::runtime_error("JSON expect object to convert into class " + typeHint);
   }
-  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props> {
-    return nullptr;
-  };
+  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<JSONObject> { return nullptr; };
   return this->_convertClassProps(value, typeHint, visitor, 0);
 }
 
 auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visitor> visitor, const std::string &key,
-                                  int level) const -> std::shared_ptr<Component::Props> {
+                                  int level) const -> std::shared_ptr<JSONObject> {
   switch (value.type()) {
     case Json::ValueType::objectValue:
       return this->_convertClassProps(value, "", visitor, level);
@@ -74,7 +70,7 @@ auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visito
 }
 
 auto JSONConverter::_convertClassProps(const Json::Value &object, const std::string &typeHint, std::function<Visitor>,
-                                       int level) const -> std::shared_ptr<Component::Props> {
+                                       int level) const -> std::shared_ptr<JSONObject> {
   auto className = object["@@type"].asString();
   if (className.empty()) {
     className = typeHint;
