@@ -1,15 +1,16 @@
 # deck.gl-native
 
-> Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, `deck.gl-native` is highly unlikely to meet the requirements of most applications. Asking for additional features without contributing implementation or providing funding is not helpful.
-
 This is an open-source C++ implementation of deck.gl 
+
+> Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, the initial `deck.gl-native` release is unlikely to meet the requirements of most applications. At this stage, asking for delivery dates and additional features without contributing to implementation or providing additional funding is unlikely to be helpful.
 
 ## Scope
 
 - Render to texture (not screen)
-- Only `ScatterplotLayer`, `LineLayer`, `SolidPolygonLayer`
-- Apache Arrow tables only.
-- loader support will be limited to CSV and line-delimited JSON. 
+- Support deck.gl JSON API
+- Layers: Only `ScatterplotLayer`, `LineLayer`, `SolidPolygonLayer`
+- Tables: Only Apache Arrow tables will be supported, apps will need to use Arrow libraries if data is not already in Arrow format.
+- loader support will be limited to CSV and line-delimited JSON.
 
 
 ## Not Planned
@@ -21,15 +22,15 @@ Many features normally considered fundamental by deck.gl applications are not ev
 - No Base map support (e.g. Mapbox integration)
 - No Interactivity (event handling, picking etc)
 - No Extensive layer catalog
-- No etc etc etc
+- etc
 
 ## Supporting this Effort
 
-The ongoing port is led by Unfolded, Inc through funding provided by a customer and external contributions. At this stage, this is not an independenly resourced project set up to address feature requests. 
+The ongoing port is led by [Unfolded, Inc](www.unfolded.ai), and currently relies heavily on initial funding provided by a customer as well as external contributions. At this stage, this is not an independenly resourced project. It does not have a maintenance plan and is not set up to address external feature requests. 
 
-We would love to see this project grow into a living part of the main deck.gl project, potentially transferring this to a foundation/open governance setup. 
+That said, our hope is to see this project quickly grow into a living part of the core deck.gl project. If this happens, Unfolded Inc, may consider transferring this to a foundation / open governance setup. 
 
-However, at this stage additional work will happen only through direct engineering contributions or by providing additional funding. 
+However, at this stage the project has yet to attain a sufficient level of completeness / critical mass. And additional work will happen only through direct engineering contributions or by providing additional funding. 
 
 
 ## Setting up Development Environment
