@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include "./viewport.h"
+#include "math.gl/web-mercator.h"
 
 using namespace std;
 using namespace mathgl;
@@ -40,6 +41,48 @@ auto Viewport::projectionMode() -> PROJECTION_MODE {
 
 auto Viewport::containsPixel(double x, double y, double width, double height) -> bool {
   return (x < this->x + this->width) && (this->x < x + width) && (y < this->y + this->height) && (this->y < y + height);
+}
+
+auto Viewport::projectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double> {
+  if (this->isGeospatial) {
+    return lngLatToWorld(xy);
+  }
+  return xy;
+}
+
+auto Viewport::unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double> {
+  if (this->isGeospatial) {
+    return worldToLngLat(xy);
+  }
+  return xy;
+}
+
+auto Viewport::projectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double> {
+  return this->projectFlat(xy);
+}
+
+auto Viewport::projectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double> {
+  auto projectedXy = this->projectFlat(xyz.toVector2());
+  auto z = xyz.z * this->distanceScales.unitsPerMeter.z;
+  return Vector3<double>(projectedXy, z);
+}
+
+auto Viewport::unprojectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double> {
+  return this->unprojectFlat(xy);
+}
+
+auto Viewport::unprojectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double> {
+  auto unprojectedXy = this->unprojectFlat(xyz.toVector2());
+  auto z = xyz.z * this->distanceScales.metersPerUnit.z;
+  return Vector3<double>(unprojectedXy, z);
+}
+
+auto Viewport::getDistanceScales(const std::optional<mathgl::Vector2<double>>& coordinateOrigin)
+    -> mathgl::DistanceScales {
+  if (coordinateOrigin.has_value()) {
+    return mathgl::getDistanceScales(coordinateOrigin.value(), true);
+  }
+  return this->distanceScales;
 }
 
 auto Viewport::getCameraPosition() -> mathgl::Vector3<double> { return this->cameraPosition; }
