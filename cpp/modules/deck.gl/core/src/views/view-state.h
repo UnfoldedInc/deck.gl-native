@@ -27,17 +27,13 @@
 
 namespace deckgl {
 
-class ViewState : public Component {
+class ViewState : public JSONObject {
  public:
-  using super = Component;
-  class Props;
-
-  virtual ~ViewState() {}
-};
-
-class ViewState::Props : public Component::Props {
- public:
+  using super = JSONObject;
   static constexpr const char* getTypeName() { return "ViewState"; }
+  auto getProperties() const -> const Properties* override;
+  virtual ~ViewState() {}
+
   // Map view states
   std::optional<double> longitude;
   std::optional<double> latitude;

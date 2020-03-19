@@ -126,6 +126,7 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/lib/layer.cpp
     cpp/modules/deck.gl/core/src/lib/layer-manager.cpp
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
+    cpp/modules/deck.gl/core/src/views/view-state.cpp
     )
 set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/lib/layer-test.cpp

@@ -21,7 +21,10 @@
 #ifndef DECKGL_CORE_DECK_H
 #define DECKGL_CORE_DECK_H
 
+#include <list>
+#include <memory>
 #include <optional>
+#include <string>
 
 #include "./layer-manager.h"
 #include "./view-manager.h"
@@ -61,7 +64,6 @@ namespace deckgl {
 
 class Deck : public Component {
  public:
-  using super = Component;
   class Props;
 
   Props *props;
@@ -87,7 +89,7 @@ class Deck : public Component {
   // this->interactiveState = {
   //   isDragging: false // Whether the cursor is down
 
-  Deck(Deck::Props *props);
+  explicit Deck(Deck::Props *props);
   ~Deck();
 
   void setProps(Deck::Props *);
@@ -130,10 +132,7 @@ class Deck : public Component {
   */
 
   // Private Methods
-  // Get the most relevant view state: props.viewState, if supplied,
-  // shadows internal viewState
-  // TODO: For backwards compatibility ensure numeric width and height is
-  // added to the viewState
+  // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
   auto _getViewState() -> ViewState *;  // { return this->props->viewState || this->viewState; }
 
   // Get the view descriptor list
@@ -195,6 +194,7 @@ class Deck : public Component {
 
 class Deck::Props : public Component::Props {
  public:
+  using super = Component::Props;
   static constexpr const char *getTypeName() { return "Deck"; }
 
   std::string id;  // PropTypes.string,
@@ -202,9 +202,9 @@ class Deck::Props : public Component::Props {
   int height;      // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 
   // layer/view/controller settings
-  std::list<std::shared_ptr<Layer>> layers;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  std::list<std::shared_ptr<View>> views;    // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  std::shared_ptr<ViewState> viewState;      // PropTypes.object,
+  std::list<std::shared_ptr<Layer::Props>> layers;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::list<std::shared_ptr<View::Props>> views;    // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::shared_ptr<ViewState> viewState;             // PropTypes.object,
   std::shared_ptr<ViewState> initialViewState;
 
   // effects, // PropTypes.arrayOf(PropTypes.instanceOf(Effect)),

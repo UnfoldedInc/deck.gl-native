@@ -31,7 +31,6 @@ namespace deckgl {
 
 class LineLayer : public Layer {
  public:
-  using super = Layer;
   class Props;
 
  protected:
@@ -46,6 +45,7 @@ class LineLayer : public Layer {
 
 class LineLayer::Props : public Layer::Props {
  public:
+  using super = Layer::Props;
   static constexpr const char *getTypeName() { return "LineLayer"; }
 
   std::string widthUnits;  // : 'pixels',

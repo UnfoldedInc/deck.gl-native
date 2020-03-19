@@ -81,6 +81,7 @@ TEST_F(JSONConverterTest, JSONConverterDeck) {
   Json::Value rootValue;
   rootValue = jsonConverter->parseJson(jsonDataSimple);
   auto jsonObject = jsonConverter->convertClass(rootValue, "Deck");
+
   EXPECT_TRUE(jsonObject);
 
   // Check that we get a deckProps object back
@@ -89,11 +90,14 @@ TEST_F(JSONConverterTest, JSONConverterDeck) {
 
   // Test deckProps.layers
   EXPECT_EQ(deckProps->layers.size(), 2);
-  // auto layerProps = std::dynamic_pointer_cast<ScatterplotLayer::Props>(deckProps->layers.front());
-  // EXPECT_TRUE(layerProps);
 
-  // Test deckProps.initialViewState
-  // EXPECT_EQ(deckProps->initialViewState->longitude, 2);
+  auto layer0Props = deckProps->layers.front();
+  EXPECT_TRUE(layer0Props);
+  std::cout << "Layer: " << layer0Props->getProperties()->className << std::endl;
+
+  // Test deckProps->initialViewState
+  EXPECT_NEAR(*deckProps->initialViewState->longitude, -122.45, 0.0001);
+  std::cout << "Done" << std::endl;
 }
 
 }  // namespace
