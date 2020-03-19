@@ -351,7 +351,7 @@ class Layer::Props : public Component::Props {
   // std::function<void()> onDragEnd;
 
   // implement Component::Props interface
-  auto getPropertyTypes() const -> const PropertyTypes* override;
+  auto getProperties() const -> const Properties* override;
 };
 
 }  // namespace deckgl

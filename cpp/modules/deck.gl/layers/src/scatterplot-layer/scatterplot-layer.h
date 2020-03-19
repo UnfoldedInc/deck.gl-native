@@ -83,7 +83,7 @@ class ScatterplotLayer::Props : public Layer::Props {
         radiusMinPixels{1},
         radiusMaxPixels{0} {}
 
-  auto getPropertyTypes() const -> const PropertyTypes * override;
+  auto getProperties() const -> const Properties * override;
 };
 
 }  // namespace deckgl

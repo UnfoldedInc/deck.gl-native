@@ -29,7 +29,9 @@
 #include "deck.gl/json.h"
 #include "deck.gl/layers.h"
 
-using namespace deckgl;
+using deckgl::Deck;
+using deckgl::JSONConverter;
+using deckgl::LineLayer;
 
 namespace {
 
@@ -58,15 +60,39 @@ TEST_F(JSONConverterTest, JSONConfig) {
   EXPECT_NO_THROW({
     Json::Value rootValue = jsonConverter->parseJson(jsonDataSimple);
     auto classConverter = jsonConverter->classes["LineLayer"];
-    auto props = classConverter(rootValue);
+
+    // TODO(ib): bizarre test that parses a Deck as a LineLayer...
+    auto lineLayerProps = classConverter(rootValue);
+    std::cout << lineLayerProps->getProperties()->className << std::endl;
+    EXPECT_TRUE(lineLayerProps);
+    EXPECT_TRUE(std::dynamic_pointer_cast<LineLayer::Props>(lineLayerProps));
   });
 }
 
 TEST_F(JSONConverterTest, JSONConverter) {
   Json::Value rootValue;
   rootValue = jsonConverter->parseJson(jsonDataSimple);
-  std::cout << rootValue.get("mykey", "A Default Value if not exists").asString() << std::endl;
   auto result = jsonConverter->convertJson(rootValue);
+  // EXPECT_TRUE(result);
+}
+
+TEST_F(JSONConverterTest, JSONConverterDeck) {
+  Json::Value rootValue;
+  rootValue = jsonConverter->parseJson(jsonDataSimple);
+  auto jsonObject = jsonConverter->convertClass(rootValue, "Deck");
+  EXPECT_TRUE(jsonObject);
+
+  // Check that we get a deckProps object back
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(jsonObject);
+  EXPECT_TRUE(deckProps);
+
+  // Test deckProps.layers
+  EXPECT_EQ(deckProps->layers.size(), 2);
+  auto layerProps = std::dynamic_pointer_cast<ScatterplotLayer::Props>(deckProps->layers[1]);
+  EXPECT_TRUE(layerProps);
+
+  // Test deckProps.initialViewState
+  EXPECT_EQ(deckProps->initialViewState->longitude, 2);
 }
 
 }  // namespace

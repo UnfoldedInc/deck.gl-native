@@ -235,7 +235,7 @@ class Deck::Props : public Component::Props {
   std::function<void(Deck *, const std::exception &)> onError;
 
   Props();
-  auto getPropertyTypes() const -> const PropertyTypes *;
+  auto getProperties() const -> const Properties *;
 };
 
 /*

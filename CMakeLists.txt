@@ -87,18 +87,21 @@ set(LUMAGL_CORE_TEST_FILES
 ## deck.gl/json
 set(DECKGL_JSON_HEADER_FILES
     cpp/modules/deck.gl/json.h
+    cpp/modules/deck.gl/json/src/json.h
     cpp/modules/deck.gl/json/src/converter/json-types.h
     cpp/modules/deck.gl/json/src/converter/json-types-mathgl.h
     cpp/modules/deck.gl/json/src/converter/json-converter.h
     cpp/modules/deck.gl/json/src/component/component.h
+    cpp/modules/deck.gl/json/src/json-object/json-object.h
 )
 
 set(DECKGL_JSON_SOURCE_FILES
     cpp/modules/deck.gl/json/src/converter/json-types.cpp
     cpp/modules/deck.gl/json/src/converter/json-converter.cpp
-    cpp/modules/deck.gl/json/src/component/component.cpp
+    cpp/modules/deck.gl/json/src/json-object/json-object.cpp
 )
 set(DECKGL_JSON_TEST_FILES
+    cpp/modules/deck.gl/json/test/json-object-test.cpp
     cpp/modules/deck.gl/json/test/json-converter-test.cpp
     cpp/modules/deck.gl/json/test/json-types-test.cpp
 )

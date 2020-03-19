@@ -10,45 +10,45 @@ using namespace deckgl;
 
 using Props = Component::Props;
 
-static const std::vector<const PropertyType*> propTypeDefs = {
-    new PropertyTypeT<bool>{
-        "visible", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
-        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true},
-    new PropertyTypeT<bool>{
+static const std::vector<const Property*> propTypeDefs = {
+    new PropertyT<bool>{"visible", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
+                        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; },
+                        true},
+    new PropertyT<bool>{
         "pickable", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->pickable; },
         [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->pickable = value; }, false},
-    new PropertyTypeT<float>{
+    new PropertyT<float>{
         "opacity", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->opacity; },
         [](Props* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; }, 1.0},
-    new PropertyTypeT<COORDINATE_SYSTEM>{
+    new PropertyT<COORDINATE_SYSTEM>{
         "coordinateSystem",
         [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateSystem; },
         [](Props* props, COORDINATE_SYSTEM value) {
           return dynamic_cast<Layer::Props*>(props)->coordinateSystem = value;
         },
         COORDINATE_SYSTEM::DEFAULT},
-    new PropertyTypeT<Vector3<double>>{
+    new PropertyT<Vector3<double>>{
         "coordinateOrigin",
         [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateOrigin; },
         [](Props* props, Vector3<double> value) {
           return dynamic_cast<Layer::Props*>(props)->coordinateOrigin = value;
         },
         Vector3<double>()},
-    new PropertyTypeT<Matrix4<double>>{
+    new PropertyT<Matrix4<double>>{
         "modelMatrix", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->modelMatrix; },
         [](Props* props, Matrix4<double> value) { return dynamic_cast<Layer::Props*>(props)->modelMatrix = value; },
         Matrix4<double>()},
-    new PropertyTypeT<bool>{
+    new PropertyT<bool>{
         "wrapLongitude", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->wrapLongitude; },
         [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; }, false}};
 
-auto Layer::Props::getPropertyTypes() const -> const PropertyTypes* {
-  static PropertyTypes propTypes{PropertyTypes::from<Layer>("Layer", propTypeDefs)};
+auto Layer::Props::getProperties() const -> const Properties* {
+  static Properties propTypes{Properties::from<Layer>("Layer", propTypeDefs)};
   return &propTypes;
 }
 
 /*
-class LayerPropertyTypes {
+class LayerProperties {
   // data: Special handling for null, see below
   // data: {type: 'data', value: EMPTY_ARRAY, async: true},
   // dataComparator: null,
