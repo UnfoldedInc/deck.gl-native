@@ -113,6 +113,8 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/lib/layer-state.h
     cpp/modules/deck.gl/core/src/lib/view-manager.h
     cpp/modules/deck.gl/core/src/viewports/viewport.h
+    cpp/modules/deck.gl/core/src/views/view.h
+    cpp/modules/deck.gl/core/src/views/view-state.h
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/lib/deck.cpp

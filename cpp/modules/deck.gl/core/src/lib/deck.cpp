@@ -58,11 +58,28 @@ using namespace deckgl;
 // TODO - auto generate from language-independent prop definition schema
 // TODO - just use member pointer?
 
-static const std::vector<const PropertyType*> propTypeDefs = {new PropertyTypeT<std::list<std::shared_ptr<Layer>>>{
-    "layers", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
-    [](Component::Props* props, std::list<std::shared_ptr<Layer>> value) {
-      return dynamic_cast<Deck::Props*>(props)->layers = value;
-    }}};
+static const std::vector<const PropertyType*> propTypeDefs = {
+    new PropertyTypeT<std::list<std::shared_ptr<Layer>>>{
+        "layers", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
+        [](Component::Props* props, std::list<std::shared_ptr<Layer>> value) {
+          return dynamic_cast<Deck::Props*>(props)->layers = value;
+        }},
+    new PropertyTypeT<std::list<std::shared_ptr<View>>>{
+        "views", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->views; },
+        [](Component::Props* props, std::list<std::shared_ptr<View>> value) {
+          return dynamic_cast<Deck::Props*>(props)->views = value;
+        }},
+    new PropertyTypeT<std::shared_ptr<ViewState>>{
+        "viewState", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->viewState; },
+        [](Component::Props* props, std::shared_ptr<ViewState> value) {
+          return dynamic_cast<Deck::Props*>(props)->viewState = value;
+        }},
+    new PropertyTypeT<std::shared_ptr<ViewState>>{
+        "initialViewState",
+        [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->initialViewState; },
+        [](Component::Props* props, std::shared_ptr<ViewState> value) {
+          return dynamic_cast<Deck::Props*>(props)->initialViewState = value;
+        }}};
 
 auto Deck::Props::getPropertyTypes() const -> const PropertyTypes* {
   static PropertyTypes propTypes{PropertyTypes::from<Deck>("Deck", propTypeDefs)};

@@ -47,6 +47,8 @@ class ScatterplotLayer : public Layer {
 
 class ScatterplotLayer::Props : public Layer::Props {
  public:
+  static constexpr const char *getTypeName() { return "ScatterplotLayer"; }
+
   bool filled;
   bool stroked;
 

@@ -94,6 +94,11 @@ static auto jsonDataSimple = R"JSON(
 {
   "@@type": "Deck",
   "description": "Test",
+  "initialViewState": {
+    "longitude": -122.45,
+    "latitude": 37.8,
+    "zoom": 12
+  },
   "layers": [
     {
       "@@type": "ScatterplotLayer",

@@ -46,6 +46,8 @@ class LineLayer : public Layer {
 
 class LineLayer::Props : public Layer::Props {
  public:
+  static constexpr const char *getTypeName() { return "LineLayer"; }
+
   std::string widthUnits;  // : 'pixels',
   float widthScale;        //  {type: 'number', value: 1, min: 0},
   float widthMinPixels;    //  {type: 'number', value: 0, min: 0},

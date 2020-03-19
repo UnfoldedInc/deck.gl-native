@@ -21,21 +21,23 @@
 #ifndef DECKGL_CORE_VIEWS_VIEW_STATE_H
 #define DECKGL_CORE_VIEWS_VIEW_STATE_H
 
-#include "deck.gl/json.h"
-
 #include <optional>
+
+#include "deck.gl/json.h"
 
 namespace deckgl {
 
 class ViewState : public Component {
-  public:
-    using super = Component;
-    class Props;
+ public:
+  using super = Component;
+  class Props;
 
-    virtual ~ViewState() {};
+  virtual ~ViewState(){};
 };
 
 class ViewState::Props : public Component::Props {
+ public:
+  static constexpr const char* getTypeName() { return "ViewState"; }
   // Map view states
   std::optional<double> longitude;
   std::optional<double> latitude;
@@ -44,6 +46,6 @@ class ViewState::Props : public Component::Props {
   std::optional<double> pitch;
 };
 
-} // namespace deckgl
+}  // namespace deckgl
 
-#endif // DECKGL_CORE_VIEWS_VIEW_STATE_H
+#endif  // DECKGL_CORE_VIEWS_VIEW_STATE_H

@@ -1,17 +1,30 @@
 #include "./component.h"  // {Props}
 
+#include <iostream>
+
 #include "../converter/json-converter.h"  // {JSONConverter}
+
 using namespace deckgl;
 
 // PropertyType
 
+auto PropertyType::_getPropFromJson(Component::Props* props, const Json::Value& jsonValue,
+                                    const JSONConverter* jsonConverter) const -> std::shared_ptr<Component::Props> {
+  auto typeHint = this->typeName;
+  std::cout << "getting prop" << typeHint << std::endl;
+  std::shared_ptr<Component::Props> propsObject = {jsonConverter->convertJsonClass(jsonValue, typeHint)};
+  return propsObject;
+}
+
 auto PropertyType::_getPropListFromJson(Component::Props* props, const Json::Value& jsonValue,
                                         const JSONConverter* jsonConverter) const
     -> std::list<std::shared_ptr<Component::Props>> {
+  auto typeHint = props->getPropertyTypes()->className;
+  std::cout << "getting prop list" << typeHint << std::endl;
   if (jsonValue.isArray()) {
     std::list<std::shared_ptr<Component::Props>> propsList;
     for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
-      std::shared_ptr<Component::Props> props = {jsonConverter->convertJson(jsonValue[1])};
+      std::shared_ptr<Component::Props> props = {jsonConverter->convertJsonClass(jsonValue[i], typeHint)};
       propsList.push_back(props);
     }
     return propsList;

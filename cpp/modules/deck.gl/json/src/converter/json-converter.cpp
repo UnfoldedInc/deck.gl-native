@@ -19,16 +19,29 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
 }
 
 auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<Component::Props> {
-  this->_traverseJson(
-      value, [=](const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props> { return nullptr; });
+  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props> {
+    return nullptr;
+  };
+  this->_traverseJson(value, visitor);
   return nullptr;
+}
+
+auto JSONConverter::convertJsonClass(const Json::Value &value, const std::string &typeHint) const
+    -> std::shared_ptr<Component::Props> {
+  if (value.type() != Json::ValueType::objectValue) {
+    throw std::runtime_error("JSON expect object to convert into class " + typeHint);
+  }
+  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<Component::Props> {
+    return nullptr;
+  };
+  return this->_convertClassProps(value, typeHint, visitor, 0);
 }
 
 auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visitor> visitor, const std::string &key,
                                   int level) const -> std::shared_ptr<Component::Props> {
   switch (value.type()) {
     case Json::ValueType::objectValue:
-      return this->_convertClassProps(value, visitor, level);
+      return this->_convertClassProps(value, "", visitor, level);
 
     /*
     case Json::ValueType::arrayValue:
@@ -60,9 +73,21 @@ auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visito
   }
 }
 
-auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<Visitor>, int level) const
-    -> std::shared_ptr<Component::Props> {
+auto JSONConverter::_convertClassProps(const Json::Value &object, const std::string &typeHint, std::function<Visitor>,
+                                       int level) const -> std::shared_ptr<Component::Props> {
   auto className = object["@@type"].asString();
+  if (className.empty()) {
+    className = typeHint;
+  }
+
+  if (className.empty()) {
+    throw std::runtime_error("JSON contains object of unknown @@type");
+  }
+
+  // TODO - since these can subclasses we can only check after we instantiate
+  // if (!typeHint.empty() && className != typeHint) {
+  //   throw std::runtime_error("JSON contains class with wrong @@type: \"" + className + "\", expected " + typeHint);
+  // }
 
   auto findIterator = this->classes.find(className);
   if (findIterator == this->classes.end()) {
@@ -89,3 +114,7 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, std::function<
 
   return props;
 }
+
+// global converter
+
+JSONConverter deckJsonConverter;
