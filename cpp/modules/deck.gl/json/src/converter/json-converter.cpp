@@ -114,7 +114,3 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, const std::str
 
   return props;
 }
-
-// global converter
-
-JSONConverter deckJsonConverter;
