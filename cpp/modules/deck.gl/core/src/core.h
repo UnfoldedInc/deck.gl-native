@@ -21,9 +21,10 @@
 #ifndef DECKGL_CORE_CORE_H
 #define DECKGL_CORE_CORE_H
 
-#include "./lib/constants.h"       // {COORDINATE_SYSTEM, PROJECTION_MODE}
-#include "./lib/deck.h"            // {Deck}
-#include "./lib/layer.h"           // {Layer, Layer::Props}
+#include "./lib/constants.h"  // {COORDINATE_SYSTEM, PROJECTION_MODE}
+#include "./lib/deck.h"       // {Deck}
+#include "./lib/layer.h"      // {Layer, Layer::Props}
+#include "./shaderlib/project/viewport-uniforms.h"
 #include "./viewports/viewport.h"  // {Viewport}
 #include "./views/map-view.h"      // {MapView, MapView::Props}
 #include "./views/view-state.h"    // {ViewState, ViewState::Props}

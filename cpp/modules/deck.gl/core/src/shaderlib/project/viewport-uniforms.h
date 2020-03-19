@@ -21,6 +21,7 @@
 #ifndef DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 #define DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 
+#include <optional>
 #include "deck.gl/core.h"
 #include "math.gl/core.h"
 
@@ -49,7 +50,8 @@ struct ViewportUniforms {
 // TODO: consider finding another way rather than these structs. Perhaps make the functions
 // that build them constructors?
 struct OffsetOrigin {
-  mathgl::Vector3<double> geospatialOrigin;
+  // TODO: temporarily replicating the JS logic of this possibly being null
+  std::optional<mathgl::Vector3<double>> geospatialOrigin;
   mathgl::Vector3<double> shaderCoordinateOrigin;
   bool offsetMode;
 };
@@ -57,17 +59,19 @@ struct OffsetOrigin {
 struct MatrixAndOffset {
   mathgl::Matrix4<double> viewMatrix;
   mathgl::Matrix4<double> viewProjectionMatrix;
-  mathgl::Vector3<double> projectionCenter;
+  mathgl::Vector4<double> projectionCenter;
   mathgl::Vector3<double> cameraPosCommon;
   mathgl::Vector3<double> shaderCoordinateOrigin;
-  mathgl::Vector3<double> geospatialOrigin;
+  std::optional<mathgl::Vector3<double>> geospatialOrigin;
 };
 
-auto getOffsetOrigin(Viewport, COORDINATE_SYSTEM, mathgl::Vector3<double> coordinateOrigin) -> OffsetOrigin;
+auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
+    -> OffsetOrigin;
 
 // The code that utilizes Matrix4 does the same calculation as their mathgl::Matrix4<double> counterparts,
 // has lower performance but provides error checking.
-auto calculateMatrixAndOffset(Viewport, COORDINATE_SYSTEM, mathgl::Vector3<double> coordinateOrigin) -> MatrixAndOffset;
+auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSystem,
+                              mathgl::Vector3<double> coordinateOrigin) -> MatrixAndOffset;
 
 /**
  * Returns uniforms for shaders based on current projection
