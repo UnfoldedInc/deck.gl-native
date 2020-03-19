@@ -290,6 +290,8 @@ class Layer : public Component {
 
 class Layer::Props : public Component::Props {
  public:
+  static constexpr const char* getTypeName() { return "Layer"; }
+
   Props()
       // TODO - how to deal with data ?
       : visible{true},

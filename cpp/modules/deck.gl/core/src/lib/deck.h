@@ -102,7 +102,7 @@ class Deck : public Component {
 
   void redraw(bool force = false);
 
-  auto getViews() -> std::list<View *>;  // { return this->viewManager->views; }
+  auto getViews() -> std::list<View>;  // { return this->viewManager->views; }
 
   /*
   // Get a set of viewports for a given width and height
@@ -195,6 +195,8 @@ class Deck : public Component {
 
 class Deck::Props : public Component::Props {
  public:
+  static constexpr const char *getTypeName() { return "Deck"; }
+
   std::string id;  // PropTypes.string,
   int width;       // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   int height;      // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),

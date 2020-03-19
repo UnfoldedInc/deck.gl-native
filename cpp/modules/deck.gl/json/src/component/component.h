@@ -28,6 +28,8 @@ class PropertyType {
   // The name of the field (this string matches the name of the field in the C++ Prop class)
   // Note: This is intended to be initialized with string constants that have static linkage.
   const char* name;
+  const char* typeName{nullptr};
+  bool isList{false};
 
   PropertyType(const char* name_) : name{name_} {}
   virtual ~PropertyType() {}
@@ -38,6 +40,8 @@ class PropertyType {
   virtual void setPropertyFromJson(Component::Props*, const Json::Value&, const JSONConverter*) const {}
 
  protected:
+  auto _getPropFromJson(Component::Props* props, const Json::Value& jsonValue, const JSONConverter* jsonConverter) const
+      -> std::shared_ptr<Component::Props>;
   auto _getPropListFromJson(Component::Props* props, const Json::Value& jsonValue,
                             const JSONConverter* jsonConverter) const -> std::list<std::shared_ptr<Component::Props>>;
 };
@@ -63,6 +67,33 @@ struct PropertyTypeT : public PropertyType {
 };
 
 template <class T>
+struct PropertyTypeT<std::shared_ptr<T>> : public PropertyType {
+ public:
+  std::function<auto(Component::Props const*)->const std::shared_ptr<T>&> get;  // TODO return const T& ?
+  std::function<void(Component::Props*, const std::shared_ptr<T>&)> set;
+  std::shared_ptr<T> defaultValue;
+
+  PropertyTypeT(const char* name_, const std::function<auto(Component::Props const*)->const std::shared_ptr<T>&>& get_,
+                const std::function<void(Component::Props*, const std::shared_ptr<T>&)>& set_)
+      : PropertyType{name_}, get{get_}, set{set_} {
+    this->typeName = T::Props::getTypeName();
+  }
+
+  bool equals(const Component::Props* props1, const Component::Props* props2) const override {
+    // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
+    return mathgl::equalsT(this->get(props1), this->get(props2));
+  }
+
+  void setPropertyFromJson(Component::Props* props, const Json::Value& jsonValue,
+                           const JSONConverter* jsonConverter) const override {
+    auto prop = this->_getPropFromJson(props, jsonValue, jsonConverter);
+    auto ptr = dynamic_cast<T*>(props);
+    std::shared_ptr<T> propT{ptr};
+    this->set(props, propT);
+  }
+};
+
+template <class T>
 struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
  public:
   std::function<auto(Component::Props const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO return const T& ?
@@ -72,7 +103,10 @@ struct PropertyTypeT<std::list<std::shared_ptr<T>>> : public PropertyType {
   PropertyTypeT(const char* name_,
                 const std::function<auto(Component::Props const*)->const std::list<std::shared_ptr<T>>&>& get_,
                 const std::function<void(Component::Props*, const std::list<std::shared_ptr<T>>&)>& set_)
-      : PropertyType{name_}, get{get_}, set{set_} {}
+      : PropertyType{name_}, get{get_}, set{set_} {
+    this->typeName = T::Props::getTypeName();
+    this->isList = true;
+  }
 
   bool equals(const Component::Props* props1, const Component::Props* props2) const override {
     // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
@@ -127,6 +161,8 @@ class PropertyTypes {
 
 class Component::Props {
  public:
+  static constexpr const char* getTypeName() { return "Component"; }
+
   Props() {}
   virtual ~Props() {}
 

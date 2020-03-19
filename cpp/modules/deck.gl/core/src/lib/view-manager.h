@@ -21,18 +21,28 @@
 #ifndef DECKGL_CORE_VIEWS_VIEW_MANAGER_H
 #define DECKGL_CORE_VIEWS_VIEW_MANAGER_H
 
+#include <optional>
+#include <string>
+
+#include "../viewports/viewport.h"
+#include "../views/view-state.h"
+#include "../views/view.h"
+
 namespace deckgl {
 
 class ViewManager {
+ private:
+  std::optional<std::string> _needsRedraw;
+
  public:
   ViewManager();
   virtual ~ViewManager();
 
   // Check if a redraw is needed
-  needsRedraw(bool clearRedrawFlags = false) {
-    const redraw = this->_needsRedraw;
-    if (opts.clearRedrawFlags) {
-      this->_needsRedraw = false;
+  auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string> {
+    auto redraw = this->_needsRedraw;
+    if (clearRedrawFlags) {
+      this->_needsRedraw = std::nullopt;
     }
     return redraw;
   }
@@ -66,7 +76,7 @@ class ViewManager {
   // 3. root viewState
   // then applies the view's filter if any
   auto getViewState(const std::string &viewId) -> void;
-  auto getViewport(viewId) -> std::shared_ptr<Viewport>;
+  auto getViewport(const std::string &viewId) -> std::shared_ptr<Viewport>;
 
   /**
    * Unproject pixel coordinates on screen onto world coordinates,
@@ -112,7 +122,7 @@ class ViewManager {
   // Note that descriptors can be the same
   void _diffViews(newViews, oldViews);
   */
-}
+};
 
 }  // namespace deckgl
 

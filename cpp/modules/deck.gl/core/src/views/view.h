@@ -21,7 +21,7 @@
 #ifndef DECKGL_CORE_VIEWS_VIEW_H
 #define DECKGL_CORE_VIEWS_VIEW_H
 
-#include "../viewports/viewport.h" // {Viewport}
+#include "../viewports/viewport.h"  // {Viewport}
 
 namespace deckgl {
 
@@ -30,13 +30,13 @@ class View : public Component {
   class Props;
 
   View(Props *props);
-  ~View();
+  ~View() {}
 
-  bool equals(const View* view);
+  bool equals(const View *view);
 
   // Build a `Viewport` from a view descriptor
   // TODO - add support for autosizing viewports using width and height
-  auto makeViewport() -> Viewport *; // {width, height, viewState});
+  auto makeViewport() -> Viewport *;  // {width, height, viewState});
 
   auto getViewStateId() -> const std::string;
 
@@ -58,22 +58,24 @@ class View : public Component {
 
 class View::Props : public Component::Props {
  public:
+  static constexpr const char *getTypeName() { return "View"; }
+
   std::string id;
 
-    // Window width/height in pixels (for pixel projection)
+  // Window width/height in pixels (for pixel projection)
   int x{0};
   int y{0};
   const std::string width{"100%"};
   const std::string height{"100%"};
 
-    // Viewport Options
-  mathgl::Matrix4<double> projectionMatrix; // Projection matrix
-  mathgl::Matrix4<double> modelMatrix; // A model matrix to be applied to position, to match the layer props API
+  // Viewport Options
+  mathgl::Matrix4<double> projectionMatrix;  // Projection matrix
+  mathgl::Matrix4<double> modelMatrix;       // A model matrix to be applied to position, to match the layer props API
 
   // Perspective projection parameters, used if projectionMatrix not supplied
   double fovy{50};
-  double near{0.1}; // Distance of near clipping plane
-  double far{1000}; // Distance of far clipping plane
+  double near{0.1};  // Distance of near clipping plane
+  double far{1000};  // Distance of far clipping plane
 
   // A View can be a wrapper for a viewport instance
   // viewportInstance = null,
@@ -82,6 +84,6 @@ class View::Props : public Component::Props {
   // type = Viewport // TODO - default to WebMercator?
 };
 
-} // namespace deckgl
+}  // namespace deckgl
 
-#endif // DECKGL_CORE_VIEWS_VIEW_H
+#endif  // DECKGL_CORE_VIEWS_VIEW_H

@@ -73,15 +73,13 @@ static const std::vector<const PropertyType*> propTypeDefs = {
         "viewState", [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->viewState; },
         [](Component::Props* props, std::shared_ptr<ViewState> value) {
           return dynamic_cast<Deck::Props*>(props)->viewState = value;
-        },
-        nullptr},
+        }},
     new PropertyTypeT<std::shared_ptr<ViewState>>{
         "initialViewState",
         [](const Component::Props* props) { return dynamic_cast<const Deck::Props*>(props)->initialViewState; },
         [](Component::Props* props, std::shared_ptr<ViewState> value) {
           return dynamic_cast<Deck::Props*>(props)->initialViewState = value;
-        },
-        nullptr}};
+        }}};
 
 auto Deck::Props::getPropertyTypes() const -> const PropertyTypes* {
   static PropertyTypes propTypes{PropertyTypes::from<Deck>("Deck", propTypeDefs)};
