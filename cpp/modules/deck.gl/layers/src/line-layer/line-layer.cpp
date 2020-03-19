@@ -1,3 +1,23 @@
+// Copyright (c) 2020 Unfolded, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 #include "./line-layer.h"
 
 // #include "./line-layer-fragment.glsl.h"
@@ -6,29 +26,28 @@
 
 using namespace deckgl;
 
-using Props = Component::Props;
-
 const std::vector<const Property*> propTypeDefs = {
     //  new PropertyT<std::string>{"widthUnits",
-    //      [](const LineLayer::Props* props) { return dynamic_cast<const LineLayer*>(props)->widthUnits; },
-    //      [](LineLayer::Props* props, bool value) { return dynamic_cast<LineLayer*>(props)->widthUnits = value; },
+    //      [](const JSONObject* props) { return dynamic_cast<const LineLayer*>(props)->widthUnits; },
+    //      [](JSONObject* props, bool value) { return dynamic_cast<LineLayer*>(props)->widthUnits = value; },
     //      true},
     new PropertyT<float>{
-        "widthScale", [](const Props* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthScale; },
-        [](Props* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthScale = value; }, 1.0},
+        "widthScale", [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthScale; },
+        [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthScale = value; }, 1.0},
     new PropertyT<float>{
         "widthMinPixels",
-        [](const Props* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMinPixels; },
-        [](Props* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMinPixels = value; }, 0.0},
+        [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMinPixels; },
+        [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMinPixels = value; },
+        0.0},
     new PropertyT<float>{
         "widthMaxPixels",
-        [](const Props* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMaxPixels; },
-        [](Props* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMaxPixels = value; },
+        [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMaxPixels; },
+        [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMaxPixels = value; },
         std::numeric_limits<float>::max()}};
 
 auto LineLayer::Props::getProperties() const -> const Properties* {
-  static Properties propTypes{Properties::from<LineLayer>("LineLayer", propTypeDefs)};
-  return &propTypes;
+  static Properties properties{Properties::from<LineLayer::Props>("LineLayer", propTypeDefs)};
+  return &properties;
 }
 
 /*

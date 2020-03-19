@@ -29,7 +29,10 @@ namespace deckgl {
 
 class ViewState : public JSONObject {
  public:
+  using super = JSONObject;
   static constexpr const char* getTypeName() { return "ViewState"; }
+  auto getProperties() const -> const Properties* override;
+  virtual ~ViewState() {}
 
   // Map view states
   std::optional<double> longitude;
@@ -37,8 +40,6 @@ class ViewState : public JSONObject {
   std::optional<double> zoom;
   std::optional<double> bearing;
   std::optional<double> pitch;
-
-  virtual ~ViewState() {}
 };
 
 }  // namespace deckgl

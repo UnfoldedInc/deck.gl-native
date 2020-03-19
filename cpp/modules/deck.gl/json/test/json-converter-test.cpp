@@ -79,34 +79,26 @@ class JSONConverterTest : public ::testing::Test {
 // }
 
 TEST_F(JSONConverterTest, JSONConverterDeck) {
-  try {
-    std::cout << "Parse" << std::endl;
-    Json::Value rootValue;
-    rootValue = jsonConverter->parseJson(jsonDataSimple);
-    std::cout << "JSON" << std::endl;
-    auto jsonObject = jsonConverter->convertClass(rootValue, "Deck");
+  Json::Value rootValue;
+  rootValue = jsonConverter->parseJson(jsonDataSimple);
+  auto jsonObject = jsonConverter->convertClass(rootValue, "Deck");
 
-    std::cout << "Class" << std::endl;
-    EXPECT_TRUE(jsonObject);
+  EXPECT_TRUE(jsonObject);
 
-    // Check that we get a deckProps object back
-    std::cout << "Deck" << std::endl;
-    auto deckProps = std::dynamic_pointer_cast<Deck::Props>(jsonObject);
-    EXPECT_TRUE(deckProps);
+  // Check that we get a deckProps object back
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(jsonObject);
+  EXPECT_TRUE(deckProps);
 
-    // Test deckProps.layers
-    std::cout << "Size" << deckProps->layers.size() << std::endl;
-    EXPECT_EQ(deckProps->layers.size(), 1);
-    // auto layer0Props = deckProps->layers.front();
-    // EXPECT_TRUE(layer0Props);
-    // std::cout << layer0Props->getProperties()->className << std::endl;
+  // Test deckProps.layers
+  EXPECT_EQ(deckProps->layers.size(), 2);
 
-    // Test deckProps->initialViewState
-    // EXPECT_EQ(deckProps->initialViewState->longitude, 2);
-    std::cout << "Done" << std::endl;
-  } catch (...) {
-    std::cout << "Nasty" << std::endl;
-  }
+  auto layer0Props = deckProps->layers.front();
+  EXPECT_TRUE(layer0Props);
+  std::cout << "Layer: " << layer0Props->getProperties()->className << std::endl;
+
+  // Test deckProps->initialViewState
+  EXPECT_NEAR(*deckProps->initialViewState->longitude, -122.45, 0.0001);
+  std::cout << "Done" << std::endl;
 }
 
 }  // namespace

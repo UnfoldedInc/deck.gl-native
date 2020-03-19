@@ -64,7 +64,6 @@ namespace deckgl {
 
 class Deck : public Component {
  public:
-  using super = Component;
   class Props;
 
   Props *props;
@@ -195,6 +194,7 @@ class Deck : public Component {
 
 class Deck::Props : public Component::Props {
  public:
+  using super = Component::Props;
   static constexpr const char *getTypeName() { return "Deck"; }
 
   std::string id;  // PropTypes.string,

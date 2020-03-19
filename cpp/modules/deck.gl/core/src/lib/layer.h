@@ -72,7 +72,6 @@ class ColorRGBA {
 
 class Layer : public Component {
  public:
-  using super = Component;
   class Props;
   class ChangeFlags;
 
@@ -290,6 +289,7 @@ class Layer : public Component {
 
 class Layer::Props : public Component::Props {
  public:
+  using super = Component::Props;
   static constexpr const char* getTypeName() { return "Layer"; }
 
   Props()

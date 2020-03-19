@@ -18,28 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
-
-#include <memory>
-
-#include "deck.gl/core.h"
+#include "./view-state.h"
 
 using namespace deckgl;
 
-namespace {
+const std::vector<const Property*> propTypeDefs = {
+    new PropertyT<std::optional<float>>{
+        "longitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->longitude; },
+        [](JSONObject* props, const float& value) { return dynamic_cast<ViewState*>(props)->longitude = value; }, 0.0},
+    new PropertyT<std::optional<float>>{
+        "latitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->latitude; },
+        [](JSONObject* props, const float& value) { return dynamic_cast<ViewState*>(props)->latitude = value; }, 0.0},
+    new PropertyT<std::optional<float>>{
+        "zoom", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->zoom; },
+        [](JSONObject* props, const float& value) { return dynamic_cast<ViewState*>(props)->zoom = value; }, 10}};
 
-TEST(Layer, Props) {
-  auto layerProps1 = std::unique_ptr<Layer::Props>(new Layer::Props());
-  auto layerProps2 = std::unique_ptr<Layer::Props>(new Layer::Props());
-
-  EXPECT_TRUE(layerProps1->equals(layerProps2.get()));
-  layerProps2->opacity = 0.5;
-  EXPECT_FALSE(layerProps1->equals(layerProps2.get()));
-
-  auto properties = layerProps1->getProperties();
-
-  EXPECT_TRUE(properties->hasProp("opacity"));
-  EXPECT_FALSE(properties->hasProp("radiusScale"));
+auto ViewState::getProperties() const -> const Properties* {
+  static Properties properties{Properties::from<ViewState>("ViewState", propTypeDefs)};
+  return &properties;
 }
-
-}  // namespace

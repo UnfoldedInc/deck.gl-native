@@ -6,45 +6,47 @@ using namespace mathgl;
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO - auto generate from language-independent prop definition schema
-
-using Props = Component::Props;
+// TODO(ib): auto generate from language-independent prop definition schema
 
 static const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<bool>{"visible", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
-                        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; },
-                        true},
     new PropertyT<bool>{
-        "pickable", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->pickable; },
-        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->pickable = value; }, false},
+        "visible", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
+        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true},
+    new PropertyT<bool>{
+        "pickable", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->pickable; },
+        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->pickable = value; }, false},
     new PropertyT<float>{
-        "opacity", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->opacity; },
-        [](Props* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; }, 1.0},
+        "opacity", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->opacity; },
+        [](JSONObject* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; }, 1.0},
     new PropertyT<COORDINATE_SYSTEM>{
         "coordinateSystem",
-        [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateSystem; },
-        [](Props* props, COORDINATE_SYSTEM value) {
+        [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateSystem; },
+        [](JSONObject* props, COORDINATE_SYSTEM value) {
           return dynamic_cast<Layer::Props*>(props)->coordinateSystem = value;
         },
         COORDINATE_SYSTEM::DEFAULT},
     new PropertyT<Vector3<double>>{
         "coordinateOrigin",
-        [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateOrigin; },
-        [](Props* props, Vector3<double> value) {
+        [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateOrigin; },
+        [](JSONObject* props, Vector3<double> value) {
           return dynamic_cast<Layer::Props*>(props)->coordinateOrigin = value;
         },
         Vector3<double>()},
     new PropertyT<Matrix4<double>>{
-        "modelMatrix", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->modelMatrix; },
-        [](Props* props, Matrix4<double> value) { return dynamic_cast<Layer::Props*>(props)->modelMatrix = value; },
+        "modelMatrix", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->modelMatrix; },
+        [](JSONObject* props, Matrix4<double> value) {
+          return dynamic_cast<Layer::Props*>(props)->modelMatrix = value;
+        },
         Matrix4<double>()},
     new PropertyT<bool>{
-        "wrapLongitude", [](const Props* props) { return dynamic_cast<const Layer::Props*>(props)->wrapLongitude; },
-        [](Props* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; }, false}};
+        "wrapLongitude",
+        [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->wrapLongitude; },
+        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; },
+        false}};
 
 auto Layer::Props::getProperties() const -> const Properties* {
-  static Properties propTypes{Properties::from<Layer>("Layer", propTypeDefs)};
-  return &propTypes;
+  static Properties properties{Properties::from<Layer::Props>("Layer", propTypeDefs)};
+  return &properties;
 }
 
 /*

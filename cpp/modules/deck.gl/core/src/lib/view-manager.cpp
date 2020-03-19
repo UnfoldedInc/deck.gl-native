@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWS_VIEW_MANAGER_H
-#define DECKGL_CORE_VIEWS_VIEW_MANAGER_H
+#include "./view-manager.h"
 
 using namespace deckgl;
 
@@ -324,5 +323,3 @@ ViewManager::_diffViews(newViews, oldViews) {
 }
 
 } // namespace deckgl
-
-#endif // DECKGL_CORE_VIEWS_VIEW_MANAGER_H

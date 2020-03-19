@@ -55,8 +55,8 @@ import {EVENTS} from './constants';
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO - auto generate from language-independent prop definition schema
-// TODO - just use member pointer?
+// TODO(ib): auto generate from language-independent prop definition schema
+// TODO(ib): just use member pointer?
 
 static const std::vector<const Property*> propTypeDefs = {
     new PropertyT<std::list<std::shared_ptr<Layer::Props>>>{
@@ -82,8 +82,8 @@ static const std::vector<const Property*> propTypeDefs = {
         }}};
 
 auto Deck::Props::getProperties() const -> const Properties* {
-  static Properties propTypes{Properties::from<Deck>("Deck", propTypeDefs)};
-  return &propTypes;
+  static Properties properties{Properties::from<Deck::Props>("Deck", propTypeDefs)};
+  return &properties;
 }
 
 // Deck::Props
