@@ -21,31 +21,6 @@
 #ifndef DECKGL_LAYERS_H
 #define DECKGL_LAYERS_H
 
-// To be ported for prototype
-
-#include "./layers/src/line-layer/line-layer.h"                // {LineLayer}
-#include "./layers/src/scatterplot-layer/scatterplot-layer.h"  // {ScatterplotLayer}
-// #include "./solid-polygon-layer/solid-polygon-layer.h" // SolidPolygonLayer
-
-// Not to be ported for prototype
-/*
-#include './arc-layer/arc-layer'; // ArcLayer
-#include './bitmap-layer/bitmap-layer'; // BitmapLayer
-#include './icon-layer/icon-layer'; // IconLayer
-#include './line-layer/line-layer'; // LineLayer
-#include './point-cloud-layer/point-cloud-layer'; // PointCloudLayer
-#include './scatterplot-layer/scatterplot-layer'; // ScatterplotLayer
-#include './column-layer/column-layer'; // ColumnLayer
-#include './column-layer/grid-cell-layer'; // GridCellLayer
-#include './path-layer/path-layer'; // PathLayer
-#include './polygon-layer/polygon-layer'; // PolygonLayer
-#include './geojson-layer/geojson-layer'; // GeoJsonLayer
-#include './text-layer/text-layer'; // TextLayer
-#include './solid-polygon-layer/solid-polygon-layer'; // SolidPolygonLayer
-#include './base-tile-layer/base-tile-layer'; // BaseTileLayer
-
-// Experimental layer exports
-#include './text-layer/multi-icon-layer/multi-icon-layer'; // _MultiIconLayer
-*/
+#include "./layers/src/layers.h"
 
 #endif  // DECKGL_LAYERS_H
