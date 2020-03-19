@@ -132,6 +132,7 @@ set(DECKGL_CORE_SOURCE_FILES
 set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/lib/layer-test.cpp
     cpp/modules/deck.gl/core/test/lib/layer-manager-test.cpp
+    cpp/modules/deck.gl/core/test/shaderlib/project/viewport-uniforms-test.cpp
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
     )
 

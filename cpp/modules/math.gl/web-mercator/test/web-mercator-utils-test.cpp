@@ -36,14 +36,6 @@ auto const DISTANCE_TOLERANCE = 0.0005;
 auto const DISTANCE_TOLERANCE_PIXELS = 2.0;
 auto const DISTANCE_SCALE_TEST_ZOOM = 12.0;
 
-/**
- * The fixture for testing class JSONConverter.
- */
-class WebMercatorUtilsTest : public ::testing::Test {
- protected:
-  WebMercatorUtilsTest() {}
-};
-
 auto getDiff(Vector3<double> value, Vector3<double> baseValue, double scale)
     -> std::tuple<Vector3<double>, Vector3<double>> {
   auto errorPixels = Vector3<double>(abs((value.x - baseValue.x) * scale), abs((value.y - baseValue.y) * scale),
@@ -54,14 +46,14 @@ auto getDiff(Vector3<double> value, Vector3<double> baseValue, double scale)
   return make_tuple(error, errorPixels);
 }
 
-TEST_F(WebMercatorUtilsTest, lngLatToWorld) {
+TEST(WebMercatorUtils, lngLatToWorld) {
   auto input = Vector2<double>(-122, 38);
   auto output = lngLatToWorld(input);
   EXPECT_DOUBLE_EQ(output.x, 82.4888888888889);
   EXPECT_DOUBLE_EQ(output.y, 314.50692551385134);
 }
 
-TEST_F(WebMercatorUtilsTest, getDistanceScales) {
+TEST(WebMercatorUtils, getDistanceScales) {
   for (auto vc : SAMPLE_VIEWPORTS) {
     auto distanceScales = getDistanceScales(Vector2<double>(vc.longitude, vc.latitude));
 
@@ -75,7 +67,7 @@ TEST_F(WebMercatorUtilsTest, getDistanceScales) {
   }
 }
 
-TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
+TEST(WebMercatorUtils, getDistanceScales_unitsPerDegree) {
   auto scale = pow(2, DISTANCE_SCALE_TEST_ZOOM);
   auto z = 1000.0;
 
@@ -111,7 +103,7 @@ TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerDegree) {
   }
 }
 
-TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerMeter) {
+TEST(WebMercatorUtils, getDistanceScales_unitsPerMeter) {
   auto scale = pow(2, DISTANCE_SCALE_TEST_ZOOM);
   auto z = 1000.0;
 
@@ -143,7 +135,7 @@ TEST_F(WebMercatorUtilsTest, getDistanceScales_unitsPerMeter) {
   }
 }
 
-TEST_F(WebMercatorUtilsTest, addMetersToLngLat) {
+TEST(WebMercatorUtils, addMetersToLngLat) {
   for (auto vc : SAMPLE_VIEWPORTS) {
     // Test degree offsets
     const double TEST_DELTAS[] = {10, 100, 1000, 5000};
@@ -160,7 +152,7 @@ TEST_F(WebMercatorUtilsTest, addMetersToLngLat) {
   }
 }
 
-TEST_F(WebMercatorUtilsTest, getMeterZoom) {
+TEST(WebMercatorUtils, getMeterZoom) {
   const double TEST_LATITUDES[] = {0, 37.5, 75};
 
   for (auto latitude : TEST_LATITUDES) {
