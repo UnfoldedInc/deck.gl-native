@@ -75,7 +75,8 @@ Notes:
 
 - [Arrow](https://arrow.apache.org/install/)
 
-You need to install `libarrow-dev` on Linux.
+You need to install `libarrow-dev` on Linux,
+and `apache-arrow` on Mac OSX (Brew).
 
 Notes: See `vcpkg` install above.
 
