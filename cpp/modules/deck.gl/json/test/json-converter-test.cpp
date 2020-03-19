@@ -51,32 +51,31 @@ class JSONConverterTest : public ::testing::Test {
   std::unique_ptr<JSONConverter> jsonConverter;
 };
 
-// TEST_F(JSONConverterTest, JSONParseFail) { EXPECT_THROW(jsonConverter->parseJson(" ** BAD JSON"),
-// std::runtime_error); }
+TEST_F(JSONConverterTest, JSONParseFail) { EXPECT_THROW(jsonConverter->parseJson(" ** BAD JSON"), std::runtime_error); }
 
-// TEST_F(JSONConverterTest, JSONParse) {
-//   EXPECT_NO_THROW({ Json::Value rootValue = jsonConverter->parseJson(jsonDataFull); });
-// }
+TEST_F(JSONConverterTest, JSONParse) {
+  EXPECT_NO_THROW({ Json::Value rootValue = jsonConverter->parseJson(jsonDataFull); });
+}
 
-// TEST_F(JSONConverterTest, JSONConfig) {
-//   EXPECT_NO_THROW({
-//     Json::Value rootValue = jsonConverter->parseJson(jsonDataSimple);
-//     auto classConverter = jsonConverter->classes["LineLayer"];
+TEST_F(JSONConverterTest, JSONConfig) {
+  EXPECT_NO_THROW({
+    Json::Value rootValue = jsonConverter->parseJson(jsonDataSimple);
+    auto classConverter = jsonConverter->classes["LineLayer"];
 
-//     // TODO(ib): bizarre test that parses a Deck as a LineLayer...
-//     auto lineLayerProps = classConverter(rootValue);
-//     std::cout << lineLayerProps->getProperties()->className << std::endl;
-//     EXPECT_TRUE(lineLayerProps);
-//     EXPECT_TRUE(std::dynamic_pointer_cast<LineLayer::Props>(lineLayerProps));
-//   });
-// }
+    // TODO(ib): bizarre test that parses a Deck as a LineLayer...
+    auto lineLayerProps = classConverter(rootValue);
+    std::cout << lineLayerProps->getProperties()->className << std::endl;
+    EXPECT_TRUE(lineLayerProps);
+    EXPECT_TRUE(std::dynamic_pointer_cast<LineLayer::Props>(lineLayerProps));
+  });
+}
 
-// TEST_F(JSONConverterTest, JSONConverter) {
-//   Json::Value rootValue;
-//   rootValue = jsonConverter->parseJson(jsonDataSimple);
-//   auto result = jsonConverter->convertJson(rootValue);
-//   // EXPECT_TRUE(result);
-// }
+TEST_F(JSONConverterTest, JSONConverter) {
+  Json::Value rootValue;
+  rootValue = jsonConverter->parseJson(jsonDataSimple);
+  auto result = jsonConverter->convertJson(rootValue);
+  // EXPECT_TRUE(result);
+}
 
 TEST_F(JSONConverterTest, JSONConverterDeck) {
   Json::Value rootValue;
