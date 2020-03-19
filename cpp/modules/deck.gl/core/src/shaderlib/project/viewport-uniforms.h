@@ -46,13 +46,28 @@ struct ViewportUniforms {
   mathgl::Matrix4<double> project_uModelMatrix;
 };
 
-// TODO: returns multiple things
-auto getOffsetOrigin(Viewport, COORDINATE_SYSTEM, mathgl::Vector3<double> coordinateOrigin) -> double;
+// TODO: consider finding another way rather than these structs. Perhaps make the functions
+// that build them constructors?
+struct OffsetOrigin {
+  mathgl::Vector3<double> geospatialOrigin;
+  mathgl::Vector3<double> shaderCoordinateOrigin;
+  bool offsetMode;
+};
+
+struct MatrixAndOffset {
+  mathgl::Matrix4<double> viewMatrix;
+  mathgl::Matrix4<double> viewProjectionMatrix;
+  mathgl::Vector3<double> projectionCenter;
+  mathgl::Vector3<double> cameraPosCommon;
+  mathgl::Vector3<double> shaderCoordinateOrigin;
+  mathgl::Vector3<double> geospatialOrigin;
+};
+
+auto getOffsetOrigin(Viewport, COORDINATE_SYSTEM, mathgl::Vector3<double> coordinateOrigin) -> OffsetOrigin;
 
 // The code that utilizes Matrix4 does the same calculation as their mathgl::Matrix4<double> counterparts,
 // has lower performance but provides error checking.
-// TODO: returns multiple things
-auto calculateMatrixAndOffset(Viewport, COORDINATE_SYSTEM, mathgl::Vector3<double> coordinateOrigin) -> double;
+auto calculateMatrixAndOffset(Viewport, COORDINATE_SYSTEM, mathgl::Vector3<double> coordinateOrigin) -> MatrixAndOffset;
 
 /**
  * Returns uniforms for shaders based on current projection

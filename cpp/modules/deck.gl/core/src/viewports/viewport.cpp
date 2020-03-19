@@ -56,6 +56,7 @@ Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
 
   this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
   // Make a centered version of the matrix for projection modes without an offset
+  // TODO: NEEDED
   // this->viewMatrix = Matrix4<double>()
   //                        // Apply the uncentered view matrix
   //                        .multiplyRight(this->viewMatrixUncentered)
