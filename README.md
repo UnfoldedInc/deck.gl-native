@@ -37,6 +37,8 @@ However, at this stage the project has yet to attain a sufficient level of compl
 
 ### gcc
 
+For Mac OSX:
+
 ```sh
 brew install gcc cmake clang-format lcov
 ```
@@ -52,7 +54,7 @@ cd vcpkg
 
 Notes: 
 - Check that the bootstrap script compiles successfully, should generate `vcpkg` binary in root folder
-- requires gcc 6 or higher, apple clang won't work.
+- requires GCC 6 or higher, Apple Clang won't work.
 
 ## Dependencies
 
@@ -76,9 +78,12 @@ Notes:
 
 - [Arrow](https://arrow.apache.org/install/)
 
-You need to install `libarrow-dev` on Linux.
+You need to install `libarrow-dev` on Linux,
+and `apache-arrow` on Mac OSX:
 
-Notes: See `vcpkg` install above.
+```sh
+brew install apache-arrow
+```
 
 ## Building
 
