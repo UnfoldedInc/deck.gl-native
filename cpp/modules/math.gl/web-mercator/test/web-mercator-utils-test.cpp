@@ -19,13 +19,13 @@
 // THE SOFTWARE.
 
 #include <gtest/gtest.h>
+
 #include <algorithm>
 #include <tuple>
 
+#include "./sample-viewports.h"
 #include "math.gl/core.h"
 #include "math.gl/web-mercator.h"
-
-#include "./sample-viewports.h"
 
 using namespace mathgl;
 using namespace std;

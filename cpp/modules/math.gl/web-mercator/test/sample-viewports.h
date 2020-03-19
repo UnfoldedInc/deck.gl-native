@@ -1,6 +1,8 @@
 #ifndef MATHGL_TEST_WEB_MERCATOR_SAMPLE_VIEWPORTS_H
 #define MATHGL_TEST_WEB_MERCATOR_SAMPLE_VIEWPORTS_H
 
+#include "math.gl/core.h"
+
 struct SampleViewport {
   double latitude;
   double longitude;
