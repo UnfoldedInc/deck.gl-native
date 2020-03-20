@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_LAYER_MANAGER_H
 #define DECKGL_CORE_LAYER_MANAGER_H
 
+#include <optional>
+
 #include "./layer-context.h"
 #include "./layer.h"
 

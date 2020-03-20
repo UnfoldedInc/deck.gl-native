@@ -21,6 +21,7 @@
 #ifndef DECKGL_CORE_CORE_H
 #define DECKGL_CORE_CORE_H
 
+#include "./lib/attribute/attribute-manager.h"
 #include "./lib/constants.h"  // {COORDINATE_SYSTEM, PROJECTION_MODE}
 #include "./lib/deck.h"       // {Deck}
 #include "./lib/layer.h"      // {Layer, Layer::Props}

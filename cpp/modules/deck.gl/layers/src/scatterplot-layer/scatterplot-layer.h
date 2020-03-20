@@ -32,7 +32,6 @@ namespace deckgl {
 
 class ScatterplotLayer : public Layer {
  public:
-  using super = Layer;
   class Props;
 
  protected:
@@ -47,6 +46,7 @@ class ScatterplotLayer : public Layer {
 
 class ScatterplotLayer::Props : public Layer::Props {
  public:
+  using super = Layer::Props;
   static constexpr const char *getTypeName() { return "ScatterplotLayer"; }
 
   bool filled;

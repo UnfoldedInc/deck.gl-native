@@ -24,16 +24,25 @@
 #include "./view.h" // {View}
 // #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
 
+#include <memory>
+
 namespace deckgl {
 
 class MapView : public View {
-  public: 
+ public:
   using super = View;
   class Props : public View::Props {};
 
-  MapView(Props* props) : View(props) {}
+  explicit MapView(Props* props) : View(props) {}
+
+  auto _getViewport() const -> std::shared_ptr<Viewport> override {
+    // TODO(ib): Having a separate WebMercatorViewport subclass is the root of all evil
+    // replace with `makeWebMercatorViewport() -> Viewport` that returns a standard viewport
+    // return std::make_shared<WebMercatorViewport>();
+    return nullptr;
+  }
 };
 
-} // namespace deckgl
+}  // namespace deckgl
 
 #endif // DECKGL_CORE_VIEWS_MAP_VIEW_H

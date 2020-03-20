@@ -24,18 +24,10 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/table.h>
 
-#include <functional>  // {std::function}
-#include <map>
-#include <memory>  // {std::shared_ptr}
-
-#include "deck.gl/core.h"  // {Component} // TODO - this is a "circular" dependency
-#include "json/json.h"     // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
-
 namespace loadersgl {
 
 class JSONLoader {
  public:
-  // methods
   JSONLoader() {}
 
   auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;

@@ -110,6 +110,9 @@ set(DECKGL_JSON_TEST_FILES
 set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core.h
     cpp/modules/deck.gl/core/src/core.h
+    cpp/modules/deck.gl/core/src/lib/attribute/data-column.h
+    cpp/modules/deck.gl/core/src/lib/attribute/attribute.h
+    cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.h
     cpp/modules/deck.gl/core/src/lib/constants.h
     cpp/modules/deck.gl/core/src/lib/deck.h
     cpp/modules/deck.gl/core/src/lib/layer.h
@@ -120,20 +123,30 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/viewports/viewport.h
     cpp/modules/deck.gl/core/src/views/view.h
     cpp/modules/deck.gl/core/src/views/view-state.h
+    cpp/modules/deck.gl/core/src/arrow/row.h
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/core.cpp
+    cpp/modules/deck.gl/core/src/lib/attribute/data-column.cc
+    cpp/modules/deck.gl/core/src/lib/attribute/attribute.cc
+    cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.cc
     cpp/modules/deck.gl/core/src/lib/deck.cpp
     cpp/modules/deck.gl/core/src/lib/layer.cpp
     cpp/modules/deck.gl/core/src/lib/layer-manager.cpp
+    cpp/modules/deck.gl/core/src/lib/view-manager.cpp
     cpp/modules/deck.gl/core/src/shaderlib/project/viewport-uniforms.cpp
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
+    cpp/modules/deck.gl/core/src/views/view.cpp
+    cpp/modules/deck.gl/core/src/views/view-state.cpp
+    cpp/modules/deck.gl/core/src/arrow/row.cc
     )
 set(DECKGL_CORE_TEST_FILES
+    cpp/modules/deck.gl/core/test/lib/attribute/attribute-manager-test.cc
     cpp/modules/deck.gl/core/test/lib/layer-test.cpp
     cpp/modules/deck.gl/core/test/lib/layer-manager-test.cpp
     cpp/modules/deck.gl/core/test/shaderlib/project/viewport-uniforms-test.cpp
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
+    cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )
 
 ## deck.gl/layers

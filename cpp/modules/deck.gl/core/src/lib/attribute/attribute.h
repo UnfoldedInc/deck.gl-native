@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Unfolded Inc
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,28 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
+#ifndef DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#define DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+
+#include <arrow/array.h>
 
 #include <memory>
 
-#include "deck.gl/core.h"
+#include "../../arrow/row.h"
+
+namespace deckgl {
 
 using namespace deckgl;
 
-namespace {
+struct AttributeDescriptor {
+ public:
+  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type)
+      : name{std::move(name)}, type{type} {}
 
-TEST(Layer, Props) {
-  auto layerProps1 = std::unique_ptr<Layer::Props>(new Layer::Props());
-  auto layerProps2 = std::unique_ptr<Layer::Props>(new Layer::Props());
+  std::string name;
+  std::shared_ptr<arrow::DataType> type;
 
-  EXPECT_TRUE(layerProps1->equals(layerProps2.get()));
-  layerProps2->opacity = 0.5;
-  EXPECT_FALSE(layerProps1->equals(layerProps2.get()));
+  // TODO(ilija): This doesn't work, and we can't really create a class template as we wouldn't be able to make use of
+  // it in attribute manager
+  //  template<typename ReturnValue>
+  //  std::function<ReturnValue(TableRow)> accessor;
+};
 
-  auto properties = layerProps1->getProperties();
+}  // namespace deckgl
 
-  EXPECT_TRUE(properties->hasProp("opacity"));
-  EXPECT_FALSE(properties->hasProp("radiusScale"));
-}
-
-}  // namespace
+#endif  // DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H

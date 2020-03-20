@@ -26,15 +26,16 @@ class JSONObject {
  public:
   static constexpr const char* getTypeName() { return "JSONObject"; }
 
-  JSONObject() {}
-  virtual ~JSONObject() {}
+  JSONObject();
+  virtual ~JSONObject();
 
   // Returns the shared static Properties for this Prop object.
   virtual auto getProperties() const -> const Properties*;
 
   // Compares the contents of this prop object against another prop object
-  auto equals(const JSONObject* other) -> bool;
-  auto compare(const JSONObject* other) -> std::optional<std::string>;
+  auto equals(const JSONObject* other) const -> bool;
+  auto equals(std::shared_ptr<JSONObject> other) const -> bool { return this->equals(other.get()); }
+  auto compare(const JSONObject* other) const -> std::optional<std::string>;
 
   bool hasProperty(const std::string& key) const;
 
@@ -53,7 +54,7 @@ class JSONObject {
   auto getPropertyT(const std::string& key) const -> const PropertyT<T>*;
 
  private:
-  std::unique_ptr<Properties> _propTypes;
+  std::unique_ptr<Properties> _properties;
 };
 
 class Property {
@@ -100,16 +101,40 @@ class PropertyT : public Property {
 };
 
 template <class T>
+struct PropertyT<std::optional<T>> : public Property {
+ public:
+  std::function<auto(JSONObject const*)->const std::optional<T>&> get;  // TODO(ib): return const T& ?
+  std::function<void(JSONObject*, const T&)> set;
+  T defaultValue;
+
+  PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::optional<T>&>& get_,
+            const std::function<void(JSONObject*, const T&)>& set_, const T& _defaultValue)
+      : Property{name_}, get{get_}, set{set_}, defaultValue{_defaultValue} {
+    this->typeName = "optional";  // T::getTypeName();
+  }
+
+  bool equals(const JSONObject* props1, const JSONObject* props2) const override {
+    // Note: `equalsT` provides approximate equality for floats (avoiding rounding errors)
+    return mathgl::equalsT(this->get(props1), this->get(props2));
+  }
+
+  void setPropertyFromJson(JSONObject* props, const Json::Value& jsonValue,
+                           const JSONConverter* jsonConverter) const override {
+    this->set(props, fromJson<T>(jsonValue));
+  }
+};
+
+template <class T>
 struct PropertyT<std::shared_ptr<T>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::shared_ptr<T>&> get;  // TODO return const T& ?
+  std::function<auto(JSONObject const*)->const std::shared_ptr<T>&> get;  // TODO(ib): return const T& ?
   std::function<void(JSONObject*, const std::shared_ptr<T>&)> set;
   std::shared_ptr<T> defaultValue;
 
   PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::shared_ptr<T>&>& get_,
             const std::function<void(JSONObject*, const std::shared_ptr<T>&)>& set_)
       : Property{name_}, get{get_}, set{set_} {
-    this->typeName = T::Props::getTypeName();
+    this->typeName = T::getTypeName();
   }
 
   bool equals(const JSONObject* props1, const JSONObject* props2) const override {
@@ -120,23 +145,25 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
   void setPropertyFromJson(JSONObject* props, const Json::Value& jsonValue,
                            const JSONConverter* jsonConverter) const override {
     auto prop = this->_getPropFromJson(props, jsonValue, jsonConverter);
-    auto ptr = dynamic_cast<T*>(props);
-    std::shared_ptr<T> propT{ptr};
-    this->set(props, propT);
+    auto typedProp = std::dynamic_pointer_cast<T>(prop);
+    if (!typedProp) {
+      throw std::runtime_error("JSON object (in list) created but of wrong type");
+    }
+    this->set(props, typedProp);
   }
 };
 
 template <class T>
 struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO return const T& ?
+  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO(ib): return const T& ?
   std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
 
   PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&>& get_,
             const std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)>& set_)
       : Property{name_}, get{get_}, set{set_} {
-    this->typeName = T::Props::getTypeName();
+    this->typeName = T::getTypeName();
     this->isList = true;
   }
 
@@ -150,9 +177,11 @@ struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
     auto propsList = this->_getPropListFromJson(props, jsonValue, jsonConverter);
     std::list<std::shared_ptr<T>> list;
     for (auto props : propsList) {
-      auto ptr = dynamic_cast<T*>(props.get());
-      // TODO - throw error if cast fails
-      list.push_back(std::shared_ptr<T>{ptr});
+      auto typedProp = std::dynamic_pointer_cast<T>(props);
+      if (!typedProp) {
+        throw std::runtime_error("JSON object (in list) created but of wrong type");
+      }
+      list.push_back(typedProp);
     }
     this->set(props, list);
   }
@@ -164,9 +193,9 @@ class Properties {
  public:
   // static methods
   template <typename JSONObjectT>
-  static auto from(const std::string& className, const std::vector<const Property*>& propTypes) -> deckgl::Properties {
-    typename JSONObjectT::super::Props parentProps;
-    return Properties{className, parentProps.getProperties(), propTypes};
+  static auto from(const std::string& className, const std::vector<const Property*>& properties) -> deckgl::Properties {
+    typename JSONObjectT::super parentProps;
+    return Properties{className, parentProps.getProperties(), properties};
   }
 
   // public members
@@ -196,8 +225,8 @@ inline bool JSONObject::hasProperty(const std::string& key) const { return this-
 template <class T>
 void JSONObject::setProperty(const std::string& key, const T& value) {
   std::cout << "setProperty: getProperties" << std::endl;
-  auto propTypes = this->getProperties();
-  if (!propTypes) {
+  auto properties = this->getProperties();
+  if (!properties) {
     throw std::logic_error("Props: No prop types found");
   }
   std::cout << "setProperty: getProperty" << std::endl;

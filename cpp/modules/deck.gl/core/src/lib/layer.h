@@ -31,6 +31,7 @@
 
 #include "./constants.h"
 #include "./layer-context.h"
+#include "attribute/attribute-manager.h"
 #include "deck.gl/json.h"  // {Component, PropTypes}
 #include "luma.gl/core.h"
 #include "math.gl/core.h"
@@ -55,14 +56,6 @@ namespace deckgl {
 
 // TODO - these should be imported from other files
 
-class AttributeManager {
- public:
-  void invalidate(const std::string& attributeName) {
-    std::cout << "AttributeManager: invalidating attribute " << attributeName << std::endl;
-  }
-  void invalidateAll() { std::cout << "AttributeManager: invalidating all attributes" << std::endl; }
-};
-
 // let pickingColorCache = new Uint8ClampedArray(0);
 class ColorRGBA {
  public:
@@ -72,7 +65,6 @@ class ColorRGBA {
 
 class Layer : public Component {
  public:
-  using super = Component;
   class Props;
   class ChangeFlags;
 
@@ -85,7 +77,7 @@ class Layer : public Component {
   std::shared_ptr<AttributeManager> attributeManager;
   std::list<std::shared_ptr<lumagl::Model>> models;
 
-  Layer(Layer::Props* props_) : props{props_}, attributeManager{new AttributeManager()} {}
+  Layer(Layer::Props* props_) : props{props_}, attributeManager{new AttributeManager(0, "layer-identifier")} {}
 
   // Update all props
   void setProps(Layer::Props* newProps);
@@ -290,6 +282,7 @@ class Layer : public Component {
 
 class Layer::Props : public Component::Props {
  public:
+  using super = Component::Props;
   static constexpr const char* getTypeName() { return "Layer"; }
 
   Props()

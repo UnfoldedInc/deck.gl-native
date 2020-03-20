@@ -21,6 +21,8 @@
 #include "./viewport.h"
 #include "math.gl/web-mercator.h"
 
+#include "math.gl/web-mercator.h"
+
 using namespace std;
 using namespace mathgl;
 using namespace deckgl;

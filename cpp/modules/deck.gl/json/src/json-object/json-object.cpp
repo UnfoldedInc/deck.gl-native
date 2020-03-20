@@ -20,7 +20,6 @@ auto Property::_getPropListFromJson(JSONObject* props, const Json::Value& jsonVa
                                     const JSONConverter* jsonConverter) const
     -> std::list<std::shared_ptr<JSONObject>> {
   auto typeHint = props->getProperties()->className;
-  std::cout << "getting prop list" << typeHint << std::endl;
   if (jsonValue.isArray()) {
     std::list<std::shared_ptr<JSONObject>> propsList;
     for (Json::Value::ArrayIndex i = 0; i < jsonValue.size(); ++i) {
@@ -49,11 +48,15 @@ Properties::Properties(const std::string& className_, const Properties* parentPr
   }
 }
 
-// Props
+// JSONObject
+
+JSONObject::JSONObject() {}
+
+JSONObject::~JSONObject() {}
 
 auto JSONObject::getProperties() const -> const Properties* {
-  static Properties propTypes{"Component", nullptr, std::vector<const Property*>{}};
-  return &propTypes;
+  static Properties properties{"Component", nullptr, std::vector<const Property*>{}};
+  return &properties;
 }
 
 void JSONObject::setPropertyFromJson(const std::string& key, const Json::Value& jsonValue,
@@ -64,8 +67,8 @@ void JSONObject::setPropertyFromJson(const std::string& key, const Json::Value& 
 
 auto JSONObject::getProperty(const std::string& key) const -> const Property* {
   // std::cout << "getProperties" << std::endl;
-  auto propTypes = this->getProperties();
-  if (!propTypes) {
+  auto properties = this->getProperties();
+  if (!properties) {
     throw std::logic_error("Component does not have property types");
   }
 
@@ -78,10 +81,10 @@ auto JSONObject::getProperty(const std::string& key) const -> const Property* {
   return propertyType;
 }
 
-auto JSONObject::equals(const JSONObject* other) -> bool {
-  auto propTypes = this->getProperties();
+auto JSONObject::equals(const JSONObject* other) const -> bool {
+  auto properties = this->getProperties();
 
-  for (auto element : propTypes->_propTypeMap) {
+  for (auto element : properties->_propTypeMap) {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.
@@ -94,16 +97,16 @@ auto JSONObject::equals(const JSONObject* other) -> bool {
   return true;
 }
 
-auto JSONObject::compare(const JSONObject* other) -> std::optional<std::string> {
-  auto propTypes = this->getProperties();
+auto JSONObject::compare(const JSONObject* other) const -> std::optional<std::string> {
+  auto properties = this->getProperties();
 
-  for (auto element : propTypes->_propTypeMap) {
+  for (auto element : properties->_propTypeMap) {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.
     const Property* propType = element.second;
     if (!propType->equals(this, other)) {
-      return std::string{propTypes->className} + propType->name + " changed";
+      return std::string{properties->className} + propType->name + " changed";
     }
   }
 

@@ -18,165 +18,142 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include './view.h'; // {Viewport}
+#include "./view.h"  // {View, View::Props}
+
+#include <vector>
 
 using namespace deckgl;
 
-View::View(Value props) {}
+const std::vector<const Property*> propTypeDefs = {
+    new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->x; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->x = value; }, 0},
+    new PropertyT<int>{"y", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->y; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->y = value; }, 0},
+    new PropertyT<int>{"width", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->width; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->width = value; },
+                       100},
+    new PropertyT<int>{
+        "height", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->height; },
+        [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->height = value; }, 100},
 
-View::View(
-  id = null,
+    new PropertyT<double>{
+        "fovy", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->fovy; },
+        [](JSONObject* props, double value) { return dynamic_cast<View::Props*>(props)->fovy = value; }, 1.0},
+    new PropertyT<double>{
+        "near", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->near; },
+        [](JSONObject* props, double value) { return dynamic_cast<View::Props*>(props)->near = value; }, 0.0},
+    new PropertyT<double>{
+        "far", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->far; },
+        [](JSONObject* props, double value) { return dynamic_cast<View::Props*>(props)->far = value; },
+        std::numeric_limits<double>::max()}};
 
-  // Window width/height in pixels (for pixel projection)
-  x = 0,
-  y = 0,
-  width = '100%',
-  height = '100%',
+auto View::Props::getProperties() const -> const Properties* {
+  static Properties properties{Properties::from<View::Props>("View", propTypeDefs)};
+  return &properties;
+}
 
-  // Viewport Options
-  projectionMatrix = null, // Projection matrix
-  fovy = 50, // Perspective projection parameters, used if projectionMatrix not supplied
-  near = 0.1, // Distance of near clipping plane
-  far = 1000, // Distance of far clipping plane
-  modelMatrix = null, // A model matrix to be applied to position, to match the layer props API
-
-  // A View can be a wrapper for a viewport instance
-  viewportInstance = null,
-
-  // Internal: Viewport Type
-  type = Viewport // TODO - default to WebMercator?
-) {
-  assert(!viewportInstance || viewportInstance instanceof Viewport);
-  this->viewportInstance = viewportInstance;
-
+View::View(View::Props* props) {
   // Id
-  this->id = id || this->constructor.displayName || 'view';
-  this->type = type;
+  // if (props->id.empty()) {
+  //   this->id = "view";
+  // }
+  // this->type = type;
 
-  this->props = Object.assign({}, props, {
-    id: this->id,
-    projectionMatrix,
-    fovy,
-    near,
-    far,
-    modelMatrix
-  });
+  // this->props = Object.assign({}, props, {id : this->id, projectionMatrix, fovy, near, far, modelMatrix});
 
-  // Extents
-  this->_parseDimensions({x, y, width, height});
+  // // Extents
+  // this->_parseDimensions({x, y, width, height});
 
-  // Bind methods for easy access
-  this->equals = this->equals.bind(this);
+  // // Bind methods for easy access
+  // this->equals = this->equals.bind(this);
 
-  Object.seal(this);
+  // Object.seal(this);
 }
-virtual ~View() {}
 
-View::equals(view) {
-  if (this === view) {
-    return true;
-  }
+View::~View() {}
 
-  // if `viewportInstance` is set, it is the only prop that is used
-  // Delegate to `Viewport.equals`
-  if (this->viewportInstance) {
-    return view.viewportInstance && this->viewportInstance.equals(view.viewportInstance);
-  }
+// bool View::equals(view) {
+//   return false
+//   // if (this == = view) {
+//   //   return true;
+//   // }
 
-  const viewChanged = deepEqual(this->props, view.props);
+//   // // if `viewportInstance` is set, it is the only prop that is used
+//   // // Delegate to `Viewport.equals`
+//   // if (this->viewportInstance) {
+//   //   return view.viewportInstance && this->viewportInstance.equals(view.viewportInstance);
+//   // }
 
-  return viewChanged;
-}
+//   // const viewChanged = deepEqual(this->props, view.props);
+
+//   // return viewChanged;
+// }
 
 // Build a `Viewport` from a view descriptor
-// TODO - add support for autosizing viewports using width and height
-View::makeViewport({width, height, viewState}) {
-  if (this->viewportInstance) {
-    return this->viewportInstance;
-  }
+// View::makeViewport({width, height, viewState}) {
+//   if (this->viewportInstance) {
+//     return this->viewportInstance;
+//   }
 
-  viewState = this->filterViewState(viewState);
+//   viewState = this->filterViewState(viewState);
 
-  // Resolve relative viewport dimensions
-  const viewportDimensions = this->getDimensions({width, height});
-  const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
-  return this->_getViewport(props);
-}
+//   // Resolve relative viewport dimensions
+//   const viewportDimensions = this->getDimensions({width, height});
+//   const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
+//   return this->_getViewport(props);
+// }
 
-View::getViewStateId() {
-  switch (typeof this->props.viewState) {
-    case 'string':
-      // if View.viewState is a string, return it
-      return this->props.viewState;
+// View::getViewStateId() {
+//   switch (typeof this->props.viewState) {
+//     case 'string':
+//       // if View.viewState is a string, return it
+//       return this->props.viewState;
 
-    case 'object':
-      // If it is an object, return its id component
-      return this->props.viewState && this->props.viewState.id;
+//     case 'object':
+//       // If it is an object, return its id component
+//       return this->props.viewState && this->props.viewState.id;
 
-    default:
-      return this->id;
-  }
-}
+//     default:
+//       return this->id;
+//   }
+// }
 
 // Allows view to override (or completely define) viewState
-View::filterViewState(viewState) {
-  if (this->props.viewState && typeof this->props.viewState === 'object') {
-    // If we have specified an id, then intent is to override,
-    // If not, completely specify the view state
-    if (!this->props.viewState.id) {
-      return this->props.viewState;
-    }
+// View::filterViewState(viewState) {
+//   if (this->props.viewState&& typeof this->props.viewState == = 'object') {
+//     // If we have specified an id, then intent is to override,
+//     // If not, completely specify the view state
+//     if (!this->props.viewState.id) {
+//       return this->props.viewState;
+//     }
 
-    // Merge in all props from View's viewState, except id
-    const newViewState = Object.assign({}, viewState);
-    for (const key in this->props.viewState) {
-      if (key !== 'id') {
-        newViewState[key] = this->props.viewState[key];
-      }
-    }
-    return newViewState;
-  }
+//     // Merge in all props from View's viewState, except id
+//     const newViewState = Object.assign({}, viewState);
+//     for (const key in this->props.viewState) {
+//       if (key != = 'id') {
+//         newViewState[key] = this->props.viewState[key];
+//       }
+//     }
+//     return newViewState;
+//   }
 
-  return viewState;
-}
+//   return viewState;
+// }
 
 // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
-View::getDimensions({width, height}) {
-  return {
-    x: getPosition(this->_x, width),
-    y: getPosition(this->_y, height),
-    width: getPosition(this->_width, width),
-    height: getPosition(this->_height, height)
-  };
-}
-
-// Used by sub classes to resolve controller props
-View::_getControllerProps(defaultOpts) {
-  let opts = this->props.controller;
-
-  if (!opts) {
-    return null;
-  }
-  if (opts === true) {
-    return defaultOpts;
-  }
-  if (typeof opts === 'function') {
-    opts = {type: opts};
-  }
-  return Object.assign({}, defaultOpts, opts);
-}
-
-// Overridable method
-View::_getViewport(props) {
-  // Get the type of the viewport
-  const {type: ViewportType} = this;
-  return new ViewportType(props);
-}
+// View::getDimensions({width, height}) {
+//   return {
+//     x : getPosition(this->_x, width),
+//     y : getPosition(this->_y, height),
+//     width : getPosition(this->_width, width),
+//     height : getPosition(this->_height, height)
+//   };
+// }
 
 // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
-View::_parseDimensions({x, y, width, height}) {
-  this->_x = parsePosition(x);
-  this->_y = parsePosition(y);
-  this->_width = parsePosition(width);
-  this->_height = parsePosition(height);
-}
+// View::_parseDimensions({x, y, width, height}) {
+//   this->_x = parsePosition(x);
+//   this->_y = parsePosition(y);
+//   this->_width = parsePosition(width);
+//   this->_height = parsePosition(height);
+// }
