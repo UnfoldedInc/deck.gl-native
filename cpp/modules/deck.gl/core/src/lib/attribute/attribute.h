@@ -18,21 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LOADERSGL_JSON_JSON_CONVERTER_H
-#define LOADERSGL_JSON_JSON_CONVERTER_H
+#ifndef DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#define DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
 
-#include <arrow/io/interfaces.h>
-#include <arrow/table.h>
+#include <arrow/array.h>
 
-namespace loadersgl {
+#include <memory>
 
-class JSONLoader {
+#include "arrow/src/table-row.h"
+
+namespace deckgl {
+
+using namespace deckgl;
+
+struct AttributeDescriptor {
  public:
-  JSONLoader() {}
+  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& defaultValue)
+      : name{std::move(name)}, defaultValue{defaultValue} {}
 
-  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
+  std::string name;
+  // TODO(ilija): We need to get a valid arrow type somehow in order to specify a schema, revisit
+  std::shared_ptr<arrow::DataType> defaultValue;
+
+  // TODO(ilija): This doesn't work, and we can't really create a class template as we wouldn't be able to make use of
+  // it in attribute manager
+  //  template<typename ReturnValue>
+  //  std::function<ReturnValue(TableRow)> accessor;
 };
 
-}  // namespace loadersgl
+}  // namespace deckgl
 
-#endif  // LOADERSGL_JSON_JSON_CONVERTER_H
+#endif  // DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H

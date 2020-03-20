@@ -18,21 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LOADERSGL_JSON_JSON_CONVERTER_H
-#define LOADERSGL_JSON_JSON_CONVERTER_H
+#ifndef DECKGL_CORE_LIB_ATTRIBUTE_TABLE_TABLE_HANDLER_H
+#define DECKGL_CORE_LIB_ATTRIBUTE_TABLE_TABLE_HANDLER_H
 
-#include <arrow/io/interfaces.h>
+#include <memory>
+
 #include <arrow/table.h>
+#include <arrow/array.h>
 
-namespace loadersgl {
-
-class JSONLoader {
+class TableHandler {
  public:
-  JSONLoader() {}
+  TableHandler(const std::shared_ptr<arrow::Table>& table): _table{table} {}
 
-  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
+  auto getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array>;
+  auto getChunkIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int;
+
+ private:
+  std::shared_ptr<arrow::Table> _table;
+
 };
 
-}  // namespace loadersgl
-
-#endif  // LOADERSGL_JSON_JSON_CONVERTER_H
+#endif  // DECKGL_CORE_LIB_ATTRIBUTE_TABLE_TABLE_HANDLER_H
