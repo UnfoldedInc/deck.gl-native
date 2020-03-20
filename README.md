@@ -74,11 +74,11 @@ Notes:
 ../vcpkg install jsoncpp
 ```
 
-### ranges v3
+### range v3
 
 Used as a placeholder until clang/gcc compilers become C++20 compatible.
 
-- [Google Test](https://github.com/ericniebler/range-v3)
+- [Range v3](https://github.com/ericniebler/range-v3)
 
 ```sh
 ../vcpkg install range-v3
