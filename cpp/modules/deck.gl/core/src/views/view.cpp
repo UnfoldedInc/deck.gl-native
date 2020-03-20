@@ -26,15 +26,15 @@ using namespace deckgl;
 
 const std::vector<const Property*> propTypeDefs = {
     new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->x; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->x = value; }, 1.0},
+                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->x = value; }, 0},
     new PropertyT<int>{"y", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->y; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->y = value; }, 1.0},
+                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->y = value; }, 0},
     new PropertyT<int>{"width", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->width; },
                        [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->width = value; },
-                       1.0},
+                       100},
     new PropertyT<int>{
         "height", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->height; },
-        [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->height = value; }, 1.0},
+        [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->height = value; }, 100},
 
     new PropertyT<double>{
         "fovy", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->fovy; },
