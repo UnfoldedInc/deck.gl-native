@@ -28,7 +28,7 @@ using namespace mathgl;
 using namespace deckgl;
 
 auto const LNGLAT_TOLERANCE = 1e-6;
-auto const ALT_TOLERANCE = 1e-5;
+// auto const ALT_TOLERANCE = 1e-5;
 auto const OFFSET_TOLERANCE = 1e-5;
 
 const WebMercatorViewport TEST_VIEWPORTS[] = {WebMercatorViewport(800, 600, 38, -122, 11, 0, 0),
