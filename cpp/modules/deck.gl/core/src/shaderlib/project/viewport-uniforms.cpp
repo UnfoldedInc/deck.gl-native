@@ -27,6 +27,24 @@ namespace deckgl {
 
 auto const DEFAULT_PIXELS_PER_UNIT2 = Vector3<double>();
 
+// TODO: consider finding another way rather than these structs. Perhaps make the functions
+// that build them constructors?
+struct OffsetOrigin {
+  // TODO: temporarily replicating the JS logic of this possibly being null
+  std::optional<mathgl::Vector3<double>> geospatialOrigin;
+  mathgl::Vector3<double> shaderCoordinateOrigin;
+  bool offsetMode;
+};
+
+struct MatrixAndOffset {
+  mathgl::Matrix4<double> viewMatrix;
+  mathgl::Matrix4<double> viewProjectionMatrix;
+  mathgl::Vector4<double> projectionCenter;
+  mathgl::Vector3<double> cameraPosCommon;
+  mathgl::Vector3<double> shaderCoordinateOrigin;
+  std::optional<mathgl::Vector3<double>> geospatialOrigin;
+};
+
 auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
     -> OffsetOrigin {
   auto shaderCoordinateOrigin = coordinateOrigin;
