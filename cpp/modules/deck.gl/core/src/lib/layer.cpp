@@ -114,8 +114,8 @@ class LayerProperties {
 //   this->setNeedsRedraw();
 // }
 
-void Layer::setProps(Layer::Props* newProps) {
-  this->props = newProps;
+void Layer::setProps(std::shared_ptr<Layer::Props> newProps) {
+  // this->props = newProps;
   this->setNeedsUpdate("Props updated");
   this->setNeedsRedraw("Props updated");
 }

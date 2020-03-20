@@ -22,6 +22,8 @@
 #define DECKGL_LAYERS_LINE_LAYER_H
 
 #include <limits>
+#include <memory>
+#include <string>
 
 #include "deck.gl/core.h"  // {Layer, project32, picking}
 // import GL from '@luma.gl/constants';
@@ -32,6 +34,8 @@ namespace deckgl {
 class LineLayer : public Layer {
  public:
   class Props;
+  explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
+  auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
  protected:
   void initializeState() override;
@@ -48,10 +52,10 @@ class LineLayer::Props : public Layer::Props {
   using super = Layer::Props;
   static constexpr const char *getTypeName() { return "LineLayer"; }
 
-  std::string widthUnits;  // : 'pixels',
-  float widthScale;        //  {type: 'number', value: 1, min: 0},
-  float widthMinPixels;    //  {type: 'number', value: 0, min: 0},
-  float widthMaxPixels;    //  {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+  std::string widthUnits;  // 'pixels',
+  float widthScale;        // {type: 'number', value: 1, min: 0},
+  float widthMinPixels;    // {type: 'number', value: 0, min: 0},
+  float widthMaxPixels;    // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
 
   /*
     // std::function<(auto row) -> Vector3<double>> getSourcePosition; //

@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include "./viewport-uniforms.h"
+
 #include <cmath>
 
 using namespace mathgl;

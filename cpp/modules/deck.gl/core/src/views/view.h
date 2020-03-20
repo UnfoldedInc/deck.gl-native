@@ -39,7 +39,7 @@ class View : public Component {
  public:
   class Props;
 
-  explicit View(Props *props);
+  explicit View(std::shared_ptr<View::Props> props);
   ~View();
 
   bool equals(const View *view);
@@ -72,6 +72,9 @@ class View::Props : public Component::Props {
   using super = Component::Props;
   static constexpr const char *getTypeName() { return "View"; }
   auto getProperties() const -> const Properties * override;
+  virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> View * {
+    return new View{std::dynamic_pointer_cast<View::Props>(props)};
+  }
 
   std::string id;
 

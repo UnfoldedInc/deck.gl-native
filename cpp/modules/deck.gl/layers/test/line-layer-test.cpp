@@ -47,4 +47,12 @@ TEST(LineLayer, PropAccess) {
   EXPECT_FALSE(propertyTypes->hasProp("radiusScale"));
 }
 
+TEST(LineLayer, Create) {
+  auto layerProps = std::shared_ptr<LineLayer::Props>(new LineLayer::Props());
+
+  auto lineLayer = new LineLayer(layerProps);
+
+  EXPECT_EQ(lineLayer->props(), layerProps);
+}
+
 }  // namespace

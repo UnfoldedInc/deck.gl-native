@@ -22,6 +22,7 @@
 #define DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 
 #include <optional>
+
 #include "deck.gl/core.h"
 #include "math.gl/core.h"
 

@@ -77,10 +77,12 @@ class Layer : public Component {
   std::shared_ptr<AttributeManager> attributeManager;
   std::list<std::shared_ptr<lumagl::Model>> models;
 
-  Layer(Layer::Props* props_) : props{props_}, attributeManager{new AttributeManager(0, "layer-identifier")} {}
+  explicit Layer(std::shared_ptr<Layer::Props> props)
+      : Component{std::dynamic_pointer_cast<Component::Props>(props)},
+        attributeManager{new AttributeManager(0, "layer-identifier")} {}
 
   // Update all props
-  void setProps(Layer::Props* newProps);
+  void setProps(std::shared_ptr<Layer::Props> newProps);
 
   void triggerUpdate(const std::string& attributeName);
 

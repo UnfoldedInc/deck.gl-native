@@ -66,19 +66,20 @@ class Deck : public Component {
  public:
   class Props;
 
-  Props *props;
+  auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
 
   int width;   // "read-only", auto-updated from canvas
   int height;  // "read-only", auto-updated from canvas
 
   // Maps view descriptors to vieports, rebuilds when width/height/viewState/views change
-  // std::shared_ptr<ViewManager> viewManager;
-  std::shared_ptr<LayerManager> layerManager;
+  std::shared_ptr<ViewManager> viewManager{new ViewManager()};
+  std::shared_ptr<LayerManager> layerManager;  // {new LayerManager()};
+  std::shared_ptr<ViewState> viewState;        // {new LayerManager()};
   // effectManager = nullptr;
   // deckRenderer = nullptr;
   // deckPicker = nullptr;
 
-  bool _needsRedraw;
+  std::optional<std::string> _needsRedraw;
   void *_pickRequest = nullptr;
   // Pick and store the object under the pointer on `pointerdown`.
   // This object is reused for subsequent `onClick` and `onDrag*`
@@ -89,7 +90,7 @@ class Deck : public Component {
   // this->interactiveState = {
   //   isDragging: false // Whether the cursor is down
 
-  explicit Deck(Deck::Props *props);
+  explicit Deck(std::shared_ptr<Deck::Props> props);
   ~Deck();
 
   void setProps(Deck::Props *);
@@ -100,7 +101,7 @@ class Deck : public Component {
   // Returns `false` or a string summarizing the redraw reason
   // opts.clearRedrawFlags (Boolean) - clear the redraw flag. Default
   // `true`
-  auto needsRedraw(bool clearRedrawFlags = false) -> std::string;
+  auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
   void redraw(bool force = false);
 
@@ -131,6 +132,7 @@ class Deck : public Component {
   }
   */
 
+ private:
   // Private Methods
   // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
   auto _getViewState() -> ViewState *;  // { return this->props->viewState || this->viewState; }

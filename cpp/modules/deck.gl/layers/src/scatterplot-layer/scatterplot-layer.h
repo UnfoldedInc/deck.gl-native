@@ -33,6 +33,9 @@ namespace deckgl {
 class ScatterplotLayer : public Layer {
  public:
   class Props;
+  explicit ScatterplotLayer(std::shared_ptr<ScatterplotLayer::Props> props)
+      : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
+  auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
  protected:
   void initializeState() override;

@@ -187,127 +187,68 @@ PropTypes.number]), touchAction: PropTypes.string,
 
 // Deck class
 
-Deck::Deck(Deck::Props* props_)
-    : props{props_},
-      width{0},   // "read-only", auto-updated from canvas
-      height{0},  // "read-only", auto-updated from canvas
+Deck::Deck(std::shared_ptr<Deck::Props> props)
+    : Component(props),
+      width{100},
+      height{100},
 
       // Maps view descriptors to vieports, rebuilds when
       // width/height/viewState/views change
-      // viewManager{nullptr},
-      // layerManager{nullptr},
+      viewManager{std::make_shared<ViewManager>()},
+      // layerManager{std::make_shared<LayerManager>()},
       // effectManager{nullptr}, deckRenderer{nullptr}, deckPicker{nullptr}
-      _needsRedraw{true},
-      _pickRequest{nullptr},
-      _lastPointerDownInfo{nullptr}  // viewState{nullptr}  // Internal view state if no callback is supplied
-{
-  /*
-  // this->interactiveState = {
-  //   isDragging: false // Whether the cursor is down
-  // };
+      _needsRedraw{"Initial render"} {
+  // this->animationLoop = this->_createAnimationLoop(props);
 
-  if (props->viewState && props->initialViewState) {
-    log.warn(
-        'View state tracking is disabled. Use either `initialViewState` for auto update or `viewState` for manual
-  update.')();
-  }
-  if (getBrowser() == = 'IE') {
-    log.warn('IE 11 support will be deprecated in v8.0')();
-  }
+  this->setProps(props.get());
 
-  if (!props->gl) {
-    // Note: LayerManager creation deferred until gl context
-    // available
-    if (typeof document != = 'undefined') {
-      this->canvas = this->_createCanvas(props);
-    }
-  }
-  this->animationLoop = this->_createAnimationLoop(props);
-
-  // this->stats = new Stats('deck.gl');
-  // this->metrics = {
-  //   fps: 0,
-  //   setPropsTime: 0,
-  //   updateAttributesTime: 0,
-  //   framesRedrawn: 0,
-  //   pickTime: 0,
-  //   pickCount: 0,
-  //   gpuTime: 0,
-  //   gpuTimePerFrame: 0,
-  //   cpuTime: 0,
-  //   cpuTimePerFrame: 0,
-  //   bufferMemory: 0,
-  //   textureMemory: 0,
-  //   renderbufferMemory: 0,
-  //   gpuMemory: 0
-  // };
-  // this->_metricsCounter = 0;
-
-  this->setProps(props);
-
-  this->animationLoop.start();
-  */
+  // this->animationLoop.start();
 }
 
 Deck::~Deck() {
   // this->animationLoop.stop();
-  // this->animationLoop = nullptr;
-  // this->_lastPointerDownInfo = nullptr;
-
-  // if (this->layerManager) {
-  //   this->layerManager;
-  //   delete this->viewManager;
-  //   // delete this->effectManager;
-  // delete this->deckRenderer;
-  // delete this->deckPicker;
-  // delete this->eventManager;
   // this->tooltip.remove();
-  // this->tooltip = nullptr;
-  // }
-
-  // if (!this->props->canvas && !this->props->gl && this->canvas) {
-  //   // remove internally created canvas
-  //   this->canvas.parentElement.removeChild(this->canvas);
-  //   this->canvas = nullptr;
-  // }
 }
 
 void Deck::setProps(Deck::Props* props) {
-  /*
   // this->stats.get('setProps Time').timeStart();
 
-  if (props->initialViewState && !deepEqual(this->props->initialViewState, props->initialViewState)) {
-    // Overwrite internal view state
-    // this->viewState = props->initialViewState;
+  // ViewState tracking
+  if (props->initialViewState) {
+    if (!this->props()->initialViewState->equals(this->props()->initialViewState)) {
+      // Overwrite internal view state
+      this->viewState = props->initialViewState;
+    }
   }
 
-  // Merge with existing props
-  Object.assign(this->props, props);
+  if (props->viewState) {
+    if (!this->props()->viewState->equals(this->props()->viewState)) {
+      // Overwrite internal view state
+      this->viewState = props->viewState;
+    }
+  }
 
   // Update CSS size of canvas
-  this->_setCanvasSize(this->props);
-
-  // We need to overwrite CSS style width and height with actual,
-  // numeric values
-  const resolvedProps = Object.create(this->props);
-  Object.assign(
-      resolvedProps,
-      {views : this->_getViews(), width : this->width, height : this->height, viewState : this->_getViewState()});
 
   // Update the animation loop
-  this->animationLoop.setProps(resolvedProps);
 
-  // If initialized, update sub manager props
-  if (this->layerManager) {
-    this->viewManager.setProps(resolvedProps);
-    this->layerManager.setProps(resolvedProps);
-    this->effectManager.setProps(resolvedProps);
-    this->deckRenderer.setProps(resolvedProps);
-    this->deckPicker.setProps(resolvedProps);
+  // Update layerManager
+  if (!props->layers.empty()) {
+    this->layerManager->setLayersFromProps(props->layers);
   }
 
-  // this->stats.get('setProps Time').timeEnd();
-  */
+  // Update viewManager
+  this->viewManager->setWidth(props->width);
+  this->viewManager->setHeight(props->height);
+  this->viewManager->setViewsFromProps(props->views);
+  this->viewManager->setViewState(this->viewState);
+
+  // Update manager props
+  // this->effectManager.setProps(resolvedProps);
+  // this->deckRenderer.setProps(resolvedProps);
+  // this->deckPicker.setProps(resolvedProps);
+
+  // super::setProps();
 }
 
 // Public API
@@ -315,28 +256,30 @@ void Deck::setProps(Deck::Props* props) {
 // Returns `false` or a string summarizing the redraw reason
 // opts.clearRedrawFlags (Boolean) - clear the redraw flag. Default
 // `true`
-auto Deck::needsRedraw(bool clearRedrawFlags) -> std::string {
-  /*
-  if (this->props->_animate) {
-    return 'Deck._animate';
+auto Deck::needsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
+  // if (this->props->_animate) {
+  //   return "Deck._animate";
+  // }
+
+  auto redraw = this->_needsRedraw;
+
+  if (clearRedrawFlags) {
+    this->_needsRedraw = std::nullopt;
   }
 
-  bool redraw = this->_needsRedraw;
-
-  if (opts.clearRedrawFlags) {
-    this->_needsRedraw = false;
-  }
-
-  auto viewManagerNeedsRedraw = this->viewManager->needsRedraw(opts);
-  auto layerManagerNeedsRedraw = this->layerManager->needsRedraw(opts);
+  // Query all managers to make sure we clear all flags
+  auto viewManagerNeedsRedraw = this->viewManager->getNeedsRedraw(clearRedrawFlags);
+  auto layerManagerNeedsRedraw = this->layerManager->needsRedraw(clearRedrawFlags);
   // auto effectManagerNeedsRedraw = this->effectManager->needsRedraw(opts);
   // auto deckRendererNeedsRedraw = this->deckRenderer->needsRedraw(opts);
 
-  redraw = redraw || viewManagerNeedsRedraw || layerManagerNeedsRedraw || effectManagerNeedsRedraw ||
-           deckRendererNeedsRedraw;
+  if (viewManagerNeedsRedraw) {
+    return viewManagerNeedsRedraw;
+  }
+  if (layerManagerNeedsRedraw) {
+    return layerManagerNeedsRedraw;
+  }
   return redraw;
-*/
-  return "not implemented";
 }
 
 void Deck::redraw(bool force) {

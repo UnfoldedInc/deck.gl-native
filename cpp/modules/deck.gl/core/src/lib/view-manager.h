@@ -99,9 +99,12 @@ class ViewManager {
 
   // Set the size of the window
   void setSize(int width, int height);
+  void setWidth(int width);
+  void setHeight(int height);
 
   // Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called)
   void setViews(const std::list<std::shared_ptr<View>> &views);
+  void setViewsFromProps(const std::list<std::shared_ptr<View::Props>> &viewProps);
 
   // Update the view state
   void setViewState(std::shared_ptr<ViewState> viewStates);
