@@ -69,3 +69,29 @@ WebMercatorViewport::WebMercatorViewport(int width, int height, double latitude,
 
   // this->_subViewports = repeat ? [] : null;
 }
+
+auto WebMercatorViewport::addMetersToLngLat(mathgl::Vector3<double> lngLatZ, mathgl::Vector3<double> xyz)
+    -> mathgl::Vector3<double> {
+  return mathgl::addMetersToLngLat(lngLatZ, xyz);
+}
+
+auto WebMercatorViewport::addMetersToLngLat(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> xy)
+    -> mathgl::Vector2<double> {
+  return mathgl::addMetersToLngLat(lngLat, xy);
+}
+
+auto WebMercatorViewport::getMapCenterByLngLatPosition(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> pos)
+    -> mathgl::Vector2<double> {
+  auto fromLocation = pixelsToWorld(pos, this->pixelUnprojectionMatrix);
+  auto toLocation = this->projectFlat(lngLat);
+
+  auto translate = toLocation - fromLocation;
+  auto newCenter = this->center.toVector2() + translate;
+
+  return this->unprojectFlat(newCenter);
+}
+
+auto fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding = 0,
+               mathgl::Vector2<int> offset = mathgl::Vector2<int>()) {
+  throw new std::logic_error("fitBounds not supported");
+}

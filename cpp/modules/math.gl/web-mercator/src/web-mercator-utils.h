@@ -176,8 +176,8 @@ auto worldToPixels(Vector2<double> xy, Matrix4<double> pixelProjectionMatrix) ->
  *    targetZ is used as the elevation plane to unproject onto
  * @return {Array} [x, y, Z] flat coordinates on 512*512 Mercator Zoom 0 tile.
  */
-auto pixelsToWorld(Vector3<double> xyz, Matrix4<double> pixelUnprojectionMatrix, double targetZ) -> Vector3<double>;
-auto pixelsToWorld(Vector2<double> xy, Matrix4<double> pixelUnprojectionMatrix, double targetZ) -> Vector2<double>;
+auto pixelsToWorld(Vector3<double> xyz, Matrix4<double> pixelUnprojectionMatrix, double targetZ = 0) -> Vector3<double>;
+auto pixelsToWorld(Vector2<double> xy, Matrix4<double> pixelUnprojectionMatrix, double targetZ = 0) -> Vector2<double>;
 
 }  // namespace mathgl
 
