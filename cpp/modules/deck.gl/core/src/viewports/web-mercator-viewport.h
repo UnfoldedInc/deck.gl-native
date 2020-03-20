@@ -40,81 +40,46 @@ class WebMercatorViewport : public Viewport {
                       double farZMultiplier = 1.01, bool orthographic = false, bool repeat = false,
                       double worldOffset = 0);
 
-  // get subViewports() {
-  //   if (this->_subViewports && !this->_subViewports.length) {
-  //     // Cache sub viewports so that we only calculate them once
-  //     const topLeft = this->unproject([0, 0]);
-  //     const topRight = this->unproject([this->width, 0]);
-  //     const bottomLeft = this->unproject([0, this->height]);
-  //     const bottomRight = this->unproject([this->width, this->height]);
+  // elided subViewports feature
+  // get subViewports()
 
-  //     const minLon = Math.min(topLeft[0], topRight[0], bottomLeft[0], bottomRight[0]);
-  //     const maxLon = Math.max(topLeft[0], topRight[0], bottomLeft[0], bottomRight[0]);
+  /**
+   * Add a meter delta to a base lnglat coordinate, returning a new lnglat array
+   *
+   * Note: Uses simple linear approximation around the viewport center
+   * Error increases with size of offset (roughly 1% per 100km)
+   *
+   * @param {[Number,Number]|[Number,Number,Number]) lngLatZ - base coordinate
+   * @param {[Number,Number]|[Number,Number,Number]) xyz - array of meter deltas
+   * @return {[Number,Number]|[Number,Number,Number]) array of [lng,lat,z] deltas
+   */
+  auto addMetersToLngLat(mathgl::Vector3<double> lngLatZ, mathgl::Vector3<double> xyz) -> mathgl::Vector3<double>;
+  auto addMetersToLngLat(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> xy) -> mathgl::Vector2<double>;
 
-  //     const minOffset = Math.floor((minLon + 180) / 360);
-  //     const maxOffset = Math.ceil((maxLon - 180) / 360);
+  /**
+   * Get the map center that place a given [lng, lat] coordinate at screen
+   * point [x, y]
+   *
+   * @param {Array} lngLat - [lng,lat] coordinates
+   *   Specifies a point on the sphere.
+   * @param {Array} pos - [x,y] coordinates
+   *   Specifies a point on the screen.
+   * @return {Array} [lng,lat] new map center.
+   */
+  auto getMapCenterByLngLatPosition(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> pos)
+      -> mathgl::Vector2<double>;
 
-  //     for (let x = minOffset; x <= maxOffset; x++) {
-  //       const offsetViewport = x
-  //         ? new WebMercatorViewport({
-  //             ...this,
-  //             worldOffset: x
-  //           })
-  //         : this;
-  //       this->_subViewports.push(offsetViewport);
-  //     }
-  //   }
-  //   return this->_subViewports;
-  // }
-
-  // /**
-  //  * Add a meter delta to a base lnglat coordinate, returning a new lnglat array
-  //  *
-  //  * Note: Uses simple linear approximation around the viewport center
-  //  * Error increases with size of offset (roughly 1% per 100km)
-  //  *
-  //  * @param {[Number,Number]|[Number,Number,Number]) lngLatZ - base coordinate
-  //  * @param {[Number,Number]|[Number,Number,Number]) xyz - array of meter deltas
-  //  * @return {[Number,Number]|[Number,Number,Number]) array of [lng,lat,z] deltas
-  //  */
-  // addMetersToLngLat(lngLatZ, xyz) {
-  //   return addMetersToLngLat(lngLatZ, xyz);
-  // }
-
-  // /**
-  //  * Get the map center that place a given [lng, lat] coordinate at screen
-  //  * point [x, y]
-  //  *
-  //  * @param {Array} lngLat - [lng,lat] coordinates
-  //  *   Specifies a point on the sphere.
-  //  * @param {Array} pos - [x,y] coordinates
-  //  *   Specifies a point on the screen.
-  //  * @return {Array} [lng,lat] new map center.
-  //  */
-  // getMapCenterByLngLatPosition({lngLat, pos}) {
-  //   const fromLocation = pixelsToWorld(pos, this->pixelUnprojectionMatrix);
-  //   const toLocation = this->projectFlat(lngLat);
-
-  //   const translate = vec2.add([], toLocation, vec2.negate([], fromLocation));
-  //   const newCenter = vec2.add([], this->center, translate);
-
-  //   return this->unprojectFlat(newCenter);
-  // }
-
-  // /**
-  //  * Returns a new viewport that fit around the given rectangle.
-  //  * Only supports non-perspective mode.
-  //  * @param {Array} bounds - [[lon, lat], [lon, lat]]
-  //  * @param {Number} [options.padding] - The amount of padding in pixels to add to the given bounds.
-  //  * @param {Array} [options.offset] - The center of the given bounds relative to the map's center,
-  //  *    [x, y] measured in pixels.
-  //  * @returns {WebMercatorViewport}
-  //  */
-  // fitBounds(bounds, options = {}) {
-  //   const {width, height} = this;
-  //   const {longitude, latitude, zoom} = fitBounds(Object.assign({width, height, bounds}, options));
-  //   return new WebMercatorViewport({width, height, longitude, latitude, zoom});
-  // }
+  /**
+   * Returns a new viewport that fit around the given rectangle.
+   * Only supports non-perspective mode.
+   * @param {Array} bounds - [[lon, lat], [lon, lat]]
+   * @param {Number} [options.padding] - The amount of padding in pixels to add to the given bounds.
+   * @param {Array} [options.offset] - The center of the given bounds relative to the map's center,
+   *    [x, y] measured in pixels.
+   * @returns {WebMercatorViewport}
+   */
+  auto fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding = 0,
+                 mathgl::Vector2<int> offset = mathgl::Vector2<int>());
 };
 
 }  // namespace deckgl

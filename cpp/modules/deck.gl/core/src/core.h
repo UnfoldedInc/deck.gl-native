@@ -26,10 +26,11 @@
 #include "./lib/deck.h"       // {Deck}
 #include "./lib/layer.h"      // {Layer, Layer::Props}
 #include "./shaderlib/project/viewport-uniforms.h"
-#include "./viewports/viewport.h"  // {Viewport}
-#include "./views/map-view.h"      // {MapView, MapView::Props}
-#include "./views/view-state.h"    // {ViewState, ViewState::Props}
-#include "./views/view.h"          // {View, View::Props}
+#include "./viewports/viewport.h"               // {Viewport}
+#include "./viewports/web-mercator-viewport.h"  // {WebMercatorViewport}
+#include "./views/map-view.h"                   // {MapView, MapView::Props}
+#include "./views/view-state.h"                 // {ViewState, ViewState::Props}
+#include "./views/view.h"                       // {View, View::Props}
 
 /*
 // Intialize globals, check version

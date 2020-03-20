@@ -28,7 +28,8 @@ using namespace std;
 using namespace mathgl;
 using namespace deckgl;
 
-ViewMatrixOptions calculateViewMatrixOptions(int height, double pitch, double bearing, double altitude, double zoom) {
+ViewMatrixOptions calculateViewMatrixOptions(int height, double longitude, double latitude, double pitch,
+                                             double bearing, double altitude, double zoom) {
   auto scale = pow(2, zoom);
   height = height == 0 ? 1 : height;
 
@@ -38,7 +39,16 @@ ViewMatrixOptions calculateViewMatrixOptions(int height, double pitch, double be
   // transforms much more useful.
   auto viewMatrixUncentered = getViewMatrix(height, pitch, bearing, altitude, scale);
 
-  return ViewMatrixOptions(viewMatrixUncentered);
+  auto opts = ViewMatrixOptions();
+  opts.viewMatrix = viewMatrixUncentered;
+  opts.isGeospatial = true;  // TODO ???
+  opts.longitude = longitude;
+  opts.latitude = latitude;
+  opts.zoom = zoom;
+  opts.position = Vector3<double>();
+  // opts.modelMatrix // TODO
+  // opts.distanceScales // TODO
+  return opts;
 }
 
 ProjectionMatrixOptions calculateProjectionMatrixOptions(int width, int height, double pitch, double altitude,
@@ -58,9 +68,13 @@ WebMercatorViewport::WebMercatorViewport(int width, int height, double latitude,
                                          double farZMultiplier, bool orthographic, bool repeat, double worldOffset
                                          // Silently allow apps to send in 0,0 to facilitate isomorphic render etc
                                          )
-    : Viewport("web-mercator-viewport", calculateViewMatrixOptions(height, pitch, bearing, altitude, zoom),
+    : Viewport("web-mercator-viewport",
+               calculateViewMatrixOptions(height, longitude, latitude, pitch, bearing, altitude, zoom),
                calculateProjectionMatrixOptions(width, height, pitch, altitude, nearZMultiplier, farZMultiplier), 0, 0,
                width == 0 ? 1 : width, height == 0 ? 1 : height) {
+  // TODO: Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
+  // but that can't be done in C++. Perhaps just call a non-virtual _init method instead?
+
   // TODO
   // if (worldOffset) {
   //   const viewOffset = new Matrix4().translate([512 * worldOffset, 0, 0]);
@@ -68,4 +82,30 @@ WebMercatorViewport::WebMercatorViewport(int width, int height, double latitude,
   // }
 
   // this->_subViewports = repeat ? [] : null;
+}
+
+auto WebMercatorViewport::addMetersToLngLat(mathgl::Vector3<double> lngLatZ, mathgl::Vector3<double> xyz)
+    -> mathgl::Vector3<double> {
+  return mathgl::addMetersToLngLat(lngLatZ, xyz);
+}
+
+auto WebMercatorViewport::addMetersToLngLat(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> xy)
+    -> mathgl::Vector2<double> {
+  return mathgl::addMetersToLngLat(lngLat, xy);
+}
+
+auto WebMercatorViewport::getMapCenterByLngLatPosition(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> pos)
+    -> mathgl::Vector2<double> {
+  auto fromLocation = pixelsToWorld(pos, this->pixelUnprojectionMatrix);
+  auto toLocation = this->projectFlat(lngLat);
+
+  auto translate = toLocation - fromLocation;
+  auto newCenter = this->center.toVector2() + translate;
+
+  return this->unprojectFlat(newCenter);
+}
+
+auto fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding = 0,
+               mathgl::Vector2<int> offset = mathgl::Vector2<int>()) {
+  throw new std::logic_error("fitBounds not supported");
 }

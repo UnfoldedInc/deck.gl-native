@@ -80,7 +80,7 @@ class Viewport {
 
   mathgl::Matrix4<double> pixelProjectionMatrix;
   mathgl::Matrix4<double> viewportMatrix;
-  mathgl::Matrix4<double> pixelUnrpojectionMatrix;
+  mathgl::Matrix4<double> pixelUnprojectionMatrix;
 
   Viewport(const std::string& id, const mathgl::ViewMatrixOptions& viewMatrixOptions,
            const mathgl::ProjectionMatrixOptions& projectionMatrixOptions,
