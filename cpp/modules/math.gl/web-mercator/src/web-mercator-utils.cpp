@@ -26,6 +26,8 @@ ViewMatrixOptions::ViewMatrixOptions()
     : viewMatrix{Matrix4<double>()},  // identity
       focalDistance{1} {}
 
+ViewMatrixOptions::ViewMatrixOptions(Matrix4<double> viewMatrix) : viewMatrix{viewMatrix}, focalDistance{1} {}
+
 ProjectionMatrixOptions::ProjectionMatrixOptions()
     : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
 

@@ -40,6 +40,8 @@ include(CTest)
 ## math.gl
 set(MATHGL_CORE_HEADER_FILES
     cpp/modules/math.gl/core.h
+    cpp/modules/math.gl/core/src/core.h
+    cpp/modules/math.gl/core/src/rectangle.h
     cpp/modules/math.gl/web-mercator/src/web-mercator-utils.h
     )
 set(MATHGL_CORE_SOURCE_FILES
@@ -121,6 +123,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/lib/view-manager.h
     cpp/modules/deck.gl/core/src/shaderlib/project/viewport-uniforms.h
     cpp/modules/deck.gl/core/src/viewports/viewport.h
+    cpp/modules/deck.gl/core/src/viewports/web-mercator-viewport.h
     cpp/modules/deck.gl/core/src/views/view.h
     cpp/modules/deck.gl/core/src/views/view-state.h
     cpp/modules/deck.gl/core/src/arrow/row.h
@@ -136,6 +139,7 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/lib/view-manager.cpp
     cpp/modules/deck.gl/core/src/shaderlib/project/viewport-uniforms.cpp
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
+    cpp/modules/deck.gl/core/src/viewports/web-mercator-viewport.cpp
     cpp/modules/deck.gl/core/src/views/view.cpp
     cpp/modules/deck.gl/core/src/views/view-state.cpp
     cpp/modules/deck.gl/core/src/arrow/row.cc

@@ -22,7 +22,9 @@
 
 #include <vector>
 
+using namespace std;
 using namespace deckgl;
+using namespace mathgl;
 
 const std::vector<const Property*> propTypeDefs = {
     new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->x; },
@@ -89,8 +91,18 @@ View::~View() {}
 //   // return viewChanged;
 // }
 
+auto View::_getViewport(const Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
+    -> std::shared_ptr<Viewport> {
+  // TODO
+  return nullptr;
+}
+
 // Build a `Viewport` from a view descriptor
 // View::makeViewport({width, height, viewState}) {
+auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) -> shared_ptr<Viewport> {
+  // TODO
+  return this->_getViewport(rect, viewState);
+}
 //   if (this->viewportInstance) {
 //     return this->viewportInstance;
 //   }
