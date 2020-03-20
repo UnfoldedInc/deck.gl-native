@@ -22,6 +22,7 @@
 #define MATHGL_WEB_MERCATOR_H
 
 #include <cmath>
+#include <optional>
 
 #include "math.gl/core.h"
 
@@ -70,7 +71,7 @@ struct ViewMatrixOptions {
 
 struct ProjectionMatrixOptions {
   // Projection matrix
-  Matrix4<double> projectionMatrix;
+  std::optional<Matrix4<double>> projectionMatrix;
 
   // Projection matrix parameters, used if projectionMatrix not supplied
   bool orthographic;

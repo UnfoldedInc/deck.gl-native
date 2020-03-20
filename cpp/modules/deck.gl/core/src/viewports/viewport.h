@@ -166,11 +166,11 @@ class Viewport {
   auto _createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance, double near,
                                double far) -> mathgl::Matrix4<double>;
 
-  void _initViewMatrix(/* opts */);
+  void _initViewMatrix(const mathgl::ViewMatrixOptions& viewMatrixOptions);
 
   auto _getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double>;
 
-  void _initProjectionMatrix(/* opts */);
+  void _initProjectionMatrix(const mathgl::ProjectionMatrixOptions& projectionMatrixOptions);
 
   void _initPixelMatrices();
 };

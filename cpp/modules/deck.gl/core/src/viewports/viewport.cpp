@@ -31,40 +31,8 @@ Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
                    const ProjectionMatrixOptions& projectionMatrixOptions, double x, double y, double width,
                    double height)
     : id{id}, x{x}, y{y}, width{width}, height{height} {
-  // _initViewMatrix
-  this->isGeospatial = viewMatrixOptions.isGeospatial;
-  this->zoom = viewMatrixOptions.zoom;
-  // elided: do not support default zoom
-  this->scale = pow(2, this->zoom);
-
-  auto lngLat = Vector2<double>(viewMatrixOptions.longitude, viewMatrixOptions.latitude);
-  // TODO: doesn't support default distance scales
-  this->distanceScales = this->isGeospatial ? getDistanceScales(lngLat) : viewMatrixOptions.distanceScales;
-  this->focalDistance = viewMatrixOptions.focalDistance;
-
-  // elided check for position defined
-  this->position = viewMatrixOptions.position;
-  this->modelMatrix = viewMatrixOptions.modelMatrix;
-  // elided meterOffset
-
-  if (this->isGeospatial) {
-    this->longitude = viewMatrixOptions.longitude;
-    this->latitude = viewMatrixOptions.latitude;
-    this->center = this->_getCenterInWorld(lngLat);
-  } else {
-    // elided check for position defined
-    this->center = this->projectPosition(position);
-  }
-
-  this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
-  // Make a centered version of the matrix for projection modes without an offset
-  // TODO: NEEDED
-  // this->viewMatrix = Matrix4<double>()
-  //                        // Apply the uncentered view matrix
-  //                        .multiplyRight(this->viewMatrixUncentered)
-  //                        // And center it
-  //                        .translate(this->center)
-  //                        .negate();
+  this->_initViewMatrix(viewMatrixOptions);
+  this->_initProjectionMatrix(projectionMatrixOptions);
 }
 
 auto Viewport::metersPerPixel() -> double { return this->distanceScales.metersPerUnit.z / this->scale; }
@@ -142,6 +110,58 @@ auto Viewport::_getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathg
   // }
 
   return center;
+}
+
+void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
+  this->isGeospatial = viewMatrixOptions.isGeospatial;
+  this->zoom = viewMatrixOptions.zoom;
+  // elided: do not support default zoom
+  this->scale = pow(2, this->zoom);
+
+  auto lngLat = Vector2<double>(viewMatrixOptions.longitude, viewMatrixOptions.latitude);
+  // TODO: doesn't support default distance scales
+  this->distanceScales = this->isGeospatial ? getDistanceScales(lngLat) : viewMatrixOptions.distanceScales;
+  this->focalDistance = viewMatrixOptions.focalDistance;
+
+  // elided check for position defined
+  this->position = viewMatrixOptions.position;
+  this->modelMatrix = viewMatrixOptions.modelMatrix;
+  // elided meterOffset
+
+  if (this->isGeospatial) {
+    this->longitude = viewMatrixOptions.longitude;
+    this->latitude = viewMatrixOptions.latitude;
+    this->center = this->_getCenterInWorld(lngLat);
+  } else {
+    // elided check for position defined
+    this->center = this->projectPosition(position);
+  }
+
+  this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
+  // Make a centered version of the matrix for projection modes without an offset
+  // TODO: NEEDED
+  // this->viewMatrix = Matrix4<double>()
+  //                        // Apply the uncentered view matrix
+  //                        .multiplyRight(this->viewMatrixUncentered)
+  //                        // And center it
+  //                        .translate(this->center)
+  //                        .negate();
+}
+
+void Viewport::_initProjectionMatrix(const ProjectionMatrixOptions& opts) {
+  if (opts.projectionMatrix.has_value()) {
+    this->projectionMatrix = opts.projectionMatrix.value();
+  } else {
+    this->projectionMatrix = _createProjectionMatrix(opts.orthographic, opts.fovyRadians, opts.aspect,
+                                                     opts.focalDistance, opts.near, opts.far);
+  }
+}
+
+auto Viewport::_createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
+                                       double near, double far) -> mathgl::Matrix4<double> {
+  // TODO support orthographic
+  return orthographic ? throw new std::logic_error("orthographic not supported")
+                      : Matrix4<double>::makePerspective(fovyRadians, aspect, near, far);
 }
 
 auto operator==(const Viewport& v1, const Viewport& v2) -> bool {

@@ -25,6 +25,7 @@ using namespace mathgl;
 
 namespace deckgl {
 
+auto const VECTOR_TO_POINT_MATRIX = Matrix4<double>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 auto const DEFAULT_PIXELS_PER_UNIT2 = Vector3<double>();
 
 // TODO: consider finding another way rather than these structs. Perhaps make the functions
@@ -95,9 +96,10 @@ auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, math
 // has lower performance but provides error checking.
 auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSystem,
                               mathgl::Vector3<double> coordinateOrigin) -> MatrixAndOffset {
-  //     const {viewMatrixUncentered, projectionMatrix} = viewport;
+  auto viewMatrixUncentered = viewport.viewMatrixUncentered;
   auto viewMatrix = viewport.viewMatrix;
   auto viewProjectionMatrix = viewport.viewProjectionMatrix;
+  auto projectionMatrix = viewport.projectionMatrix;
   auto projectionCenter = Vector4<double>();
   auto cameraPosCommon = viewport.cameraPosition;
 
@@ -117,13 +119,12 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
     projectionCenter = viewProjectionMatrix.transform(positionCommonSpace);
 
     // Always apply uncentered projection matrix if available (shader adds center)
-    // TODO
-    // viewMatrix = viewMatrixUncentered || viewMatrix;
+    // TODO: elided default of viewport.viewMatrix
+    viewMatrix = viewMatrixUncentered;
 
     // Zero out 4th coordinate ("after" model matrix) - avoids further translations
-    // TODO
-    // viewProjectionMatrix = mat4.multiply([], projectionMatrix, viewMatrix);
-    // viewProjectionMatrix = mat4.multiply([], viewProjectionMatrix, VECTOR_TO_POINT_MATRIX);
+    viewProjectionMatrix = projectionMatrix * viewMatrix;
+    viewProjectionMatrix = viewProjectionMatrix * VECTOR_TO_POINT_MATRIX;
   }
 
   return {.viewMatrix = viewMatrix,
