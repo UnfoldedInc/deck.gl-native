@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 #include "./viewport.h"
+#include "math.gl/web-mercator.h"
 
 #include "math.gl/web-mercator.h"
 
@@ -31,7 +32,7 @@ Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
                    double height)
     : id{id}, x{x}, y{y}, width{width}, height{height} {
   // _initViewMatrix
-  // this->isGeospatial = viewMatrixOptions.isGeospatial;
+  this->isGeospatial = viewMatrixOptions.isGeospatial;
   this->zoom = viewMatrixOptions.zoom;
   // elided: do not support default zoom
   this->scale = pow(2, this->zoom);
