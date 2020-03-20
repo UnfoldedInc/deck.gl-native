@@ -127,8 +127,8 @@ auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio, mathgl:
   auto uniforms = calculateViewportUniforms(viewport, devicePixelRatio, coordinateSystem, coordinateOrigin);
 
   uniforms.project_uWrapLongitude = wrapLongitude;
-  // TODO
-  // uniforms.project_uModelMatrix = modelMatrix || IDENTITY_MATRIX;
+  // elided IDENTITY_MATRIX default
+  uniforms.project_uModelMatrix = viewport.modelMatrix;
 
   return uniforms;
 }
@@ -147,8 +147,7 @@ auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORD
                                .project_uProjectionMode = viewport.projectionMode(),
                                .project_uCoordinateOrigin = matrixAndOffset.shaderCoordinateOrigin,
                                .project_uCenter = matrixAndOffset.projectionCenter,
-                               // TODO: optional longitude: should default to 0
-                               .project_uAntimeridian = viewport.longitude - 180,
+                               .project_uAntimeridian = (viewport.isGeospatial ? viewport.longitude : 0) - 180,
 
                                // Screen size
                                .project_uViewportSize = viewportSize,
@@ -156,7 +155,7 @@ auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORD
 
                                // Distance at which screen pixels are projected
                                // TODO: optional focalDistance
-                               .project_uFocalDistance = viewport.focalDistance || 1,
+                               .project_uFocalDistance = viewport.focalDistance,
                                .project_uCommonUnitsPerMeter = distanceScales.unitsPerMeter,
                                .project_uCommonUnitsPerWorldUnit = distanceScales.unitsPerMeter,
                                .project_uCommonUnitsPerWorldUnit2 = DEFAULT_PIXELS_PER_UNIT2,
