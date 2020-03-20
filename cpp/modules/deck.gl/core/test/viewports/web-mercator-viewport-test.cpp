@@ -66,8 +66,50 @@ TEST(WebMercatorViewport, projectFlat) {
 //       std::cout << lnglatIn3 << xyz3 << lnglat3 << std::endl;
 
 //       EXPECT_NEAR(lnglatIn3.x, lnglat3.x, LNGLAT_TOLERANCE);
-//       EXPECT_NEAR(lnglatIn3.y, lnglat3.y + 1, LNGLAT_TOLERANCE);
+//       EXPECT_NEAR(lnglatIn3.y, lnglat3.y, LNGLAT_TOLERANCE);
 //       EXPECT_NEAR(lnglatIn3.z, lnglat3.z, ALT_TOLERANCE);
 //     }
 //   }
 // }
+
+// TODO: project/unproject not implemented
+// TEST(WebMercatorViewport, project2D) {
+//   for (auto viewport : TEST_VIEWPORTS) {
+//     const double TEST_OFFSETS[] = {0, 0.5, 1.0, 5.0};
+//     for (auto offset : TEST_OFFSETS) {
+//       auto lnglatIn = Vector2<double>(viewport.longitude + offset, viewport.latitude + offset);
+//       auto xy = viewport.project(lnglatIn);
+//       auto lnglat = viewport.unproject(xy);
+
+//       std::cout << lnglatIn3 << xyz3 << lnglat3 << std::endl;
+
+//       EXPECT_NEAR(lnglatIn.x, lnglat.x, LNGLAT_TOLERANCE);
+//       EXPECT_NEAR(lnglatIn.y, lnglat.y, LNGLAT_TOLERANCE);
+//     }
+//   }
+// }
+
+TEST(WebMercatorViewport, getScales) {
+  for (auto viewport : TEST_VIEWPORTS) {
+    auto distanceScales = viewport.getDistanceScales();
+
+    EXPECT_NEAR(1, distanceScales.unitsPerMeter.x * distanceScales.metersPerUnit.x, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(1, distanceScales.unitsPerMeter.y * distanceScales.metersPerUnit.y, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(1, distanceScales.unitsPerMeter.z * distanceScales.metersPerUnit.z, LNGLAT_TOLERANCE);
+
+    EXPECT_NEAR(1, distanceScales.unitsPerDegree.x * distanceScales.degreesPerUnit.x, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(1, distanceScales.unitsPerDegree.y * distanceScales.degreesPerUnit.y, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(1, distanceScales.unitsPerDegree.z * distanceScales.degreesPerUnit.z, LNGLAT_TOLERANCE);
+
+    const double TEST_OFFSETS[] = {-0.01, 0.005, 0.01};
+    for (auto offset : TEST_OFFSETS) {
+      // In the test this doesn't actually define a third component - seems like it should be 2d
+      auto xyz0 = Vector2<double>(viewport.center.x + distanceScales.unitsPerDegree.x * offset,
+                                  viewport.center.y + distanceScales.unitsPerDegree.y * offset);
+      auto xyz1 = viewport.projectFlat(Vector2<double>(viewport.longitude + offset, viewport.latitude + offset));
+
+      EXPECT_NEAR(xyz0.x, xyz1.x, OFFSET_TOLERANCE);
+      EXPECT_NEAR(xyz0.y, xyz1.y, OFFSET_TOLERANCE);
+    }
+  }
+}
