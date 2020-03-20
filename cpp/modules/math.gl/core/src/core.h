@@ -92,7 +92,7 @@ auto operator-(const Vector2<coord> &v1, const Vector2<coord> &v2) -> Vector2<co
 
 template <typename coord>
 auto operator==(const Vector2<coord> &v1, const Vector2<coord> &v2) -> bool {
-  return v1.x == v2.x && v1.xy == v2.y;
+  return v1.x == v2.x && v1.y == v2.y;
 }
 
 template <typename coord>

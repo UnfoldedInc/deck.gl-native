@@ -22,7 +22,7 @@ void AttributeManager::initialize() {
   // Create a new table based on previously added descriptors
   std::vector<std::shared_ptr<arrow::Field>> fields = {};
   for (auto descriptor : this->_descriptors) {
-    auto field = arrow::field(descriptor->name, descriptor->defaultValue);
+    auto field = arrow::field(descriptor->name, descriptor->type);
     fields.push_back(field);
   }
   auto schema = std::make_shared<arrow::Schema>(fields);

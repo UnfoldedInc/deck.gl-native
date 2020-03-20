@@ -27,29 +27,42 @@
 #include <memory>
 #include <unordered_map>
 
+#include "math.gl/core.h"
+
+using namespace mathgl;
+
 namespace deckgl {
 
-class TableRow {
+class Row {
  public:
-  TableRow(const std::shared_ptr<arrow::Table>& table, int rowIndex);
+  Row(const std::shared_ptr<arrow::Table>& table, int rowIndex);
 
-  auto getString(const std::string& columnName) -> std::string;
+  auto getInt(const std::string& columnName, int nullValue = 0) -> int;
+  auto getFloat(const std::string& columnName, float nullValue = 0.0) -> float;
+  auto getDouble(const std::string& columnName, double nullValue = 0.0) -> double;
+  auto getBool(const std::string& columnName, bool nullValue = false) -> bool;
+  auto getString(const std::string& columnName, const std::string& nullValue = "") -> std::string;
 
-  template <typename ElementType, typename ReturnValue>
-  auto getNumber(const std::string& columnName) -> ReturnValue {
-    auto chunk = this->_getChunk(columnName);
-    if (auto numericArray = std::dynamic_pointer_cast<arrow::NumericArray<ElementType>>(chunk)) {
-      return numericArray->Value(_chunkIndex);
-    }
+  auto getFloatVector2(const std::string& columnName, const Vector2<float>& nullValue = {}) -> Vector2<float>;
+  auto getDoubleVector2(const std::string& columnName, const Vector2<double>& nullValue = {}) -> Vector2<double>;
+  auto getFloatVector3(const std::string& columnName, const Vector3<float>& nullValue = {}) -> Vector3<float>;
+  auto getDoubleVector3(const std::string& columnName, const Vector3<double>& nullValue = {}) -> Vector3<double>;
 
-    throw std::logic_error("Invalid column type, found: " + chunk->type()->ToString());
-  }
-
-  // TODO: Support additional types
+  auto isValid(const std::string& columnName) -> bool;
 
  private:
   auto _getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array>;
   auto _getChunkIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int;
+
+  auto _getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optional<double>;
+  auto _vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector2<float>& nullValue)
+      -> Vector2<float>;
+  auto _vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector2<double>& nullValue)
+      -> Vector2<double>;
+  auto _vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector3<float>& nullValue)
+      -> Vector3<float>;
+  auto _vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector3<double>& nullValue)
+      -> Vector3<double>;
 
   std::shared_ptr<arrow::Table> _table;
   int _chunkIndex;

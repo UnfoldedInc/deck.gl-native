@@ -25,7 +25,7 @@
 
 #include <memory>
 
-#include "arrow/src/table-row.h"
+#include "../../arrow/row.h"
 
 namespace deckgl {
 
@@ -33,12 +33,11 @@ using namespace deckgl;
 
 struct AttributeDescriptor {
  public:
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& defaultValue)
-      : name{std::move(name)}, defaultValue{defaultValue} {}
+  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type)
+      : name{std::move(name)}, type{type} {}
 
   std::string name;
-  // TODO(ilija): We need to get a valid arrow type somehow in order to specify a schema, revisit
-  std::shared_ptr<arrow::DataType> defaultValue;
+  std::shared_ptr<arrow::DataType> type;
 
   // TODO(ilija): This doesn't work, and we can't really create a class template as we wouldn't be able to make use of
   // it in attribute manager

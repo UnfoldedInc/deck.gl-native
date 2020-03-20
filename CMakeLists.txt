@@ -53,17 +53,6 @@ set(MATHGL_CORE_TEST_FILES
     cpp/modules/math.gl/web-mercator/test/web-mercator-utils-test.cpp
     )
 
-## arrow-deckgl
-set(ARROW_DECKGL_HEADER_FILES
-    cpp/modules/arrow/src/table-row.h
-    )
-set(MATHGL_CORE_SOURCE_FILES
-    cpp/modules/arrow/src/table-row.cc
-    )
-set(MATHGL_CORE_TEST_FILES
-    cpp/modules/arrow/test/table-row-test.cc
-    )
-
 ## loaders.gl/csv
 set(LOADERSGL_CSV_HEADER_FILES
     cpp/modules/loaders.gl/csv/src/csv-loader.h
@@ -133,6 +122,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/viewports/viewport.h
     cpp/modules/deck.gl/core/src/views/view.h
     cpp/modules/deck.gl/core/src/views/view-state.h
+    cpp/modules/deck.gl/core/src/arrow/row.h
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/core.cpp
@@ -144,12 +134,14 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.cc
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
     cpp/modules/deck.gl/core/src/views/view-state.cpp
+    cpp/modules/deck.gl/core/src/arrow/row.cc
     )
 set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/lib/layer-test.cpp
     cpp/modules/deck.gl/core/test/lib/layer-manager-test.cpp
     cpp/modules/deck.gl/core/test/lib/attribute/attribute-manager-test.cc
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
+    cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )
 
 ## deck.gl/layers
