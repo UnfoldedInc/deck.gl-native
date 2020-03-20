@@ -81,7 +81,7 @@ auto JSONObject::getProperty(const std::string& key) const -> const Property* {
   return propertyType;
 }
 
-auto JSONObject::equals(const JSONObject* other) -> bool {
+auto JSONObject::equals(const JSONObject* other) const -> bool {
   auto properties = this->getProperties();
 
   for (auto element : properties->_propTypeMap) {
@@ -97,7 +97,7 @@ auto JSONObject::equals(const JSONObject* other) -> bool {
   return true;
 }
 
-auto JSONObject::compare(const JSONObject* other) -> std::optional<std::string> {
+auto JSONObject::compare(const JSONObject* other) const -> std::optional<std::string> {
   auto properties = this->getProperties();
 
   for (auto element : properties->_propTypeMap) {
