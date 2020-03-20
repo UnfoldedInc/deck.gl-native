@@ -81,7 +81,7 @@ Used as a placeholder until clang/gcc compilers become C++20 compatible.
 - [Google Test](https://github.com/ericniebler/range-v3)
 
 ```sh
-../vcpkg install ranges-v3
+../vcpkg install range-v3
 ```
 
 ### Arrow
