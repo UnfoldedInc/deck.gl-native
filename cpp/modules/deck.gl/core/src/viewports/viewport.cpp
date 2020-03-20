@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 #include "./viewport.h"
-#include "math.gl/web-mercator.h"
 
 #include "math.gl/web-mercator.h"
 
@@ -149,12 +148,10 @@ void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
 }
 
 void Viewport::_initProjectionMatrix(const ProjectionMatrixOptions& opts) {
-  if (opts.projectionMatrix.has_value()) {
-    this->projectionMatrix = opts.projectionMatrix.value();
-  } else {
-    this->projectionMatrix = _createProjectionMatrix(opts.orthographic, opts.fovyRadians, opts.aspect,
-                                                     opts.focalDistance, opts.near, opts.far);
-  }
+  this->projectionMatrix = opts.projectionMatrix.has_value()
+                               ? opts.projectionMatrix.value()
+                               : this->_createProjectionMatrix(opts.orthographic, opts.fovyRadians, opts.aspect,
+                                                               opts.focalDistance, opts.near, opts.far);
 }
 
 auto Viewport::_createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,

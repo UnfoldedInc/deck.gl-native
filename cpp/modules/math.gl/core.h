@@ -7,5 +7,6 @@
 
 // TODO Split into matrix.h, vector.h etc?
 #include "./core/src/core.h"
+#include "./core/src/rectangle.h"
 
 #endif  // MATHGL_CORE

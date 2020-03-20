@@ -26,6 +26,8 @@
 
 #include <memory>
 
+#include "math.gl/core.h"
+
 namespace deckgl {
 
 class MapView : public View {
@@ -35,7 +37,8 @@ class MapView : public View {
 
   explicit MapView(Props* props) : View(props) {}
 
-  auto _getViewport() const -> std::shared_ptr<Viewport> override {
+protected:
+  auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override {
     // TODO(ib): Having a separate WebMercatorViewport subclass is the root of all evil
     // replace with `makeWebMercatorViewport() -> Viewport` that returns a standard viewport
     // return std::make_shared<WebMercatorViewport>();

@@ -192,9 +192,13 @@ class Vector4 {
     return *this;
   }
 
-  auto operator+(const Vector4<coord> &v) const -> Vector4<coord> { return Vector4<coord>(x + v.x, y + v.y, z + v.z, w + v.w); }
+  auto operator+(const Vector4<coord> &v) const -> Vector4<coord> {
+    return Vector4<coord>(x + v.x, y + v.y, z + v.z, w + v.w);
+  }
 
-  auto operator-(const Vector4<coord> &v) const -> Vector4<coord> { return Vector4<coord>(x - v.x, y - v.y, z - v.z, w - v.w); }
+  auto operator-(const Vector4<coord> &v) const -> Vector4<coord> {
+    return Vector4<coord>(x - v.x, y - v.y, z - v.z, w - v.w);
+  }
 
   auto operator==(const Vector4<coord> &v) const -> bool { return x == v.x && y == v.y && z == v.z && w == v.w; }
 
@@ -763,12 +767,7 @@ auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord
   auto f = 1.0 / tan(fovy / 2.0);
   auto nf = 1.0 / (near - far);
   // TODO: Doesn't support far not being set or far being Infinity
-  return Matrix4<coord>(
-    f / aspect, 0, 0, 0,
-    0, f, 0, 0,
-    0, 0, (far + near) * nf, -1,
-    0, 0, 2.0 * far * near * nf, 0
-  );
+  return Matrix4<coord>(f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2.0 * far * near * nf, 0);
 }
 
 template <typename coord>
@@ -796,22 +795,17 @@ auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coo
 
 template <typename coord>
 auto Matrix4<coord>::scale(const Vector3<coord> &s) const -> Matrix4<coord> {
-  return Matrix4<coord>(
-    m[0][0] * s.x, m[0][1] * s.x, m[0][2] * s.x, m[0][3] * s.x,
-    m[1][0] * s.y, m[1][1] * s.y, m[1][2] * s.y, m[1][3] * s.y,
-    m[2][0] * s.z, m[2][1] * s.z, m[2][2] * s.z, m[2][3] * s.z,
-    m[3][0], m[3][1], m[3][2], m[3][3]
-  );
+  return Matrix4<coord>(m[0][0] * s.x, m[0][1] * s.x, m[0][2] * s.x, m[0][3] * s.x, m[1][0] * s.y, m[1][1] * s.y,
+                        m[1][2] * s.y, m[1][3] * s.y, m[2][0] * s.z, m[2][1] * s.z, m[2][2] * s.z, m[2][3] * s.z,
+                        m[3][0], m[3][1], m[3][2], m[3][3]);
 }
 
 template <typename coord>
 auto Matrix4<coord>::transform(const Vector4<coord> &xyzw) const -> Vector4<coord> {
-  return Vector4<coord>(
-    m[0][0] * xyzw.x + m[1][0] * xyzw.y + m[2][0] * xyzw.z + m[3][0] * xyzw.w,
-    m[0][1] * xyzw.x + m[1][1] * xyzw.y + m[2][1] * xyzw.z + m[3][1] * xyzw.w,
-    m[0][2] * xyzw.x + m[1][2] * xyzw.y + m[2][2] * xyzw.z + m[3][2] * xyzw.w,
-    m[0][3] * xyzw.x + m[1][3] * xyzw.y + m[2][3] * xyzw.z + m[3][3] * xyzw.w
-  );
+  return Vector4<coord>(m[0][0] * xyzw.x + m[1][0] * xyzw.y + m[2][0] * xyzw.z + m[3][0] * xyzw.w,
+                        m[0][1] * xyzw.x + m[1][1] * xyzw.y + m[2][1] * xyzw.z + m[3][1] * xyzw.w,
+                        m[0][2] * xyzw.x + m[1][2] * xyzw.y + m[2][2] * xyzw.z + m[3][2] * xyzw.w,
+                        m[0][3] * xyzw.x + m[1][3] * xyzw.y + m[2][3] * xyzw.z + m[3][3] * xyzw.w);
 }
 
 template <typename coord>

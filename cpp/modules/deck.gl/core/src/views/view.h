@@ -27,6 +27,7 @@
 #include "../viewports/viewport.h"  // {Viewport}
 #include "./view-state.h"           // {ViewState}
 #include "deck.gl/json.h"
+#include "math.gl/core.h"
 
 namespace deckgl {
 
@@ -45,14 +46,16 @@ class View : public Component {
 
   auto getViewStateId() const -> std::string;
 
+  // Build a `Viewport` from a view descriptor
+  auto makeViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState)
+      -> std::shared_ptr<Viewport>;
+
  protected:
   // Create actual viewport
-  virtual auto _getViewport() const -> std::shared_ptr<Viewport> = 0;
+  virtual auto _getViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState) const
+      -> std::shared_ptr<Viewport>;
 
  private:
-  // Build a `Viewport` from a view descriptor
-  auto makeViewport() -> Viewport *;
-
   // Allows view to override (or completely define) viewState
   auto filterViewState(std::shared_ptr<ViewState>) -> std::shared_ptr<ViewState>;
 
