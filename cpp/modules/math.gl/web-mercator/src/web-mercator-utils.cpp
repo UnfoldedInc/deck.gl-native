@@ -89,11 +89,11 @@ auto getDistanceScales(Vector2<double> lngLat, bool highPrecision) -> DistanceSc
    * Y needs to be flipped when converting delta degree/meter to delta pixels
    */
   DistanceScales result;
-  result.unitsPerMeter = Vector3(altUnitsPerMeter, altUnitsPerMeter, altUnitsPerMeter);
-  result.metersPerUnit = Vector3(inverseAltUnitsPerMeter, inverseAltUnitsPerMeter, inverseAltUnitsPerMeter);
+  result.unitsPerMeter = Vector3<double>(altUnitsPerMeter, altUnitsPerMeter, altUnitsPerMeter);
+  result.metersPerUnit = Vector3<double>(inverseAltUnitsPerMeter, inverseAltUnitsPerMeter, inverseAltUnitsPerMeter);
 
-  result.unitsPerDegree = Vector3(unitsPerDegreeX, unitsPerDegreeY, altUnitsPerMeter);
-  result.degreesPerUnit = Vector3(1.0 / unitsPerDegreeX, 1.0 / unitsPerDegreeY, 1.0 / altUnitsPerMeter);
+  result.unitsPerDegree = Vector3<double>(unitsPerDegreeX, unitsPerDegreeY, altUnitsPerMeter);
+  result.degreesPerUnit = Vector3<double>(1.0 / unitsPerDegreeX, 1.0 / unitsPerDegreeY, 1.0 / altUnitsPerMeter);
 
   /**
    * Taylor series 2nd order for 1/latCosine
@@ -107,8 +107,8 @@ auto getDistanceScales(Vector2<double> lngLat, bool highPrecision) -> DistanceSc
     auto altUnitsPerDegree2 = (worldSize / EARTH_CIRCUMFERENCE) * latCosine2;
     auto altUnitsPerMeter2 = (altUnitsPerDegree2 / unitsPerDegreeY) * altUnitsPerMeter;
 
-    result.unitsPerDegree2 = Vector3(0.0, unitsPerDegreeY2, altUnitsPerDegree2);
-    result.unitsPerMeter2 = Vector3(altUnitsPerMeter2, 0.0, altUnitsPerMeter2);
+    result.unitsPerDegree2 = Vector3<double>(0.0, unitsPerDegreeY2, altUnitsPerDegree2);
+    result.unitsPerMeter2 = Vector3<double>(altUnitsPerMeter2, 0.0, altUnitsPerMeter2);
   }
 
   // Main results, used for converting meters to latlng deltas and scaling offsets
@@ -128,7 +128,7 @@ auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<
   auto newLngLat = worldToLngLat(worldspace);
   auto newZ = lngLatZ.z + xyz.z;
 
-  return Vector3(newLngLat.x, newLngLat.y, newZ);
+  return Vector3<double>(newLngLat.x, newLngLat.y, newZ);
 }
 
 auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<double> {
