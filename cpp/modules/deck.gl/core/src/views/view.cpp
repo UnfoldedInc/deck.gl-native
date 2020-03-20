@@ -94,26 +94,29 @@ View::~View() {}
 auto View::_getViewport(const Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
     -> std::shared_ptr<Viewport> {
   // TODO
-  return nullptr;
+  auto id = "my_viewport_idTODO";
+  auto viewMatrixOptions = ViewMatrixOptions();
+  auto projectionMatrixOptions = ProjectionMatrixOptions();
+  return make_shared<Viewport>(id, viewMatrixOptions, projectionMatrixOptions, static_cast<double>(rect.x),
+                               static_cast<double>(rect.y), static_cast<double>(rect.w), static_cast<double>(rect.h));
 }
 
 // Build a `Viewport` from a view descriptor
-// View::makeViewport({width, height, viewState}) {
 auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) -> shared_ptr<Viewport> {
-  // TODO
+  // TODO: do filtering, overrides of the viewState
+  //   if (this->viewportInstance) {
+  //     return this->viewportInstance;
+  //   }
+
+  //   viewState = this->filterViewState(viewState);
+
+  //   // Resolve relative viewport dimensions
+  //   const viewportDimensions = this->getDimensions({width, height});
+  //   const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
+  //   return this->_getViewport(props);
+
   return this->_getViewport(rect, viewState);
 }
-//   if (this->viewportInstance) {
-//     return this->viewportInstance;
-//   }
-
-//   viewState = this->filterViewState(viewState);
-
-//   // Resolve relative viewport dimensions
-//   const viewportDimensions = this->getDimensions({width, height});
-//   const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
-//   return this->_getViewport(props);
-// }
 
 // View::getViewStateId() {
 //   switch (typeof this->props.viewState) {

@@ -18,29 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWS_MAP_VIEW_H
-#define DECKGL_CORE_VIEWS_MAP_VIEW_H
+#include "./map-view.h"                          // {MapView}
+#include "../viewports/web-mercator-viewport.h"  // {WebMercatorViewport}
 
-#include "./view.h" // {View}
-// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
+#include <vector>
 
-#include <memory>
+using namespace std;
+using namespace deckgl;
+using namespace mathgl;
 
-#include "math.gl/core.h"
-
-namespace deckgl {
-
-class MapView : public View {
- public:
-  using super = View;
-  class Props : public View::Props {};
-
-  explicit MapView(Props* props) : View(props) {}
-
-protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
-};
-
-}  // namespace deckgl
-
-#endif // DECKGL_CORE_VIEWS_MAP_VIEW_H
+auto MapView::_getViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) const -> shared_ptr<Viewport> {
+  return make_shared<WebMercatorViewport>(rect.w, rect.h, viewState->longitude.value_or(0),
+                                          viewState->latitude.value_or(0), viewState->zoom.value_or(11),
+                                          viewState->pitch.value_or(0), viewState->bearing.value_or(0));
+}

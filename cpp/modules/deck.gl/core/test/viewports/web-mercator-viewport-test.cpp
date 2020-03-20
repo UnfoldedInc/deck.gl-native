@@ -31,9 +31,9 @@ auto const LNGLAT_TOLERANCE = 1e-6;
 // auto const ALT_TOLERANCE = 1e-5;
 auto const OFFSET_TOLERANCE = 1e-5;
 
-const WebMercatorViewport TEST_VIEWPORTS[] = {WebMercatorViewport(800, 600, 38, -122, 11, 0, 0),
-                                              WebMercatorViewport(800, 600, 23, 20, 15, 30, -85),
-                                              WebMercatorViewport(800, 600, 65, 42, 16, 15, 30)};
+const WebMercatorViewport TEST_VIEWPORTS[] = {WebMercatorViewport(800, 600, -122, 38, 11, 0, 0),
+                                              WebMercatorViewport(800, 600, 20, 23, 15, 30, -85),
+                                              WebMercatorViewport(800, 600, 42, 65, 16, 15, 30)};
 
 TEST(WebMercatorViewport, Ctor) {
   WebMercatorViewport();

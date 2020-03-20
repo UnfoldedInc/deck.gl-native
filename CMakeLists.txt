@@ -140,6 +140,7 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/shaderlib/project/viewport-uniforms.cpp
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
     cpp/modules/deck.gl/core/src/viewports/web-mercator-viewport.cpp
+    cpp/modules/deck.gl/core/src/views/map-view.cpp
     cpp/modules/deck.gl/core/src/views/view.cpp
     cpp/modules/deck.gl/core/src/views/view-state.cpp
     cpp/modules/deck.gl/core/src/arrow/row.cc

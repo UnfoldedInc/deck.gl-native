@@ -63,7 +63,7 @@ ProjectionMatrixOptions calculateProjectionMatrixOptions(int width, int height, 
   return getProjectionParameters(width, height, altitude, pitch, nearZMultiplier, farZMultiplier);
 }
 
-WebMercatorViewport::WebMercatorViewport(int width, int height, double latitude, double longitude, double zoom,
+WebMercatorViewport::WebMercatorViewport(int width, int height, double longitude, double latitude, double zoom,
                                          double pitch, double bearing, double altitude, double nearZMultiplier,
                                          double farZMultiplier, bool orthographic, bool repeat, double worldOffset
                                          // Silently allow apps to send in 0,0 to facilitate isomorphic render etc
