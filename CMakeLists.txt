@@ -150,6 +150,7 @@ set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/lib/layer-manager-test.cpp
     cpp/modules/deck.gl/core/test/shaderlib/project/viewport-uniforms-test.cpp
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
+    cpp/modules/deck.gl/core/test/viewports/web-mercator-viewport-test.cpp
     cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )
 
