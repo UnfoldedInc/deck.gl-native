@@ -21,6 +21,7 @@
 #ifndef DECKGL_CORE_VIEWPORTS_VIEWPORT_H
 #define DECKGL_CORE_VIEWPORTS_VIEWPORT_H
 
+#include <optional>
 #include <string>
 
 #include "../lib/constants.h"
@@ -34,9 +35,7 @@ class Viewport {
   std::string id;
   double x;
   double y;
-  // NEEDED
   double width;
-  // NEEDED
   double height;
   // Not needed
   double _frustumPlanes;  // TODO: actually an object
@@ -122,11 +121,9 @@ class Viewport {
   // NON_LINEAR PROJECTION HOOKS
   // Used for web meractor projection
 
-  // NEEDED
   auto projectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
   auto projectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
-  // NEEDED
   auto unprojectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
   auto unprojectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
@@ -140,7 +137,6 @@ class Viewport {
    * @return {Array} [x,y] coordinates.
    */
   auto projectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
-  auto projectFlat(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
   /**
    * Unproject world point [x,y] on map onto {lat, lon} on sphere
@@ -151,10 +147,9 @@ class Viewport {
    *   Per cartographic tradition, lat and lon are specified as degrees.
    */
   auto unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
-  auto unprojectFlat(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
-  // NEEDED
-  auto getDistanceScales(const mathgl::Vector2<double>* coordinateOrigin) -> double;
+  auto getDistanceScales(const std::optional<mathgl::Vector2<double>>& coordinateOrigin =
+                             std::optional<mathgl::Vector2<double>>()) -> mathgl::DistanceScales;
   auto containsPixel(double x, double y, double width = 1, double height = 1) -> bool;
 
   // Extract frustum planes in common space
@@ -173,7 +168,7 @@ class Viewport {
 
   void _initViewMatrix(/* opts */);
 
-  auto _getCenterInWorld(double longitude, double latitude) -> mathgl::Vector3<double>;
+  auto _getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double>;
 
   void _initProjectionMatrix(/* opts */);
 

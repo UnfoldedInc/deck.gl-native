@@ -22,67 +22,35 @@
 
 using namespace deckgl;
 
-ViewManager::ViewManager(props = {}) {
-  // List of view descriptors, gets re-evaluated when width/height changes
-  this->views = [];
-  this->width = 100;
-  this->height = 100;
-  this->viewState = {};
-  this->controllers = {};
-  this->timeline = props.timeline;
+ViewManager::ViewManager() {}
 
-  this->_viewports = [];  // Generated viewports
-  this->_viewportMap = {};
-  this->_isUpdating = false;
-  this->_needsRedraw = 'Initial render';
-  this->_needsUpdate = true;
-
-  this->_eventManager = props.eventManager;
-  this->_eventCallbacks = {
-    onViewStateChange : props.onViewStateChange,
-    onInteractiveStateChange : props.onInteractiveStateChange
-  };
-
-  Object.seal(this);
-
-  // Init with default map viewport
-  this->setProps(props);
-}
-
-ViewManager::~ViewManager() {
-  // for (const key in this->controllers) {
-  //   if (this->controllers[key]) {
-  //     this->controllers[key].finalize();
-  //   }
-  // }
-  // this->controllers = {};
-}
+ViewManager::~ViewManager() {}
 
 // Check if a redraw is needed
-ViewManager::needsRedraw(opts = {clearRedrawFlags : false}) {
-  const redraw = this->_needsRedraw;
-  if (opts.clearRedrawFlags) {
-    this->_needsRedraw = false;
+auto ViewManager::getNeedsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
+  auto redraw = this->_needsRedraw;
+  if (clearRedrawFlags) {
+    this->_needsRedraw = std::nullopt;
   }
   return redraw;
 }
 
 // Layers will be updated deeply (in next animation frame)
 // Potentially regenerating attributes and sub layers
-ViewManager::setNeedsUpdate(reason) {
-  this->_needsUpdate = this->_needsUpdate || reason;
-  this->_needsRedraw = this->_needsRedraw || reason;
+void ViewManager::setNeedsUpdate(const std::string &reason) {
+  // this->_needsUpdate = this->_needsUpdate || reason;
+  // this->_needsRedraw = this->_needsRedraw || reason;
 }
 
 // Checks each viewport for transition updates
-ViewManager::updateViewStates() {
-  for (const viewId in this->controllers) {
-    const controller = this->controllers[viewId];
-    if (controller) {
-      controller.updateTransition();
-    }
-  }
-}
+// void ViewManager::updateViewStates() {
+//   for (const viewId in this->controllers) {
+//     const controller = this->controllers[viewId];
+//     if (controller) {
+//       controller.updateTransition();
+//     }
+//   }
+// }
 
 /** Get a set of viewports for a given width and height
  * TODO - Intention is for deck.gl to autodeduce width and height and drop
@@ -93,22 +61,24 @@ ViewManager::updateViewStates() {
  *   + {x, y, width, height} - only return viewports that overlap with this
  * rectangle
  */
-ViewManager::getViewports(rect) {
-  if (rect) {
-    return this->_viewports.filter(viewport = > viewport.containsPixel(rect));
-  }
+auto ViewManager::getViewports() -> std::list<std::shared_ptr<Viewport>> {  // {rect) {
+  // if (rect) {
+  //   return this->_viewports.filter(viewport = > viewport.containsPixel(rect));
+  // }
   return this->_viewports;
 }
 
-ViewManager::getViews() {
-  const viewMap = {};
-  this->views.forEach(view = > { viewMap[view.id] = view; });
-  return viewMap;
+auto ViewManager::getViews() -> std::list<std::shared_ptr<View>> {
+  // const viewMap = {};
+  // this->views.forEach(view = > { viewMap[view.id] = view; });
+  // return viewMap;
+  return this->views;
 }
 
 // Resolves a viewId string to a View, if already a View returns it.
-ViewManager::getView(viewOrViewId) {
-  return typeof viewOrViewId == = 'string' ? this->views.find(view = > view.id == = viewOrViewId) : viewOrViewId;
+auto ViewManager::getView(const std::string &viewId) -> std::shared_ptr<View> {
+  // TODO(ib): implement a lookup
+  return this->views.front();
 }
 
 // Returns the viewState for a specific viewId. Matches the viewState by
@@ -116,14 +86,16 @@ ViewManager::getView(viewOrViewId) {
 // 2. view.id
 // 3. root viewState
 // then applies the view's filter if any
-ViewManager::getViewState(viewId) {
-  const view = this->getView(viewId);
-  // Backward compatibility: view state for single view
-  const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
-  return view ? view.filterViewState(viewState) : viewState;
-}
+// ViewManager::getViewState(viewId) {
+//   const view = this->getView(viewId);
+//   // Backward compatibility: view state for single view
+//   const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
+//   return view ? view.filterViewState(viewState) : viewState;
+// }
 
-ViewManager::getViewport(viewId) { return this->_viewportMap[viewId]; }
+auto ViewManager::getViewport(const std::string &viewId) -> std::shared_ptr<Viewport> {
+  return nullptr;  // return this->_viewportMap[viewId];
+}
 
 /**
  * Unproject pixel coordinates on screen onto world coordinates,
@@ -135,49 +107,42 @@ ViewManager::getViewport(viewId) { return this->_viewportMap[viewId]; }
  * @param {Object} opts.topLeft=true - Whether origin is top left
  * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
  */
-ViewManager::unproject(xyz, opts) {
-  const viewports = this->getViewports();
-  const pixel = {x : xyz[0], y : xyz[1]};
-  for (let i = viewports.length - 1; i >= 0; --i) {
-    const viewport = viewports[i];
-    if (viewport.containsPixel(pixel)) {
-      const p = xyz.slice();
-      p[0] -= viewport.x;
-      p[1] -= viewport.y;
-      return viewport.unproject(p, opts);
-    }
-  }
-  return null;
-}
+// ViewManager::unproject(xyz, opts) {
+//   const viewports = this->getViewports();
+//   const pixel = {x : xyz[0], y : xyz[1]};
+//   for (let i = viewports.length - 1; i >= 0; --i) {
+//     const viewport = viewports[i];
+//     if (viewport.containsPixel(pixel)) {
+//       const p = xyz.slice();
+//       p[0] -= viewport.x;
+//       p[1] -= viewport.y;
+//       return viewport.unproject(p, opts);
+//     }
+//   }
+//   return null;
+// }
 
-ViewManager::setProps(props) {
-  if ('views' in props) {
-    this->_setViews(props.views);
-  }
+//
+// MODIFIERS
+//
 
-  // TODO - support multiple view states
-  if ('viewState' in props) {
-    this->_setViewState(props.viewState);
-  }
+//
+// PRIVATE METHODS
+//
 
-  if ('width' in props || 'height' in props) {
-    this->_setSize(props.width, props.height);
-  }
-
+void ViewManager::_update() {
   // Important: avoid invoking _update() inside itself
   // Nested updates result in unexpected side effects inside
   // _rebuildViewports() when using auto control in pure-js
-  if (!this->_isUpdating) {
-    this->_update();
-  }
-}
+  // if (!this->_isUpdating) {
+  //   this->_update();
+  // }
 
-ViewManager::_update() {
   this->_isUpdating = true;
 
   // Only rebuild viewports if the update flag is set
   if (this->_needsUpdate) {
-    this->_needsUpdate = false;
+    this->_needsUpdate = std::nullopt;
     this->_rebuildViewports();
   }
 
@@ -185,141 +150,105 @@ ViewManager::_update() {
   // controller(s) will immediately call `onViewStateChange` which calls
   // `viewManager.setProps` again.
   if (this->_needsUpdate) {
-    this->_needsUpdate = false;
+    this->_needsUpdate = std::nullopt;
     this->_rebuildViewports();
   }
 
   this->_isUpdating = false;
 }
 
-ViewManager::_setSize(width, height) {
-  assert(Number.isFinite(width) && Number.isFinite(height));
-  if (width != = this->width || height != = this->height) {
+void ViewManager::setSize(int width, int height) {
+  if (width < 0) {
+    width = 0;
+  }
+  if (height < 0) {
+    height = 0;
+  }
+
+  // Only trigger an update if width actually changed
+  if (width != this->width || height != this->height) {
     this->width = width;
     this->height = height;
-    this->setNeedsUpdate('Size changed');
+    this->setNeedsUpdate("Window size changed");
   }
 }
 
 // Update the view descriptor list and set change flag if needed
 // Does not actually rebuild the `Viewport`s until `getViewports` is called
-ViewManager::_setViews(views) {
-  views = flatten(views, {filter : Boolean});
-
-  const viewsChanged = this->_diffViews(views, this->views);
+void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
+  // TODO(ib): Only update if views actually changed
+  auto viewsChanged = true;  // this->_diffViews(views, this->views);
   if (viewsChanged) {
-    this->setNeedsUpdate('views changed');
+    this->views = views;
+    this->setNeedsUpdate("Views changed");
   }
-
-  this->views = views;
 }
 
-ViewManager::_setViewState(viewState) {
-  if (viewState) {
-    const viewStateChanged = !deepEqual(viewState, this->viewState);
+void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
+  auto viewStateChanged = !viewState->equals(this->viewState);
 
-    if (viewStateChanged) {
-      this->setNeedsUpdate('viewState changed');
-    }
-
+  if (viewStateChanged) {
     this->viewState = viewState;
-  } else {
-    log.warn('missing `viewState` or `initialViewState`')();
+    this->setNeedsUpdate("viewState changed");
   }
 }
 
-//
-// PRIVATE METHODS
-//
+// void ViewManager::setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates) {
+//   if (viewState) {
+//     auto viewStateChanged = !viewState->equals(this->viewState);
 
-ViewManager::_onViewStateChange(viewId, event) {
-  event.viewId = viewId;
-  this->_eventCallbacks.onViewStateChange(event);
-}
+//     if (viewStateChanged) {
+//       this->setNeedsUpdate("viewState changed");
+//     }
 
-ViewManager::_createController(props) {
-  const Controller = props.type;
+//     this->viewState = viewStates;
+//   } else {
+//     // log.warn('missing `viewState` or `initialViewState`')();
+//   }
+// }
 
-  const controller = new Controller(Object.assign({
-    timeline : this->timeline,
-    eventManager : this->_eventManager,
-    // Set an internal callback that calls the prop callback if provided
-    onViewStateChange : this->_onViewStateChange.bind(this, props.id),
-    onStateChange : this->_eventCallbacks.onInteractiveStateChange
-  },
-                                                  props));
-
-  return controller;
-}
-
-ViewManager::_updateController(view, viewState, viewport, controller) {
-  if (view.controller) {
-    const controllerProps = Object.assign(
-        {}, view.controller, viewState,
-        {id : view.id, x : viewport.x, y : viewport.y, width : viewport.width, height : viewport.height});
-
-    // TODO - check if view / controller type has changed, and replace
-    // the controller
-    if (controller) {
-      controller.setProps(controllerProps);
-    } else {
-      controller = this->_createController(controllerProps);
-    }
-    return controller;
-  }
-  return null;
-}
+// void ViewManager::_onViewStateChange(viewId, event) {
+//   event.viewId = viewId;
+//   this->_eventCallbacks.onViewStateChange(event);
+// }
 
 // Rebuilds viewports from descriptors towards a certain window size
-ViewManager::_rebuildViewports() {
-  const {width, height, views} = this;
+void ViewManager::_rebuildViewports() {
+  throw std::logic_error("rebuild viewports not implemented");
+  // const {width, height, views} = this;
 
-  const oldControllers = this->controllers;
-  this->_viewports = [];
-  this->controllers = {};
+  // this->_viewports = [];
+  // this->controllers = {};
 
-  // Create controllers in reverse order, so that views on top receive
-  // events first
-  for (let i = views.length; i--;) {
-    const view = views[i];
-    const viewState = this->getViewState(view);
-    const viewport = view.makeViewport({width, height, viewState});
+  // for (let i = views.length; i--;) {
+  //   const view = views[i];
+  //   const viewState = this->getViewState(view);
+  //   const viewport = view.makeViewport({width, height, viewState});
 
-    // Update the controller
-    this->controllers[view.id] = this->_updateController(view, viewState, viewport, oldControllers[view.id]);
+  //   this->_viewports.unshift(viewport);
+  // }
 
-    this->_viewports.unshift(viewport);
-  }
-
-  // Remove unused controllers
-  for (const id in oldControllers) {
-    if (oldControllers[id] && !this->controllers[id]) {
-      oldControllers[id].finalize();
-    }
-  }
-
-  this->_buildViewportMap();
+  // this->_buildViewportMap();
 }
 
-ViewManager::_buildViewportMap() {
-  // Build a view id to view index
-  this->_viewportMap = {};
-  this->_viewports.forEach(viewport = > {
-    if (viewport.id) {
-      // TODO - issue warning if multiple viewports use same id
-      this->_viewportMap[viewport.id] = this->_viewportMap[viewport.id] || viewport;
-    }
-  });
-}
+// ViewManager::_buildViewportMap() {
+//   // Build a view id to view index
+//   this->_viewportMap = {};
+//   this->_viewports.forEach(viewport = > {
+//     if (viewport.id) {
+//       // TODO - issue warning if multiple viewports use same id
+//       this->_viewportMap[viewport.id] = this->_viewportMap[viewport.id] || viewport;
+//     }
+//   });
+// }
 
 // Check if viewport array has changed, returns true if any change
 // Note that descriptors can be the same
-ViewManager::_diffViews(newViews, oldViews) {
-  if (newViews.length != = oldViews.length) {
-    return true;
-  }
+// ViewManager::_diffViews(const std::list<std::shared_ptr<View>> &views, const std::list<std::shared_ptr<View>> &views)
+// {
+//   if (newViews.length != = oldViews.length) {
+//     return true;
+//   }
 
-  return newViews.some((_, i) = > !newViews[i].equals(oldViews[i]));
-}
-
-} // namespace deckgl
+//   return newViews.some((_, i) = > !newViews[i].equals(oldViews[i]));
+// }

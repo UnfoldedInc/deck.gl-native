@@ -33,8 +33,9 @@ class JSONObject {
   virtual auto getProperties() const -> const Properties*;
 
   // Compares the contents of this prop object against another prop object
-  auto equals(const JSONObject* other) -> bool;
-  auto compare(const JSONObject* other) -> std::optional<std::string>;
+  auto equals(const JSONObject* other) const -> bool;
+  auto equals(std::shared_ptr<JSONObject> other) const -> bool { return this->equals(other.get()); }
+  auto compare(const JSONObject* other) const -> std::optional<std::string>;
 
   bool hasProperty(const std::string& key) const;
 

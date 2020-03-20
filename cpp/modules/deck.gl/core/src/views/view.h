@@ -21,67 +21,71 @@
 #ifndef DECKGL_CORE_VIEWS_VIEW_H
 #define DECKGL_CORE_VIEWS_VIEW_H
 
+#include <memory>
+#include <string>
+
 #include "../viewports/viewport.h"  // {Viewport}
+#include "./view-state.h"           // {ViewState}
+#include "deck.gl/json.h"
 
 namespace deckgl {
 
+class ViewManager;
+
 class View : public Component {
+  friend class ViewManager;
+
  public:
   class Props;
 
-  View(Props *props);
-  ~View() {}
+  explicit View(Props *props);
+  ~View();
 
   bool equals(const View *view);
 
-  // Build a `Viewport` from a view descriptor
-  // TODO - add support for autosizing viewports using width and height
-  auto makeViewport() -> Viewport *;  // {width, height, viewState});
+  auto getViewStateId() const -> std::string;
 
-  auto getViewStateId() -> const std::string;
+ protected:
+  // Create actual viewport
+  virtual auto _getViewport() const -> std::shared_ptr<Viewport> = 0;
+
+ private:
+  // Build a `Viewport` from a view descriptor
+  auto makeViewport() -> Viewport *;
 
   // Allows view to override (or completely define) viewState
-  // filterViewState(viewState);
+  auto filterViewState(std::shared_ptr<ViewState>) -> std::shared_ptr<ViewState>;
 
   // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
-  // auto getDimensions(int width, int height) -> ;
-
-  // Used by sub classes to resolve controller props
-  // _getControllerProps(void *defaultOpts);
-
-  // Overridable method
-  // _getViewport(void *props);
+  // auto getDimensions(int width, int height) -> Rect...
 
   // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
   // _parseDimensions(int x, int y, int width, int height});
 };
 
+// TODO(ib) - how do we override viewstate? inherit from ViewState
 class View::Props : public Component::Props {
  public:
+  using super = Component::Props;
   static constexpr const char *getTypeName() { return "View"; }
+  auto getProperties() const -> const Properties * override;
 
   std::string id;
 
-  // Window width/height in pixels (for pixel projection)
+  // width/height of view
   int x{0};
   int y{0};
-  const std::string width{"100%"};
-  const std::string height{"100%"};
+  int width{100};
+  int height{100};
 
   // Viewport Options
-  mathgl::Matrix4<double> projectionMatrix;  // Projection matrix
-  mathgl::Matrix4<double> modelMatrix;       // A model matrix to be applied to position, to match the layer props API
+  std::optional<mathgl::Matrix4<double>> projectionMatrix;  // Projection matrix
+  std::optional<mathgl::Matrix4<double>> modelMatrix;       // A model matrix to be applied to position
 
   // Perspective projection parameters, used if projectionMatrix not supplied
   double fovy{50};
   double near{0.1};  // Distance of near clipping plane
   double far{1000};  // Distance of far clipping plane
-
-  // A View can be a wrapper for a viewport instance
-  // viewportInstance = null,
-
-  // Internal: Viewport Type
-  // type = Viewport // TODO - default to WebMercator?
 };
 
 }  // namespace deckgl

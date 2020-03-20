@@ -23,24 +23,18 @@
 
 #include <cmath>
 
+#include "viewport.h"
+
 namespace deckgl {
 
-// View and Projection Matrix calculations for mapbox-js style
-// map view properties
+// View and Projection Matrix calculations for mapbox-js style map view properties
 
-class LngLat {
-
-};
-
-class Viewport {};
-
+// Creates view/projection matrices from mercator params
+// Note: The Viewport is immutable in the sense that it only has accessors.
+// A new viewport instance should be created if any parameters have changed.
+//
 class WebMercatorViewport : public Viewport {
 public:
-  /**
-   * Creates view/projection matrices from mercator params
-   * Note: The Viewport is immutable in the sense that it only has accessors.
-   * A new viewport instance should be created if any parameters have changed.
-   */
   Viewport(
     int width = 1,
     int height = 1,

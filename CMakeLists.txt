@@ -132,7 +132,9 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/lib/attribute/data-column.cc
     cpp/modules/deck.gl/core/src/lib/attribute/attribute.cc
     cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.cc
+    cpp/modules/deck.gl/core/src/lib/view-manager.cpp
     cpp/modules/deck.gl/core/src/viewports/viewport.cpp
+    cpp/modules/deck.gl/core/src/views/view.cpp
     cpp/modules/deck.gl/core/src/views/view-state.cpp
     cpp/modules/deck.gl/core/src/arrow/row.cc
     )

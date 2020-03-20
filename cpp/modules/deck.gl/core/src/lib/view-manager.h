@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_VIEWS_VIEW_MANAGER_H
 #define DECKGL_CORE_VIEWS_VIEW_MANAGER_H
 
+#include <list>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -32,23 +34,24 @@ namespace deckgl {
 
 class ViewManager {
  private:
-  std::optional<std::string> _needsRedraw;
+  std::optional<std::string> _needsRedraw{"Initial render"};
+  std::optional<std::string> _needsUpdate{"Initial render"};
+  std::list<std::shared_ptr<Viewport>> _viewports;  // Generated viewports
+  bool _isUpdating{false};
 
  public:
+  std::list<std::shared_ptr<View>> views;
+  int width{100};
+  int height{100};
+  std::shared_ptr<ViewState> viewState{new ViewState()};
+
   ViewManager();
   virtual ~ViewManager();
 
   // Check if a redraw is needed
-  auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string> {
-    auto redraw = this->_needsRedraw;
-    if (clearRedrawFlags) {
-      this->_needsRedraw = std::nullopt;
-    }
-    return redraw;
-  }
+  auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
   // Views will be updated deeply (in next animation frame)
-  // Potentially regenerating attributes and sub layers
   void setNeedsUpdate(const std::string &reason);
 
   // Checks each viewport for transition updates
@@ -63,12 +66,12 @@ class ViewManager {
    *   + {x, y, width, height} - only return viewports that overlap with this
    * rectangle
    */
-  auto getViewports() -> void;  // (rect)
+  auto getViewports() -> std::list<std::shared_ptr<Viewport>>;  // (rect)
 
-  auto getViews() -> void;
+  auto getViews() -> std::list<std::shared_ptr<View>>;
 
   // Resolves a viewId string to a View, if already a View returns it.
-  auto getView(const std::string &viewOrViewId) -> void;
+  auto getView(const std::string &viewOrViewId) -> std::shared_ptr<View>;
 
   // Returns the viewState for a specific viewId. Matches the viewState by
   // 1. view.viewStateId
@@ -90,31 +93,35 @@ class ViewManager {
    */
   // unproject(xyz, opts);
 
-  void setProps(void *props);
+  //
+  // MODIFIERS
+  //
+
+  // Set the size of the window
+  void setSize(int width, int height);
+
+  // Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called)
+  void setViews(const std::list<std::shared_ptr<View>> &views);
+
+  // Update the view state
+  void setViewState(std::shared_ptr<ViewState> viewStates);
+  void setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates);
 
   //
   // PRIVATE METHODS
   //
 
-  /*
   void _update();
 
-  void _setSize(width, height);
+  // Rebuilds viewports from descriptors towards a certain window size
+  void _rebuildViewports();
 
-  // Update the view descriptor list and set change flag if needed
-  // Does not actually rebuild the `Viewport`s until `getViewports` is called
-  void _setViews(views);
-
-  void _setViewState(viewState);
-
+  /*
   void _onViewStateChange(viewId, event);
 
   void _createController(props);
 
   void _updateController(view, viewState, viewport, controller);
-
-  // Rebuilds viewports from descriptors towards a certain window size
-  void _rebuildViewports();
 
   void _buildViewportMap();
 
