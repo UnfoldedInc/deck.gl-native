@@ -24,8 +24,9 @@
 
 using namespace deckgl;
 
-LayerManager::LayerManager(LayerContext *_context)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
-    : context{_context}                             // gl,
+LayerManager::LayerManager(
+    std::shared_ptr<LayerContext> _context)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
+    : context{_context}                      // gl,
 {
   // this->_needsRedraw = 'Initial render';
   // this->_needsUpdate = false;
