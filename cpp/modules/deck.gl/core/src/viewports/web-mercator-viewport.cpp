@@ -18,9 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <algorithm>
-
 #include "./web-mercator-viewport.h"
+
+#include <algorithm>
 
 #include "math.gl/web-mercator.h"
 

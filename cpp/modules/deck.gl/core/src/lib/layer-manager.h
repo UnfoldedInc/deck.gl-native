@@ -65,6 +65,9 @@ class LayerManager {
 
   // Layer API
 
+  // For JSON: Supply a new layer prop list
+  void setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &newLayers);
+
   void addLayer(std::shared_ptr<Layer>);
   // Gets an (optionally) filtered list of layers
   auto getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
@@ -73,9 +76,6 @@ class LayerManager {
   void removeAllLayers();
   void removeLayer(std::shared_ptr<Layer>);
   void removeLayerById(const std::string &id);
-
-  // For JSON: Supply a new layer prop list
-  void setLayerProps(const std::list<Layer::Props> newLayers);
 
   // Update layers from last cycle if `setNeedsUpdate()` has been called
   void updateLayers();

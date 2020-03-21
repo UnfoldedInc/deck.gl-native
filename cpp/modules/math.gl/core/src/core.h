@@ -8,6 +8,8 @@
 #include <cmath>
 #include <ostream>
 
+#undef PI  // Get rid of nasty cmath macro (conflicts e.g. with ranges)
+
 namespace mathgl {
 
 // Approx equals for floating point

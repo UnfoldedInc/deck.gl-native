@@ -101,7 +101,7 @@ void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
 // auto LayerManager::findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
 
 void LayerManager::removeAllLayers() {
-  // TODO - exception handling
+  // TODO(ib) - exception handling
   for (auto layer : this->layers) {
     layer->finalize();
   }
@@ -113,7 +113,7 @@ void LayerManager::removeLayer(std::shared_ptr<Layer> layer) { throw std::logic_
 void LayerManager::removeLayerById(const std::string &id) { throw std::logic_error("Not implemented"); }
 
 // For JSON: Supply a new layer prop list, match against existing layers
-void LayerManager::setLayerProps(const std::list<Layer::Props> layerPropsList) {
+void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &layerPropsList) {
   /*
   // Create a map of old layers
   std::map<std::string, Layer *> oldLayerMap;

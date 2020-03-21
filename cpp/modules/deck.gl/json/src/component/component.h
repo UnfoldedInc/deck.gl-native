@@ -20,8 +20,19 @@ class JSONConverter;  // #include "../converter/json-converter.h"
 
 class Component {
  public:
-  using Props = JSONObject;
+  class Props;
+
+  explicit Component(std::shared_ptr<Props> props) : _props{props} {}
   virtual ~Component() {}
+
+ protected:
+  std::shared_ptr<Props> _props;
+};
+
+class Component::Props : public JSONObject {
+ public:
+  using super = JSONObject;
+  // virtual auto createComponent() const -> std::shared_ptr<Component> = 0;
 };
 
 }  // namespace deckgl
