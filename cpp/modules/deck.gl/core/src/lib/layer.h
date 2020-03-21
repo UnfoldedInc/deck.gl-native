@@ -26,9 +26,11 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 
+#include "./component.h"
 #include "./constants.h"
 #include "./layer-context.h"
 #include "attribute/attribute-manager.h"
@@ -54,7 +56,7 @@ namespace deckgl {
 // const TRACE_FINALIZE = "layer.finalize";
 // const TRACE_MATCHED = "layer.matched";
 
-// TODO - these should be imported from other files
+// TODO(ib): these should be imported from other files
 
 // let pickingColorCache = new Uint8ClampedArray(0);
 class ColorRGBA {
@@ -68,7 +70,8 @@ class Layer : public Component {
   class Props;
   class ChangeFlags;
 
-  const Layer::Props* props;
+  const auto props() const { return std::dynamic_pointer_cast<const Layer::Props>(this->_props); }
+
   const Layer::Props* oldProps;
   const LayerContext* context;
 
@@ -151,7 +154,7 @@ class Layer : public Component {
   // LIFECYCLE METHODS - redefined by subclasses
 
   // Called once to set up the initial state: App can create WebGL resources
-  virtual void initializeState() = 0;
+  virtual void initializeState();
 
   // Check if update cycle should run. Default returns changeFlags.propsOrDataChanged.
   virtual auto shouldUpdateState(const ChangeFlags&, const Layer::Props* oldProps) -> const std::optional<std::string>&;
@@ -287,44 +290,24 @@ class Layer::Props : public Component::Props {
   using super = Component::Props;
   static constexpr const char* getTypeName() { return "Layer"; }
 
-  Props()
-      // TODO - how to deal with data ?
-      : visible{true},
-        pickable{false},
-        opacity{1.0},
-        coordinateSystem{COORDINATE_SYSTEM::DEFAULT},
-        wrapLongitude{false},
-        positionFormat{"XYZ"},
-        colorFormat{"RGBA"},
-        autoHighlight{false},
-        highlightColor{0, 0, 128, 128},
-        highlightedObjectIndex{-1}  // Callbacks
-                                    // TODO - Initialize to noop (prevent bad_function_call exceptions)
-                                    // , onHover
-                                    // , onClick
-                                    // , onDragStart
-                                    // , onDrag
-                                    // , onDragEnd
-  {}
-
   std::string id;
 
   // data: TODO - how do we manage ownership of data? i.e prevent leaks?
-  void* data;
+  void* data{nullptr};
   std::function<auto(void*, void*)->bool> dataComparator;
   // updateTriggers // TODO - how do we handle these in C++?
 
-  bool visible;
-  bool pickable;
-  float opacity;
+  bool visible{true};
+  bool pickable{false};
+  float opacity{1.0};
 
-  COORDINATE_SYSTEM coordinateSystem;
+  COORDINATE_SYSTEM coordinateSystem{COORDINATE_SYSTEM::DEFAULT};
   mathgl::Vector3<double> coordinateOrigin;
   mathgl::Matrix4<double> modelMatrix;
-  bool wrapLongitude;
+  bool wrapLongitude{false};
 
-  std::string positionFormat;
-  std::string colorFormat;
+  std::string positionFormat{"XYZ"};
+  std::string colorFormat{"RGBA"};
 
   // Offset depth based on layer index to avoid z-fighting. Negative values
   // pull layer towards the camera
@@ -336,8 +319,8 @@ class Layer::Props : public Component::Props {
 
   // Selection/Highlighting
   bool autoHighlight;
-  ColorRGBA highlightColor;
-  int highlightedObjectIndex;
+  ColorRGBA highlightColor{0, 0, 128, 128};
+  int highlightedObjectIndex{false};
 
   // std::function<void()> onHover;
   // std::function<void()> onClick;
@@ -345,8 +328,11 @@ class Layer::Props : public Component::Props {
   // std::function<void()> onDrag;
   // std::function<void()> onDragEnd;
 
-  // implement Component::Props interface
+  // Property Type Machinery
   auto getProperties() const -> const Properties* override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> Layer* override {
+    return new Layer{std::dynamic_pointer_cast<Layer::Props>(props)};
+  }
 };
 
 }  // namespace deckgl

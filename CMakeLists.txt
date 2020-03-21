@@ -93,7 +93,6 @@ set(DECKGL_JSON_HEADER_FILES
     cpp/modules/deck.gl/json/src/converter/json-types.h
     cpp/modules/deck.gl/json/src/converter/json-types-mathgl.h
     cpp/modules/deck.gl/json/src/converter/json-converter.h
-    cpp/modules/deck.gl/json/src/component/component.h
     cpp/modules/deck.gl/json/src/json-object/json-object.h
 )
 
@@ -115,6 +114,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/lib/attribute/data-column.h
     cpp/modules/deck.gl/core/src/lib/attribute/attribute.h
     cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.h
+    cpp/modules/deck.gl/core/src/lib/component.h
     cpp/modules/deck.gl/core/src/lib/constants.h
     cpp/modules/deck.gl/core/src/lib/deck.h
     cpp/modules/deck.gl/core/src/lib/layer.h

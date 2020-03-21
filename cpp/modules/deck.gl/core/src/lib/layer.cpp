@@ -152,7 +152,7 @@ auto Layer::getNeedsUpdate() -> std::optional<std::string> {
 }
 
 // Returns true if the layer is pickable and visible.
-auto Layer::isPickable() const -> bool { return this->props->pickable && this->props->visible; }
+auto Layer::isPickable() const -> bool { return this->props()->pickable && this->props()->visible; }
 
 // auto Layer::getAttributeManager() -> std::shared_ptr<AttributeManager> { return this->attributeManager; }
 
@@ -273,6 +273,7 @@ decodePickingColor(color) {
 //   }
 //   return shaders;
 // }
+void Layer::initializeState() {}
 
 // Let"s layer control if updateState should be called
 auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps)
