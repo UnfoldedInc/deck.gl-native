@@ -67,9 +67,9 @@ class JSONTypeConverterTest : public ::testing::Test {
 TEST_F(JSONTypeConverterTest, JSONParse) {
   Json::Value jsonValue = jsonConverter->parseJson("[1, 2, 3]");
   auto vector3 = fromJson<mathgl::Vector3<double>>(jsonValue);
-  EXPECT_TRUE(vector3.x == 1);
-  EXPECT_TRUE(vector3.y == 2);
-  EXPECT_TRUE(vector3.z == 3);
+  EXPECT_EQ(vector3.x, 1);
+  EXPECT_EQ(vector3.y, 2);
+  EXPECT_EQ(vector3.z, 3);
 }
 
 }  // namespace

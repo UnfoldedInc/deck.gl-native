@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./deck.h"
+#include "./deck.h"  // NOLINT(build/include)
 
 #include <memory>
 
@@ -195,7 +195,7 @@ pickObjects(opts) {
 // Private Methods
 // Get the most relevant view state: props->viewState, if supplied,
 // shadows internal viewState
-// TODO: For backwards compatibility ensure numeric width and height is
+// TODO(ib): For backwards compatibility ensure numeric width and height is
 // added to the viewState
 // auto _getViewState() -> ViewState* { return this->props->viewState || this->viewState; }
 

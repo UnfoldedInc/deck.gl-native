@@ -25,7 +25,7 @@
 #include <iostream>
 #include <string>
 
-#include "csv-data.h"
+#include "./csv-data.h"
 #include "loaders.gl/csv.h"
 
 using namespace loadersgl;

@@ -1,4 +1,24 @@
-#include "row.h"
+// Copyright (c) 2020 Unfolded, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+#include "./row.h"  // NOLINT(build/include)
 
 #include <arrow/array.h>
 
@@ -22,7 +42,7 @@ auto Row::getInt(const std::string& columnName, int nullValue) -> int {
     return static_cast<int>(doubleValue.value());
   }
 
-  // TODO: Log out a warning once logging system is in place
+  // TODO(ilija): Log out a warning once logging system is in place
   //  throw std::logic_error("Invalid column type. Expected int, found: " + chunk->type()->ToString());
 
   return nullValue;
@@ -39,7 +59,7 @@ auto Row::getFloat(const std::string& columnName, float nullValue) -> float {
     return static_cast<float>(doubleValue.value());
   }
 
-  // TODO: Log out a warning once logging system is in place
+  // TODO(ilija): Log out a warning once logging system is in place
   //  throw std::logic_error("Invalid column type. Expected float, found: " + chunk->type()->ToString());
 
   return nullValue;
@@ -56,7 +76,7 @@ auto Row::getDouble(const std::string& columnName, double nullValue) -> double {
     return doubleValue.value();
   }
 
-  // TODO: Log out a warning once logging system is in place
+  // TODO(ilija): Log out a warning once logging system is in place
   //  throw std::logic_error("Invalid column type. Expected double, found: " + chunk->type()->ToString());
 
   return nullValue;
@@ -77,7 +97,7 @@ auto Row::getBool(const std::string& columnName, bool nullValue) -> bool {
     return static_cast<bool>(doubleValue.value());
   }
 
-  // TODO: Log out a warning once logging system is in place
+  // TODO(ilija): Log out a warning once logging system is in place
   //  throw std::logic_error("Invalid column type. Expected bool, found: " + chunk->type()->ToString());
 
   return nullValue;
@@ -93,7 +113,7 @@ auto Row::getString(const std::string& columnName, const std::string& nullValue)
     return stringArray->GetString(this->_chunkIndex);
   }
 
-  // TODO: Log out a warning once logging system is in place
+  // TODO(ilija): Log out a warning once logging system is in place
   //  throw std::logic_error("Invalid column type. Expected string, found: " + chunk->type()->ToString());
 
   return nullValue;
@@ -109,7 +129,7 @@ auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& n
 
       auto length = nextOffset - thisOffset;
       if (length != 2) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
         return nullValue;
       }
@@ -124,7 +144,7 @@ auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& n
 
       auto length = nextOffset - thisOffset;
       if (length != 2) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
 
         return nullValue;
@@ -135,7 +155,7 @@ auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& n
     }
 
     default:
-      // TODO: Log out a warning once logging system is in place
+      // TODO(ilija): Log out a warning once logging system is in place
       // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
       return nullValue;
   }
@@ -151,7 +171,7 @@ auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>&
 
       auto length = nextOffset - thisOffset;
       if (length != 2) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
         return nullValue;
       }
@@ -166,7 +186,7 @@ auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>&
 
       auto length = nextOffset - thisOffset;
       if (length != 2) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
 
         return nullValue;
@@ -177,7 +197,7 @@ auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>&
     }
 
     default:
-      // TODO: Log out a warning once logging system is in place
+      // TODO(ilija): Log out a warning once logging system is in place
       // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
       return nullValue;
   }
@@ -193,7 +213,7 @@ auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& n
 
       auto length = nextOffset - thisOffset;
       if (length != 3) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
         return nullValue;
       }
@@ -208,7 +228,7 @@ auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& n
 
       auto length = nextOffset - thisOffset;
       if (length != 3) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
 
         return nullValue;
@@ -219,7 +239,7 @@ auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& n
     }
 
     default:
-      // TODO: Log out a warning once logging system is in place
+      // TODO(ilija): Log out a warning once logging system is in place
       // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
       return nullValue;
   }
@@ -235,7 +255,7 @@ auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>&
 
       auto length = nextOffset - thisOffset;
       if (length != 3) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
         return nullValue;
       }
@@ -250,7 +270,7 @@ auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>&
 
       auto length = nextOffset - thisOffset;
       if (length != 3) {
-        // TODO: Log out a warning once logging system is in place
+        // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
 
         return nullValue;
@@ -261,7 +281,7 @@ auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>&
     }
 
     default:
-      // TODO: Log out a warning once logging system is in place
+      // TODO(ilija): Log out a warning once logging system is in place
       // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
       return nullValue;
   }
@@ -282,7 +302,7 @@ auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Arr
   int64_t offset = 0;
   for (auto chunk : column->chunks()) {
     if (_rowIndex >= offset && _rowIndex < offset + chunk->length()) {
-      // TODO: Cache
+      // TODO(ilija): Cache
       return chunk;
     }
 
@@ -314,7 +334,7 @@ auto Row::_getChunkIndex(const std::shared_ptr<arrow::Table>& table, int rowInde
   throw std::logic_error("Invalid chunk lookup");
 }
 
-// TODO: Sacrificing performance and precision for conciseness, revisit
+// TODO(ilija): Sacrificing performance and precision for conciseness, revisit
 auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optional<double> {
   switch (chunk->type_id()) {
     case arrow::Type::DOUBLE:
@@ -334,7 +354,7 @@ auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optiona
 auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector2<float>& nullValue)
     -> Vector2<float> {
   if (values->type_id() != arrow::Type::FLOAT) {
-    // TODO: Log out a warning once logging system is in place
+    // TODO(ilija): Log out a warning once logging system is in place
     // throw std::logic_error("Inconsistent vector type, expected float got: " + values->type()->ToString());
     return nullValue;
   }
@@ -350,7 +370,7 @@ auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector2<double>& nullValue)
     -> Vector2<double> {
   if (values->type_id() != arrow::Type::DOUBLE) {
-    // TODO: Log out a warning once logging system is in place
+    // TODO(ilija): Log out a warning once logging system is in place
     // throw std::logic_error("Inconsistent vector type, expected double got: " + values->type()->ToString());
     return nullValue;
   }
@@ -366,7 +386,7 @@ auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
 auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector3<float>& nullValue)
     -> Vector3<float> {
   if (values->type_id() != arrow::Type::FLOAT) {
-    // TODO: Log out a warning once logging system is in place
+    // TODO(ilija): Log out a warning once logging system is in place
     // throw std::logic_error("Inconsistent vector type, expected double got: " + values->type()->ToString());
     return nullValue;
   }
@@ -383,7 +403,7 @@ auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector3<double>& nullValue)
     -> Vector3<double> {
   if (values->type_id() != arrow::Type::DOUBLE) {
-    // TODO: Log out a warning once logging system is in place
+    // TODO(ilija): Log out a warning once logging system is in place
     // throw std::logic_error("Inconsistent vector type, expected double got: " + values->type()->ToString());
     return nullValue;
   }
