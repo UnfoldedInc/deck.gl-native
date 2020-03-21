@@ -21,6 +21,7 @@
 #ifndef DECKGL_CORE_LAYER_MANAGER_H
 #define DECKGL_CORE_LAYER_MANAGER_H
 
+#include <memory>
 #include <optional>
 
 #include "./layer-context.h"
@@ -32,8 +33,7 @@ class LayerManager {
  public:
   std::shared_ptr<LayerContext> context;
 
-  std::list<Layer *> layers;
-  std::list<Layer *> lastRenderedLayers;
+  std::list<std::shared_ptr<Layer>> layers;
 
   std::optional<std::string> _needsRedraw;
   std::optional<std::string> _needsUpdate;
@@ -63,13 +63,15 @@ class LayerManager {
   void setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &newLayers);
 
   void addLayer(std::shared_ptr<Layer>);
-  // Gets an (optionally) filtered list of layers
-  auto getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
-      -> std::list<std::shared_ptr<Layer>>;
-  auto findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
-  void removeAllLayers();
   void removeLayer(std::shared_ptr<Layer>);
-  void removeLayerById(const std::string &id);
+  void removeLayer(const std::string &id);
+
+  // Gets an (optionally) filtered list of layers
+  // auto getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
+  //     -> std::list<std::shared_ptr<Layer>>;
+  // auto findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
+  // void removeAllLayers();
+  // void removeLayerById(const std::string &id);
 
   // Update layers from last cycle if `setNeedsUpdate()` has been called
   void updateLayers();

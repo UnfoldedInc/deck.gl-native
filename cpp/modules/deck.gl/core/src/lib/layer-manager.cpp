@@ -22,6 +22,9 @@
 
 #include "./layer.h"
 
+#undef PI
+#include "range/v3/all.hpp"
+
 using namespace deckgl;
 
 LayerManager::LayerManager(
@@ -88,41 +91,17 @@ void LayerManager::setOnError() {}
 
 // Layer API
 
-void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
-  // if (this->findLayerById(const std::string &id)) {
-  //   throw std::runtime_error("Layer with id already exists");
-  // }
-  // this->addLayer();
-}
-
-// Gets an (optionally) filtered list of layers
-// auto LayerManager::getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
-//     -> std::list<std::shared_ptr<Layer>>;
-
-// auto LayerManager::findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
-
-void LayerManager::removeAllLayers() {
-  // TODO(ib) - exception handling
-  for (auto layer : this->layers) {
-    layer->finalize();
-  }
-  this->layers.clear();
-}
-
-void LayerManager::removeLayer(std::shared_ptr<Layer> layer) { throw std::logic_error("Not implemented"); }
-
-void LayerManager::removeLayerById(const std::string &id) { throw std::logic_error("Not implemented"); }
-
 // For JSON: Supply a new layer prop list, match against existing layers
 void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &layerPropsList) {
   // Create a map of old layers
   std::map<std::string, Layer *> oldLayerMap;
   for (auto oldLayer : this->layers) {
-    oldLayerMap[oldLayer->props()->id] = oldLayer;
+    oldLayerMap[oldLayer->props()->id] = oldLayer.get();
   }
 
   // Update old layers or add new layers if not matched
   for (auto layerProps : layerPropsList) {
+    // ranges::find(oldLayerMap, layerProps->id);
     auto matchedLayerIterator = oldLayerMap.find(layerProps->id);
     if (matchedLayerIterator != oldLayerMap.end()) {
       // If a layer with this id is present, set the props
@@ -137,14 +116,44 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
   }
 
   // Remove any unmatched layers
-  /*
-  for (auto unmatchedLayerEntry : oldLayerMap) {
-    auto unmatchedLayer = unmatchedLayerEntry.second;
+  for (const auto &unmatchedLayerId : oldLayerMap | ranges::views::keys) {
     // TODO(ib): handle exceptions
-    this->removeLayer(unmatchedLayer);
+    this->removeLayer(unmatchedLayerId);
   }
-  */
 }
+
+void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
+  auto id = layer->props()->id;
+  bool idExists = ranges::any_of(this->layers, [id](auto layer) { return layer->props()->id == id; });
+  if (idExists) {
+    throw std::runtime_error("Layer with id already exists");
+  }
+  this->layers.push_back(layer);
+}
+
+void LayerManager::removeLayer(std::shared_ptr<Layer> layer) {
+  this->layers.remove_if([layer](auto layer_) { return layer_ == layer; });
+}
+
+void LayerManager::removeLayer(const std::string &id) {
+  this->layers.remove_if([id](auto layer) { return layer->props()->id == id; });
+}
+
+/*
+// Gets an (optionally) filtered list of layers
+// auto LayerManager::getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
+//     -> std::list<std::shared_ptr<Layer>>;
+
+// auto LayerManager::findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
+
+void LayerManager::removeAllLayers() {
+  // TODO(ib) - exception handling
+  for (auto layer : this->layers) {
+    layer->finalize();
+  }
+  this->layers.clear();
+}
+*/
 
 // Update layers from last cycle if `setNeedsUpdate()` has been called
 void LayerManager::updateLayers() {
