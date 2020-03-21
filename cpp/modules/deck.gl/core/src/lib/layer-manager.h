@@ -26,17 +26,11 @@
 #include "./layer-context.h"
 #include "./layer.h"
 
-/*
-import {LIFECYCLE} from '../lifecycle/constants';
-import Viewport from '../viewports/viewport';
-import {createProgramManager} from '../shaderlib';
-*/
-
 namespace deckgl {
 
 class LayerManager {
  public:
-  LayerContext *context;
+  std::shared_ptr<LayerContext> context;
 
   std::list<Layer *> layers;
   std::list<Layer *> lastRenderedLayers;
@@ -45,7 +39,7 @@ class LayerManager {
   std::optional<std::string> _needsUpdate;
   bool _debug;
 
-  LayerManager(LayerContext *context);
+  explicit LayerManager(std::shared_ptr<LayerContext> context);
   virtual ~LayerManager();
 
   // Check if a redraw is needed

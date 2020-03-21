@@ -26,26 +26,7 @@ namespace deckgl {
 class Deck;
 class LayerManager;
 
-// CONTEXT IS EXPOSED TO LAYERS
-/*
-const INITIAL_CONTEXT = Object.seal({
-  layerManager: null,
-  deck: null,
-  gl: null,
-
-  // General resources
-  stats: null, // for tracking lifecycle performance
-
-  // GL Resources
-  shaderCache: null,
-  pickingFBO: null, // Screen-size framebuffer that layers can reuse
-
-  mousePosition: null,
-
-  userData: {} // Place for any custom app `context`
-});
-*/
-
+// LayerContext is data shared between all layers
 class LayerContext {
  public:
   void *gl;
@@ -61,11 +42,7 @@ class LayerContext {
   // mousePosition: null,
   // userData: {} // Place for any custom app `context`
 
-  LayerContext() {}
-      // : deck{deck_},
-      //   layerManager{layerManager_}  // , gl{nullptr}
-      //                                // , stats
-  // {}
+  explicit LayerContext(Deck * deck_) : deck{deck_} {}
 };
 
 }
