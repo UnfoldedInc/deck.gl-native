@@ -70,7 +70,7 @@ install:
   - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
   - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
   # Install our dependencies:
-  - ./vcpkg install jsoncpp gtest --recurse
+  - ./vcpkg install jsoncpp gtest range-v3 --recurse
   - rm -rf buildtrees
   - popd
 
