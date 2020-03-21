@@ -114,31 +114,33 @@ void LayerManager::removeLayerById(const std::string &id) { throw std::logic_err
 
 // For JSON: Supply a new layer prop list, match against existing layers
 void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &layerPropsList) {
-  /*
   // Create a map of old layers
   std::map<std::string, Layer *> oldLayerMap;
   for (auto oldLayer : this->layers) {
-    oldLayerMap[oldLayer->props->id] = oldLayer.get();
+    oldLayerMap[oldLayer->props()->id] = oldLayer;
   }
 
-  //
+  // Update old layers or add new layers if not matched
   for (auto layerProps : layerPropsList) {
-    const oldLayerIterator = oldLayerMap.find(layerProps.id);
-    if (oldLayerIterator != oldLayerMap.end()) {
+    auto matchedLayerIterator = oldLayerMap.find(layerProps->id);
+    if (matchedLayerIterator != oldLayerMap.end()) {
       // If a layer with this id is present, set the props
-      // TODO - catch exceptions and continue
-      auto(*oldLayerIterator)->setProps(layerProps);
-      oldLayerMap.erase(oldLayerIterator);
+      // TODO(ib): catch exceptions and continue
+      auto matchedLayer = matchedLayerIterator->second;
+      matchedLayer->setProps(layerProps);
+      oldLayerMap.erase(matchedLayerIterator);
     } else {
-      // TODO - handle exceptions
-      this->addLayer(layerProps->newObject());
+      // TODO(ib): handle exceptions
+      this->addLayer(std::shared_ptr<Layer>{layerProps->makeComponent(layerProps)});
     }
   }
 
   // Remove any unmatched layers
-  for (const iterator : oldLayerMap) {
-    // TODO - handle exceptions
-    this->removeLayer(*iterator);
+  /*
+  for (auto unmatchedLayerEntry : oldLayerMap) {
+    auto unmatchedLayer = unmatchedLayerEntry.second;
+    // TODO(ib): handle exceptions
+    this->removeLayer(unmatchedLayer);
   }
   */
 }
@@ -146,7 +148,7 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
 // Update layers from last cycle if `setNeedsUpdate()` has been called
 void LayerManager::updateLayers() {
   for (auto layer : this->layers) {
-    // TODO - handle exceptions
+    // TODO(ib): handle exceptions
     layer->update();
   }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Unfolded Inc
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,34 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWS_MAP_VIEW_H
-#define DECKGL_CORE_VIEWS_MAP_VIEW_H
+#ifndef DECKGL_CORE_LIB_COMPONENT_H
+#define DECKGL_CORE_LIB_COMPONENT_H
 
-#include "./view.h" // {View}
-// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
-
+#include <functional>
+#include <iostream>
+#include <list>
+#include <map>
 #include <memory>
+#include <string>
 
-#include "math.gl/core.h"
+#include "deck.gl/json.h"  // {JSONObject}
 
 namespace deckgl {
 
-class MapView : public View {
+class Component {
  public:
-  using super = View;
-  class Props : public View::Props {
-    // Property type machinery
-    auto makeComponent(std::shared_ptr<Component::Props> props) const -> MapView * override {
-      return new MapView{std::dynamic_pointer_cast<MapView::Props>(props)};
-    }
-  };
+  class Props;
+  explicit Component(std::shared_ptr<Props> props) : _props{props} {}
+  virtual ~Component() {}
 
-  explicit MapView(std::shared_ptr<MapView::Props> props) : View(props) {}
+ protected:
+  std::shared_ptr<Props> _props;
+};
 
-protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
+class Component::Props : public JSONObject {
+ public:
+  using super = JSONObject;
+  virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> Component* {
+    return new Component{std::dynamic_pointer_cast<Component::Props>(props)};
+  }
 };
 
 }  // namespace deckgl
 
-#endif // DECKGL_CORE_VIEWS_MAP_VIEW_H
+#endif  // DECKGL_CORE_LIB_COMPONENT_H

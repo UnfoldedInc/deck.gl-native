@@ -237,7 +237,10 @@ class Deck::Props : public Component::Props {
   std::function<void(Deck *, const std::exception &)> onError;
 
   Props();
-  auto getProperties() const -> const Properties *;
+  auto getProperties() const -> const Properties * override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> Deck * override {
+    return new Deck{std::dynamic_pointer_cast<Deck::Props>(props)};
+  }
 };
 
 /*
