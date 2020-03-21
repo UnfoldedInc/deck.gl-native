@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./layer-manager.h"
+#include "./layer-manager.h"  // NOLINT(build/include)
 
 #include "./layer.h"
 
@@ -178,7 +178,7 @@ LayerManager::setProps(props) {
     this->context.userData = props.userData;
   }
 
-  // TODO - For now we set layers before viewports to preserve changeFlags
+  // TODO(ib): - For now we set layers before viewports to preserve changeFlags
   if ('layers' in props) {
     this->setLayers(props.layers);
   }
@@ -193,7 +193,7 @@ LayerManager::setProps(props) {
 // matching
 /*
 void LayerManager::setLayers(std::list<Layer *> newLayers, bool forceUpdate) {
-  // TODO - something is generating state updates that cause rerender of
+  // TODO(ib): - something is generating state updates that cause rerender of
   // the same
   const shouldUpdate = forceUpdate || newLayers != = this->lastRenderedLayers;
   // debug(TRACE_SET_LAYERS, this, shouldUpdate, newLayers);
@@ -203,7 +203,7 @@ void LayerManager::setLayers(std::list<Layer *> newLayers, bool forceUpdate) {
   }
   this->lastRenderedLayers = newLayers;
 
-  // TODO array flattening needs to be done during JSON conversion?
+  // TODO(ib): array flattening needs to be done during JSON conversion?
   // newLayers = flatten(newLayers, {filter : Boolean});
 
   for (auto layer : newLayers) {
@@ -222,7 +222,7 @@ void LayerManager::updateLayers() {
   // different sublayers are rendered
   auto reason = this->needsUpdate();
   if (reason) {
-    this->setNeedsRedraw("updating layers : $ { reason }");  // TODO string
+    this->setNeedsRedraw("updating layers : $ { reason }");  // TODO(ib): string
     // Force a full update
     auto forceUpdate = true;
     this->setLayers(this->lastRenderedLayers, forceUpdate);
@@ -271,7 +271,7 @@ LayerManager::activateViewport(viewport) {
 
 // Match all layers, checking for caught errors
 // To avoid having an exception in one layer disrupt other layers
-// TODO - mark layers with exceptions as bad and remove from rendering
+// TODO(ib): - mark layers with exceptions as bad and remove from rendering
 // cycle?
 /*
 void LayerManager::_updateLayers(oldLayers, newLayers) {

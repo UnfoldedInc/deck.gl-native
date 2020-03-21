@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./view-state.h"
+#include "./view-state.h"  // NOLINT(build/include)
 
 using namespace deckgl;
 

@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./view-manager.h"
+#include "./view-manager.h"  // NOLINT(build/include)
 
 #include <array>
 #include <iostream>

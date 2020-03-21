@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./view.h"  // {View, View::Props}
+#include "./view.h"  // NOLINT(build/include)
 
 #include <vector>
 
@@ -93,21 +93,17 @@ View::~View() {}
 
 auto View::_getViewport(const Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
     -> std::shared_ptr<Viewport> {
-  // TODO
+  // TODO(ib):
   return nullptr;
 }
 
 // Build a `Viewport` from a view descriptor
 // View::makeViewport({width, height, viewState}) {
 auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) -> shared_ptr<Viewport> {
-  // TODO
+  // TODO(ib): calculate rect and filter view state
+  // viewState = this->filterViewState(viewState);
   return this->_getViewport(rect, viewState);
 }
-//   if (this->viewportInstance) {
-//     return this->viewportInstance;
-//   }
-
-//   viewState = this->filterViewState(viewState);
 
 // bool View::equals(view) {
 //   return false
