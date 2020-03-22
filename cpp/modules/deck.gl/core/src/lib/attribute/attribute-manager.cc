@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "attribute-manager.h"  // NOLINT(build/include)
+#include "./attribute-manager.h"  // NOLINT(build/include)
 
 #include <iostream>
 
