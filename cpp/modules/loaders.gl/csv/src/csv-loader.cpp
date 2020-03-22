@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./csv-loader.h"
+#include "./csv-loader.h"  // NOLINT(build/include)
 
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
