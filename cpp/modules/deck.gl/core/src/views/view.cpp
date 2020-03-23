@@ -93,7 +93,7 @@ View::~View() {}
 
 auto View::_getViewport(const Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
     -> std::shared_ptr<Viewport> {
-  // TODO
+  // TODO(isaac)
   auto id = "my_viewport_idTODO";
   auto viewMatrixOptions = ViewMatrixOptions();
   auto projectionMatrixOptions = ProjectionMatrixOptions();

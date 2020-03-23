@@ -24,6 +24,8 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/table.h>
 
+#include <memory>
+
 namespace loadersgl {
 
 class JSONLoader {

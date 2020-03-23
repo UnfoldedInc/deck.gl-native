@@ -25,6 +25,7 @@
 #include <arrow/table.h>
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 #include "math.gl/core.h"

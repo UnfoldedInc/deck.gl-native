@@ -21,7 +21,7 @@
 #ifndef DECKGL_CORE_LIB_ATTRIBUTE_DATA_COLUMN_H
 #define DECKGL_CORE_LIB_ATTRIBUTE_DATA_COLUMN_H
 
-// TODO: Placeholder types
+// TODO(ilija): Placeholder types
 typedef void *UnknownType;
 typedef void *GLPlaceholder;
 typedef void *BufferPlaceholder;
@@ -39,7 +39,7 @@ struct DataColumnOptions {
  public:
   DataColumnOptions(const std::string &identifier, int size, const DataType &defaultValue, bool isIndexed,
                     bool fp64 = true)
-      : identifier(identifier), size(size), defaultValue(defaultValue), isIndexed(isIndexed), fp64(fp64){};
+      : identifier(identifier), size(size), defaultValue(defaultValue), isIndexed(isIndexed), fp64(fp64) {}
 
   std::string identifier;
   int size;
@@ -47,7 +47,7 @@ struct DataColumnOptions {
   bool isIndexed;
   bool fp64;
 
-  // TODO: Not needed?
+  // TODO(ilija): Not needed?
   //    void *logicalType;
   //    void *type;
 };
@@ -67,7 +67,7 @@ class DataColumn {
   BufferPlaceholder buffer();
   int byteOffset();
   void release();
-  // TODO: Unfortunate naming as we already have these getter?
+  // TODO(ilija): Unfortunate naming as we already have these getter?
   BufferPlaceholder getBuffer();
   ValuePlaceholder getValue();
   AccessorPlaceholder getAccessor();
@@ -76,7 +76,7 @@ class DataColumn {
   bool doublePrecision;
   DataType value;
 
-  // TODO: Not needed?
+  // TODO(ilija): Not needed?
   //    void *defaultType;
   //    void *settings;
   //    void *state;

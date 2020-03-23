@@ -67,7 +67,7 @@ struct ViewMatrixOptions {
   DistanceScales distanceScales;
 
   ViewMatrixOptions();
-  ViewMatrixOptions(Matrix4<double> viewMatrix);
+  explicit ViewMatrixOptions(Matrix4<double> viewMatrix);
 };
 
 struct ProjectionMatrixOptions {

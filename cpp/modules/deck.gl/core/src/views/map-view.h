@@ -21,11 +21,10 @@
 #ifndef DECKGL_CORE_VIEWS_MAP_VIEW_H
 #define DECKGL_CORE_VIEWS_MAP_VIEW_H
 
-#include "./view.h" // {View}
-// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
-
 #include <memory>
 
+#include "./view.h"  // {View}
+// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
 #include "math.gl/core.h"
 
 namespace deckgl {
@@ -42,10 +41,11 @@ class MapView : public View {
 
   explicit MapView(std::shared_ptr<MapView::Props> props) : View(props) {}
 
-protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
+ protected:
+  auto _getViewport(const mathgl::Rectangle<int>& rect,
+                    std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
 };
 
 }  // namespace deckgl
 
-#endif // DECKGL_CORE_VIEWS_MAP_VIEW_H
+#endif  // DECKGL_CORE_VIEWS_MAP_VIEW_H

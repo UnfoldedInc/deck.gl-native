@@ -27,6 +27,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "../converter/json-types-mathgl.h"  // {fromJson<T>(math.gl types)}
 #include "../converter/json-types.h"         // {fromJson<T>(std types)}
@@ -85,7 +86,7 @@ class Property {
   const char* typeName{nullptr};
   bool isList{false};
 
-  Property(const char* name_) : name{name_} {}
+  explicit Property(const char* name_) : name{name_} {}
   virtual ~Property() {}
 
   auto getName() const -> std::string { return this->name; }
@@ -103,7 +104,7 @@ class Property {
 template <class T>
 class PropertyT : public Property {
  public:
-  std::function<auto(JSONObject const*)->T> get;  // TODO return const T& ?
+  std::function<auto(JSONObject const*)->T> get;  // TODO(ib): return const T& ?
   std::function<void(JSONObject*, T)> set;
   T defaultValue;
 

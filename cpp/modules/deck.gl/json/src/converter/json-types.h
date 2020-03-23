@@ -21,11 +21,13 @@
 #ifndef DECKGL_JSON_JSON_TYPES_H
 #define DECKGL_JSON_JSON_TYPES_H
 
+#include <string>
+
 #include "json/json.h"  // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
 
 namespace deckgl {
 
-// TODO - mathgl types
+// TODO(ib) - mathgl types
 
 // template <typename T>
 // struct Type {};
