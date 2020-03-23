@@ -24,6 +24,7 @@
 #include <functional>  // {std::function}
 #include <map>
 #include <memory>  // {std::shared_ptr}
+#include <string>
 
 #include "../json-object/json-object.h"  // {JSONObject}
 #include "json/json.h"                   // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
@@ -39,7 +40,7 @@ class JSONConverter {
 
   // methods
   JSONConverter() {}
-  JSONConverter(const std::map<std::string, JsonValueToComponentConverter> &classes_) : classes{classes_} {}
+  explicit JSONConverter(const std::map<std::string, JsonValueToComponentConverter> &classes_) : classes{classes_} {}
 
   // parse JSON string using jsoncpp
   auto parseJson(const std::string &rawJson) -> Json::Value;

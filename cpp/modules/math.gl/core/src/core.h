@@ -1,11 +1,29 @@
-///////////////////////////////////////////////////////////
-/// \file
-/// \brief Matrix operation support for geometrical transformations
+// Copyright (c) 2020, Unfolded Inc
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 #ifndef MATHGL_CORE_CORE_H
 #define MATHGL_CORE_CORE_H
 
+#include <algorithm>
 #include <cmath>
+#include <limits>
 #include <ostream>
 
 #undef PI  // Get rid of nasty cmath macro (conflicts e.g. with ranges)
@@ -768,7 +786,7 @@ template <typename coord>
 auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord> {
   auto f = 1.0 / tan(fovy / 2.0);
   auto nf = 1.0 / (near - far);
-  // TODO: Doesn't support far not being set or far being Infinity
+  // TODO(ib): Doesn't support far not being set or far being Infinity
   return Matrix4<coord>(f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2.0 * far * near * nf, 0);
 }
 
@@ -785,9 +803,9 @@ auto Matrix4<coord>::MultiplyVector(const Vector3<coord> &s) const -> Vector3<co
 
 template <typename coord>
 auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coord> {
-  // TODO - ???
-  //	coord w = m[3][0] * s.x + m[3][1] * s.y + m[3][2] * s.z + m[3][3] *
-  // static_cast<coord>(1); 	 if (abs (w - 1.0) > FLT_EPSILON) throw
+  // TODO(ib) - ???
+  // coord w = m[3][0] * s.x + m[3][1] * s.y + m[3][2] * s.z + m[3][3] *
+  // static_cast<coord>(1); if (abs (w - 1.0) > FLT_EPSILON) throw
   // std::runtime_error ("error");
 
   return Vector3<coord>(m[0][0] * s.x + m[0][1] * s.y + m[0][2] * s.z + m[0][3] * static_cast<coord>(1),

@@ -24,6 +24,8 @@
 #include <arrow/array.h>
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "../../arrow/row.h"
 

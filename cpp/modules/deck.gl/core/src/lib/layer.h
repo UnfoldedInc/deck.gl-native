@@ -315,7 +315,7 @@ class Layer::Props : public Component::Props {
 
   // INTERACTIVITY PROPS
 
-  // TODO - interactivity is not planned for the v0.1 prototype
+  // TODO(ib) - interactivity is not planned for the v0.1 prototype
 
   // Selection/Highlighting
   bool autoHighlight;

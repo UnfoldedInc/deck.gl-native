@@ -45,6 +45,6 @@ class LayerContext {
   explicit LayerContext(Deck * deck_) : deck{deck_} {}
 };
 
-}
+}  // namespace deckgl
 
-#endif // DECKGL_CORE_LAYER_CONTEXT_H
+#endif  // DECKGL_CORE_LAYER_CONTEXT_H

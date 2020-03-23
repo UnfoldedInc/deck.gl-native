@@ -21,8 +21,11 @@
 #ifndef DECKGL_CORE_LAYER_MANAGER_H
 #define DECKGL_CORE_LAYER_MANAGER_H
 
+#include <list>
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "./layer-context.h"
 #include "./layer.h"
@@ -87,7 +90,7 @@ class LayerManager {
 
   // Match all layers, checking for caught errors
   // To avoid having an exception in one layer disrupt other layers
-  // TODO - mark layers with exceptions as bad and remove from rendering cycle?
+  // TODO(ib) - mark layers with exceptions as bad and remove from rendering cycle?
   void _updateLayers(const std::list<Layer> &oldLayers, const std::list<Layer::Props> &newLayers);
 
   // Finalize any old layers that were not matched

@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-#include "viewport.h"
+#include "./viewport.h"
 
 namespace deckgl {
 

@@ -28,11 +28,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "attribute.h"
+#include "./attribute.h"
 
 namespace deckgl {
 
-// TODO: Placeholder types
+// TODO(ilija): Placeholder types
 typedef void* GLPlaceholder;
 
 /*

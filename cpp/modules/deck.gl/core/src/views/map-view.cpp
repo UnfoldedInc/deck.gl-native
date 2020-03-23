@@ -18,10 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./map-view.h"                          // {MapView}
-#include "../viewports/web-mercator-viewport.h"  // {WebMercatorViewport}
+#include "./map-view.h"  // {MapView} NOLINT(build/include)
 
 #include <vector>
+
+#include "../viewports/web-mercator-viewport.h"  // {WebMercatorViewport}
 
 using namespace std;
 using namespace deckgl;

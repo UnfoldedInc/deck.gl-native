@@ -38,7 +38,7 @@ class Viewport {
   double width;
   double height;
   // Not needed
-  double _frustumPlanes;  // TODO: actually an object
+  double _frustumPlanes;  // TODO(isaac): actually an object
   // NEEDED
   bool isGeospatial;
   double zoom;
@@ -153,7 +153,7 @@ class Viewport {
   auto containsPixel(double x, double y, double width = 1, double height = 1) -> bool;
 
   // Extract frustum planes in common space
-  // TODO: don't know type
+  // TODO(isaac): don't know type
   void getFrustrumPlanes();
 
   // EXPERIMENTAL METHODS
