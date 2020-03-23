@@ -18,9 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <algorithm>
+#include "./web-mercator-viewport.h"  // NOLINT(build/include)
 
-#include "./web-mercator-viewport.h"
+#include <algorithm>
 
 #include "math.gl/web-mercator.h"
 
@@ -41,13 +41,13 @@ ViewMatrixOptions calculateViewMatrixOptions(int height, double longitude, doubl
 
   auto opts = ViewMatrixOptions();
   opts.viewMatrix = viewMatrixUncentered;
-  opts.isGeospatial = true;  // TODO ???
+  opts.isGeospatial = true;  // TODO(isaac): ???
   opts.longitude = longitude;
   opts.latitude = latitude;
   opts.zoom = zoom;
   opts.position = Vector3<double>();
-  // opts.modelMatrix // TODO
-  // opts.distanceScales // TODO
+  // opts.modelMatrix // TODO(isaac):
+  // opts.distanceScales // TODO(isaac):
   return opts;
 }
 
@@ -57,7 +57,7 @@ ProjectionMatrixOptions calculateProjectionMatrixOptions(int width, int height, 
   height = height == 0 ? 1 : height;
 
   // Altitude - prevent division by 0
-  // TODO - just throw an Error instead?
+  // TODO(isaac): - just throw an Error instead?
   altitude = max(0.75, altitude);
 
   return getProjectionParameters(width, height, altitude, pitch, nearZMultiplier, farZMultiplier);
@@ -72,10 +72,10 @@ WebMercatorViewport::WebMercatorViewport(int width, int height, double longitude
                calculateViewMatrixOptions(height, longitude, latitude, pitch, bearing, altitude, zoom),
                calculateProjectionMatrixOptions(width, height, pitch, altitude, nearZMultiplier, farZMultiplier), 0, 0,
                width == 0 ? 1 : width, height == 0 ? 1 : height) {
-  // TODO: Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
+  // TODO(isaac): Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
   // but that can't be done in C++. Perhaps just call a non-virtual _init method instead?
 
-  // TODO
+  // TODO(isaac):
   // if (worldOffset) {
   //   const viewOffset = new Matrix4().translate([512 * worldOffset, 0, 0]);
   //   viewMatrixUncentered = viewOffset.multiplyLeft(viewMatrixUncentered);

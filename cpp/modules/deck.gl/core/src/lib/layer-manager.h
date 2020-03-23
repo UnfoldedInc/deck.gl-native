@@ -26,17 +26,11 @@
 #include "./layer-context.h"
 #include "./layer.h"
 
-/*
-import {LIFECYCLE} from '../lifecycle/constants';
-import Viewport from '../viewports/viewport';
-import {createProgramManager} from '../shaderlib';
-*/
-
 namespace deckgl {
 
 class LayerManager {
  public:
-  LayerContext *context;
+  std::shared_ptr<LayerContext> context;
 
   std::list<Layer *> layers;
   std::list<Layer *> lastRenderedLayers;
@@ -45,7 +39,7 @@ class LayerManager {
   std::optional<std::string> _needsUpdate;
   bool _debug;
 
-  LayerManager(LayerContext *context);
+  explicit LayerManager(std::shared_ptr<LayerContext> context);
   virtual ~LayerManager();
 
   // Check if a redraw is needed
@@ -65,6 +59,9 @@ class LayerManager {
 
   // Layer API
 
+  // For JSON: Supply a new layer prop list
+  void setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &newLayers);
+
   void addLayer(std::shared_ptr<Layer>);
   // Gets an (optionally) filtered list of layers
   auto getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
@@ -73,9 +70,6 @@ class LayerManager {
   void removeAllLayers();
   void removeLayer(std::shared_ptr<Layer>);
   void removeLayerById(const std::string &id);
-
-  // For JSON: Supply a new layer prop list
-  void setLayerProps(const std::list<Layer::Props> newLayers);
 
   // Update layers from last cycle if `setNeedsUpdate()` has been called
   void updateLayers();

@@ -65,31 +65,20 @@ namespace deckgl {
 class Deck : public Component {
  public:
   class Props;
+  auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
 
-  Props *props;
+  int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
+  int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  int width;   // "read-only", auto-updated from canvas
-  int height;  // "read-only", auto-updated from canvas
+  std::shared_ptr<LayerContext> context{new LayerContext{this}};
+  std::shared_ptr<ViewManager> viewManager{new ViewManager()};
+  std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
+  std::shared_ptr<ViewState> viewState;
 
-  // Maps view descriptors to vieports, rebuilds when width/height/viewState/views change
-  // std::shared_ptr<ViewManager> viewManager;
-  std::shared_ptr<LayerManager> layerManager;
-  // effectManager = nullptr;
-  // deckRenderer = nullptr;
-  // deckPicker = nullptr;
+  //  private:
+  std::optional<std::string> _needsRedraw;
 
-  bool _needsRedraw;
-  void *_pickRequest = nullptr;
-  // Pick and store the object under the pointer on `pointerdown`.
-  // This object is reused for subsequent `onClick` and `onDrag*`
-  // callbacks.
-  void *_lastPointerDownInfo = nullptr;
-
-  // viewState = nullptr;  // Internal view state if no callback is supplied
-  // this->interactiveState = {
-  //   isDragging: false // Whether the cursor is down
-
-  explicit Deck(Deck::Props *props);
+  explicit Deck(std::shared_ptr<Deck::Props> props);
   ~Deck();
 
   void setProps(Deck::Props *);
@@ -97,109 +86,38 @@ class Deck : public Component {
   // Public API
 
   // Check if a redraw is needed
-  // Returns `false` or a string summarizing the redraw reason
-  // opts.clearRedrawFlags (Boolean) - clear the redraw flag. Default
-  // `true`
-  auto needsRedraw(bool clearRedrawFlags = false) -> std::string;
-
+  // Returns an optional string summarizing the redraw reason
+  // - clearRedrawFlags (Boolean) - clear the redraw flag.
+  auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
   void redraw(bool force = false);
 
   auto getViews() -> std::list<View>;  // { return this->viewManager->views; }
 
-  /*
   // Get a set of viewports for a given width and height
-  getViewports(rect) {
-    return this->viewManager.getViewports(rect);
-  }
+  // `getViewports`(rect);
+  // `pickObject`({x, y, radius = 0, layerIds = nullptr, unproject3D})
+  // `pickMultipleObjects`({x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10})
+  // `pickObjects`({x, y, width = 1, height = 1, layerIds = nullptr})
 
-  // {x, y, radius = 0, layerIds = nullptr, unproject3D}
-  pickObject(opts) {
-    const infos = this->_pick('pickObject', 'pickObject Time',
-  opts).result; return infos.length ? infos[0] : nullptr;
-  }
-
-  // {x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10}
-  pickMultipleObjects(opts) {
-    opts.depth = opts.depth || 10;
-    return this->_pick('pickObject', 'pickMultipleObjects Time',
-  opts).result;
-  }
-
-  // {x, y, width = 1, height = 1, layerIds = nullptr}
-  pickObjects(opts) {
-    return this->_pick('pickObjects', 'pickObjects Time', opts);
-  }
-  */
-
-  // Private Methods
+ private:
   // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
   auto _getViewState() -> ViewState *;  // { return this->props->viewState || this->viewState; }
 
   // Get the view descriptor list
   void _getViews();
-
-  /*
-  auto _pick(method, statKey, opts);
-
-  // canvas, either string, canvas or `nullptr`
-  auto _createCanvas(props);
-
-  // Updates canvas width and/or height, if provided as props
-  auto _setCanvasSize(props);
-
-  // If canvas size has changed, updates
-  auto _updateCanvasSize();
-
-  // If canvas size has changed, reads out the new size and returns true
-  auto _checkForCanvasSizeChange();
-
-  void _createAnimationLoop(props);
-
-  // The `pointermove` event may fire multiple times in between two animation frames,
-  // it's a waste of time to run picking without rerender. Instead we save the last pick
-  // request and only do it once on the next animation frame.
-  void _onPointerMove(event);
-
-  // Actually run picking
-  void _pickAndCallback();
-
-  void _updateCursor();
-
-  void _setGLContext(void *gl);
-  */
-
   void _drawLayers(const std::string &redrawReason);  // , renderOptions);
-  // Callbacks
-
   void _onRendererInitialized(void *gl);
-
-  void _onRenderFrame();  // animationProps);
-
-  // Callbacks
-
+  void _onRenderFrame();      // animationProps);
   void _onViewStateChange();  // params);
-
-  /*
-  void _onInteractiveStateChange(isDragging = false);
-
-  void _onEvent(event);
-
-  void _onPointerDown(event);
-
-  void _getFrameStats();
-
-  void _getMetrics();
-  */
-};
+};                            // namespace deckgl
 
 class Deck::Props : public Component::Props {
  public:
   using super = Component::Props;
-  static constexpr const char *getTypeName() { return "Deck"; }
 
-  std::string id;  // PropTypes.string,
-  int width;       // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  int height;      // PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  std::string id{"deckgl"};
+  int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
+  int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
   // layer/view/controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
@@ -207,84 +125,35 @@ class Deck::Props : public Component::Props {
   std::shared_ptr<ViewState> viewState;             // PropTypes.object,
   std::shared_ptr<ViewState> initialViewState;
 
-  // effects, // PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
-  // controller, // PropTypes.oneOfType([PropTypes.func, PropTypes.bool, PropTypes.object]),
-  // std::string touchAction, // PropTypes.string,
-
-  // GL settings
-  // gl, // PropTypes.object,
-  // glOptions, // PropTypes.object,
-  // parameters, // PropTypes.object,
-  void *_framebuffer;    // PropTypes.object, // Experimental props
-  bool _animate;         // PropTypes.bool // Forces a redraw every animation frame
-  float pickingRadius;   // PropTypes.number,
-  bool useDevicePixels;  // PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  void *_framebuffer{nullptr};  // PropTypes.object, // Experimental props
+  bool _animate{false};         // PropTypes.bool // Forces a redraw every animation frame
+  float pickingRadius{5};       // PropTypes.number,
 
   // Debug settings
-  bool debug;              // PropTypes.bool;
-  bool drawPickingColors;  // PropTypes.bool;
+  bool debug{false};
+  bool drawPickingColors{false};
 
   // Callbacks
-  // std::function<> layerFilter, // PropTypes.func,
-  std::function<void(Deck *, void *gl)> onWebGLInitialized;
-  std::function<void(Deck *, int width, int height)> onResize;
-  std::function<auto(Deck *, const ViewState *)->ViewState *> onViewStateChange;
-  std::function<void(Deck *)> onBeforeRender;
-  std::function<void(Deck *)> onAfterRender;
-  std::function<void(Deck *)> onLoad;
-  std::function<void(Deck *, const std::exception &)> onError;
+  std::function<void(Deck *, void *gl)> onWebGLInitialized{[](Deck *, void *gl) {}};
+  std::function<void(Deck *, int width, int height)> onResize{[](Deck *, int width, int height) {}};
+  std::function<auto(Deck *, ViewState *)->ViewState *> onViewStateChange{[](Deck *, ViewState *vs) { return vs; }};
+  std::function<void(Deck *)> onBeforeRender{[](Deck *) {}};
+  std::function<void(Deck *)> onAfterRender{[](Deck *) {}};
+  std::function<void(Deck *)> onLoad{[](Deck *) {}};
+  std::function<void(Deck *, const std::exception &)> onError{[](Deck *, const std::exception &) {}};
 
-  Props();
-  auto getProperties() const -> const Properties *;
+  // GL settings - these are creation parameters, can not be updated, maybe move out of props?
+  // gl,
+  // glOptions,
+  // parameters,
+
+  // Prop Type Machinery
+  static constexpr const char *getTypeName() { return "Deck"; }
+  auto getProperties() const -> const Properties * override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> Deck * override {
+    return new Deck{std::dynamic_pointer_cast<Deck::Props>(props)};
+  }
 };
-
-/*
-function noop() {}
-
-const getCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
-
-function getPropTypes(PropTypes) {
-  // Note: Arrays (layers, views, ) can contain falsy values
-  return {
-    id: PropTypes.string,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-
-    // layer/view/controller settings
-    layers: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    layerFilter: PropTypes.func,
-    views: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    viewState: PropTypes.object,
-    effects: PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
-    controller: PropTypes.oneOfType([PropTypes.func, PropTypes.bool, PropTypes.object]),
-
-    // GL settings
-    gl: PropTypes.object,
-    glOptions: PropTypes.object,
-    parameters: PropTypes.object,
-    pickingRadius: PropTypes.number,
-    useDevicePixels: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]), touchAction: PropTypes.string,
-
-    // Callbacks
-    onWebGLInitialized: PropTypes.func,
-    onResize: PropTypes.func,
-    onViewStateChange: PropTypes.func,
-    onBeforeRender: PropTypes.func,
-    onAfterRender: PropTypes.func,
-    onLoad: PropTypes.func,
-    onError: PropTypes.func,
-
-    // Debug settings
-    debug: PropTypes.bool,
-    drawPickingColors: PropTypes.bool,
-
-    // Experimental props
-    _framebuffer: PropTypes.object,
-    // Forces a redraw every animation frame
-    _animate: PropTypes.bool
-  };
-}
-*/
 
 }  // namespace deckgl
 

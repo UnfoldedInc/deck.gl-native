@@ -24,6 +24,7 @@
 #include <memory>
 #include <string>
 
+#include "../lib/component.h"       // {Component}
 #include "../viewports/viewport.h"  // {Viewport}
 #include "./view-state.h"           // {ViewState}
 #include "deck.gl/json.h"
@@ -39,7 +40,7 @@ class View : public Component {
  public:
   class Props;
 
-  explicit View(Props *props);
+  explicit View(std::shared_ptr<View::Props> props);
   ~View();
 
   bool equals(const View *view);
@@ -70,8 +71,6 @@ class View : public Component {
 class View::Props : public Component::Props {
  public:
   using super = Component::Props;
-  static constexpr const char *getTypeName() { return "View"; }
-  auto getProperties() const -> const Properties * override;
 
   std::string id;
 
@@ -89,6 +88,13 @@ class View::Props : public Component::Props {
   double fovy{50};
   double near{0.1};  // Distance of near clipping plane
   double far{1000};  // Distance of far clipping plane
+
+  // Property type machinery
+  static constexpr const char *getTypeName() { return "View"; }
+  auto getProperties() const -> const Properties * override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> View * override {
+    return new View{std::dynamic_pointer_cast<View::Props>(props)};
+  }
 };
 
 }  // namespace deckgl

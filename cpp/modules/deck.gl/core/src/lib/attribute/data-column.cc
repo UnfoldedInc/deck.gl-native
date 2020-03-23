@@ -1,1 +1,1 @@
-#include "data-column.h"
+#include "data-column.h"  // NOLINT(build/include)

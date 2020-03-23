@@ -18,7 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./viewport-uniforms.h"
+#include "./viewport-uniforms.h"  // NOLINT(build/include)
+
 #include <cmath>
 
 using namespace mathgl;
@@ -28,10 +29,10 @@ namespace deckgl {
 auto const VECTOR_TO_POINT_MATRIX = Matrix4<double>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 auto const DEFAULT_PIXELS_PER_UNIT2 = Vector3<double>();
 
-// TODO: consider finding another way rather than these structs. Perhaps make the functions
+// TODO(isaac): consider finding another way rather than these structs. Perhaps make the functions
 // that build them constructors?
 struct OffsetOrigin {
-  // TODO: temporarily replicating the JS logic of this possibly being null
+  // TODO(isaac): temporarily replicating the JS logic of this possibly being null
   std::optional<mathgl::Vector3<double>> geospatialOrigin;
   mathgl::Vector3<double> shaderCoordinateOrigin;
   bool offsetMode;
@@ -68,7 +69,7 @@ auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, math
     case PROJECTION_MODE::WEB_MERCATOR_AUTO_OFFSET:
       if (coordinateSystem == COORDINATE_SYSTEM::LNGLAT) {
         // viewport center in world space
-        // TODO: This must not be null per original logic but unclear how to prove that here
+        // TODO(isaac): This must not be null per original logic but unclear how to prove that here
         shaderCoordinateOrigin = geospatialOrigin.value();
       } else if (coordinateSystem == COORDINATE_SYSTEM::CARTESIAN) {
         // viewport center in common space
@@ -119,7 +120,7 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
     projectionCenter = viewProjectionMatrix.transform(positionCommonSpace);
 
     // Always apply uncentered projection matrix if available (shader adds center)
-    // TODO: elided default of viewport.viewMatrix
+    // TODO(isaac): elided default of viewport.viewMatrix
     viewMatrix = viewMatrixUncentered;
 
     // Zero out 4th coordinate ("after" model matrix) - avoids further translations
@@ -173,7 +174,7 @@ auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORD
                                .project_uDevicePixelRatio = devicePixelRatio,
 
                                // Distance at which screen pixels are projected
-                               // TODO: optional focalDistance
+                               // TODO(isaac): optional focalDistance
                                .project_uFocalDistance = viewport.focalDistance,
                                .project_uCommonUnitsPerMeter = distanceScales.unitsPerMeter,
                                .project_uCommonUnitsPerWorldUnit = distanceScales.unitsPerMeter,

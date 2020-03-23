@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./scatterplot-layer.h"
+#include "./scatterplot-layer.h"  // NOLINT(build/include)
 
 // #include "./scatterplot-layer-fragment.glsl.h"
 // #include "./scatterplot-layer-vertex.glsl.h"

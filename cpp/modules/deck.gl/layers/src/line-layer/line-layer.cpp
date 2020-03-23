@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./line-layer.h"
+#include "./line-layer.h"  // NOLINT(build/include)
 
 // #include "./line-layer-fragment.glsl.h"
 // #include "./line-layer-vertex.glsl.h"

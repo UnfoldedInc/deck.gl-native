@@ -18,14 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./layer-manager.h"
+#include "./layer-manager.h"  // NOLINT(build/include)
 
 #include "./layer.h"
 
 using namespace deckgl;
 
-LayerManager::LayerManager(LayerContext *_context)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
-    : context{_context}                             // gl,
+LayerManager::LayerManager(
+    std::shared_ptr<LayerContext> _context)  // (gl, {deck, stats, viewport = null, timeline = null} = {}) {
+    : context{_context}                      // gl,
 {
   // this->_needsRedraw = 'Initial render';
   // this->_needsUpdate = false;
@@ -101,7 +102,7 @@ void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
 // auto LayerManager::findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
 
 void LayerManager::removeAllLayers() {
-  // TODO - exception handling
+  // TODO(ib) - exception handling
   for (auto layer : this->layers) {
     layer->finalize();
   }
@@ -113,32 +114,34 @@ void LayerManager::removeLayer(std::shared_ptr<Layer> layer) { throw std::logic_
 void LayerManager::removeLayerById(const std::string &id) { throw std::logic_error("Not implemented"); }
 
 // For JSON: Supply a new layer prop list, match against existing layers
-void LayerManager::setLayerProps(const std::list<Layer::Props> layerPropsList) {
-  /*
+void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &layerPropsList) {
   // Create a map of old layers
   std::map<std::string, Layer *> oldLayerMap;
   for (auto oldLayer : this->layers) {
-    oldLayerMap[oldLayer->props->id] = oldLayer.get();
+    oldLayerMap[oldLayer->props()->id] = oldLayer;
   }
 
-  //
+  // Update old layers or add new layers if not matched
   for (auto layerProps : layerPropsList) {
-    const oldLayerIterator = oldLayerMap.find(layerProps.id);
-    if (oldLayerIterator != oldLayerMap.end()) {
+    auto matchedLayerIterator = oldLayerMap.find(layerProps->id);
+    if (matchedLayerIterator != oldLayerMap.end()) {
       // If a layer with this id is present, set the props
-      // TODO - catch exceptions and continue
-      auto(*oldLayerIterator)->setProps(layerProps);
-      oldLayerMap.erase(oldLayerIterator);
+      // TODO(ib): catch exceptions and continue
+      auto matchedLayer = matchedLayerIterator->second;
+      matchedLayer->setProps(layerProps);
+      oldLayerMap.erase(matchedLayerIterator);
     } else {
-      // TODO - handle exceptions
-      this->addLayer(layerProps->newObject());
+      // TODO(ib): handle exceptions
+      this->addLayer(std::shared_ptr<Layer>{layerProps->makeComponent(layerProps)});
     }
   }
 
   // Remove any unmatched layers
-  for (const iterator : oldLayerMap) {
-    // TODO - handle exceptions
-    this->removeLayer(*iterator);
+  /*
+  for (auto unmatchedLayerEntry : oldLayerMap) {
+    auto unmatchedLayer = unmatchedLayerEntry.second;
+    // TODO(ib): handle exceptions
+    this->removeLayer(unmatchedLayer);
   }
   */
 }
@@ -146,7 +149,7 @@ void LayerManager::setLayerProps(const std::list<Layer::Props> layerPropsList) {
 // Update layers from last cycle if `setNeedsUpdate()` has been called
 void LayerManager::updateLayers() {
   for (auto layer : this->layers) {
-    // TODO - handle exceptions
+    // TODO(ib): handle exceptions
     layer->update();
   }
 }
@@ -175,7 +178,7 @@ LayerManager::setProps(props) {
     this->context.userData = props.userData;
   }
 
-  // TODO - For now we set layers before viewports to preserve changeFlags
+  // TODO(ib): - For now we set layers before viewports to preserve changeFlags
   if ('layers' in props) {
     this->setLayers(props.layers);
   }
@@ -190,7 +193,7 @@ LayerManager::setProps(props) {
 // matching
 /*
 void LayerManager::setLayers(std::list<Layer *> newLayers, bool forceUpdate) {
-  // TODO - something is generating state updates that cause rerender of
+  // TODO(ib): - something is generating state updates that cause rerender of
   // the same
   const shouldUpdate = forceUpdate || newLayers != = this->lastRenderedLayers;
   // debug(TRACE_SET_LAYERS, this, shouldUpdate, newLayers);
@@ -200,7 +203,7 @@ void LayerManager::setLayers(std::list<Layer *> newLayers, bool forceUpdate) {
   }
   this->lastRenderedLayers = newLayers;
 
-  // TODO array flattening needs to be done during JSON conversion?
+  // TODO(ib): array flattening needs to be done during JSON conversion?
   // newLayers = flatten(newLayers, {filter : Boolean});
 
   for (auto layer : newLayers) {
@@ -219,7 +222,7 @@ void LayerManager::updateLayers() {
   // different sublayers are rendered
   auto reason = this->needsUpdate();
   if (reason) {
-    this->setNeedsRedraw("updating layers : $ { reason }");  // TODO string
+    this->setNeedsRedraw("updating layers : $ { reason }");  // TODO(ib): string
     // Force a full update
     auto forceUpdate = true;
     this->setLayers(this->lastRenderedLayers, forceUpdate);
@@ -268,7 +271,7 @@ LayerManager::activateViewport(viewport) {
 
 // Match all layers, checking for caught errors
 // To avoid having an exception in one layer disrupt other layers
-// TODO - mark layers with exceptions as bad and remove from rendering
+// TODO(ib): - mark layers with exceptions as bad and remove from rendering
 // cycle?
 /*
 void LayerManager::_updateLayers(oldLayers, newLayers) {

@@ -33,9 +33,14 @@ namespace deckgl {
 class MapView : public View {
  public:
   using super = View;
-  class Props : public View::Props {};
+  class Props : public View::Props {
+    // Property type machinery
+    auto makeComponent(std::shared_ptr<Component::Props> props) const -> MapView * override {
+      return new MapView{std::dynamic_pointer_cast<MapView::Props>(props)};
+    }
+  };
 
-  explicit MapView(Props* props) : View(props) {}
+  explicit MapView(std::shared_ptr<MapView::Props> props) : View(props) {}
 
 protected:
   auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;

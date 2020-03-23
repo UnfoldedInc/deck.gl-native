@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Unfolded Inc
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,41 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
+#ifndef DECKGL_CORE_LIB_COMPONENT_H
+#define DECKGL_CORE_LIB_COMPONENT_H
 
+#include <functional>
+#include <iostream>
+#include <list>
+#include <map>
 #include <memory>
+#include <string>
 
-#include "deck.gl/layers.h"
+#include "deck.gl/json.h"  // {JSONObject}
 
-using namespace deckgl;
+namespace deckgl {
 
-namespace {
+class Component {
+ public:
+  class Props;
+  explicit Component(std::shared_ptr<Props> props) : _props{props} {}
+  virtual ~Component() {}
 
-TEST(LineLayer, PropComparison) {
-  auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
-  auto layerProps2 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
+ protected:
+  std::shared_ptr<Props> _props;
+};
 
-  EXPECT_TRUE(layerProps1->equals(layerProps2.get()));
-  layerProps2->opacity = 0.5;
-  layerProps2->widthScale = 0.5;
-  EXPECT_FALSE(layerProps1->equals(layerProps2.get()));
-}
+class Component::Props : public JSONObject {
+ public:
+  using super = JSONObject;
+  virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> Component* {
+    return new Component{std::dynamic_pointer_cast<Component::Props>(props)};
+  }
+};
 
-TEST(LineLayer, PropAccess) {
-  auto layerProps1 = std::unique_ptr<LineLayer::Props>(new LineLayer::Props());
+}  // namespace deckgl
 
-  auto propertyTypes = layerProps1->getProperties();
-  EXPECT_TRUE(propertyTypes->hasProp("opacity"));
-  EXPECT_TRUE(propertyTypes->hasProp("widthScale"));
-  EXPECT_FALSE(propertyTypes->hasProp("radiusScale"));
-}
-
-TEST(LineLayer, Create) {
-  auto layerProps = std::shared_ptr<LineLayer::Props>(new LineLayer::Props());
-
-  auto lineLayer = new LineLayer(layerProps);
-
-  EXPECT_EQ(lineLayer->props(), layerProps);
-}
-
-}  // namespace
+#endif  // DECKGL_CORE_LIB_COMPONENT_H

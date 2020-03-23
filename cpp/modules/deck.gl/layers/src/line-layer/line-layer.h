@@ -22,6 +22,8 @@
 #define DECKGL_LAYERS_LINE_LAYER_H
 
 #include <limits>
+#include <memory>
+#include <string>
 
 #include "deck.gl/core.h"  // {Layer, project32, picking}
 // import GL from '@luma.gl/constants';
@@ -32,6 +34,8 @@ namespace deckgl {
 class LineLayer : public Layer {
  public:
   class Props;
+  explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
+  auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
  protected:
   void initializeState() override;
@@ -48,10 +52,10 @@ class LineLayer::Props : public Layer::Props {
   using super = Layer::Props;
   static constexpr const char *getTypeName() { return "LineLayer"; }
 
-  std::string widthUnits;  // : 'pixels',
-  float widthScale;        //  {type: 'number', value: 1, min: 0},
-  float widthMinPixels;    //  {type: 'number', value: 0, min: 0},
-  float widthMaxPixels;    //  {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+  std::string widthUnits{"pixels"};                         // 'pixels',
+  float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
+  float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
+  float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
 
   /*
     // std::function<(auto row) -> Vector3<double>> getSourcePosition; //
@@ -64,9 +68,11 @@ class LineLayer::Props : public Layer::Props {
     value: 1},
    */
 
-  Props() : widthUnits{"pixels"}, widthScale{1}, widthMinPixels{0}, widthMaxPixels{std::numeric_limits<float>::max()} {}
-
+  // Property Type Machinery
   auto getProperties() const -> const Properties * override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> LineLayer * override {
+    return new LineLayer{std::dynamic_pointer_cast<LineLayer::Props>(props)};
+  }
 };
 
 }  // namespace deckgl

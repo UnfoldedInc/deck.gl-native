@@ -1,4 +1,24 @@
-#include "./layer.h"
+// Copyright (c) 2020 Unfolded, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+#include "./layer.h"  // NOLINT(build/include)
 
 #include "./layer-manager.h"
 
@@ -114,8 +134,8 @@ class LayerProperties {
 //   this->setNeedsRedraw();
 // }
 
-void Layer::setProps(Layer::Props* newProps) {
-  this->props = newProps;
+void Layer::setProps(std::shared_ptr<Layer::Props> newProps) {
+  // this->props = newProps;
   this->setNeedsUpdate("Props updated");
   this->setNeedsRedraw("Props updated");
 }
@@ -152,7 +172,7 @@ auto Layer::getNeedsUpdate() -> std::optional<std::string> {
 }
 
 // Returns true if the layer is pickable and visible.
-auto Layer::isPickable() const -> bool { return this->props->pickable && this->props->visible; }
+auto Layer::isPickable() const -> bool { return this->props()->pickable && this->props()->visible; }
 
 // auto Layer::getAttributeManager() -> std::shared_ptr<AttributeManager> { return this->attributeManager; }
 
@@ -273,6 +293,7 @@ decodePickingColor(color) {
 //   }
 //   return shaders;
 // }
+void Layer::initializeState() {}
 
 // Let"s layer control if updateState should be called
 auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps)

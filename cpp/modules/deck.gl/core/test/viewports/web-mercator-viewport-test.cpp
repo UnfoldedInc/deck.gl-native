@@ -54,7 +54,7 @@ TEST(WebMercatorViewport, projectFlat) {
   }
 }
 
-// TODO: project/unproject not implemented
+// TODO(isaac): project/unproject not implemented
 // TEST(WebMercatorViewport, project3D) {
 //   for (auto viewport : TEST_VIEWPORTS) {
 //     const double TEST_OFFSETS[] = {0, 0.5, 1.0, 5.0};
@@ -72,7 +72,7 @@ TEST(WebMercatorViewport, projectFlat) {
 //   }
 // }
 
-// TODO: project/unproject not implemented
+// TODO(isaac): project/unproject not implemented
 // TEST(WebMercatorViewport, project2D) {
 //   for (auto viewport : TEST_VIEWPORTS) {
 //     const double TEST_OFFSETS[] = {0, 0.5, 1.0, 5.0};

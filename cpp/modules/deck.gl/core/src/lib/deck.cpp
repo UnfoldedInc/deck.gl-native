@@ -18,45 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./deck.h"
+#include "./deck.h"  // NOLINT(build/include)
 
 #include <memory>
-
-/*
-import LayerManager from './layer-manager';
-import ViewManager from './view-manager';
-import MapView from '../views/map-view';
-import EffectManager from './effect-manager';
-import Effect from './effect';
-import DeckRenderer from './deck-renderer';
-import DeckPicker from './deck-picker';
-import Tooltip from './tooltip';
-import log from '../utils/log';
-import {deepEqual} from '../utils/deep-equal';
-import deckGlobal from './init';
-
-import {getBrowser} from 'probe.gl/env';
-import GL from '@luma.gl/constants';
-import {
-  AnimationLoop,
-  createGLContext,
-  instrumentGLContext,
-  setParameters,
-  Timeline,
-  lumaStats
-} from '@luma.gl/core';
-import {Stats} from 'probe.gl';
-import {EventManager} from 'mjolnir.js';
-
-import assert from '../utils/assert';
-import {EVENTS} from './constants';
-*/
 
 using namespace deckgl;
 
 // Setters and getters for properties
 // TODO(ib): auto generate from language-independent prop definition schema
-// TODO(ib): just use member pointer?
 
 static const std::vector<const Property*> propTypeDefs = {
     new PropertyT<std::list<std::shared_ptr<Layer::Props>>>{
@@ -86,257 +55,92 @@ auto Deck::Props::getProperties() const -> const Properties* {
   return &properties;
 }
 
-// Deck::Props
-
-Deck::Props::Props()
-    : id{"deckgl-overlay"},
-      width{100},
-      height{100},
-      // layerFilter{nullptr},
-      // glOptions{},
-      // gl{nullptr},
-      // layers{},
-      // // effects{},
-      // views{},
-      pickingRadius{0}  // controller{nullptr},
-                        // useDevicePixels{true},
-                        // touchAction{"none"},
-                        // _framebuffer{nullptr},
-                        // _animate{false},
-                        // onWebGLInitialized{noop}, onResize{noop}, onViewStateChange{noop}, onBeforeRender{noop},
-                        // onAfterRender{noop}, onLoad{noop}, onError{nullptr}, _onMetrics{nullptr},
-                        // getCursor{nullptr},
-                        // debug{false}, drawPickingColors{fals}
-{}
-
-/*
-,
-    pickingRadius{0}, layerFilter{nullptr}, glOptions{{}}, gl{nullptr}, layers{[]}, effects{[]}, views{nullptr},
-    controller{nullptr,  // Rely on external controller, e.g. react-map-g}
-               ,
-               useDevicePixels{true},
-               touchAction{'none'},
-               _framebuffer{nullptr},
-               _animate{false}
-
-               ,
-               onWebGLInitialized{noop},
-               onResize{noop},
-               onViewStateChange{noop},
-               onBeforeRender{noop},
-               onAfterRender{noop},
-               onLoad{noop},
-               onError{nullptr},
-               _onMetrics{nullptr}
-
-               ,
-               getCursor,
-
-               ,
-               debug{false},
-               drawPickingColors{fals} {}};
-
-function noop() {}
-
-const getCursor = ({isDragging}) => (isDragging ? 'grabbing' : 'grab');
-
-function getPropTypes(PropTypes) {
-  // Note: Arrays (layers, views, ) can contain falsy values
-  return {
-    id: PropTypes.string,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-
-    // layer/view/controller settings
-    layers: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    layerFilter: PropTypes.func,
-    views: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-    viewState: PropTypes.object,
-    effects: PropTypes.arrayOf(PropTypes.instanceOf(Effect)),
-    controller: PropTypes.oneOfType([PropTypes.func, PropTypes.bool,
-PropTypes.object]),
-
-    // GL settings
-    gl: PropTypes.object,
-    glOptions: PropTypes.object,
-    parameters: PropTypes.object,
-    pickingRadius: PropTypes.number,
-    useDevicePixels: PropTypes.oneOfType([PropTypes.bool,
-PropTypes.number]), touchAction: PropTypes.string,
-
-    // Callbacks
-    onWebGLInitialized: PropTypes.func,
-    onResize: PropTypes.func,
-    onViewStateChange: PropTypes.func,
-    onBeforeRender: PropTypes.func,
-    onAfterRender: PropTypes.func,
-    onLoad: PropTypes.func,
-    onError: PropTypes.func,
-
-    // Debug settings
-    debug: PropTypes.bool,
-    drawPickingColors: PropTypes.bool,
-
-    // Experimental props
-    _framebuffer: PropTypes.object,
-    // Forces a redraw every animation frame
-    _animate: PropTypes.bool
-  };
-}
-*/
-
 // Deck class
 
-Deck::Deck(Deck::Props* props_)
-    : props{props_},
-      width{0},   // "read-only", auto-updated from canvas
-      height{0},  // "read-only", auto-updated from canvas
-
-      // Maps view descriptors to vieports, rebuilds when
-      // width/height/viewState/views change
-      // viewManager{nullptr},
-      // layerManager{nullptr},
-      // effectManager{nullptr}, deckRenderer{nullptr}, deckPicker{nullptr}
-      _needsRedraw{true},
-      _pickRequest{nullptr},
-      _lastPointerDownInfo{nullptr}  // viewState{nullptr}  // Internal view state if no callback is supplied
-{
-  /*
-  // this->interactiveState = {
-  //   isDragging: false // Whether the cursor is down
-  // };
-
-  if (props->viewState && props->initialViewState) {
-    log.warn(
-        'View state tracking is disabled. Use either `initialViewState` for auto update or `viewState` for manual
-  update.')();
-  }
-  if (getBrowser() == = 'IE') {
-    log.warn('IE 11 support will be deprecated in v8.0')();
-  }
-
-  if (!props->gl) {
-    // Note: LayerManager creation deferred until gl context
-    // available
-    if (typeof document != = 'undefined') {
-      this->canvas = this->_createCanvas(props);
-    }
-  }
-  this->animationLoop = this->_createAnimationLoop(props);
-
-  // this->stats = new Stats('deck.gl');
-  // this->metrics = {
-  //   fps: 0,
-  //   setPropsTime: 0,
-  //   updateAttributesTime: 0,
-  //   framesRedrawn: 0,
-  //   pickTime: 0,
-  //   pickCount: 0,
-  //   gpuTime: 0,
-  //   gpuTimePerFrame: 0,
-  //   cpuTime: 0,
-  //   cpuTimePerFrame: 0,
-  //   bufferMemory: 0,
-  //   textureMemory: 0,
-  //   renderbufferMemory: 0,
-  //   gpuMemory: 0
-  // };
-  // this->_metricsCounter = 0;
-
-  this->setProps(props);
-
-  this->animationLoop.start();
-  */
+Deck::Deck(std::shared_ptr<Deck::Props> props)
+    : Component(props),
+      width{100},
+      height{100},
+      viewManager{std::make_shared<ViewManager>()},
+      // layerManager{std::make_shared<LayerManager>()},
+      _needsRedraw{"Initial render"} {
+  // this->animationLoop = this->_createAnimationLoop(props);
+  this->setProps(props.get());
+  // this->animationLoop.start();
 }
 
 Deck::~Deck() {
   // this->animationLoop.stop();
-  // this->animationLoop = nullptr;
-  // this->_lastPointerDownInfo = nullptr;
-
-  // if (this->layerManager) {
-  //   this->layerManager;
-  //   delete this->viewManager;
-  //   // delete this->effectManager;
-  // delete this->deckRenderer;
-  // delete this->deckPicker;
-  // delete this->eventManager;
   // this->tooltip.remove();
-  // this->tooltip = nullptr;
-  // }
-
-  // if (!this->props->canvas && !this->props->gl && this->canvas) {
-  //   // remove internally created canvas
-  //   this->canvas.parentElement.removeChild(this->canvas);
-  //   this->canvas = nullptr;
-  // }
 }
 
 void Deck::setProps(Deck::Props* props) {
-  /*
   // this->stats.get('setProps Time').timeStart();
 
-  if (props->initialViewState && !deepEqual(this->props->initialViewState, props->initialViewState)) {
-    // Overwrite internal view state
-    // this->viewState = props->initialViewState;
+  // ViewState tracking
+  if (props->initialViewState) {
+    if (!this->props()->initialViewState->equals(this->props()->initialViewState)) {
+      // Overwrite internal view state
+      this->viewState = props->initialViewState;
+    }
   }
 
-  // Merge with existing props
-  Object.assign(this->props, props);
+  if (props->viewState) {
+    if (!this->props()->viewState->equals(this->props()->viewState)) {
+      // Overwrite internal view state
+      this->viewState = props->viewState;
+    }
+  }
 
   // Update CSS size of canvas
-  this->_setCanvasSize(this->props);
-
-  // We need to overwrite CSS style width and height with actual,
-  // numeric values
-  const resolvedProps = Object.create(this->props);
-  Object.assign(
-      resolvedProps,
-      {views : this->_getViews(), width : this->width, height : this->height, viewState : this->_getViewState()});
 
   // Update the animation loop
-  this->animationLoop.setProps(resolvedProps);
 
-  // If initialized, update sub manager props
-  if (this->layerManager) {
-    this->viewManager.setProps(resolvedProps);
-    this->layerManager.setProps(resolvedProps);
-    this->effectManager.setProps(resolvedProps);
-    this->deckRenderer.setProps(resolvedProps);
-    this->deckPicker.setProps(resolvedProps);
+  // Update layerManager
+  if (!props->layers.empty()) {
+    this->layerManager->setLayersFromProps(props->layers);
   }
 
-  // this->stats.get('setProps Time').timeEnd();
-  */
+  // Update viewManager
+  this->viewManager->setWidth(props->width);
+  this->viewManager->setHeight(props->height);
+  this->viewManager->setViewsFromProps(props->views);
+  this->viewManager->setViewState(this->viewState);
+
+  // Update manager props
+  // this->effectManager.setProps(resolvedProps);
+  // this->deckRenderer.setProps(resolvedProps);
+  // this->deckPicker.setProps(resolvedProps);
+
+  // super::setProps();
 }
 
 // Public API
 // Check if a redraw is needed
-// Returns `false` or a string summarizing the redraw reason
-// opts.clearRedrawFlags (Boolean) - clear the redraw flag. Default
-// `true`
-auto Deck::needsRedraw(bool clearRedrawFlags) -> std::string {
-  /*
-  if (this->props->_animate) {
-    return 'Deck._animate';
+auto Deck::needsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
+  // if (this->props->_animate) {
+  //   return "Deck._animate";
+  // }
+
+  auto redraw = this->_needsRedraw;
+
+  if (clearRedrawFlags) {
+    this->_needsRedraw = std::nullopt;
   }
 
-  bool redraw = this->_needsRedraw;
-
-  if (opts.clearRedrawFlags) {
-    this->_needsRedraw = false;
-  }
-
-  auto viewManagerNeedsRedraw = this->viewManager->needsRedraw(opts);
-  auto layerManagerNeedsRedraw = this->layerManager->needsRedraw(opts);
+  // Query all managers to make sure we clear all flags
+  auto viewManagerNeedsRedraw = this->viewManager->getNeedsRedraw(clearRedrawFlags);
+  auto layerManagerNeedsRedraw = this->layerManager->needsRedraw(clearRedrawFlags);
   // auto effectManagerNeedsRedraw = this->effectManager->needsRedraw(opts);
   // auto deckRendererNeedsRedraw = this->deckRenderer->needsRedraw(opts);
 
-  redraw = redraw || viewManagerNeedsRedraw || layerManagerNeedsRedraw || effectManagerNeedsRedraw ||
-           deckRendererNeedsRedraw;
+  if (viewManagerNeedsRedraw) {
+    return viewManagerNeedsRedraw;
+  }
+  if (layerManagerNeedsRedraw) {
+    return layerManagerNeedsRedraw;
+  }
   return redraw;
-*/
-  return "not implemented";
 }
 
 void Deck::redraw(bool force) {
@@ -391,7 +195,7 @@ pickObjects(opts) {
 // Private Methods
 // Get the most relevant view state: props->viewState, if supplied,
 // shadows internal viewState
-// TODO: For backwards compatibility ensure numeric width and height is
+// TODO(ib): For backwards compatibility ensure numeric width and height is
 // added to the viewState
 // auto _getViewState() -> ViewState* { return this->props->viewState || this->viewState; }
 

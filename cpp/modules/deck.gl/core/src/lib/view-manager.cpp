@@ -18,7 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./view-manager.h"
+#include "./view-manager.h"  // NOLINT(build/include)
+
+#include <array>
+#include <iostream>
+
+#undef PI
+#include "range/v3/all.hpp"
 
 using namespace deckgl;
 
@@ -126,6 +132,80 @@ auto ViewManager::getViewport(const std::string &viewId) -> std::shared_ptr<View
 // MODIFIERS
 //
 
+void ViewManager::setSize(int width, int height) {
+  this->setWidth(width);
+  this->setHeight(height);
+}
+
+void ViewManager::setWidth(int width) {
+  if (width < 0) {
+    width = 0;
+  }
+  if (width != this->width) {
+    this->width = width;
+    this->setNeedsUpdate("Window width changed");
+  }
+}
+
+void ViewManager::setHeight(int height) {
+  if (height < 0) {
+    height = 0;
+  }
+
+  // Only trigger an update if height actually changed
+  if (height != this->height) {
+    this->height = height;
+    this->setNeedsUpdate("Window height changed");
+  }
+}
+
+// Update the view descriptor list and set change flag if needed
+// Does not actually rebuild the `Viewport`s until `getViewports` is called
+void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
+  // TODO(ib): Only update if views actually changed
+  auto viewsChanged = true;  // this->_diffViews(views, this->views);
+  if (viewsChanged) {
+    this->views = views;
+    this->setNeedsUpdate("Views changed");
+  }
+}
+
+void ViewManager::setViewsFromProps(const std::list<std::shared_ptr<View::Props>> &viewProps) {
+  // TODO(ib): Only update if views actually changed
+  auto viewsChanged = true;  // this->_diffViews(views, this->views);
+  if (viewsChanged) {
+    auto views =
+        viewProps |
+        ranges::views::transform([](auto props) { return std::shared_ptr<View>{props->makeComponent(props)}; }) |
+        ranges::to<std::list>();
+    this->views = views;
+    this->setNeedsUpdate("Views changed");
+  }
+}
+
+void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
+  auto viewStateChanged = !viewState->equals(this->viewState);
+
+  if (viewStateChanged) {
+    this->viewState = viewState;
+    this->setNeedsUpdate("viewState changed");
+  }
+}
+
+// void ViewManager::setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates) {
+//   if (viewState) {
+//     auto viewStateChanged = !viewState->equals(this->viewState);
+
+//     if (viewStateChanged) {
+//       this->setNeedsUpdate("viewState changed");
+//     }
+
+//     this->viewState = viewStates;
+//   } else {
+//     // log.warn('missing `viewState` or `initialViewState`')();
+//   }
+// }
+
 //
 // PRIVATE METHODS
 //
@@ -156,61 +236,6 @@ void ViewManager::_update() {
 
   this->_isUpdating = false;
 }
-
-void ViewManager::setSize(int width, int height) {
-  if (width < 0) {
-    width = 0;
-  }
-  if (height < 0) {
-    height = 0;
-  }
-
-  // Only trigger an update if width actually changed
-  if (width != this->width || height != this->height) {
-    this->width = width;
-    this->height = height;
-    this->setNeedsUpdate("Window size changed");
-  }
-}
-
-// Update the view descriptor list and set change flag if needed
-// Does not actually rebuild the `Viewport`s until `getViewports` is called
-void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
-  // TODO(ib): Only update if views actually changed
-  auto viewsChanged = true;  // this->_diffViews(views, this->views);
-  if (viewsChanged) {
-    this->views = views;
-    this->setNeedsUpdate("Views changed");
-  }
-}
-
-void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
-  auto viewStateChanged = !viewState->equals(this->viewState);
-
-  if (viewStateChanged) {
-    this->viewState = viewState;
-    this->setNeedsUpdate("viewState changed");
-  }
-}
-
-// void ViewManager::setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates) {
-//   if (viewState) {
-//     auto viewStateChanged = !viewState->equals(this->viewState);
-
-//     if (viewStateChanged) {
-//       this->setNeedsUpdate("viewState changed");
-//     }
-
-//     this->viewState = viewStates;
-//   } else {
-//     // log.warn('missing `viewState` or `initialViewState`')();
-//   }
-// }
-
-// void ViewManager::_onViewStateChange(viewId, event) {
-//   event.viewId = viewId;
-//   this->_eventCallbacks.onViewStateChange(event);
-// }
 
 // Rebuilds viewports from descriptors towards a certain window size
 void ViewManager::_rebuildViewports() {
@@ -244,7 +269,8 @@ void ViewManager::_rebuildViewports() {
 
 // Check if viewport array has changed, returns true if any change
 // Note that descriptors can be the same
-// ViewManager::_diffViews(const std::list<std::shared_ptr<View>> &views, const std::list<std::shared_ptr<View>> &views)
+// ViewManager::_diffViews(const std::list<std::shared_ptr<View>> &views, const std::list<std::shared_ptr<View>>
+// &views)
 // {
 //   if (newViews.length != = oldViews.length) {
 //     return true;

@@ -58,6 +58,14 @@ Notes:
 
 ## Dependencies
 
+### Google Test
+
+- [Google Test](https://github.com/google/googletest)
+
+```sh
+../vcpkg install gtest
+```
+
 ### jsoncpp
 
 - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
@@ -66,12 +74,14 @@ Notes:
 ../vcpkg install jsoncpp
 ```
 
-### Google Test
+### range v3
 
-- [Google Test](https://github.com/google/googletest)
+Used as a placeholder until clang/gcc compilers become C++20 compatible.
+
+- [Range v3](https://github.com/ericniebler/range-v3)
 
 ```sh
-../vcpkg install gtest
+../vcpkg install range-v3
 ```
 
 ### Arrow

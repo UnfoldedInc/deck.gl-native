@@ -21,6 +21,7 @@
 #ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 #define DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 
+#include <memory>
 #include <string>
 
 #include "deck.gl/core.h"  // import {Layer, project32, picking} from '@deck.gl/core';
@@ -33,6 +34,9 @@ namespace deckgl {
 class ScatterplotLayer : public Layer {
  public:
   class Props;
+  explicit ScatterplotLayer(std::shared_ptr<ScatterplotLayer::Props> props)
+      : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
+  auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
  protected:
   void initializeState() override;
@@ -49,17 +53,17 @@ class ScatterplotLayer::Props : public Layer::Props {
   using super = Layer::Props;
   static constexpr const char *getTypeName() { return "ScatterplotLayer"; }
 
-  bool filled;
-  bool stroked;
+  bool filled{true};
+  bool stroked{false};
 
-  std::string lineWidthUnits;
-  float lineWidthScale;      //
-  float lineWidthMinPixels;  // min point radius in pixels
-  float lineWidthMaxPixels;  // max point radius in pixels
+  std::string lineWidthUnits{"meters"};
+  float lineWidthScale{1.0};      //
+  float lineWidthMinPixels{1.0};  // min point radius in pixels
+  float lineWidthMaxPixels{2.0};  // max point radius in pixels
 
-  float radiusScale;
-  float radiusMinPixels;  // min point radius in pixels
-  float radiusMaxPixels;  // max point radius in pixels
+  float radiusScale{1.0};
+  float radiusMinPixels{1.0};  // min point radius in pixels
+  float radiusMaxPixels{2.0};  // max point radius in pixels
 
   // std::function<(auto row) -> Vector3<double>> getPosition,
   // {type: 'accessor', value: x => x.position}, std::function<(auto row) -> float>
@@ -70,20 +74,11 @@ class ScatterplotLayer::Props : public Layer::Props {
   // value: DEFAULT_COLOR}, std::function<(auto row) -> float> getLineWidth, //
   // {type: 'accessor', value: 1},
 
-  Props()
-      : filled{true},
-        stroked{false},
-
-        lineWidthUnits{"meters"},
-        lineWidthScale{1},
-        lineWidthMinPixels{1},
-        lineWidthMaxPixels{0},
-
-        radiusScale{1},
-        radiusMinPixels{1},
-        radiusMaxPixels{0} {}
-
+  // Property Type Machinery
   auto getProperties() const -> const Properties * override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> ScatterplotLayer * override {
+    return new ScatterplotLayer{std::dynamic_pointer_cast<ScatterplotLayer::Props>(props)};
+  }
 };
 
 }  // namespace deckgl
