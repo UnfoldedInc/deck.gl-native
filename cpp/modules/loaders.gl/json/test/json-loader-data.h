@@ -21,3 +21,8 @@
 static auto ndjsonDataSimple = R"JSON(
 {"@@type":"Deck","description":"Test","layers":[{"@@type":"ScatterplotLayer","data":[{"position1":[-155.25, 122.3],"position2":[23.1,522.21]}],"getFillColor":[255,0,0,255],"getRadius":1000},{"@@type":"LineLayer","data":[{"position1":[-122.45, 37.8],"position2":[-122.45,37.8]}]}]}
 )JSON";
+
+static auto jsonDataTypes = R"JSON(
+{"string":"sample1","int":-3351,"double":65630.5,"double_array":[0.2,0.8]}
+{"string":"sample2","int":21,"double":5}
+)JSON";

@@ -35,7 +35,7 @@ auto CSVLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -
   // Instantiate TableReader from input stream and options
   auto makeResult = arrow::csv::TableReader::Make(pool, input, readOptions, parseOptions, convertOptions);
   if (!makeResult.ok()) {
-    // Ideally we provide additional context here somehow...
+    // TODO(ilija): Ideally we provide additional context here somehow...
     throw std::runtime_error("Cannot instantiate TableReader");
   }
 
@@ -44,7 +44,7 @@ auto CSVLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -
   // Read table from CSV file
   auto readResult = reader->Read();
   if (!readResult.ok()) {
-    // Ideally we provide additional context here somehow...
+    // TODO(ilija): Ideally we provide additional context here somehow...
     throw std::runtime_error("An error has occured while parsing CSV data");
   }
   std::shared_ptr<arrow::Table> table = readResult.ValueOrDie();

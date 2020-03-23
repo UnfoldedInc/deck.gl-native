@@ -131,3 +131,12 @@ value,alias,type
 56,WY,STATEFP10
 56,WYOMING,STATEFP10
 )CSV";
+
+static auto csvDataTypes = R"CSV(
+int,double,string
+-1234,1234.56,ValuE
+42,942.2,"Quoted, string"
+55,91,"Another ""quoted"" string"
+1,995.0,"String with
+line break"
+)CSV";

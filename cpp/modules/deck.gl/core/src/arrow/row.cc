@@ -86,9 +86,6 @@ auto Row::getBool(const std::string& columnName, bool nullValue) -> bool {
   if (!this->isValid(columnName)) {
     return nullValue;
   }
-  if (!this->isValid(columnName)) {
-    return nullValue;
-  }
 
   auto chunk = this->_getChunk(columnName);
   if (auto boolArray = std::dynamic_pointer_cast<arrow::BooleanArray>(chunk)) {
@@ -120,29 +117,26 @@ auto Row::getString(const std::string& columnName, const std::string& nullValue)
 }
 
 auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& nullValue) -> Vector2<float> {
+  if (!this->isValid(columnName)) {
+    return nullValue;
+  }
+
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
-      auto offsets = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      auto thisOffset = offsets->value_offset(this->_rowIndex);
-      auto nextOffset = offsets->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
-      if (length != 2) {
+      auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
+      if (listArray->value_length() != 2) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::FloatArray>(offsets->values());
+      auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
       return this->_vector2FromFloatArray(values, nullValue);
     }
     case arrow::Type::LIST: {
-      auto offset = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto thisOffset = offset->value_offset(this->_rowIndex);
-      auto nextOffset = offset->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
+      auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
+      auto length = listArray->value_length(this->_rowIndex);
       if (length != 2) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
@@ -150,7 +144,7 @@ auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& n
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::FloatArray>(offset->values());
+      auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
       return this->_vector2FromFloatArray(values, nullValue);
     }
 
@@ -162,29 +156,26 @@ auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& n
 }
 
 auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>& nullValue) -> Vector2<double> {
+  if (!this->isValid(columnName)) {
+    return nullValue;
+  }
+
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
-      auto offsets = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      auto thisOffset = offsets->value_offset(this->_rowIndex);
-      auto nextOffset = offsets->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
-      if (length != 2) {
+      auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
+      if (listArray->value_length() != 2) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::DoubleArray>(offsets->values());
+      auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
       return this->_vector2FromDoubleArray(values, nullValue);
     }
     case arrow::Type::LIST: {
-      auto offset = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto thisOffset = offset->value_offset(this->_rowIndex);
-      auto nextOffset = offset->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
+      auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
+      auto length = listArray->value_length(this->_rowIndex);
       if (length != 2) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 2 values");
@@ -192,7 +183,7 @@ auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>&
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::DoubleArray>(offset->values());
+      auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
       return this->_vector2FromDoubleArray(values, nullValue);
     }
 
@@ -204,29 +195,26 @@ auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>&
 }
 
 auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& nullValue) -> Vector3<float> {
+  if (!this->isValid(columnName)) {
+    return nullValue;
+  }
+
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
-      auto offsets = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      auto thisOffset = offsets->value_offset(this->_rowIndex);
-      auto nextOffset = offsets->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
-      if (length != 3) {
+      auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
+      if (listArray->value_length() != 3) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::FloatArray>(offsets->values());
+      auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
       return this->_vector3FromFloatArray(values, nullValue);
     }
     case arrow::Type::LIST: {
-      auto offset = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto thisOffset = offset->value_offset(this->_rowIndex);
-      auto nextOffset = offset->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
+      auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
+      auto length = listArray->value_length(this->_rowIndex);
       if (length != 3) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
@@ -234,7 +222,7 @@ auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& n
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::FloatArray>(offset->values());
+      auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
       return this->_vector3FromFloatArray(values, nullValue);
     }
 
@@ -246,29 +234,26 @@ auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& n
 }
 
 auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>& nullValue) -> Vector3<double> {
+  if (!this->isValid(columnName)) {
+    return nullValue;
+  }
+
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
-      auto offsets = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      auto thisOffset = offsets->value_offset(this->_rowIndex);
-      auto nextOffset = offsets->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
-      if (length != 3) {
+      auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
+      if (listArray->value_length() != 3) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::DoubleArray>(offsets->values());
+      auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
       return this->_vector3FromDoubleArray(values, nullValue);
     }
     case arrow::Type::LIST: {
-      auto offset = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto thisOffset = offset->value_offset(this->_rowIndex);
-      auto nextOffset = offset->value_offset(this->_rowIndex + 1);
-
-      auto length = nextOffset - thisOffset;
+      auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
+      auto length = listArray->value_length(this->_rowIndex);
       if (length != 3) {
         // TODO(ilija): Log out a warning once logging system is in place
         // throw std::logic_error("Vector does not have 3 values");
@@ -276,7 +261,7 @@ auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>&
         return nullValue;
       }
 
-      auto values = std::static_pointer_cast<arrow::DoubleArray>(offset->values());
+      auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
       return this->_vector3FromDoubleArray(values, nullValue);
     }
 
@@ -288,8 +273,12 @@ auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>&
 }
 
 auto Row::isValid(const std::string& columnName) -> bool {
-  auto chunk = this->_getChunk(columnName);
-  return chunk->IsValid(this->_rowIndex);
+  try {
+    auto chunk = this->_getChunk(columnName);
+    return chunk->IsValid(this->_rowIndex);
+  } catch (...) {
+    return false;
+  }
 }
 
 auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array> {
