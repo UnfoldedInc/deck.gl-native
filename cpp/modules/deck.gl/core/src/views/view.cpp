@@ -93,13 +93,19 @@ View::~View() {}
 
 auto View::_getViewport(const Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
     -> std::shared_ptr<Viewport> {
-  // TODO(ib):
-  return nullptr;
+  // TODO
+  auto id = "my_viewport_idTODO";
+  auto viewMatrixOptions = ViewMatrixOptions();
+  auto projectionMatrixOptions = ProjectionMatrixOptions();
+  return make_shared<Viewport>(id, viewMatrixOptions, projectionMatrixOptions, static_cast<double>(rect.x),
+                               static_cast<double>(rect.y), static_cast<double>(rect.w), static_cast<double>(rect.h));
 }
 
 // Build a `Viewport` from a view descriptor
-// View::makeViewport({width, height, viewState}) {
 auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) -> shared_ptr<Viewport> {
+  //   if (this->viewportInstance) {
+  //     return this->viewportInstance;
+  //   }
   // TODO(ib): calculate rect and filter view state
   // viewState = this->filterViewState(viewState);
   return this->_getViewport(rect, viewState);
@@ -134,7 +140,6 @@ auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewSt
 //   const viewportDimensions = this->getDimensions({width, height});
 //   const props = Object.assign({viewState}, viewState, this->props, viewportDimensions);
 //   return this->_getViewport(props);
-// }
 
 // View::getViewStateId() {
 //   switch (typeof this->props.viewState) {
