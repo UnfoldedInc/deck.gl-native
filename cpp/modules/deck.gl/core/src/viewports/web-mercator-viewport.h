@@ -35,10 +35,23 @@ namespace deckgl {
 //
 class WebMercatorViewport : public Viewport {
  public:
-  WebMercatorViewport(int width = 1, int height = 1, double latitude = 0, double longitude = 0, double zoom = 11,
-                      double pitch = 0, double bearing = 0, double altitude = 1.5, double nearZMultiplier = 0.1,
-                      double farZMultiplier = 1.01, bool orthographic = false, bool repeat = false,
-                      double worldOffset = 0);
+  struct WebMercatorViewportOptions {
+    int width = 1;
+    int height = 1;
+    double latitude = 0;
+    double longitude = 0;
+    double zoom = 11;
+    double pitch = 0;
+    double bearing = 0;
+    double altitude = 1.5;
+    double nearZMultiplier = 0.1;
+    double farZMultiplier = 1.01;
+    bool orthographic = false;
+    bool repeat = false;
+    double worldOffset = 0;
+  };
+
+  WebMercatorViewport(const WebMercatorViewportOptions& options);
 
   // elided subViewports feature
   // get subViewports()

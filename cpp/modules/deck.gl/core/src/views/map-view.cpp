@@ -29,7 +29,14 @@ using namespace deckgl;
 using namespace mathgl;
 
 auto MapView::_getViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) const -> shared_ptr<Viewport> {
-  return make_shared<WebMercatorViewport>(rect.w, rect.h, viewState->longitude.value_or(0),
-                                          viewState->latitude.value_or(0), viewState->zoom.value_or(11),
-                                          viewState->pitch.value_or(0), viewState->bearing.value_or(0));
+  WebMercatorViewport::WebMercatorViewportOptions opts;
+  opts.width = rect.w;
+  opts.height = rect.h;
+  opts.longitude = viewState->longitude.value_or(0);
+  opts.latitude = viewState->latitude.value_or(0);
+  opts.zoom = viewState->zoom.value_or(11);
+  opts.pitch = viewState->pitch.value_or(0);
+  opts.bearing = viewState->bearing.value_or(0);
+
+  return make_shared<WebMercatorViewport>(opts);
 }

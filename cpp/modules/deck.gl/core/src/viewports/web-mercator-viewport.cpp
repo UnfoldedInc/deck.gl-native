@@ -28,50 +28,43 @@ using namespace std;
 using namespace mathgl;
 using namespace deckgl;
 
-ViewMatrixOptions calculateViewMatrixOptions(int height, double longitude, double latitude, double pitch,
-                                             double bearing, double altitude, double zoom) {
-  auto scale = pow(2, zoom);
-  height = height == 0 ? 1 : height;
+ViewMatrixOptions calculateViewMatrixOptions(const WebMercatorViewport::WebMercatorViewportOptions& opts) {
+  auto scale = pow(2, opts.zoom);
+  double adjustedHeight = opts.height == 0 ? 1 : opts.height;
 
   // The uncentered matrix allows us two move the center addition to the
   // shader (cheap) which gives a coordinate system that has its center in
   // the layer's center position. This makes rotations and other modelMatrx
   // transforms much more useful.
-  auto viewMatrixUncentered = getViewMatrix(height, pitch, bearing, altitude, scale);
+  auto viewMatrixUncentered = getViewMatrix(adjustedHeight, opts.pitch, opts.bearing, opts.altitude, scale);
 
-  auto opts = ViewMatrixOptions();
-  opts.viewMatrix = viewMatrixUncentered;
-  opts.isGeospatial = true;  // TODO(isaac): ???
-  opts.longitude = longitude;
-  opts.latitude = latitude;
-  opts.zoom = zoom;
-  opts.position = Vector3<double>();
-  // opts.modelMatrix // TODO(isaac):
-  // opts.distanceScales // TODO(isaac):
-  return opts;
+  auto viewOpts = ViewMatrixOptions();
+  viewOpts.viewMatrix = viewMatrixUncentered;
+  viewOpts.isGeospatial = true;  // TODO(isaac): ???
+  viewOpts.longitude = opts.longitude;
+  viewOpts.latitude = opts.latitude;
+  viewOpts.zoom = opts.zoom;
+  viewOpts.position = Vector3<double>();
+  // viewOpts.modelMatrix // TODO(isaac):
+  // viewOpts.distanceScales // TODO(isaac):
+  return viewOpts;
 }
 
-ProjectionMatrixOptions calculateProjectionMatrixOptions(int width, int height, double pitch, double altitude,
-                                                         double nearZMultiplier, double farZMultiplier) {
-  width = width == 0 ? 1 : width;
-  height = height == 0 ? 1 : height;
+ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewport::WebMercatorViewportOptions& opts) {
+  double adjustedWidth = opts.width == 0 ? 1 : opts.width;
+  double adjustedHeight = opts.height == 0 ? 1 : opts.height;
 
   // Altitude - prevent division by 0
   // TODO(isaac): - just throw an Error instead?
-  altitude = max(0.75, altitude);
+  double adjustedAltitude = max(0.75, opts.altitude);
 
-  return getProjectionParameters(width, height, altitude, pitch, nearZMultiplier, farZMultiplier);
+  return getProjectionParameters(adjustedWidth, adjustedHeight, adjustedAltitude, opts.pitch, opts.nearZMultiplier,
+                                 opts.farZMultiplier);
 }
 
-WebMercatorViewport::WebMercatorViewport(int width, int height, double longitude, double latitude, double zoom,
-                                         double pitch, double bearing, double altitude, double nearZMultiplier,
-                                         double farZMultiplier, bool orthographic, bool repeat, double worldOffset
-                                         // Silently allow apps to send in 0,0 to facilitate isomorphic render etc
-                                         )
-    : Viewport("web-mercator-viewport",
-               calculateViewMatrixOptions(height, longitude, latitude, pitch, bearing, altitude, zoom),
-               calculateProjectionMatrixOptions(width, height, pitch, altitude, nearZMultiplier, farZMultiplier), 0, 0,
-               width == 0 ? 1 : width, height == 0 ? 1 : height) {
+WebMercatorViewport::WebMercatorViewport(const WebMercatorViewport::WebMercatorViewportOptions& opts)
+    : Viewport("web-mercator-viewport", calculateViewMatrixOptions(opts), calculateProjectionMatrixOptions(opts), 0, 0,
+               opts.width == 0 ? 1 : opts.width, opts.height == 0 ? 1 : opts.height) {
   // TODO(isaac): Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
   // but that can't be done in C++. Perhaps just call a non-virtual _init method instead?
 
