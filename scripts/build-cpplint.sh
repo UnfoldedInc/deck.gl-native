@@ -4,7 +4,8 @@
 
 mkdir -p build/cpplint
 cd build/cpplint
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake "-DCMAKE_CXX_CPPLINT=cpplint" ../..
+VCPKG_ROOT=${VCPKG_ROOT:-../vcpkg}
+cmake "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_CXX_CPPLINT=cpplint" ../..
 make -j
 ctest --output-on-failure
 # make test #  same output as `ctest`?
