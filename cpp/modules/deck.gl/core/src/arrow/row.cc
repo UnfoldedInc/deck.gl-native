@@ -26,14 +26,14 @@ using namespace deckgl;
 using namespace mathgl;
 
 Row::Row(const std::shared_ptr<arrow::Table>& table, int rowIndex) : _table{table}, _rowIndex{rowIndex} {
-  this->_chunkIndex = this->_getChunkIndex(table, rowIndex);
+  this->_chunkRowIndex = this->_getChunkRowIndex(table, rowIndex);
 }
 
 // NOTE: Accessors largely based on https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
 
-auto Row::getInt(const std::string& columnName, int nullValue) -> int {
+auto Row::getInt(const std::string& columnName, int defaultValue) -> int {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
@@ -42,15 +42,12 @@ auto Row::getInt(const std::string& columnName, int nullValue) -> int {
     return static_cast<int>(doubleValue.value());
   }
 
-  // TODO(ilija): Log out a warning once logging system is in place
-  //  throw std::logic_error("Invalid column type. Expected int, found: " + chunk->type()->ToString());
-
-  return nullValue;
+  return defaultValue;
 }
 
-auto Row::getFloat(const std::string& columnName, float nullValue) -> float {
+auto Row::getFloat(const std::string& columnName, float defaultValue) -> float {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
@@ -59,15 +56,12 @@ auto Row::getFloat(const std::string& columnName, float nullValue) -> float {
     return static_cast<float>(doubleValue.value());
   }
 
-  // TODO(ilija): Log out a warning once logging system is in place
-  //  throw std::logic_error("Invalid column type. Expected float, found: " + chunk->type()->ToString());
-
-  return nullValue;
+  return defaultValue;
 }
 
-auto Row::getDouble(const std::string& columnName, double nullValue) -> double {
+auto Row::getDouble(const std::string& columnName, double defaultValue) -> double {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
@@ -76,199 +70,142 @@ auto Row::getDouble(const std::string& columnName, double nullValue) -> double {
     return doubleValue.value();
   }
 
-  // TODO(ilija): Log out a warning once logging system is in place
-  //  throw std::logic_error("Invalid column type. Expected double, found: " + chunk->type()->ToString());
-
-  return nullValue;
+  return defaultValue;
 }
 
-auto Row::getBool(const std::string& columnName, bool nullValue) -> bool {
+auto Row::getBool(const std::string& columnName, bool defaultValue) -> bool {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
   if (auto boolArray = std::dynamic_pointer_cast<arrow::BooleanArray>(chunk)) {
-    return boolArray->Value(this->_chunkIndex);
+    return boolArray->Value(this->_chunkRowIndex);
   } else if (auto doubleValue = this->_getDouble(chunk)) {
     return static_cast<bool>(doubleValue.value());
   }
 
-  // TODO(ilija): Log out a warning once logging system is in place
-  //  throw std::logic_error("Invalid column type. Expected bool, found: " + chunk->type()->ToString());
-
-  return nullValue;
+  return defaultValue;
 }
 
-auto Row::getString(const std::string& columnName, const std::string& nullValue) -> std::string {
+auto Row::getString(const std::string& columnName, const std::string& defaultValue) -> std::string {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
   if (auto stringArray = std::dynamic_pointer_cast<arrow::StringArray>(chunk)) {
-    return stringArray->GetString(this->_chunkIndex);
+    return stringArray->GetString(this->_chunkRowIndex);
   }
 
-  // TODO(ilija): Log out a warning once logging system is in place
-  //  throw std::logic_error("Invalid column type. Expected string, found: " + chunk->type()->ToString());
-
-  return nullValue;
+  return defaultValue;
 }
 
-auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& nullValue) -> Vector2<float> {
+auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& defaultValue) -> Vector2<float> {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
       auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      if (listArray->value_length() != 2) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 2 values");
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
-      return this->_vector2FromFloatArray(values, nullValue);
+      return this->_vector2FromFloatArray(values, offset, listArray->value_length(), defaultValue);
     }
     case arrow::Type::LIST: {
       auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto length = listArray->value_length(this->_rowIndex);
-      if (length != 2) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 2 values");
-
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
+      auto length = listArray->value_length(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
-      return this->_vector2FromFloatArray(values, nullValue);
+      return this->_vector2FromFloatArray(values, offset, length, defaultValue);
     }
-
     default:
-      // TODO(ilija): Log out a warning once logging system is in place
-      // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
-      return nullValue;
+      return defaultValue;
   }
 }
 
-auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>& nullValue) -> Vector2<double> {
+auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>& defaultValue) -> Vector2<double> {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
       auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      if (listArray->value_length() != 2) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 2 values");
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
-      return this->_vector2FromDoubleArray(values, nullValue);
+      return this->_vector2FromDoubleArray(values, offset, listArray->value_length(), defaultValue);
     }
     case arrow::Type::LIST: {
       auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto length = listArray->value_length(this->_rowIndex);
-      if (length != 2) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 2 values");
-
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
+      auto length = listArray->value_length(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
-      return this->_vector2FromDoubleArray(values, nullValue);
+      return this->_vector2FromDoubleArray(values, offset, length, defaultValue);
     }
-
     default:
-      // TODO(ilija): Log out a warning once logging system is in place
-      // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
-      return nullValue;
+      return defaultValue;
   }
 }
 
-auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& nullValue) -> Vector3<float> {
+auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& defaultValue) -> Vector3<float> {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
       auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      if (listArray->value_length() != 3) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 3 values");
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
-      return this->_vector3FromFloatArray(values, nullValue);
+      return this->_vector3FromFloatArray(values, offset, listArray->value_length(), defaultValue);
     }
     case arrow::Type::LIST: {
       auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto length = listArray->value_length(this->_rowIndex);
-      if (length != 3) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 3 values");
-
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
+      auto length = listArray->value_length(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
-      return this->_vector3FromFloatArray(values, nullValue);
+      return this->_vector3FromFloatArray(values, offset, length, defaultValue);
     }
-
     default:
-      // TODO(ilija): Log out a warning once logging system is in place
-      // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
-      return nullValue;
+      return defaultValue;
   }
 }
 
-auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>& nullValue) -> Vector3<double> {
+auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>& defaultValue) -> Vector3<double> {
   if (!this->isValid(columnName)) {
-    return nullValue;
+    return defaultValue;
   }
 
   auto chunk = this->_getChunk(columnName);
   switch (chunk->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
       auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(chunk);
-      if (listArray->value_length() != 3) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 3 values");
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
-      return this->_vector3FromDoubleArray(values, nullValue);
+      return this->_vector3FromDoubleArray(values, offset, listArray->value_length(), defaultValue);
     }
     case arrow::Type::LIST: {
       auto listArray = std::static_pointer_cast<arrow::ListArray>(chunk);
-      auto length = listArray->value_length(this->_rowIndex);
-      if (length != 3) {
-        // TODO(ilija): Log out a warning once logging system is in place
-        // throw std::logic_error("Vector does not have 3 values");
-
-        return nullValue;
-      }
+      auto offset = listArray->value_offset(this->_chunkRowIndex);
+      auto length = listArray->value_length(this->_chunkRowIndex);
 
       auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
-      return this->_vector3FromDoubleArray(values, nullValue);
+      return this->_vector3FromDoubleArray(values, offset, length, defaultValue);
     }
-
     default:
-      // TODO(ilija): Log out a warning once logging system is in place
-      // throw std::logic_error("Invalid column type. Expected list, found: " + chunk->type()->ToString());
-      return nullValue;
+      return defaultValue;
   }
 }
 
@@ -301,7 +238,7 @@ auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Arr
   throw std::logic_error("Invalid chunk lookup");
 }
 
-auto Row::_getChunkIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int {
+auto Row::_getChunkRowIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int {
   if (rowIndex >= table->num_rows()) {
     throw std::range_error("Invalid row index");
   }
@@ -327,81 +264,69 @@ auto Row::_getChunkIndex(const std::shared_ptr<arrow::Table>& table, int rowInde
 auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optional<double> {
   switch (chunk->type_id()) {
     case arrow::Type::DOUBLE:
-      return std::static_pointer_cast<arrow::DoubleArray>(chunk)->Value(this->_chunkIndex);
+      return std::static_pointer_cast<arrow::DoubleArray>(chunk)->Value(this->_chunkRowIndex);
     case arrow::Type::FLOAT:
-      return static_cast<double>(std::static_pointer_cast<arrow::FloatArray>(chunk)->Value(this->_chunkIndex));
+      return static_cast<double>(std::static_pointer_cast<arrow::FloatArray>(chunk)->Value(this->_chunkRowIndex));
     case arrow::Type::INT64:
-      return static_cast<double>(std::static_pointer_cast<arrow::Int64Array>(chunk)->Value(this->_chunkIndex));
+      return static_cast<double>(std::static_pointer_cast<arrow::Int64Array>(chunk)->Value(this->_chunkRowIndex));
     case arrow::Type::INT32:
-      return static_cast<double>(std::static_pointer_cast<arrow::Int32Array>(chunk)->Value(this->_chunkIndex));
+      return static_cast<double>(std::static_pointer_cast<arrow::Int32Array>(chunk)->Value(this->_chunkRowIndex));
 
     default:
       return std::nullopt;
   }
 }
 
-auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector2<float>& nullValue)
-    -> Vector2<float> {
-  if (values->type_id() != arrow::Type::FLOAT) {
-    // TODO(ilija): Log out a warning once logging system is in place
-    // throw std::logic_error("Inconsistent vector type, expected float got: " + values->type()->ToString());
-    return nullValue;
-  }
+auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
+                                 const Vector2<float>& defaultValue) -> Vector2<float> {
+  if (values->type_id() != arrow::Type::FLOAT) { return defaultValue; }
+  if (listSize < 1) { return defaultValue; }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<float>(1);
-  const float* first = listPointer;
-  const float* second = listPointer + 1;
+  const float first = *(listPointer + offset);
+  const float second = listSize >= 2 ? *(listPointer + offset + 1) : 0.0;
 
-  return Vector2<float>(*first, *second);
+  return Vector2<float>(first, second);
 }
 
-auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector2<double>& nullValue)
-    -> Vector2<double> {
-  if (values->type_id() != arrow::Type::DOUBLE) {
-    // TODO(ilija): Log out a warning once logging system is in place
-    // throw std::logic_error("Inconsistent vector type, expected double got: " + values->type()->ToString());
-    return nullValue;
-  }
+auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
+                                  const Vector2<double>& defaultValue) -> Vector2<double> {
+  if (values->type_id() != arrow::Type::DOUBLE) { return defaultValue; }
+  if (listSize < 1) { return defaultValue; }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<double>(1);
-  const double* first = listPointer;
-  const double* second = listPointer + 1;
+  const double first = *(listPointer + offset);
+  const double second = listSize >= 2 ? *(listPointer + offset + 1) : 0.0;
 
-  return Vector2<double>(*first, *second);
+  return Vector2<double>(first, second);
 }
 
-auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector3<float>& nullValue)
-    -> Vector3<float> {
-  if (values->type_id() != arrow::Type::FLOAT) {
-    // TODO(ilija): Log out a warning once logging system is in place
-    // throw std::logic_error("Inconsistent vector type, expected double got: " + values->type()->ToString());
-    return nullValue;
-  }
+auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
+                                 const Vector3<float>& defaultValue) -> Vector3<float> {
+  if (values->type_id() != arrow::Type::FLOAT) { return defaultValue; }
+  if (listSize < 2) { return defaultValue; }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<double>(1);
-  const double* first = listPointer;
-  const double* second = listPointer + 1;
-  const double* third = listPointer + 2;
+  const double first = *(listPointer + offset);
+  const double second = *(listPointer + offset + 1);
+  const double third = listSize >= 3 ? *(listPointer + offset + 2) : 0.0;
 
-  return Vector3<float>(*first, *second, *third);
+  return Vector3<float>(first, second, third);
 }
 
-auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector3<double>& nullValue)
-    -> Vector3<double> {
-  if (values->type_id() != arrow::Type::DOUBLE) {
-    // TODO(ilija): Log out a warning once logging system is in place
-    // throw std::logic_error("Inconsistent vector type, expected double got: " + values->type()->ToString());
-    return nullValue;
-  }
+auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
+                                  const Vector3<double>& defaultValue) -> Vector3<double> {
+  if (values->type_id() != arrow::Type::DOUBLE) { return defaultValue; }
+  if (listSize < 2) { return defaultValue; }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<double>(1);
-  const double* first = listPointer;
-  const double* second = listPointer + 1;
-  const double* third = listPointer + 2;
+  const double first = *(listPointer + offset);
+  const double second = *(listPointer + offset + 1);
+  const double third = listSize >= 3 ? *(listPointer + offset + 2) : 0.0;
 
-  return Vector3<double>(*first, *second, *third);
+  return Vector3<double>(first, second, third);
 }
