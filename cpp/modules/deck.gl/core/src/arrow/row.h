@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_LIB_ATTRIBUTE_TABLE_TABLE_ROW_H
-#define DECKGL_CORE_LIB_ATTRIBUTE_TABLE_TABLE_ROW_H
+#ifndef DECKGL_CORE_ARROW_ROW_H
+#define DECKGL_CORE_ARROW_ROW_H
 
 #include <arrow/array.h>
 #include <arrow/table.h>
@@ -48,13 +48,15 @@ class Row {
   auto getDoubleVector2(const std::string& columnName, const Vector2<double>& defaultValue = {}) -> Vector2<double>;
   auto getFloatVector3(const std::string& columnName, const Vector3<float>& defaultValue = {}) -> Vector3<float>;
   auto getDoubleVector3(const std::string& columnName, const Vector3<double>& defaultValue = {}) -> Vector3<double>;
+  auto getFloatVector4(const std::string& columnName, const Vector4<float>& defaultValue = {}) -> Vector4<float>;
+  auto getDoubleVector4(const std::string& columnName, const Vector4<double>& defaultValue = {}) -> Vector4<double>;
 
   auto isValid(const std::string& columnName) -> bool;
 
  private:
-  /// Retrieves a chunk for a given columName.
+  /// \brief Retrieves a chunk for a given columName.
   auto _getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array>;
-  /// Calculates a relative index of a row within the appropriate chunk.
+  /// \brief Calculates a relative index of a row within the appropriate chunk.
   auto _getChunkRowIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int;
 
   auto _getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optional<double>;
@@ -66,11 +68,15 @@ class Row {
                               const Vector3<float>& defaultValue) -> Vector3<float>;
   auto _vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
                                const Vector3<double>& defaultValue) -> Vector3<double>;
+  auto _vector4FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
+                              const Vector4<float>& defaultValue) -> Vector4<float>;
+  auto _vector4FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
+                               const Vector4<double>& defaultValue) -> Vector4<double>;
 
   std::shared_ptr<arrow::Table> _table;
-  /// Index of the row within table.
+  /// \brief Index of the row within table.
   int _rowIndex;
-  /// Relative row index in respect to the chunk.
+  /// \brief Relative row index in respect to the chunk.
   int _chunkRowIndex;
 
   //  std::unordered_map<std::string, std::shared_ptr<arrow::Array>> _cache;
@@ -78,4 +84,4 @@ class Row {
 
 }  // namespace deckgl
 
-#endif  // DECKGL_CORE_LIB_ATTRIBUTE_TABLE_TABLE_ROW_H
+#endif  // DECKGL_CORE_ARROW_ROW_H

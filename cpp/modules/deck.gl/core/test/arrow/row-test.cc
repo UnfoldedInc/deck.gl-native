@@ -30,16 +30,14 @@ namespace {
 
 using namespace deckgl;
 
-/**
- * The fixture for testing class Row.
- */
+/// \brief The fixture for testing class Row.
 class RowTest : public ::testing::Test {
  protected:
   RowTest() {
     arrow::MemoryPool* pool = arrow::default_memory_pool();
 
     // int column
-    arrow::Int64Builder intBuilder(pool);
+    arrow::Int64Builder intBuilder{pool};
     EXPECT_TRUE(intBuilder.Append(42).ok());
     EXPECT_TRUE(intBuilder.Append(-212).ok());
 
@@ -47,7 +45,7 @@ class RowTest : public ::testing::Test {
     EXPECT_TRUE(intBuilder.Finish(&intArray).ok());
 
     // double column
-    arrow::DoubleBuilder doubleBuilder(pool);
+    arrow::DoubleBuilder doubleBuilder{pool};
     EXPECT_TRUE(doubleBuilder.Append(-256.5).ok());
     EXPECT_TRUE(doubleBuilder.Append(991.1).ok());
 
@@ -55,21 +53,21 @@ class RowTest : public ::testing::Test {
     EXPECT_TRUE(doubleBuilder.Finish(&doubleArray).ok());
 
     // bool column
-    arrow::BooleanBuilder boolBuilder(pool);
+    arrow::BooleanBuilder boolBuilder{pool};
     EXPECT_TRUE(boolBuilder.Append(false).ok());
 
     std::shared_ptr<arrow::Array> boolArray;
     EXPECT_TRUE(boolBuilder.Finish(&boolArray).ok());
 
     // string column
-    arrow::StringBuilder stringBuilder(pool);
+    arrow::StringBuilder stringBuilder{pool};
     EXPECT_TRUE(stringBuilder.Append("first").ok());
 
     std::shared_ptr<arrow::Array> stringArray;
     EXPECT_TRUE(stringBuilder.Finish(&stringArray).ok());
 
     // float list column
-    arrow::ListBuilder listBuilder(pool, std::make_shared<arrow::FloatBuilder>(pool));
+    arrow::ListBuilder listBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool)};
     arrow::FloatBuilder& listValueBuilder = *(static_cast<arrow::FloatBuilder*>(listBuilder.value_builder()));
 
     EXPECT_TRUE(listBuilder.Append().ok());
@@ -80,9 +78,9 @@ class RowTest : public ::testing::Test {
     EXPECT_TRUE(listBuilder.Finish(&listArray).ok());
 
     // double fixed list column
-    arrow::FixedSizeListBuilder fixedListBuilder(pool, std::make_shared<arrow::DoubleBuilder>(pool), 3);
+    arrow::FixedSizeListBuilder fixedListBuilder{pool, std::make_shared<arrow::DoubleBuilder>(pool), 3};
     arrow::DoubleBuilder& fixedListValueBuilder =
-      *(static_cast<arrow::DoubleBuilder*>(fixedListBuilder.value_builder()));
+        *(static_cast<arrow::DoubleBuilder*>(fixedListBuilder.value_builder()));
 
     EXPECT_TRUE(fixedListBuilder.Append().ok());
     std::vector<double> fixedListValues{-256.2, 0.0, 1.23};
@@ -92,11 +90,12 @@ class RowTest : public ::testing::Test {
     EXPECT_TRUE(fixedListBuilder.Finish(&fixedListArray).ok());
 
     std::vector<std::shared_ptr<arrow::Field>> schemaVector = {
-      arrow::field("int", arrow::int64()), arrow::field("double", arrow::float64()),
-      arrow::field("bool", arrow::boolean()), arrow::field("string", arrow::utf8()),
-      arrow::field("list", arrow::list(arrow::float32())),
-      arrow::field("fixed_list", arrow::fixed_size_list(arrow::float64(), 3))
-    };
+        arrow::field("int", arrow::int64()),
+        arrow::field("double", arrow::float64()),
+        arrow::field("bool", arrow::boolean()),
+        arrow::field("string", arrow::utf8()),
+        arrow::field("list", arrow::list(arrow::float32())),
+        arrow::field("fixed_list", arrow::fixed_size_list(arrow::float64(), 3))};
 
     auto schema = std::make_shared<arrow::Schema>(schemaVector);
     table = arrow::Table::Make(schema, {intArray, doubleArray, boolArray, stringArray, listArray, fixedListArray});

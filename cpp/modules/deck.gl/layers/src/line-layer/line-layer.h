@@ -21,6 +21,9 @@
 #ifndef DECKGL_LAYERS_LINE_LAYER_H
 #define DECKGL_LAYERS_LINE_LAYER_H
 
+#include <arrow/array.h>
+#include <arrow/table.h>
+
 #include <limits>
 #include <memory>
 #include <string>
@@ -37,40 +40,46 @@ class LineLayer : public Layer {
   explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
+  // TODO(ilija): Should these be public?
+  auto getSourcePositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getWidthData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+
  protected:
   void initializeState() override;
-  void updateState(const Layer::ChangeFlags &, const Layer::Props *oldProps) override;
+  void updateState(const Layer::ChangeFlags&, const Layer::Props* oldProps) override;
   void finalizeState() override;
   void drawState() override;
 
  private:
-  auto _getModel(void *gl) -> std::shared_ptr<lumagl::Model>;
+  auto _getModel(void* gl) -> std::shared_ptr<lumagl::Model>;
 };
 
 class LineLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
-  static constexpr const char *getTypeName() { return "LineLayer"; }
+  static constexpr const char* getTypeName() { return "LineLayer"; }
 
   std::string widthUnits{"pixels"};                         // 'pixels',
   float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
   float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
   float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
 
-  /*
-    // std::function<(auto row) -> Vector3<double>> getSourcePosition; //
-    {type: 'accessor', value: x => x.sourcePosition},
-    // std::function<(auto row) -> Vector3<double>> getTargetPosition; //
-    {type: 'accessor', value: x => x.targetPosition},
-    // std::function<(auto row) -> ColorRGBA> getColor; //  {type: 'accessor',
-    value: DEFAULT_COLOR},
-    // std::function<(auto row) -> float> getWidth; //  {type: 'accessor',
-    value: 1},
-   */
+  /// Property accessors
+  auto getSourcePosition(const std::shared_ptr<Row>& row) -> mathgl::Vector3<double> {
+    return row->getDoubleVector3("sourcePosition");
+  }
+  auto getTargetPosition(const std::shared_ptr<Row>& row) -> mathgl::Vector3<double> {
+    return row->getDoubleVector3("targetPosition");
+  }
+  // TODO(ilija): Is this supposed to return ColorRGBA? Adding another conversion back to Vector4 seems unnecessary
+  auto getColor(const std::shared_ptr<Row>& row) -> mathgl::Vector4<float> { return row->getFloatVector4("color"); }
+  auto getWidth(const std::shared_ptr<Row>& row) -> float { return row->getFloat("width"); }
 
   // Property Type Machinery
-  auto getProperties() const -> const Properties * override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> LineLayer * override {
+  auto getProperties() const -> const Properties* override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> LineLayer* override {
     return new LineLayer{std::dynamic_pointer_cast<LineLayer::Props>(props)};
   }
 };

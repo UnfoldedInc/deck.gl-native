@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_CORE_H
 #define DECKGL_CORE_CORE_H
 
+#include "./arrow/arrow-mapper.h"
+#include "./arrow/row.h"
 #include "./lib/attribute/attribute-manager.h"
 #include "./lib/constants.h"  // {COORDINATE_SYSTEM, PROJECTION_MODE}
 #include "./lib/deck.h"       // {Deck}
