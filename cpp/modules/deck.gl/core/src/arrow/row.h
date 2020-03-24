@@ -38,36 +38,40 @@ class Row {
  public:
   Row(const std::shared_ptr<arrow::Table>& table, int rowIndex);
 
-  auto getInt(const std::string& columnName, int nullValue = 0) -> int;
-  auto getFloat(const std::string& columnName, float nullValue = 0.0) -> float;
-  auto getDouble(const std::string& columnName, double nullValue = 0.0) -> double;
-  auto getBool(const std::string& columnName, bool nullValue = false) -> bool;
-  auto getString(const std::string& columnName, const std::string& nullValue = "") -> std::string;
+  auto getInt(const std::string& columnName, int defaultValue = 0) -> int;
+  auto getFloat(const std::string& columnName, float defaultValue = 0.0) -> float;
+  auto getDouble(const std::string& columnName, double defaultValue = 0.0) -> double;
+  auto getBool(const std::string& columnName, bool defaultValue = false) -> bool;
+  auto getString(const std::string& columnName, const std::string& defaultValue = "") -> std::string;
 
-  auto getFloatVector2(const std::string& columnName, const Vector2<float>& nullValue = {}) -> Vector2<float>;
-  auto getDoubleVector2(const std::string& columnName, const Vector2<double>& nullValue = {}) -> Vector2<double>;
-  auto getFloatVector3(const std::string& columnName, const Vector3<float>& nullValue = {}) -> Vector3<float>;
-  auto getDoubleVector3(const std::string& columnName, const Vector3<double>& nullValue = {}) -> Vector3<double>;
+  auto getFloatVector2(const std::string& columnName, const Vector2<float>& defaultValue = {}) -> Vector2<float>;
+  auto getDoubleVector2(const std::string& columnName, const Vector2<double>& defaultValue = {}) -> Vector2<double>;
+  auto getFloatVector3(const std::string& columnName, const Vector3<float>& defaultValue = {}) -> Vector3<float>;
+  auto getDoubleVector3(const std::string& columnName, const Vector3<double>& defaultValue = {}) -> Vector3<double>;
 
   auto isValid(const std::string& columnName) -> bool;
 
  private:
+  /// Retrieves a chunk for a given columName.
   auto _getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array>;
-  auto _getChunkIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int;
+  /// Calculates a relative index of a row within the appropriate chunk.
+  auto _getChunkRowIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int;
 
   auto _getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optional<double>;
-  auto _vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector2<float>& nullValue)
-      -> Vector2<float>;
-  auto _vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector2<double>& nullValue)
-      -> Vector2<double>;
-  auto _vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, const Vector3<float>& nullValue)
-      -> Vector3<float>;
-  auto _vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, const Vector3<double>& nullValue)
-      -> Vector3<double>;
+  auto _vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
+                              const Vector2<float>& defaultValue) -> Vector2<float>;
+  auto _vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
+                               const Vector2<double>& defaultValue) -> Vector2<double>;
+  auto _vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
+                              const Vector3<float>& defaultValue) -> Vector3<float>;
+  auto _vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
+                               const Vector3<double>& defaultValue) -> Vector3<double>;
 
   std::shared_ptr<arrow::Table> _table;
-  int _chunkIndex;
+  /// Index of the row within table.
   int _rowIndex;
+  /// Relative row index in respect to the chunk.
+  int _chunkRowIndex;
 
   //  std::unordered_map<std::string, std::shared_ptr<arrow::Array>> _cache;
 };
