@@ -33,7 +33,7 @@ auto const OFFSET_TOLERANCE = 1e-5;
 
 WebMercatorViewport makeTestViewport(int width, int height, double longitude, double latitude, double zoom,
                                      double pitch, double bearing) {
-  WebMercatorViewport::WebMercatorViewportOptions opts;
+  WebMercatorViewport::Options opts;
   opts.width = width;
   opts.height = height;
   opts.longitude = longitude;

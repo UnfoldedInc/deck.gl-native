@@ -28,7 +28,7 @@ using namespace std;
 using namespace mathgl;
 using namespace deckgl;
 
-ViewMatrixOptions calculateViewMatrixOptions(const WebMercatorViewport::WebMercatorViewportOptions& opts) {
+ViewMatrixOptions calculateViewMatrixOptions(const WebMercatorViewport::Options& opts) {
   auto scale = pow(2, opts.zoom);
   double adjustedHeight = opts.height == 0 ? 1 : opts.height;
 
@@ -50,7 +50,7 @@ ViewMatrixOptions calculateViewMatrixOptions(const WebMercatorViewport::WebMerca
   return viewOpts;
 }
 
-ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewport::WebMercatorViewportOptions& opts) {
+ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewport::Options& opts) {
   double adjustedWidth = opts.width == 0 ? 1 : opts.width;
   double adjustedHeight = opts.height == 0 ? 1 : opts.height;
 
@@ -62,7 +62,7 @@ ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewpo
                                  opts.farZMultiplier);
 }
 
-WebMercatorViewport::WebMercatorViewport(const WebMercatorViewport::WebMercatorViewportOptions& opts)
+WebMercatorViewport::WebMercatorViewport(const WebMercatorViewport::Options& opts)
     : Viewport("web-mercator-viewport", calculateViewMatrixOptions(opts), calculateProjectionMatrixOptions(opts), 0, 0,
                opts.width == 0 ? 1 : opts.width, opts.height == 0 ? 1 : opts.height) {
   // TODO(isaac): Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
