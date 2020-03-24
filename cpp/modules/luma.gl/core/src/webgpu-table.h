@@ -18,9 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_H
-#define LUMAGL_CORE_H
+#ifndef LUMAGL_CORE_WEBGPU_TABLE_H
+#define LUMAGL_CORE_WEBGPU_TABLE_H
 
-#include "./core/src/model.h"
+namespace lumagl {
 
-#endif  // LUMAGL_CORE_CORE_H
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_CORE_WEBGPU_TABLE_H

@@ -30,6 +30,6 @@ using namespace deckgl;
 TEST(ViewportUniforms, Simple) {
   // TODO(isaac): Add tests
 
-  // TODO: Check for non-finite outputs
-  // TODO: Check for coordinate origin (copy from JS)
+  // TODO(isaac): Check for non-finite outputs
+  // TODO(isaac): Check for coordinate origin (copy from JS)
 }

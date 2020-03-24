@@ -18,9 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_H
-#define LUMAGL_CORE_H
+#ifndef LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
+#define LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
 
-#include "./core/src/model.h"
+#include "./animation-loop.h"
+#include "GLFW/glfw3.h"
 
-#endif  // LUMAGL_CORE_CORE_H
+namespace lumagl {
+
+class GLFWAnimationLoop : public AnimationLoop {
+ public:
+  explicit GLFWAnimationLoop(wgpu::BackendType backendType);
+
+  auto createDevice(wgpu::BackendType) -> wgpu::Device override;
+  bool shouldQuit() override;
+  void flush() override;
+
+  GLFWwindow* window{nullptr};
+};
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_CORE_GLFW_ANIMATION_LOOP_H

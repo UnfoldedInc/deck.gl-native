@@ -18,9 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_H
-#define LUMAGL_CORE_H
+#ifndef LUMAGL_CORE_MODEL_H
+#define LUMAGL_CORE_MODEL_H
 
-#include "./core/src/model.h"
+#include <string>
 
-#endif  // LUMAGL_CORE_CORE_H
+namespace lumagl {
+
+class Model {
+ public:
+  class Options;
+
+  explicit Model(void *device, const Options &);
+  explicit Model(void *device);
+  void draw();
+
+  // wgpu::ShaderModule vsModule;  // Compiled vertex shader
+  // wgpu::ShaderModule fsModule;  // Compiled fragment shader
+  // wgpu::RenderPipeline pipeline;  // rendering pipeline ("program")
+  // wgpu::BindGroupLayout bgl;  // Uniform buffer
+};
+
+class Model::Options {
+ public:
+  std::string vs;  // vertex shader source
+  std::string fs;  // fragment shader source
+};
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_CORE_MODEL_H

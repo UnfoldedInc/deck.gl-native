@@ -18,9 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_H
-#define LUMAGL_CORE_H
+#ifndef LUMAGL_UTILS_WEBGPU_UTILS_H
+#define LUMAGL_UTILS_WEBGPU_UTILS_H
 
-#include "./core/src/model.h"
+#include <dawn/webgpu_cpp.h>
 
-#endif  // LUMAGL_CORE_CORE_H
+#include <string>
+
+namespace lumagl {
+namespace utils {
+
+/// \brief Get the default WebGPU/Dawn backend type for this platform
+/// Default to D3D12, Metal, Vulkan, OpenGL in that order as D3D12 and Metal are the preferred on
+/// their respective platforms, and Vulkan is preferred to OpenGL
+auto getDefaultWebGPUBackendType() -> wgpu::BackendType;
+
+/// \brief Get a WebGPU/Dawn backend type from a string
+auto getWebGPUBackendType(const std::string &backendType) -> wgpu::BackendType;
+
+/// \brief Get a string representation of a WebGPU Error
+auto getDeviceErrorTypeName(WGPUErrorType errorType) -> const char *;
+
+}  // namespace utils
+}  // namespace lumagl
+
+#endif  // LUMAGL_UTILS_WEBGPU_UTILS_H

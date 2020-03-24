@@ -95,10 +95,30 @@ set(LOADERSGL_JSON_TEST_FILES
 )
 
 ## luma.gl
-set(LUMAGL_CORE_HEADER_FILES
+set(LUMAGL_WEBGPU_HEADER_FILES
+    cpp/modules/luma.gl/webgpu.h
+    cpp/modules/luma.gl/webgpu/src/webgpu-constants.h
+    cpp/modules/luma.gl/webgpu/src/webgpu-utils.h
+    cpp/modules/luma.gl/webgpu/src/webgpu-helpers.h
+    )
+set(LUMAGL_WEBGPU_SOURCE_FILES
+    cpp/modules/luma.gl/webgpu/src/webgpu-utils.cpp
+    cpp/modules/luma.gl/webgpu/src/webgpu-helpers.cpp
+    )
+set(LUMAGL_WEBGPU_TEST_FILES
+    cpp/modules/luma.gl/webgpu/test/webgpu-test.cpp
+    )
+
+    set(LUMAGL_CORE_HEADER_FILES
     cpp/modules/luma.gl/core.h
+    cpp/modules/luma.gl/core/src/animation-loop.h
+    cpp/modules/luma.gl/core/src/glfw-animation-loop.h
+    cpp/modules/luma.gl/core/src/model.h
     )
 set(LUMAGL_CORE_SOURCE_FILES
+    cpp/modules/luma.gl/core/src/animation-loop.cpp
+    # cpp/modules/luma.gl/core/src/glfw-animation-loop.cpp
+    cpp/modules/luma.gl/core/src/model.cpp
     )
 set(LUMAGL_CORE_TEST_FILES
     )
@@ -197,21 +217,21 @@ set(LIB_HEADER_FILES
     ${PROBEGL_CORE_HEADER_FILES}
     ${MATHGL_CORE_HEADER_FILES}
     ${LOADERSGL_CSV_HEADER_FILES} ${LOADERSGL_JSON_HEADER_FILES}
-    ${LUMAGL_CORE_HEADER_FILES}
+    ${LUMAGL_CORE_HEADER_FILES} ${LUMAGL_WEBGPU_HEADER_FILES}
     ${DECKGL_JSON_HEADER_FILES} ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
     ${PROBEGL_CORE_SOURCE_FILES}
     ${MATHGL_CORE_SOURCE_FILES}
     ${LOADERSGL_CSV_SOURCE_FILES} ${LOADERSGL_JSON_SOURCE_FILES}
-    ${LUMAGL_CORE_SOURCE_FILES}
+    ${LUMAGL_CORE_SOURCE_FILES} ${LUMAGL_WEBGPU_SOURCE_FILES}
     ${DECKGL_JSON_SOURCE_FILES} ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
     ${PROBEGL_CORE_TEST_FILES}
     ${MATHGL_CORE_TEST_FILES}
     ${LOADERSGL_CSV_TEST_FILES} ${LOADERSGL_JSON_TEST_FILES}
-    ${LUMAGL_CORE_TEST_FILES}
+    ${LUMAGL_CORE_TEST_FILES} ${LUMAGL_WEBGPU_TEST_FILES}
     ${DECKGL_JSON_TEST_FILES} ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
     cpp/tests/main.cpp
     )
@@ -227,6 +247,8 @@ find_package(jsoncpp CONFIG REQUIRED)
 
 find_package(range-v3 CONFIG REQUIRED)
 
+find_package(glfw3 CONFIG REQUIRED)
+
 # TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
 include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
 link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
@@ -238,7 +260,7 @@ add_library(deck.gl ${LIB_SOURCE_FILES})
 # TODO: dawn can be included but is not linked yet.
 target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/dawn/include/>)
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 arrow)
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 glfw arrow)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)

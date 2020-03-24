@@ -95,6 +95,13 @@ and `apache-arrow` on Mac OSX:
 brew install apache-arrow
 ```
 
+## Graphics Dependencies
+
+deck.gl-native is built on top of the C++ WebGPU API using the Dawn framework.
+
+### Dawn
+
+
 ## Building
 
 ```
