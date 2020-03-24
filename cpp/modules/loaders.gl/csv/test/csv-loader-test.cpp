@@ -37,7 +37,7 @@ namespace {
  */
 class CSVLoaderTest : public ::testing::Test {
  protected:
-  CSVLoaderTest(): csvLoader{std::unique_ptr<CSVLoader>()} {}
+  CSVLoaderTest() : csvLoader{std::unique_ptr<CSVLoader>()} {}
 
   std::unique_ptr<CSVLoader> csvLoader;
 };

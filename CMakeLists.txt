@@ -1,7 +1,7 @@
 # Inspired by https://github.com/uber/h3/blob/master/CMakeLists.txt
 # and by https://github.com/google/s2geometry/blob/master/CMakeLists.txt
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -212,6 +212,8 @@ find_package(Arrow CONFIG REQUIRED)
 # Build the actual library file
 add_library(deck.gl ${LIB_SOURCE_FILES})
 
+# TODO: dawn can be included but is not linked yet.
+target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/dawn/include/>)
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
 target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 arrow)
 

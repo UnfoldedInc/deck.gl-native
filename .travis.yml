@@ -14,6 +14,9 @@ addons:
     packages:
     - apache-arrow
 
+env:
+  VCPKG_ROOT: $HOME/vcpkg
+
 matrix:
   include:
       # Check that clang-format doesn't detect some files are not formatted.
@@ -76,14 +79,15 @@ install:
 
 cache:
   directories:
-    - ${HOME}/vcpkg
+    - ${VCPKG_ROOT}
 
 before_script:
   # Build out of source
+  - ./scripts/bootstrap.sh
   - mkdir build
   - cd build
-  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake ..
+  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ..
 
 script:
   - make -j
-  - CTEST_OUTPUT_ON_FAILURE=1 make -j test
+  - CTEST_OUTPUT_ON_FAILURE=1 make test

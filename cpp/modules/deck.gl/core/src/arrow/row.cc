@@ -279,8 +279,12 @@ auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optiona
 
 auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
                                  const Vector2<float>& defaultValue) -> Vector2<float> {
-  if (values->type_id() != arrow::Type::FLOAT) { return defaultValue; }
-  if (listSize < 1) { return defaultValue; }
+  if (values->type_id() != arrow::Type::FLOAT) {
+    return defaultValue;
+  }
+  if (listSize < 1) {
+    return defaultValue;
+  }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<float>(1);
@@ -292,8 +296,12 @@ auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 
 auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
                                   const Vector2<double>& defaultValue) -> Vector2<double> {
-  if (values->type_id() != arrow::Type::DOUBLE) { return defaultValue; }
-  if (listSize < 1) { return defaultValue; }
+  if (values->type_id() != arrow::Type::DOUBLE) {
+    return defaultValue;
+  }
+  if (listSize < 1) {
+    return defaultValue;
+  }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<double>(1);
@@ -305,8 +313,12 @@ auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
 
 auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
                                  const Vector3<float>& defaultValue) -> Vector3<float> {
-  if (values->type_id() != arrow::Type::FLOAT) { return defaultValue; }
-  if (listSize < 2) { return defaultValue; }
+  if (values->type_id() != arrow::Type::FLOAT) {
+    return defaultValue;
+  }
+  if (listSize < 2) {
+    return defaultValue;
+  }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<float>(1);
@@ -319,8 +331,12 @@ auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 
 auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
                                   const Vector3<double>& defaultValue) -> Vector3<double> {
-  if (values->type_id() != arrow::Type::DOUBLE) { return defaultValue; }
-  if (listSize < 2) { return defaultValue; }
+  if (values->type_id() != arrow::Type::DOUBLE) {
+    return defaultValue;
+  }
+  if (listSize < 2) {
+    return defaultValue;
+  }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<double>(1);
