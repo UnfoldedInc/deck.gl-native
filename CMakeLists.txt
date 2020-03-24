@@ -1,7 +1,7 @@
 # Inspired by https://github.com/uber/h3/blob/master/CMakeLists.txt
 # and by https://github.com/google/s2geometry/blob/master/CMakeLists.txt
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
