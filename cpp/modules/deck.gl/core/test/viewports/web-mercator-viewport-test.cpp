@@ -31,14 +31,27 @@ auto const LNGLAT_TOLERANCE = 1e-6;
 // auto const ALT_TOLERANCE = 1e-5;
 auto const OFFSET_TOLERANCE = 1e-5;
 
-const WebMercatorViewport TEST_VIEWPORTS[] = {WebMercatorViewport(800, 600, -122, 38, 11, 0, 0),
-                                              WebMercatorViewport(800, 600, 20, 23, 15, 30, -85),
-                                              WebMercatorViewport(800, 600, 42, 65, 16, 15, 30)};
+WebMercatorViewport makeTestViewport(int width, int height, double longitude, double latitude, double zoom,
+                                     double pitch, double bearing) {
+  WebMercatorViewport::Options opts;
+  opts.width = width;
+  opts.height = height;
+  opts.longitude = longitude;
+  opts.latitude = latitude;
+  opts.zoom = zoom;
+  opts.pitch = pitch;
+  opts.bearing = bearing;
+
+  return WebMercatorViewport(opts);
+}
+
+const WebMercatorViewport TEST_VIEWPORTS[] = {makeTestViewport(800, 600, -122, 38, 11, 0, 0),
+                                              makeTestViewport(800, 600, 20, 23, 15, 30, -85),
+                                              makeTestViewport(800, 600, 42, 65, 16, 15, 30)};
 
 TEST(WebMercatorViewport, Ctor) {
-  WebMercatorViewport();
   // Construct with 0 width and height
-  WebMercatorViewport(0, 0);
+  makeTestViewport(0, 0, 0, 0, 11, 0, 0);
 }
 
 TEST(WebMercatorViewport, projectFlat) {

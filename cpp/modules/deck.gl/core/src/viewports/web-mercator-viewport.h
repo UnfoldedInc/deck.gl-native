@@ -35,10 +35,37 @@ namespace deckgl {
 //
 class WebMercatorViewport : public Viewport {
  public:
-  WebMercatorViewport(int width = 1, int height = 1, double latitude = 0, double longitude = 0, double zoom = 11,
-                      double pitch = 0, double bearing = 0, double altitude = 1.5, double nearZMultiplier = 0.1,
-                      double farZMultiplier = 1.01, bool orthographic = false, bool repeat = false,
-                      double worldOffset = 0);
+  struct Options {
+    const int DEFAULT_WIDTH = 1;
+    const int DEFAULT_HEIGHT = 1;
+    const double DEFAULT_LONGITUDE = 0.0;
+    const double DEFAULT_LATITUDE = 0.0;
+    const double DEFAULT_ZOOM = 11.0;
+    const double DEFAULT_PITCH = 0.0;
+    const double DEFAULT_BEARING = 0.0;
+    const double DEFAULT_ALTITUDE = 1.5;
+    const double DEFAULT_NEAR_Z_MULTIPLIER = 0.1;
+    const double DEFAULT_FAR_Z_MULTIPLIER = 1.01;
+    const bool DEFAULT_ORTHOGRAPHIC = false;
+    const bool DEFAULT_REPEAT = false;
+    const double DEFAULT_WORLD_OFFSET = 0.0;
+
+    int width = DEFAULT_WIDTH;
+    int height = DEFAULT_HEIGHT;
+    double latitude = DEFAULT_LATITUDE;
+    double longitude = DEFAULT_LONGITUDE;
+    double zoom = DEFAULT_ZOOM;
+    double pitch = DEFAULT_PITCH;
+    double bearing = DEFAULT_BEARING;
+    double altitude = DEFAULT_ALTITUDE;
+    double nearZMultiplier = DEFAULT_NEAR_Z_MULTIPLIER;
+    double farZMultiplier = DEFAULT_FAR_Z_MULTIPLIER;
+    bool orthographic = DEFAULT_ORTHOGRAPHIC;
+    bool repeat = DEFAULT_REPEAT;
+    double worldOffset = DEFAULT_WORLD_OFFSET;
+  };
+
+  WebMercatorViewport(const Options& options);
 
   // elided subViewports feature
   // get subViewports()

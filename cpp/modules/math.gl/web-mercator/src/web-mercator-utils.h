@@ -26,18 +26,20 @@
 
 #include "math.gl/core.h"
 
-#define PI M_PI
-#define PI_4 (M_PI / 4.0)
-#define DEGREES_TO_RADIANS (PI / 180.0)
-#define RADIANS_TO_DEGREES (180.0 / PI)
-#define TILE_SIZE 512
+namespace mathgl {
+
+const auto PI = M_PI;
+const auto PI_4 = PI / 4.0;
+const auto DEGREES_TO_RADIANS = PI / 180.0;
+const auto RADIANS_TO_DEGREES = 180.0 / PI;
+
+const auto TILE_SIZE = 512;
+
 // Average circumference (40075 km equatorial, 40007 km meridional)
-#define EARTH_CIRCUMFERENCE 40.03e6
+const auto EARTH_CIRCUMFERENCE = 40.03e6;
 
 // Mapbox default altitude
-#define DEFAULT_ALTITUDE 1.5
-
-namespace mathgl {
+const auto DEFAULT_ALTITUDE = 1.5;
 
 struct DistanceScales {
   Vector3<double> metersPerUnit;
