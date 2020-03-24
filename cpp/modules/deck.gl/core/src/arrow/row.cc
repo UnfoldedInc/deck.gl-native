@@ -309,10 +309,10 @@ auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
   if (listSize < 2) { return defaultValue; }
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto listPointer = values->data()->GetValues<double>(1);
-  const double first = *(listPointer + offset);
-  const double second = *(listPointer + offset + 1);
-  const double third = listSize >= 3 ? *(listPointer + offset + 2) : 0.0;
+  auto listPointer = values->data()->GetValues<float>(1);
+  const float first = *(listPointer + offset);
+  const float second = *(listPointer + offset + 1);
+  const float third = listSize >= 3 ? *(listPointer + offset + 2) : 0.0;
 
   return Vector3<float>(first, second, third);
 }
