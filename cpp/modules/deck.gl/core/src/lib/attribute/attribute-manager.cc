@@ -34,10 +34,6 @@ void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
 void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) { this->_add(descriptor); }
 
-void AttributeManager::addInstanced(const std::shared_ptr<AttributeDescriptor>& descriptor) {
-  this->_add(descriptor, true);
-}
-
 void AttributeManager::initialize() {
   // Create a new table based on previously added descriptors
   std::vector<std::shared_ptr<arrow::Field>> fields = {};
@@ -49,9 +45,6 @@ void AttributeManager::initialize() {
 
   std::vector<std::shared_ptr<arrow::Array>> arrays = {};
   this->_attributeTable = arrow::Table::Make(schema, arrays);
-
-  // Reset the descriptor data
-  this->_descriptors.clear();
 }
 
 void AttributeManager::invalidate(const std::string& attributeName) { this->invalidateAll(); }

@@ -22,6 +22,7 @@
 #define DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
 
 #include <arrow/array.h>
+#include <arrow/table.h>
 
 #include <memory>
 #include <string>
@@ -31,20 +32,16 @@
 
 namespace deckgl {
 
-using namespace deckgl;
-
 struct AttributeDescriptor {
  public:
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type)
-      : name{std::move(name)}, type{type} {}
+  using Accessor = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
+  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
+                      std::function<Accessor> accessor)
+      : name{std::move(name)}, type{type}, accessor{std::move(accessor)} {}
 
   std::string name;
   std::shared_ptr<arrow::DataType> type;
-
-  // TODO(ilija): This doesn't work, and we can't really create a class template as we wouldn't be able to make use of
-  // it in attribute manager
-  //  template<typename ReturnValue>
-  //  std::function<ReturnValue(TableRow)> accessor;
+  std::function<Accessor> accessor;
 };
 
 }  // namespace deckgl

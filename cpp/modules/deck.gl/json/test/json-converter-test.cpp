@@ -64,7 +64,6 @@ TEST_F(JSONConverterTest, JSONConfig) {
 
     // TODO(ib): bizarre test that parses a Deck as a LineLayer...
     auto lineLayerProps = classConverter(rootValue);
-    std::cout << lineLayerProps->getProperties()->className << std::endl;
     EXPECT_TRUE(lineLayerProps);
     EXPECT_TRUE(std::dynamic_pointer_cast<LineLayer::Props>(lineLayerProps));
   });
@@ -93,11 +92,9 @@ TEST_F(JSONConverterTest, JSONConverterDeck) {
 
   auto layer0Props = deckProps->layers.front();
   EXPECT_TRUE(layer0Props);
-  std::cout << "Layer: " << layer0Props->getProperties()->className << std::endl;
 
   // Test deckProps->initialViewState
   EXPECT_NEAR(*deckProps->initialViewState->longitude, -122.45, 0.0001);
-  std::cout << "Done" << std::endl;
 }
 
 }  // namespace

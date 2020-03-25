@@ -292,8 +292,7 @@ class Layer::Props : public Component::Props {
 
   std::string id;
 
-  // data: TODO - how do we manage ownership of data? i.e prevent leaks?
-  void* data{nullptr};
+  std::shared_ptr<arrow::Table> data;
   std::function<auto(void*, void*)->bool> dataComparator;
   // updateTriggers // TODO - how do we handle these in C++?
 

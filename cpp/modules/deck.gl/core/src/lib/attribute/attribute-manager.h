@@ -65,7 +65,6 @@ class AttributeManager {
   void setNeedsRedraw();
 
   void add(const std::shared_ptr<AttributeDescriptor>& descriptor);
-  void addInstanced(const std::shared_ptr<AttributeDescriptor>& descriptor);
 
   void initialize();
 

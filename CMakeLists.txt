@@ -127,6 +127,7 @@ set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core/src/views/view.h
     cpp/modules/deck.gl/core/src/views/view-state.h
     cpp/modules/deck.gl/core/src/arrow/row.h
+    cpp/modules/deck.gl/core/src/arrow/arrow-mapper.h
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/core.cpp
@@ -144,6 +145,7 @@ set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/views/view.cpp
     cpp/modules/deck.gl/core/src/views/view-state.cpp
     cpp/modules/deck.gl/core/src/arrow/row.cc
+    cpp/modules/deck.gl/core/src/arrow/arrow-mapper.cc
     )
 set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/lib/attribute/attribute-manager-test.cc
