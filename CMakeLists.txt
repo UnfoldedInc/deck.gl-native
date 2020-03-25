@@ -37,6 +37,18 @@ include(CTest)
 
 # Define source file lists per library
 
+## probe.gl
+set(PROBEGL_HEADER_FILES
+    cpp/modules/probe.gl/core.h
+    cpp/modules/probe.gl/core/src/platform.h
+    cpp/modules/probe.gl/core/src/system-utils.h
+)
+set(PROBEGL_SOURCE_FILES
+    cpp/modules/probe.gl/core/src/system-utils.cpp
+)
+set(PROBEGL_TEST_FILES
+)
+
 ## math.gl
 set(MATHGL_CORE_HEADER_FILES
     cpp/modules/math.gl/core.h
@@ -176,18 +188,21 @@ set(DECKGL_LAYERS_TEST_FILES
 
 # Define source file lists per type
 set(LIB_HEADER_FILES
+    ${PROBEGL_CORE_HEADER_FILES}
     ${MATHGL_CORE_HEADER_FILES}
     ${LOADERSGL_CSV_HEADER_FILES} ${LOADERSGL_JSON_HEADER_FILES}
     ${LUMAGL_CORE_HEADER_FILES}
     ${DECKGL_JSON_HEADER_FILES} ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
+    ${PROBEGL_CORE_SOURCE_FILES}
     ${MATHGL_CORE_SOURCE_FILES}
     ${LOADERSGL_CSV_SOURCE_FILES} ${LOADERSGL_JSON_SOURCE_FILES}
     ${LUMAGL_CORE_SOURCE_FILES}
     ${DECKGL_JSON_SOURCE_FILES} ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
+    ${PROBEGL_CORE_TEST_FILES}
     ${MATHGL_CORE_TEST_FILES}
     ${LOADERSGL_CSV_TEST_FILES} ${LOADERSGL_JSON_TEST_FILES}
     ${LUMAGL_CORE_TEST_FILES}
