@@ -229,15 +229,27 @@ SET(TEST_HEADER_FILES
 set(ALL_SOURCE_FILES
     ${LIB_SOURCE_FILES} ${TEST_SOURCE_FILES} ${LIB_HEADER_FILES} ${TEST_HEADER_FILES})
 
-# Dependencies
-find_package(jsoncpp CONFIG REQUIRED)
+## Dependencies
 
-find_package(range-v3 CONFIG REQUIRED)
-
-# TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
+# TODO: Workaround for using Homebrew
+#  due to not being able to (efficiently or otherwise) install certain modules through vcpkg
 include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
 link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
-find_package(Arrow CONFIG REQUIRED)
+include_directories(/usr/local/Cellar/gdal/2.4.4_2/include)
+link_directories(/usr/local/Cellar/gdal/2.4.4_2/lib)
+
+# General C++ Dependencies
+find_package(jsoncpp CONFIG REQUIRED)  # C++ JSON parser
+find_package(range-v3 CONFIG REQUIRED) # C++20 ranges on C++ 17.
+find_package(fmt CONFIG REQUIRED)      # C++20 fmt on C++17. Link w/ fmt::fmt or fmt::fmt-header-only
+find_package(Arrow CONFIG REQUIRED)    # Binary columnar tables
+
+# luma.gl Graphics Dependencies
+# dawn: Note: installed separately, currently headers checked in
+# find_package(shaderc CONFIG REQUIRED)  # GLSL to SPIR-V compiler (for dynamic shaders)
+find_package(glfw3 CONFIG REQUIRED)    # Windowing integration for dawn
+
+## Library Targets
 
 # Build the actual library file
 add_library(deck.gl ${LIB_SOURCE_FILES})
@@ -245,7 +257,7 @@ add_library(deck.gl ${LIB_SOURCE_FILES})
 # TODO: dawn can be included but is not linked yet.
 target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/dawn/include/>)
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 arrow)
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 fmt::fmt arrow glfw)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)
