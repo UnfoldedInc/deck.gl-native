@@ -18,9 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./core/src/compiler.h"
-#include "./core/src/platform.h"
+#ifndef PROBEGL_CORE
+#define PROBEGL_CORE
 
 #include "./core/src/assert.h"
+#include "./core/src/compiler.h"
 #include "./core/src/log.h"
+#include "./core/src/platform.h"
 #include "./core/src/system-utils.h"
+
+#endif  // PROBEGL_CORE

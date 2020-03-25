@@ -22,19 +22,17 @@
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
 #include "./assert.h"  // NOLINT(build/include)
-#include "./log.h"
 
 #include <cstdlib>
 
-void HandleAssertionFailure(const char* file,
-                            const char* function,
-                            int line,
-                            const char* condition) {
-    dawn::ErrorLog() << "Assertion failure at " << file << ":" << line << " (" << function
-                     << "): " << condition;
-#if defined(DAWN_ABORT_ON_ASSERT)
-    abort();
+#include "./compiler.h"
+#include "./log.h"
+
+void HandleAssertionFailure(const char* file, const char* function, int line, const char* condition) {
+  probegl::ErrorLog() << "Assertion failure at " << file << ":" << line << " (" << function << "): " << condition;
+#if defined(PROBEGL_ABORT_ON_ASSERT)
+  abort();
 #else
-    DAWN_BREAKPOINT();
+  PROBEGL_BREAKPOINT();
 #endif
 }

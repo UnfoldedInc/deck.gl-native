@@ -25,45 +25,44 @@
 #define PROBEGL_PLATFORM_H_
 
 #if defined(_WIN32) || defined(_WIN64)
-# define PROBEGL_PLATFORM_WINDOWS 1
+#define PROBEGL_PLATFORM_WINDOWS 1
 
 #elif defined(__linux__)
-# define PROBEGL_PLATFORM_LINUX 1
-# define PROBEGL_PLATFORM_POSIX 1
-# if defined(__ANDROID__)
-#  define PROBEGL_PLATFORM_ANDROID 1
-# endif
-
-#elif defined(__APPLE__)
-# define PROBEGL_PLATFORM_APPLE 1
-# define PROBEGL_PLATFORM_POSIX 1
-# include <TargetConditionals.h>
-# if TARGET_OS_IPHONE
-#  define PROBEGL_PLATFORM_IOS
-# elif TARGET_OS_MAC
-#  define PROBEGL_PLATFORM_MACOS
-# else
-#  error "Unsupported Apple platform."
-# endif
-
-#elif defined(__Fuchsia__)
-# define PROBEGL_PLATFORM_FUCHSIA 1
-# define PROBEGL_PLATFORM_POSIX 1
-
-#else
-# error "Unsupported platform."
+#define PROBEGL_PLATFORM_LINUX 1
+#define PROBEGL_PLATFORM_POSIX 1
+#if defined(__ANDROID__)
+#define PROBEGL_PLATFORM_ANDROID 1
 #endif
 
-#if defined(_WIN64) || defined(__aarch64__) || defined(__x86_64__) || defined(__mips64__) || \
-    defined(__s390x__) || defined(__PPC64__)
-# define PROBEGL_PLATFORM_64_BIT 1
+#elif defined(__APPLE__)
+#define PROBEGL_PLATFORM_APPLE 1
+#define PROBEGL_PLATFORM_POSIX 1
+#include <TargetConditionals.h>
+#if TARGET_OS_IPHONE
+#define PROBEGL_PLATFORM_IOS
+#elif TARGET_OS_MAC
+#define PROBEGL_PLATFORM_MACOS
+#else
+#error "Unsupported Apple platform."
+#endif
+
+#elif defined(__Fuchsia__)
+#define PROBEGL_PLATFORM_FUCHSIA 1
+#define PROBEGL_PLATFORM_POSIX 1
+
+#else
+#error "Unsupported platform."
+#endif
+
+#if defined(_WIN64) || defined(__aarch64__) || defined(__x86_64__) || defined(__mips64__) || defined(__s390x__) || \
+    defined(__PPC64__)
+#define PROBEGL_PLATFORM_64_BIT 1
 static_assert(sizeof(sizeof(char)) == 8, "Expect sizeof(size_t) == 8");
-#elif defined(_WIN32) || defined(__arm__) || defined(__i386__) || defined(__mips32__) || \
-    defined(__s390__)
-# define PROBEGL_PLATFORM_32_BIT 1
+#elif defined(_WIN32) || defined(__arm__) || defined(__i386__) || defined(__mips32__) || defined(__s390__)
+#define PROBEGL_PLATFORM_32_BIT 1
 static_assert(sizeof(sizeof(char)) == 4, "Expect sizeof(size_t) == 4");
 #else
-# error "Unsupported platform"
+#error "Unsupported platform"
 #endif
 
 #endif  // PROBEGL_PLATFORM_H_

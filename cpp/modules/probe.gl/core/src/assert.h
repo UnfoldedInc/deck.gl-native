@@ -41,49 +41,46 @@
 // MSVC triggers a warning in /W4 for do {} while(0). SDL worked around this by using (0,0) and
 // points out that it looks like an owl face.
 #if defined(PROBEGL_COMPILER_MSVC)
-#    define PROBEGL_ASSERT_LOOP_CONDITION (0, 0)
+#define PROBEGL_ASSERT_LOOP_CONDITION (0, 0)
 #else
-#    define PROBEGL_ASSERT_LOOP_CONDITION (0)
+#define PROBEGL_ASSERT_LOOP_CONDITION (0)
 #endif
 
 // PROBEGL_ASSERT_CALLSITE_HELPER generates the actual assert code. In Debug it does what you would
 // expect of an assert and in release it tries to give hints to make the compiler generate better
 // code.
 #if defined(PROBEGL_ENABLE_ASSERTS)
-#    define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition)  \
-        do {                                                          \
-            if (!(condition)) {                                       \
-                HandleAssertionFailure(file, func, line, #condition); \
-            }                                                         \
-        } while (PROBEGL_ASSERT_LOOP_CONDITION)
+#define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) \
+  do {                                                              \
+    if (!(condition)) {                                             \
+      HandleAssertionFailure(file, func, line, #condition);         \
+    }                                                               \
+  } while (PROBEGL_ASSERT_LOOP_CONDITION)
 #else
-#    if defined(PROBEGL_COMPILER_MSVC)
-#        define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) __assume(condition)
-#    elif defined(PROBEGL_COMPILER_CLANG) && defined(__builtin_assume)
-#        define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) __builtin_assume(condition)
-#    else
-#        define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) \
-            do {                                                         \
-                PROBEGL_UNUSED(sizeof(condition));                          \
-            } while (PROBEGL_ASSERT_LOOP_CONDITION)
-#    endif
+#if defined(PROBEGL_COMPILER_MSVC)
+#define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) __assume(condition)
+#elif defined(PROBEGL_COMPILER_CLANG) && defined(__builtin_assume)
+#define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) __builtin_assume(condition)
+#else
+#define PROBEGL_ASSERT_CALLSITE_HELPER(file, func, line, condition) \
+  do {                                                              \
+    PROBEGL_UNUSED(sizeof(condition));                              \
+  } while (PROBEGL_ASSERT_LOOP_CONDITION)
+#endif
 #endif
 
 #define PROBEGL_ASSERT(condition) PROBEGL_ASSERT_CALLSITE_HELPER(__FILE__, __func__, __LINE__, condition)
-#define PROBEGL_UNREACHABLE()                                                 \
-    do {                                                                   \
-        PROBEGL_ASSERT(PROBEGL_ASSERT_LOOP_CONDITION && "Unreachable code hit"); \
-        PROBEGL_BUILTIN_UNREACHABLE();                                        \
-    } while (PROBEGL_ASSERT_LOOP_CONDITION)
+#define PROBEGL_UNREACHABLE()                                                \
+  do {                                                                       \
+    PROBEGL_ASSERT(PROBEGL_ASSERT_LOOP_CONDITION && "Unreachable code hit"); \
+    PROBEGL_BUILTIN_UNREACHABLE();                                           \
+  } while (PROBEGL_ASSERT_LOOP_CONDITION)
 
 #if !defined(PROBEGL_SKIP_ASSERT_SHORTHANDS)
-#    define ASSERT PROBEGL_ASSERT
-#    define UNREACHABLE PROBEGL_UNREACHABLE
+#define ASSERT PROBEGL_ASSERT
+#define UNREACHABLE PROBEGL_UNREACHABLE
 #endif
 
-void HandleAssertionFailure(const char* file,
-                            const char* function,
-                            int line,
-                            const char* condition);
+void HandleAssertionFailure(const char* file, const char* function, int line, const char* condition);
 
 #endif  // COMMON_ASSERT_H_

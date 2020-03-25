@@ -28,6 +28,6 @@ namespace probegl {
 
 void uSleep(unsigned int usecs);
 
-} // namespace probegl
+}  // namespace probegl
 
 #endif  // PROBEGL_SYSTEMUTILS_H_

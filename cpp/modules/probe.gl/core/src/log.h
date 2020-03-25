@@ -45,61 +45,60 @@
 // It creates a LogMessage object that isn't stored anywhere and gets its destructor called
 // immediately which outputs the stored ostringstream in the right place.
 //
-// This file also contains DAWN_DEBUG for "printf debugging" which works on Android and
+// This file also contains PROBEGL_DEBUG for "printf debugging" which works on Android and
 // additionally outputs the file, line and function name. Use it this way:
 //
 //   // Pepper this throughout code to get a log of the execution
-//   DAWN_DEBUG();
+//   PROBEGL_DEBUG();
 //
 //   // Get more information
-//   DAWN_DEBUG() << texture.GetFormat();
+//   PROBEGL_DEBUG() << texture.GetFormat();
 
 #include <sstream>
 
 namespace probegl {
 
-    // Log levels mostly used to signal intent where the log message is produced and used to route
-    // the message to the correct output.
-    enum class LogSeverity {
-        Debug,
-        Info,
-        Warning,
-        Error,
-    };
+// Log levels mostly used to signal intent where the log message is produced and used to route
+// the message to the correct output.
+enum class LogSeverity {
+  Debug,
+  Info,
+  Warning,
+  Error,
+};
 
-    // Essentially an ostringstream that will print itself in its destructor.
-    class LogMessage {
-      public:
-        LogMessage(LogSeverity severity);
-        ~LogMessage();
+// Essentially an ostringstream that will print itself in its destructor.
+class LogMessage {
+ public:
+  explicit LogMessage(LogSeverity severity);
+  ~LogMessage();
 
-        LogMessage(LogMessage&& other) = default;
-        LogMessage& operator=(LogMessage&& other) = default;
+  LogMessage(LogMessage&& other) = default;
+  auto operator=(LogMessage&& other) -> LogMessage& = default;
 
-        template <typename T>
-        LogMessage& operator<<(T&& value) {
-            mStream << value;
-            return *this;
-        }
+  template <typename T>
+  auto operator<<(T&& value) -> LogMessage& {
+    mStream << value;
+    return *this;
+  }
 
-      private:
-        LogMessage(const LogMessage& other) = delete;
-        LogMessage& operator=(const LogMessage& other) = delete;
+ private:
+  LogMessage(const LogMessage& other) = delete;
+  auto operator=(const LogMessage& other) -> LogMessage& = delete;
 
-        LogSeverity mSeverity;
-        std::ostringstream mStream;
-    };
+  LogSeverity mSeverity;
+  std::ostringstream mStream;
+};
 
-    // Short-hands to create a LogMessage with the respective severity.
-    LogMessage DebugLog();
-    LogMessage InfoLog();
-    LogMessage WarningLog();
-    LogMessage ErrorLog();
+// Short-hands to create a LogMessage with the respective severity.
+auto DebugLog() -> LogMessage;
+auto InfoLog() -> LogMessage;
+auto WarningLog() -> LogMessage;
+auto ErrorLog() -> LogMessage;
 
-    // DAWN_DEBUG is a helper macro that creates a DebugLog and outputs file/line/function
-    // information
-    LogMessage DebugLog(const char* file, const char* function, int line);
-#define DAWN_DEBUG() ::probegl::DebugLog(__FILE__, __func__, __LINE__)
+// PROBEGL_DEBUG is a helper macro that creates a DebugLog and outputs file/line/function information
+auto DebugLog(const char* file, const char* function, int line) -> LogMessage;
+#define PROBEGL_DEBUG() ::probegl::DebugLog(__FILE__, __func__, __LINE__)
 
 }  // namespace probegl
 

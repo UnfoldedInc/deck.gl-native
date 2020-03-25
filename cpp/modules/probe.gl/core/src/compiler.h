@@ -24,6 +24,9 @@
 #ifndef PROBEGL_COMPILER_H_
 #define PROBEGL_COMPILER_H_
 
+// Input Macros
+//  - PROBEGL_CPP_VERSION
+
 // Defines macros for compiler-specific functionality
 //  - PROBEGL_COMPILER_[CLANG|GCC|MSVC]: Compiler detection
 //  - PROBEGL_BREAKPOINT(): Raises an exception and breaks in the debugger
@@ -39,62 +42,61 @@
 
 // Clang and GCC, check for __clang__ too to catch clang-cl masquarading as MSVC
 #if defined(__GNUC__) || defined(__clang__)
-#    if defined(__clang__)
-#        define PROBEGL_COMPILER_CLANG
-#    else
-#        define PROBEGL_COMPILER_GCC
-#    endif
+#if defined(__clang__)
+#define PROBEGL_COMPILER_CLANG
+#else
+#define PROBEGL_COMPILER_GCC
+#endif
 
-#    if defined(__i386__) || defined(__x86_64__)
-#        define PROBEGL_BREAKPOINT() __asm__ __volatile__("int $3\n\t")
-#    else
-// TODO(cwallez@chromium.org): Implement breakpoint on all supported architectures
-#        define PROBEGL_BREAKPOINT()
-#    endif
+#if defined(__i386__) || defined(__x86_64__)
+#define PROBEGL_BREAKPOINT() __asm__ __volatile__("int $3\n\t")
+#else
+#define PROBEGL_BREAKPOINT()
+#endif
 
-#    define PROBEGL_BUILTIN_UNREACHABLE() __builtin_unreachable()
-#    define PROBEGL_LIKELY(x) __builtin_expect(!!(x), 1)
-#    define PROBEGL_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#define PROBEGL_BUILTIN_UNREACHABLE() __builtin_unreachable()
+#define PROBEGL_LIKELY(x) __builtin_expect(!!(x), 1)
+#define PROBEGL_UNLIKELY(x) __builtin_expect(!!(x), 0)
 
-#    if !defined(__has_cpp_attribute)
-#        define __has_cpp_attribute(name) 0
-#    endif
+#if !defined(__has_cpp_attribute)
+#define __has_cpp_attribute(name) 0
+#endif
 
 // Use warn_unused_result on clang otherwise we can a c++1z extension warning in C++14 mode
 // Also avoid warn_unused_result with GCC because it is only a function attribute and not a type
 // attribute.
-#    if __has_cpp_attribute(warn_unused_result) && defined(__clang__)
-#        define PROBEGL_NO_DISCARD __attribute__((warn_unused_result))
-#    elif PROBEGL_CPP_VERSION >= 17 && __has_cpp_attribute(nodiscard)
-#        define PROBEGL_NO_DISCARD [[nodiscard]]
-#    endif
+#if __has_cpp_attribute(warn_unused_result) && defined(__clang__)
+#define PROBEGL_NO_DISCARD __attribute__((warn_unused_result))
+#elif PROBEGL_CPP_VERSION >= 17 && __has_cpp_attribute(nodiscard)
+#define PROBEGL_NO_DISCARD [[nodiscard]]  // NOLINT
+#endif
 
-#    define PROBEGL_DECLARE_UNUSED __attribute__((unused))
-#    if defined(NDEBUG)
-#        define PROBEGL_FORCE_INLINE inline __attribute__((always_inline))
-#    endif
+#define PROBEGL_DECLARE_UNUSED __attribute__((unused))
+#if defined(NDEBUG)
+#define PROBEGL_FORCE_INLINE inline __attribute__((always_inline))
+#endif
 
 // MSVC
 #elif defined(_MSC_VER)
-#    define PROBEGL_COMPILER_MSVC
+#define PROBEGL_COMPILER_MSVC
 
 extern void __cdecl __debugbreak(void);
-#    define PROBEGL_BREAKPOINT() __debugbreak()
+#define PROBEGL_BREAKPOINT() __debugbreak()
 
-#    define PROBEGL_BUILTIN_UNREACHABLE() __assume(false)
+#define PROBEGL_BUILTIN_UNREACHABLE() __assume(false)
 
 // Visual Studio 2017 15.3 adds support for [[nodiscard]]
-#    if _MSC_VER >= 1911 && PROBEGL_CPP_VERSION >= 17
-#        define PROBEGL_NO_DISCARD [[nodiscard]]
-#    endif
+#if _MSC_VER >= 1911 && PROBEGL_CPP_VERSION >= 17
+#define PROBEGL_NO_DISCARD [[nodiscard]]  // NOLINT
+#endif
 
-#    define PROBEGL_DECLARE_UNUSED
-#    if defined(NDEBUG)
-#        define PROBEGL_FORCE_INLINE __forceinline
-#    endif
+#define PROBEGL_DECLARE_UNUSED
+#if defined(NDEBUG)
+#define PROBEGL_FORCE_INLINE __forceinline
+#endif
 
 #else
-#    error "Unsupported compiler"
+#error "Unsupported compiler"
 #endif
 
 // It seems that (void) EXPR works on all compilers to silence the unused variable warning.
@@ -104,16 +106,16 @@ extern void __cdecl __debugbreak(void);
 
 // Add noop replacements for macros for features that aren't supported by the compiler.
 #if !defined(PROBEGL_LIKELY)
-#    define PROBEGL_LIKELY(X) X
+#define PROBEGL_LIKELY(X) X
 #endif
 #if !defined(PROBEGL_UNLIKELY)
-#    define PROBEGL_UNLIKELY(X) X
+#define PROBEGL_UNLIKELY(X) X
 #endif
 #if !defined(PROBEGL_NO_DISCARD)
-#    define PROBEGL_NO_DISCARD
+#define PROBEGL_NO_DISCARD
 #endif
 #if !defined(PROBEGL_FORCE_INLINE)
-#    define PROBEGL_FORCE_INLINE inline
+#define PROBEGL_FORCE_INLINE inline
 #endif
 
 #endif  // PROBEGL_COMPILER_H_
