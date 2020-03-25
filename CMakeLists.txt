@@ -172,6 +172,8 @@ set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/shaderlib/project/viewport-uniforms-test.cpp
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
     cpp/modules/deck.gl/core/test/viewports/web-mercator-viewport-test.cpp
+    cpp/modules/deck.gl/core/test/views/map-view-test.cpp
+    cpp/modules/deck.gl/core/test/views/view-test.cpp
     cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )
 
