@@ -44,8 +44,8 @@ auto ViewManager::getNeedsRedraw(bool clearRedrawFlags) -> std::optional<std::st
 // Layers will be updated deeply (in next animation frame)
 // Potentially regenerating attributes and sub layers
 void ViewManager::setNeedsUpdate(const std::string &reason) {
-  // this->_needsUpdate = this->_needsUpdate || reason;
-  // this->_needsRedraw = this->_needsRedraw || reason;
+  this->_needsUpdate = this->_needsUpdate.value_or(reason);
+  this->_needsRedraw = this->_needsRedraw.value_or(reason);
 }
 
 // Checks each viewport for transition updates
@@ -113,20 +113,33 @@ auto ViewManager::getViewport(const std::string &viewId) -> std::shared_ptr<View
  * @param {Object} opts.topLeft=true - Whether origin is top left
  * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
  */
-// ViewManager::unproject(xyz, opts) {
-//   const viewports = this->getViewports();
-//   const pixel = {x : xyz[0], y : xyz[1]};
-//   for (let i = viewports.length - 1; i >= 0; --i) {
-//     const viewport = viewports[i];
-//     if (viewport.containsPixel(pixel)) {
-//       const p = xyz.slice();
-//       p[0] -= viewport.x;
-//       p[1] -= viewport.y;
-//       return viewport.unproject(p, opts);
-//     }
-//   }
-//   return null;
-// }
+auto ViewManager::unproject(const mathgl::Vector3<double> xyz, bool topLeft) -> std::optional<mathgl::Vector3<double>> {
+  auto viewports = this->getViewports();
+  for (auto i = viewports.rbegin(); i != viewports.rend(); i++) {
+    auto viewport = *i;
+    if (viewport->containsPixel(xyz.x, xyz.y)) {
+      auto p = xyz;
+      p.x -= viewport->x;
+      p.y -= viewport->y;
+      return viewport->unproject(p, topLeft);
+    }
+  }
+  return std::nullopt;
+}
+
+auto ViewManager::unproject(const mathgl::Vector2<double> xy, bool topLeft) -> std::optional<mathgl::Vector2<double>> {
+  auto viewports = this->getViewports();
+  for (auto i = viewports.rbegin(); i != viewports.rend(); i++) {
+    auto viewport = *i;
+    if (viewport->containsPixel(xy.x, xy.y)) {
+      auto p = xy;
+      p.x -= viewport->x;
+      p.y -= viewport->y;
+      return viewport->unproject(p, topLeft);
+    }
+  }
+  return std::nullopt;
+}
 
 //
 // MODIFIERS
@@ -141,6 +154,7 @@ void ViewManager::setWidth(int width) {
   if (width < 0) {
     width = 0;
   }
+
   if (width != this->width) {
     this->width = width;
     this->setNeedsUpdate("Window width changed");

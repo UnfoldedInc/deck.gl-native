@@ -149,6 +149,7 @@ set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/lib/attribute/attribute-manager-test.cc
     cpp/modules/deck.gl/core/test/lib/layer-test.cpp
     cpp/modules/deck.gl/core/test/lib/layer-manager-test.cpp
+    cpp/modules/deck.gl/core/test/lib/view-manager-test.cpp
     cpp/modules/deck.gl/core/test/shaderlib/project/viewport-uniforms-test.cpp
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
     cpp/modules/deck.gl/core/test/viewports/web-mercator-viewport-test.cpp

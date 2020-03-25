@@ -91,7 +91,8 @@ class ViewManager {
    * @param {Object} opts.topLeft=true - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
-  // unproject(xyz, opts);
+  auto unproject(const mathgl::Vector3<double> xyz, bool topLeft = true) -> std::optional<mathgl::Vector3<double>>;
+  auto unproject(const mathgl::Vector2<double> xy, bool topLeft = true) -> std::optional<mathgl::Vector2<double>>;
 
   //
   // MODIFIERS

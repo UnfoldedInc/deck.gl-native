@@ -61,6 +61,21 @@ auto Viewport::unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vecto
   return xy;
 }
 
+auto Viewport::unproject(const mathgl::Vector2<double>& xy, bool topLeft, double targetZ) -> mathgl::Vector2<double> {
+  auto y2 = topLeft ? xy.y : this->height - xy.y;
+  auto targetZWorld = targetZ * this->distanceScales.unitsPerMeter.z;
+  auto coord = pixelsToWorld(Vector2<double>(xy.x, y2), this->pixelUnprojectionMatrix, targetZWorld);
+  // elided: returning the targetZ if the user provided it
+  return this->unprojectPosition(coord);
+}
+
+auto Viewport::unproject(const mathgl::Vector3<double>& xyz, bool topLeft, double targetZ) -> mathgl::Vector3<double> {
+  auto y2 = topLeft ? xyz.y : this->height - xyz.y;
+  auto targetZWorld = targetZ * this->distanceScales.unitsPerMeter.z;
+  auto coord = pixelsToWorld(Vector3<double>(xyz.x, y2, xyz.z), this->pixelUnprojectionMatrix, targetZWorld);
+  return this->unprojectPosition(coord);
+}
+
 auto Viewport::projectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double> {
   return this->projectFlat(xy);
 }
