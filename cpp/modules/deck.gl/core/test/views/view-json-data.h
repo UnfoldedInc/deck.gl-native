@@ -38,18 +38,3 @@ static auto viewJsonDataWidthAndHeight = R"JSON(
     "height": 1000
 }
 )JSON";
-
-static auto mapViewJsonDataWidth = R"JSON(
-{
-    "@@type": "MapView",
-    "width": 1000
-}
-)JSON";
-
-static auto mapViewJsonDataWidthAndHeight = R"JSON(
-{
-    "@@type": "MapView",
-    "width": 1000,
-    "height": 1000
-}
-)JSON";
