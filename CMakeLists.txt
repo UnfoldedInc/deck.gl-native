@@ -41,9 +41,14 @@ include(CTest)
 set(PROBEGL_HEADER_FILES
     cpp/modules/probe.gl/core.h
     cpp/modules/probe.gl/core/src/platform.h
+    cpp/modules/probe.gl/core/src/compiler.h
+    cpp/modules/probe.gl/core/src/assert.h
+    cpp/modules/probe.gl/core/src/log.h
     cpp/modules/probe.gl/core/src/system-utils.h
 )
 set(PROBEGL_SOURCE_FILES
+    cpp/modules/probe.gl/core/src/assert.cpp
+    cpp/modules/probe.gl/core/src/log.cpp
     cpp/modules/probe.gl/core/src/system-utils.cpp
 )
 set(PROBEGL_TEST_FILES
