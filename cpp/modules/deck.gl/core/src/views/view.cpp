@@ -73,23 +73,6 @@ auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewSt
   return this->_getViewport(rect, viewState);
 }
 
-// bool View::equals(view) {
-//   return false
-//   // if (this == = view) {
-//   //   return true;
-//   // }
-
-//   // // if `viewportInstance` is set, it is the only prop that is used
-//   // // Delegate to `Viewport.equals`
-//   // if (this->viewportInstance) {
-//   //   return view.viewportInstance && this->viewportInstance.equals(view.viewportInstance);
-//   // }
-
-//   // const viewChanged = deepEqual(this->props, view.props);
-
-//   // return viewChanged;
-// }
-
 // Build a `Viewport` from a view descriptor
 // View::makeViewport({width, height, viewState}) {
 //   if (this->viewportInstance) {

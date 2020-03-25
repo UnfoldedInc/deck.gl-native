@@ -57,6 +57,9 @@ class JSONObject {
   auto equals(const JSONObject* other) const -> bool;
   auto equals(std::shared_ptr<JSONObject> other) const -> bool { return this->equals(other.get()); }
   auto compare(const JSONObject* other) const -> std::optional<std::string>;
+  auto compare(std::shared_ptr<JSONObject> other) const -> std::optional<std::string> {
+    return this->compare(other.get());
+  }
 
   bool hasProperty(const std::string& key) const;
 
@@ -231,6 +234,14 @@ class Properties {
       throw std::runtime_error("No such property: " + className + "." + key);
     }
     return searchIterator->second;
+  }
+  auto allProperties() const -> std::vector<const Property*> {
+    std::vector<const Property*> properties;
+    properties.reserve(this->_propTypeMap.size());
+    for (auto prop : _propTypeMap) {
+      properties.push_back(prop.second);
+    }
+    return properties;
   }
 
  private:

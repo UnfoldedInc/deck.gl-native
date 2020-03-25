@@ -24,27 +24,7 @@
 
 #include "deck.gl/core.h"
 
-static auto jsonData = R"JSON(
-{
-    "@@type": "View",
-    "controller": true
-}
-)JSON";
-
-static auto jsonDataWidth = R"JSON(
-{
-    "@@type": "View",
-    "width": 1000
-}
-)JSON";
-
-static auto jsonDataWidthAndHeight = R"JSON(
-{
-    "@@type": "View",
-    "width": 1000,
-    "height": 1000
-}
-)JSON";
+#include "json-data.h"
 
 using namespace mathgl;
 using namespace deckgl;
@@ -61,8 +41,8 @@ class ViewTest : public ::testing::Test {
 };
 
 TEST_F(ViewTest, JSONParse) {
-  auto view1 = jsonConverter->convertJson(jsonData);
-  auto view1copy = jsonConverter->convertJson(jsonData);
+  auto view1 = jsonConverter->convertJson(viewJsonData);
+  auto view1copy = jsonConverter->convertJson(viewJsonData);
 
   // Tests for equality
   EXPECT_TRUE(view1->equals(view1));
@@ -70,18 +50,18 @@ TEST_F(ViewTest, JSONParse) {
   // pointers should not be the same even though the objects are equal
   EXPECT_FALSE(view1.get() == view1copy.get());
   EXPECT_FALSE(view1->equals(nullptr));
-  EXPECT_EQ(view1->compare(view1.get()), std::nullopt);
-  EXPECT_EQ(view1->compare(view1copy.get()), std::nullopt);
+  EXPECT_EQ(view1->compare(view1), std::nullopt);
+  EXPECT_EQ(view1->compare(view1copy), std::nullopt);
   EXPECT_NE(view1->compare(nullptr), std::nullopt);
 
-  auto view2 = jsonConverter->convertJson(jsonDataWidth);
+  auto view2 = jsonConverter->convertJson(viewJsonDataWidth);
 
   EXPECT_FALSE(view1->equals(view2));
-  EXPECT_NE(view1->compare(view2.get()), std::nullopt);
+  EXPECT_NE(view1->compare(view2), std::nullopt);
 }
 
 TEST_F(ViewTest, JSONProps) {
-  auto view = std::dynamic_pointer_cast<View>(jsonConverter->convertJson(jsonDataWidthAndHeight));
+  auto view = std::dynamic_pointer_cast<View>(jsonConverter->convertJson(viewJsonDataWidthAndHeight));
 
   EXPECT_EQ(view->x, 0);
   EXPECT_EQ(view->y, 0);

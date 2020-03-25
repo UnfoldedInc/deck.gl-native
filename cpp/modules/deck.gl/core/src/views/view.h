@@ -63,8 +63,6 @@ class View : public JSONObject {
 
   virtual ~View();
 
-  bool equals(const View *view);
-
   auto getViewStateId() const -> std::string;
 
   // Build a `Viewport` from a view descriptor

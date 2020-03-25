@@ -24,9 +24,26 @@
 
 #include "deck.gl/core.h"
 
+#include "json-data.h"
+
 using namespace mathgl;
 using namespace deckgl;
 
-TEST(MapView, Simple) {
-  // TODO
+class MapViewTest : public ::testing::Test {
+ protected:
+  MapViewTest() {
+    jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
+
+    registerJSONConvertersForDeckCore(jsonConverter.get());
+  }
+
+  std::unique_ptr<JSONConverter> jsonConverter;
+};
+
+TEST_F(MapViewTest, JSONParse) {
+  auto mapView = std::dynamic_pointer_cast<MapView>(jsonConverter->convertJson(mapViewJsonDataWidth));
+  auto view = jsonConverter->convertJson(viewJsonDataWidth);
+
+  EXPECT_FALSE(mapView->equals(view));
+  EXPECT_EQ(mapView->width, 1000);
 }

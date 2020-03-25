@@ -176,6 +176,9 @@ set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/views/view-test.cpp
     cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )
+set(DECKGL_CORE_TEST_HEADER_FILES
+    cpp/modules/deck.gl/core/test/views/json-data.h
+    )
 
 ## deck.gl/layers
 set(DECKGL_LAYERS_HEADER_FILES
@@ -218,6 +221,7 @@ set(TEST_SOURCE_FILES
     cpp/tests/main.cpp
     )
 SET(TEST_HEADER_FILES
+    ${DECKGL_CORE_TEST_HEADER_FILES}
     ${MATHGL_CORE_TEST_HEADER_FILES}
     )
 
