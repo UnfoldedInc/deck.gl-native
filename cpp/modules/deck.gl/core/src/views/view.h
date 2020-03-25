@@ -34,14 +34,34 @@ namespace deckgl {
 
 class ViewManager;
 
-class View : public Component {
+class View : public JSONObject {
   friend class ViewManager;
 
  public:
-  class Props;
+  using super = JSONObject;
 
-  explicit View(std::shared_ptr<View::Props> props);
-  ~View();
+  std::string id;
+
+  // width/height of view
+  int x{0};
+  int y{0};
+  int width{100};
+  int height{100};
+
+  // Viewport Options
+  std::optional<mathgl::Matrix4<double>> projectionMatrix;  // Projection matrix
+  std::optional<mathgl::Matrix4<double>> modelMatrix;       // A model matrix to be applied to position
+
+  // Perspective projection parameters, used if projectionMatrix not supplied
+  double fovy{50};
+  double near{0.1};  // Distance of near clipping plane
+  double far{1000};  // Distance of far clipping plane
+
+  // Property type machinery
+  static constexpr const char *getTypeName() { return "View"; }
+  auto getProperties() const -> const Properties * override;
+
+  virtual ~View();
 
   bool equals(const View *view);
 
@@ -65,36 +85,6 @@ class View : public Component {
 
   // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
   // _parseDimensions(int x, int y, int width, int height});
-};
-
-// TODO(ib) - how do we override viewstate? inherit from ViewState
-class View::Props : public Component::Props {
- public:
-  using super = Component::Props;
-
-  std::string id;
-
-  // width/height of view
-  int x{0};
-  int y{0};
-  int width{100};
-  int height{100};
-
-  // Viewport Options
-  std::optional<mathgl::Matrix4<double>> projectionMatrix;  // Projection matrix
-  std::optional<mathgl::Matrix4<double>> modelMatrix;       // A model matrix to be applied to position
-
-  // Perspective projection parameters, used if projectionMatrix not supplied
-  double fovy{50};
-  double near{0.1};  // Distance of near clipping plane
-  double far{1000};  // Distance of far clipping plane
-
-  // Property type machinery
-  static constexpr const char *getTypeName() { return "View"; }
-  auto getProperties() const -> const Properties * override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> View * override {
-    return new View{std::dynamic_pointer_cast<View::Props>(props)};
-  }
 };
 
 }  // namespace deckgl

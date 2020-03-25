@@ -33,9 +33,9 @@ static const std::vector<const Property*> propTypeDefs = {
         [](JSONObject* props, std::list<std::shared_ptr<Layer::Props>> value) {
           return dynamic_cast<Deck::Props*>(props)->layers = value;
         }},
-    new PropertyT<std::list<std::shared_ptr<View::Props>>>{
+    new PropertyT<std::list<std::shared_ptr<View>>>{
         "views", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->views; },
-        [](JSONObject* props, std::list<std::shared_ptr<View::Props>> value) {
+        [](JSONObject* props, std::list<std::shared_ptr<View>> value) {
           return dynamic_cast<Deck::Props*>(props)->views = value;
         }},
     new PropertyT<std::shared_ptr<ViewState>>{
@@ -104,7 +104,7 @@ void Deck::setProps(Deck::Props* props) {
   // Update viewManager
   this->viewManager->setWidth(props->width);
   this->viewManager->setHeight(props->height);
-  this->viewManager->setViewsFromProps(props->views);
+  this->viewManager->setViews(props->views);
   this->viewManager->setViewState(this->viewState);
 
   // Update manager props

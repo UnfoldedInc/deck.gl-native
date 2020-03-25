@@ -27,69 +27,31 @@ using namespace deckgl;
 using namespace mathgl;
 
 const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->x; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->x = value; }, 0},
-    new PropertyT<int>{"y", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->y; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->y = value; }, 0},
-    new PropertyT<int>{"width", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->width; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->width = value; },
-                       100},
-    new PropertyT<int>{
-        "height", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->height; },
-        [](JSONObject* props, int value) { return dynamic_cast<View::Props*>(props)->height = value; }, 100},
+    new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->x; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->x = value; }, 0},
+    new PropertyT<int>{"y", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->y; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->y = value; }, 0},
+    new PropertyT<int>{"width", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->width; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->width = value; }, 100},
+    new PropertyT<int>{"height", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->height; },
+                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->height = value; }, 100},
 
-    new PropertyT<double>{
-        "fovy", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->fovy; },
-        [](JSONObject* props, double value) { return dynamic_cast<View::Props*>(props)->fovy = value; }, 1.0},
-    new PropertyT<double>{
-        "near", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->near; },
-        [](JSONObject* props, double value) { return dynamic_cast<View::Props*>(props)->near = value; }, 0.0},
-    new PropertyT<double>{
-        "far", [](const JSONObject* props) { return dynamic_cast<const View::Props*>(props)->far; },
-        [](JSONObject* props, double value) { return dynamic_cast<View::Props*>(props)->far = value; },
-        std::numeric_limits<double>::max()}};
+    new PropertyT<double>{"fovy", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->fovy; },
+                          [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->fovy = value; },
+                          1.0},
+    new PropertyT<double>{"near", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->near; },
+                          [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->near = value; },
+                          0.0},
+    new PropertyT<double>{"far", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->far; },
+                          [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->far = value; },
+                          std::numeric_limits<double>::max()}};
 
-auto View::Props::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<View::Props>("View", propTypeDefs)};
+auto View::getProperties() const -> const Properties* {
+  static Properties properties{Properties::from<View>("View", propTypeDefs)};
   return &properties;
 }
 
-View::View(std::shared_ptr<View::Props> props) : Component(props) {
-  // Id
-  // if (props->id.empty()) {
-  //   this->id = "view";
-  // }
-  // this->type = type;
-
-  // this->props = Object.assign({}, props, {id : this->id, projectionMatrix, fovy, near, far, modelMatrix});
-
-  // // Extents
-  // this->_parseDimensions({x, y, width, height});
-
-  // // Bind methods for easy access
-  // this->equals = this->equals.bind(this);
-
-  // Object.seal(this);
-}
-
 View::~View() {}
-
-// bool View::equals(view) {
-//   return false
-//   // if (this == = view) {
-//   //   return true;
-//   // }
-
-//   // // if `viewportInstance` is set, it is the only prop that is used
-//   // // Delegate to `Viewport.equals`
-//   // if (this->viewportInstance) {
-//   //   return view.viewportInstance && this->viewportInstance.equals(view.viewportInstance);
-//   // }
-
-//   // const viewChanged = deepEqual(this->props, view.props);
-
-//   // return viewChanged;
-// }
 
 auto View::_getViewport(const Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
     -> std::shared_ptr<Viewport> {

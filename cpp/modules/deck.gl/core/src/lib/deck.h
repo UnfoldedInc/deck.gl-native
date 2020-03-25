@@ -121,7 +121,7 @@ class Deck::Props : public Component::Props {
 
   // layer/view/controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  std::list<std::shared_ptr<View::Props>> views;    // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  std::list<std::shared_ptr<View>> views;           // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   std::shared_ptr<ViewState> viewState;             // PropTypes.object,
   std::shared_ptr<ViewState> initialViewState;
 
