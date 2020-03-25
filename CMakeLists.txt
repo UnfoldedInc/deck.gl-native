@@ -221,8 +221,6 @@ find_package(jsoncpp CONFIG REQUIRED)
 
 find_package(range-v3 CONFIG REQUIRED)
 
-find_package(glfw3 CONFIG REQUIRED)
-
 # TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
 include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
 link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
@@ -234,7 +232,7 @@ add_library(deck.gl ${LIB_SOURCE_FILES})
 # TODO: dawn can be included but is not linked yet.
 target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/dawn/include/>)
 target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 glfw arrow)
+target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 arrow)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)
