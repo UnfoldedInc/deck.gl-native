@@ -60,15 +60,31 @@ class ViewTest : public ::testing::Test {
   std::unique_ptr<JSONConverter> jsonConverter;
 };
 
-TEST_F(ViewTest, ViewJSONParse) {
+TEST_F(ViewTest, JSONParse) {
   auto view1 = jsonConverter->convertJson(jsonData);
   auto view1copy = jsonConverter->convertJson(jsonData);
 
+  // Tests for equality
   EXPECT_TRUE(view1->equals(view1));
   EXPECT_TRUE(view1->equals(view1copy));
+  // pointers should not be the same even though the objects are equal
+  EXPECT_FALSE(view1.get() == view1copy.get());
   EXPECT_FALSE(view1->equals(nullptr));
+  EXPECT_EQ(view1->compare(view1.get()), std::nullopt);
+  EXPECT_EQ(view1->compare(view1copy.get()), std::nullopt);
+  EXPECT_NE(view1->compare(nullptr), std::nullopt);
 
   auto view2 = jsonConverter->convertJson(jsonDataWidth);
 
   EXPECT_FALSE(view1->equals(view2));
+  EXPECT_NE(view1->compare(view2.get()), std::nullopt);
+}
+
+TEST_F(ViewTest, JSONProps) {
+  auto view = std::dynamic_pointer_cast<View>(jsonConverter->convertJson(jsonDataWidthAndHeight));
+
+  EXPECT_EQ(view->x, 0);
+  EXPECT_EQ(view->y, 0);
+  EXPECT_EQ(view->width, 1000);
+  EXPECT_EQ(view->height, 1000);
 }
