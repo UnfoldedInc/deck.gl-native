@@ -22,28 +22,27 @@
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
 #include "./system-utils.h"  // NOLINT(build/include)
+
 #include "./platform.h"
 
 #if defined(PROBEGL_PLATFORM_WINDOWS)
-# include <Windows.h>
+#include <Windows.h>
 #elif defined(PROBEGL_PLATFORM_POSIX)
-# include <unistd.h>
+#include <unistd.h>
 #else
-# error "Unsupported platform."
+#error "Unsupported platform."
 #endif
 
 using namespace probegl;
 
 #if defined(PROBGL_PLATFORM_WINDOWS)
 
-void uSleep(unsigned int usecs) {
-  Sleep(static_cast<DWORD>(usecs / 1000));
-}
+void uSleep(unsigned int usecs) { Sleep(static_cast<DWORD>(usecs / 1000)); }
 
-#elif defined(PROBGL_PLATFORM_POSIX)
-void uSleep(unsigned int usecs) {
-  usleep(usecs);
-}
+#elif defined(PROBEGL_PLATFORM_POSIX)
+
+void uSleep(unsigned int usecs) { usleep(usecs); }
+
 #else
-# error "Implement uSleep for your platform."
+#error "Implement uSleep for your platform."
 #endif

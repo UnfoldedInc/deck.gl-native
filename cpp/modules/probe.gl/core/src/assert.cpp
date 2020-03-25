@@ -18,13 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef PROBEGL_CORE
-#define PROBEGL_CORE
+// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
+// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "./core/src/assert.h"
-#include "./core/src/compiler.h"
-#include "./core/src/log.h"
-#include "./core/src/platform.h"
-#include "./core/src/system-utils.h"
+#include "./assert.h"  // NOLINT(build/include)
 
-#endif  // PROBEGL_CORE
+#include <cstdlib>
+
+#include "./compiler.h"
+#include "./log.h"
+
+void HandleAssertionFailure(const char* file, const char* function, int line, const char* condition) {
+  probegl::ErrorLog() << "Assertion failure at " << file << ":" << line << " (" << function << "): " << condition;
+#if defined(PROBEGL_ABORT_ON_ASSERT)
+  abort();
+#else
+  PROBEGL_BREAKPOINT();
+#endif
+}
