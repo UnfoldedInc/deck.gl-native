@@ -63,7 +63,11 @@ Notes:
 - [Google Test](https://github.com/google/googletest)
 
 ```sh
+# vcpkg
 ../vcpkg install gtest
+
+# Ubuntu bionic
+sudo apt install googletest
 ```
 
 ### jsoncpp
@@ -71,7 +75,11 @@ Notes:
 - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
 
 ```sh
+# vcpkg
 ../vcpkg install jsoncpp
+
+# Ubuntu bionic
+sudo apt install libjsoncpp-dev
 ```
 
 ### range v3
@@ -81,18 +89,23 @@ Used as a placeholder until clang/gcc compilers become C++20 compatible.
 - [Range v3](https://github.com/ericniebler/range-v3)
 
 ```sh
+# vcpkg
 ../vcpkg install range-v3
+
+# Ubuntu bionic
+sudo apt install librange-v3-dev
 ```
 
 ### Arrow
 
 - [Arrow](https://arrow.apache.org/install/)
 
-You need to install `libarrow-dev` on Linux,
-and `apache-arrow` on Mac OSX:
-
 ```sh
+# Homebrew
 brew install apache-arrow
+
+# Ubuntu bionic
+sudo apt install libarrow-dev
 ```
 
 ## Building
