@@ -13,38 +13,42 @@ addons:
   homebrew:
     packages:
     - apache-arrow
-
-env:
-  VCPKG_ROOT: $HOME/vcpkg
+    - jsoncpp
+    - gtest
+    - range-v3
+  apt:
+    packages:
+    - libjsoncpp-dev
+    - googletest
+    - librange-v3-dev
 
 matrix:
   include:
-      # Check that clang-format doesn't detect some files are not formatted.
-    # - name: "Formatting check"
-    #   compiler: clang
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - llvm-toolchain-trusty-5.0
-    #       packages:
-    #         - clang-format-5.0
-    #   script: make format && git diff --exit-code
-    # - name: "Valgrind test"
-    #   compiler: gcc
-    #   addons:
-    #     apt:
-    #       packages:
-    #         - valgrind
-    #   before_script:
-    #     - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake .
-    #   script:
-    #     - make
-    #     - CTEST_OUTPUT_ON_FAILURE=1 make test
-    # TODO: Doesn't install arrow correctly on OSX
-    # - name: "Mac OSX (Xcode 11.3)"
-    #   os: osx
-    #   osx_image: xcode11.3
-    #   before_install: []
+    # Check that clang-format doesn't detect some files are not formatted.
+    - name: "Formatting check"
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-bionic-9.0
+          packages:
+            - clang-format-9
+      script: make format && git diff --exit-code
+    - name: "Valgrind test"
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - valgrind
+      before_script:
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake .
+      script:
+        - make
+        - CTEST_OUTPUT_ON_FAILURE=1 make test
+    - name: "Mac OSX (Xcode 11.3)"
+      os: osx
+      osx_image: xcode11.3
+      before_install: []
     - name: "Linux (Clang)"
       os: linux
       compiler: clang
@@ -61,32 +65,12 @@ before_install:
   - sudo apt install libarrow-dev
   - popd
 
-install:
-  # Install vcpkg and dependencies
-  - pushd $HOME
-  - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
-  - cd vcpkg
-  - git checkout .
-  - git pull
-  - ./bootstrap-vcpkg.sh
-  # Try to avoid building unneeded debug versions of dependencies
-  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
-  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
-  # Install our dependencies:
-  - ./vcpkg install jsoncpp gtest range-v3 --recurse
-  - rm -rf buildtrees
-  - popd
-
-cache:
-  directories:
-    - ${VCPKG_ROOT}
-
 before_script:
   # Build out of source
   - ./scripts/bootstrap.sh
   - mkdir build
   - cd build
-  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ..
+  - cmake -DWARNINGS_AS_ERRORS=ON ..
 
 script:
   - make -j
