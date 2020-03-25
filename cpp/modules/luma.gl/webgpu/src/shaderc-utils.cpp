@@ -1,8 +1,39 @@
-#include "./shaderc-utils.h"
+// Copyright (c) 2020 Unfolded Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
-#include <shaderc/shaderc.hpp>
+// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
+// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-auto ShadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
+#include "./shaderc-utils.h"  // NOLINT(build/include)
+
+#include "probe.gl/core.h"
+
+// #include <shaderc/shaderc.hpp>
+enum shaderc_shader_kind { shaderc_glsl_vertex_shader, shaderc_glsl_fragment_shader, shaderc_glsl_compute_shader };
+
+using namespace lumagl;
+using namespace lumagl::utils;
+
+namespace {
+
+auto shadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
   switch (stage) {
     case SingleShaderStage::Vertex:
       return shaderc_glsl_vertex_shader;
@@ -11,12 +42,13 @@ auto ShadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
     case SingleShaderStage::Compute:
       return shaderc_glsl_compute_shader;
     default:
-      UNREACHABLE();
+      PROBEGL_UNREACHABLE();
   }
 }
 
-auto CreateShaderModuleFromResult(const wgpu::Device& device,
-                                                const shaderc::SpvCompilationResult& result) -> wgpu::ShaderModule {
+/*
+auto createShaderModuleFromResult(const wgpu::Device& device, const shaderc::SpvCompilationResult& result)
+    -> wgpu::ShaderModule {
   // result.cend and result.cbegin return pointers to uint32_t.
   const uint32_t* resultBegin = result.cbegin();
   const uint32_t* resultEnd = result.cend();
@@ -29,11 +61,13 @@ auto CreateShaderModuleFromResult(const wgpu::Device& device,
   descriptor.code = result.cbegin();
   return device.CreateShaderModule(&descriptor);
 }
+*/
 
 }  // anonymous namespace
 
-auto CreateShaderModule(const wgpu::Device& device, SingleShaderStage stage, const char* source) -> wgpu::ShaderModule {
-  shaderc_shader_kind kind = ShadercShaderKind(stage);
+auto createShaderModule(const wgpu::Device& device, SingleShaderStage stage, const char* source) -> wgpu::ShaderModule {
+  /*
+  shaderc_shader_kind kind = shadercShaderKind(stage);
 
   shaderc::Compiler compiler;
   auto result = compiler.CompileGlslToSpv(source, strlen(source), kind, "myshader?");
@@ -69,10 +103,13 @@ auto CreateShaderModule(const wgpu::Device& device, SingleShaderStage stage, con
   printf("SPIRV JS ARRAY DUMP END\n");
 #endif
 
-  return CreateShaderModuleFromResult(device, result);
+  return createShaderModuleFromResult(device, result);
+  */
+  return nullptr;
 }
 
-auto CreateShaderModuleFromASM(const wgpu::Device& device, const char* source) -> wgpu::ShaderModule {
+auto createShaderModuleFromASM(const wgpu::Device& device, const char* source) -> wgpu::ShaderModule {
+  /*
   shaderc::Compiler compiler;
   shaderc::SpvCompilationResult result = compiler.AssembleToSpv(source, strlen(source));
   if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
@@ -81,4 +118,6 @@ auto CreateShaderModuleFromASM(const wgpu::Device& device, const char* source) -
   }
 
   return CreateShaderModuleFromResult(device, result);
+  */
+  return nullptr;
 }

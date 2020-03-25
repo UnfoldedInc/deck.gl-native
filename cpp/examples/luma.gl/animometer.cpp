@@ -81,6 +81,10 @@ int main(int argc, const char* argv[]) {
 
   GLFWAnimationLoop animationLoop;
 
+  animationLoop.initializeDevice();
+
+  let model = new Model(animationLoop.device, vs, fs)
+
   init();
 
   animationLoop.onBeforeRender = [](AnimationLoop*) {
@@ -93,7 +97,7 @@ int main(int argc, const char* argv[]) {
   }
 
   animationLoop.run([](AnimationLoop*, wgpu::RenderPassEncoder pass) {
-    pass.SetPipeline(pipeline);
+    pass.SetPipeline(model.pipeline);
     for (size_t i = 0; i < kNumTriangles; i++) {
       uint32_t offset = i * sizeof(ShaderData);
       pass.SetBindGroup(0, bindGroup, 1, &offset);

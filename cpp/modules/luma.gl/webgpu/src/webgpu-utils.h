@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_UTILS_WEBGPU_UTILS_H
-#define LUMAGL_UTILS_WEBGPU_UTILS_H
+#ifndef LUMAGL_WEBGPU_UTILS_H
+#define LUMAGL_WEBGPU_UTILS_H
 
 #include <dawn/webgpu_cpp.h>
 
@@ -42,4 +42,4 @@ auto getDeviceErrorTypeName(WGPUErrorType errorType) -> const char *;
 }  // namespace utils
 }  // namespace lumagl
 
-#endif  // LUMAGL_UTILS_WEBGPU_UTILS_H
+#endif  // LUMAGL_WEBGPU_UTILS_H

@@ -21,22 +21,26 @@
 #ifndef LUMAGL_CORE_MODEL_H
 #define LUMAGL_CORE_MODEL_H
 
+#include <dawn/webgpu_cpp.h>
+
 #include <string>
 
 namespace lumagl {
 
+/// \brief Holds shaders compiled and linked into a pipeline
+/// pass.SetPipeline(model.pipeline)
 class Model {
  public:
   class Options;
 
-  explicit Model(void *device, const Options &);
-  explicit Model(void *device);
+  explicit Model(wgpu::Device device, const Options &);
+  explicit Model(wgpu::Device device);
   void draw();
 
-  // wgpu::ShaderModule vsModule;  // Compiled vertex shader
-  // wgpu::ShaderModule fsModule;  // Compiled fragment shader
-  // wgpu::RenderPipeline pipeline;  // rendering pipeline ("program")
-  // wgpu::BindGroupLayout bgl;  // Uniform buffer
+  wgpu::RenderPipeline pipeline;                 // rendering pipeline (pass.SetPipeline(model.pipeline)
+  wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
+  wgpu::ShaderModule vsModule;                   // Compiled vertex shader
+  wgpu::ShaderModule fsModule;                   // Compiled fragment shader
 };
 
 class Model::Options {

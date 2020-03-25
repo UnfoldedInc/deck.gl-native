@@ -25,36 +25,25 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-struct alignas(kMinDynamicBufferOffsetAlignment) ShaderData {
-  float scale;
-  float time;
-  float offsetX;
-  float offsetY;
-  float scalar;
-  float scalarOffset;
-};
+auto GetPreferredSwapChainTextureFormat() { return WGPUTextureFormat_BGRA8Unorm; }
 
-// static std::vector<ShaderData> shaderData;
+Model::Model(wgpu::Device device) : Model(device, Options{}) {}
 
-Model::Model(void *device) : Model(device, Options{}) {}
+Model::Model(wgpu::Device device, const Model::Options &options) {
+  this->vsModule = utils::createShaderModule(device, utils::SingleShaderStage::Vertex, options.vs.c_str());
+  this->fsModule = utils::createShaderModule(device, utils::SingleShaderStage::Fragment, options.fs.c_str());
 
-Model::Model(void *device, const Model::Options &options) {
-  /*
-  this->vsModule = utils::CreateShaderModule(device, utils::SingleShaderStage::Vertex, options.vs);
-  this->fsModule = utils::CreateShaderModule(device, utils::SingleShaderStage::Fragment, options.vs);
-
-  this->bgl =
-      utils::MakeBindGroupLayout(device, {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true}});
+  this->uniformBindGroupLayout =
+      utils::makeBindGroupLayout(device, {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true}});
 
   utils::ComboRenderPipelineDescriptor descriptor{device};
   descriptor.vertexStage.module = vsModule;
   descriptor.cFragmentStage.module = fsModule;
   descriptor.cColorStates[0].format = GetPreferredSwapChainTextureFormat();
 
-  descriptor.layout = utils::MakeBasicPipelineLayout(device, &bgl);
+  descriptor.layout = utils::makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
 
   this->pipeline = device.CreateRenderPipeline(&descriptor);
-  */
 }
 
 void Model::draw() {}

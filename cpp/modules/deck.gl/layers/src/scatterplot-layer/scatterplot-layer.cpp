@@ -209,11 +209,11 @@ void ScatterplotLayer::drawState() {  // uniforms
     */
 }
 
-auto ScatterplotLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
+auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model> {
   // a square that minimally cover the unit circle
   // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
-  return std::shared_ptr<lumagl::Model>(new lumagl::Model(gl));
+  return std::shared_ptr<lumagl::Model>(new lumagl::Model(device));
   // Object.assign(this->getShaders(), {
   //   id: this->props.id,
   //   geometry: new Geometry({

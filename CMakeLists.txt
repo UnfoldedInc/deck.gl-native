@@ -97,11 +97,15 @@ set(LOADERSGL_JSON_TEST_FILES
 ## luma.gl
 set(LUMAGL_WEBGPU_HEADER_FILES
     cpp/modules/luma.gl/webgpu.h
+    cpp/modules/luma.gl/webgpu/src/combo-render-pipeline-descriptor.h
+    cpp/modules/luma.gl/webgpu/src/shaderc-utils.h
     cpp/modules/luma.gl/webgpu/src/webgpu-constants.h
     cpp/modules/luma.gl/webgpu/src/webgpu-utils.h
     cpp/modules/luma.gl/webgpu/src/webgpu-helpers.h
     )
 set(LUMAGL_WEBGPU_SOURCE_FILES
+    cpp/modules/luma.gl/webgpu/src/combo-render-pipeline-descriptor.cpp
+    cpp/modules/luma.gl/webgpu/src/shaderc-utils.cpp
     cpp/modules/luma.gl/webgpu/src/webgpu-utils.cpp
     cpp/modules/luma.gl/webgpu/src/webgpu-helpers.cpp
     )
