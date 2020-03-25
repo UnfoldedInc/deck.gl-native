@@ -24,7 +24,51 @@
 
 #include "deck.gl/core.h"
 
+static auto jsonData = R"JSON(
+{
+    "@@type": "View",
+    "controller": true
+}
+)JSON";
+
+static auto jsonDataWidth = R"JSON(
+{
+    "@@type": "View",
+    "width": 1000
+}
+)JSON";
+
+static auto jsonDataWidthAndHeight = R"JSON(
+{
+    "@@type": "View",
+    "width": 1000,
+    "height": 1000
+}
+)JSON";
+
 using namespace mathgl;
 using namespace deckgl;
 
-TEST(View, Simple) {}
+class ViewTest : public ::testing::Test {
+ protected:
+  ViewTest() {
+    jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
+
+    registerJSONConvertersForDeckCore(jsonConverter.get());
+  }
+
+  std::unique_ptr<JSONConverter> jsonConverter;
+};
+
+TEST_F(ViewTest, ViewJSONParse) {
+  auto view1 = jsonConverter->convertJson(jsonData);
+  auto view1copy = jsonConverter->convertJson(jsonData);
+
+  EXPECT_TRUE(view1->equals(view1));
+  EXPECT_TRUE(view1->equals(view1copy));
+  EXPECT_FALSE(view1->equals(nullptr));
+
+  auto view2 = jsonConverter->convertJson(jsonDataWidth);
+
+  EXPECT_FALSE(view1->equals(view2));
+}
