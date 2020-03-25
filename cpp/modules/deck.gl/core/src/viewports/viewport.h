@@ -102,8 +102,8 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether projected coords are top left
    * @return {Array} - [x, y] or [x, y, z] in top left coords
    */
-  auto project(const mathgl::Vector2<double>& latlng, bool topLeft = true) -> mathgl::Vector2<double>;
-  auto project(const mathgl::Vector3<double>& latlng, bool topLeft = true) -> mathgl::Vector3<double>;
+  auto project(const mathgl::Vector2<double>& lngLat, bool topLeft = true) -> mathgl::Vector2<double>;
+  auto project(const mathgl::Vector3<double>& lngLatZ, bool topLeft = true) -> mathgl::Vector3<double>;
 
   /**
    * Unproject pixel coordinates on screen onto world coordinates,
@@ -115,8 +115,10 @@ class Viewport {
    * @param {Object} opts.topLeft=true - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
-  auto unproject(const mathgl::Vector2<double>& xy, bool topLeft = true) -> mathgl::Vector2<double>;
-  auto unproject(const mathgl::Vector3<double>& xy, bool topLeft = true) -> mathgl::Vector3<double>;
+  auto unproject(const mathgl::Vector2<double>& xy, bool topLeft = true, double targetZ = 0.0)
+      -> mathgl::Vector2<double>;
+  auto unproject(const mathgl::Vector3<double>& xyz, bool topLeft = true, double targetZ = 0.0)
+      -> mathgl::Vector3<double>;
 
   // NON_LINEAR PROJECTION HOOKS
   // Used for web meractor projection
