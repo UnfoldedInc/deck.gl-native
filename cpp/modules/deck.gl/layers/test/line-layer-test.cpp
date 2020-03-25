@@ -33,8 +33,12 @@ namespace {
 /// \brief LineLayer test suite.
 class LineLayerTest : public ::testing::Test {
  protected:
-  LineLayerTest() {
-    // TODO(ilija): Rethink how we want to provide test data for these as creating new tables is bothersome
+  LineLayerTest() { this->propData = this->_createPropDataTable(); }
+
+  std::shared_ptr<arrow::Table> propData;
+
+ private:
+  auto _createPropDataTable() -> std::shared_ptr<arrow::Table> {
     arrow::MemoryPool* pool = arrow::default_memory_pool();
 
     // Positions
@@ -72,10 +76,8 @@ class LineLayerTest : public ::testing::Test {
         arrow::field("color", arrow::fixed_size_list(arrow::float32(), 4)), arrow::field("width", arrow::float32())};
 
     auto schema = std::make_shared<arrow::Schema>(schemaVector);
-    this->propData = arrow::Table::Make(schema, {positions, positions, colors, widths});
+    return arrow::Table::Make(schema, {positions, positions, colors, widths});
   }
-
-  std::shared_ptr<arrow::Table> propData;
 };
 
 TEST_F(LineLayerTest, PropComparison) {

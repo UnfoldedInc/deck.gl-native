@@ -71,25 +71,24 @@ const defaultProps = {
 // }
 
 void LineLayer::initializeState() {
-  // TODO(ilija): Double check divisor values
-  // TODO(ilija): How does bind deal with retain cycles? Can we use __weak?
+  // TODO(ilija): Guaranteed to crash when this layer goes out of scope, revisit
   auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition = std::make_shared<AttributeDescriptor>(
-      "instanceSourcePositions", arrow::fixed_size_list(arrow::float64(), 3), 1, getSourcePosition);
+      "instanceSourcePositions", arrow::fixed_size_list(arrow::float64(), 3), getSourcePosition);
   this->attributeManager->add(sourcePosition);
 
   auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
   auto targetPosition = std::make_shared<AttributeDescriptor>(
-      "instanceTargetPositions", arrow::fixed_size_list(arrow::float64(), 3), 1, getTargetPosition);
+      "instanceTargetPositions", arrow::fixed_size_list(arrow::float64(), 3), getTargetPosition);
   this->attributeManager->add(targetPosition);
 
   auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
   auto color =
-      std::make_shared<AttributeDescriptor>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4), 1, getColor);
+      std::make_shared<AttributeDescriptor>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4), getColor);
   this->attributeManager->add(color);
 
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
-  auto width = std::make_shared<AttributeDescriptor>("instanceWidths", arrow::float32(), 1, getWidth);
+  auto width = std::make_shared<AttributeDescriptor>("instanceWidths", arrow::float32(), getWidth);
   this->attributeManager->add(width);
 }
 
@@ -161,7 +160,6 @@ auto LineLayer::getSourcePositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  // TODO(ilija): How does bind deal with retain cycles? Can we use __weak?
   auto getSourcePosition = std::bind(&LineLayer::Props::getSourcePosition, props, std::placeholders::_1);
   return ArrowMapper::mapVector3DoubleColumn(table, getSourcePosition);
 }
@@ -172,7 +170,6 @@ auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  // TODO(ilija): How does bind deal with retain cycles? Can we use __weak?
   auto getTargetPosition = std::bind(&LineLayer::Props::getTargetPosition, props, std::placeholders::_1);
   return ArrowMapper::mapVector3DoubleColumn(table, getTargetPosition);
 }
@@ -183,7 +180,6 @@ auto LineLayer::getColorData(const std::shared_ptr<arrow::Table>& table) -> std:
     throw std::logic_error("Invalid layer properties");
   }
 
-  // TODO(ilija): How does bind deal with retain cycles? Can we use __weak?
   auto getColor = std::bind(&LineLayer::Props::getColor, props, std::placeholders::_1);
   return ArrowMapper::mapVector4FloatColumn(table, getColor);
 }
@@ -194,7 +190,6 @@ auto LineLayer::getWidthData(const std::shared_ptr<arrow::Table>& table) -> std:
     throw std::logic_error("Invalid layer properties");
   }
 
-  // TODO(ilija): How does bind deal with retain cycles? Can we use __weak?
   auto getWidth = std::bind(&LineLayer::Props::getWidth, props, std::placeholders::_1);
   return ArrowMapper::mapFloatColumn(table, getWidth);
 }

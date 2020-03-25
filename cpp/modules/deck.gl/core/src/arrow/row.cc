@@ -25,8 +25,11 @@
 using namespace deckgl;
 using namespace mathgl;
 
-Row::Row(const std::shared_ptr<arrow::Table>& table, int rowIndex) : _table{table}, _rowIndex{rowIndex} {
-  this->_chunkRowIndex = this->_getChunkRowIndex(table, rowIndex);
+Row::Row(const std::shared_ptr<arrow::Table>& table, int64_t rowIndex) : _table{table}, _rowIndex{rowIndex} {
+  auto [chunkIndex, chunkRowIndex] = this->_getRowChunkData(table, rowIndex);
+
+  this->_chunkIndex = chunkIndex;
+  this->_chunkRowIndex = chunkRowIndex;
 }
 
 // NOTE: Accessors largely based on https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
@@ -272,6 +275,32 @@ auto Row::isValid(const std::string& columnName) -> bool {
   }
 }
 
+void Row::incrementRowIndex(uint64_t increment) {
+  int64_t newRowIndex = this->_rowIndex + increment;
+  if (newRowIndex >= this->_table->num_rows()) {
+    throw std::range_error("Increment index out of bounds");
+  }
+
+  // NOTE: Columns are chunked in the same way, so we pick an arbitrary column
+  // https://arrow.apache.org/docs/cpp/tables.html#tables
+  auto column = this->_table->column(0);
+
+  // Look up incremented row, starting with the chunk previous row index was in
+  int chunkIndex = this->_chunkIndex;
+  auto chunk = column->chunk(chunkIndex);
+  int64_t newChunkRowIndex = this->_chunkRowIndex + increment;
+  int64_t stepSize = chunk->length() - this->_chunkRowIndex;
+  while (newChunkRowIndex >= chunk->length()) {
+    newChunkRowIndex -= stepSize;
+    chunk = column->chunk(++chunkIndex);
+    stepSize = chunk->length();
+  }
+
+  this->_chunkIndex = chunkIndex;
+  this->_chunkRowIndex = newChunkRowIndex;
+  this->_rowIndex = newRowIndex;
+}
+
 auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array> {
   auto column = this->_table->GetColumnByName(columnName);
   if (column == nullptr) {
@@ -292,7 +321,7 @@ auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Arr
   throw std::logic_error("Invalid chunk lookup");
 }
 
-auto Row::_getChunkRowIndex(const std::shared_ptr<arrow::Table>& table, int rowIndex) -> int {
+auto Row::_getRowChunkData(const std::shared_ptr<arrow::Table>& table, int64_t rowIndex) -> std::tuple<int, int64_t> {
   if (rowIndex >= table->num_rows()) {
     throw std::range_error("Invalid row index");
   }
@@ -302,13 +331,14 @@ auto Row::_getChunkRowIndex(const std::shared_ptr<arrow::Table>& table, int rowI
   auto column = table->column(0);
 
   // Iterate over column chunks and find the chunk that contains row data
-  int chunkIndex = rowIndex;
-  for (auto chunk : column->chunks()) {
-    if (chunkIndex < chunk->length()) {
-      return chunkIndex;
+  int64_t chunkRowIndex = rowIndex;
+  for (int chunkIndex = 0; chunkIndex < column->num_chunks(); ++chunkIndex) {
+    auto chunk = column->chunk(chunkIndex);
+    if (chunkRowIndex < chunk->length()) {
+      return {chunkIndex, chunkRowIndex};
     }
 
-    chunkIndex -= chunk->length();
+    chunkRowIndex -= chunk->length();
   }
 
   throw std::logic_error("Invalid chunk lookup");
@@ -345,7 +375,7 @@ auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
   const float first = *(listPointer + offset);
   const float second = listSize >= 2 ? *(listPointer + offset + 1) : 0.0;
 
-  return Vector2<float>(first, second);
+  return Vector2<float>{first, second};
 }
 
 auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
@@ -362,7 +392,7 @@ auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
   const double first = *(listPointer + offset);
   const double second = listSize >= 2 ? *(listPointer + offset + 1) : 0.0;
 
-  return Vector2<double>(first, second);
+  return Vector2<double>{first, second};
 }
 
 auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
@@ -380,7 +410,7 @@ auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
   const float second = *(listPointer + offset + 1);
   const float third = listSize >= 3 ? *(listPointer + offset + 2) : 0.0;
 
-  return Vector3<float>(first, second, third);
+  return Vector3<float>{first, second, third};
 }
 
 auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
@@ -398,7 +428,7 @@ auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
   const double second = *(listPointer + offset + 1);
   const double third = listSize >= 3 ? *(listPointer + offset + 2) : 0.0;
 
-  return Vector3<double>(first, second, third);
+  return Vector3<double>{first, second, third};
 }
 
 auto Row::_vector4FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
@@ -417,7 +447,7 @@ auto Row::_vector4FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
   const float third = *(listPointer + offset + 2);
   const float fourth = listSize >= 4 ? *(listPointer + offset + 3) : 0.0;
 
-  return Vector4<float>(first, second, third, fourth);
+  return Vector4<float>{first, second, third, fourth};
 }
 
 auto Row::_vector4FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
@@ -436,5 +466,5 @@ auto Row::_vector4FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
   const double third = *(listPointer + offset + 2);
   const double fourth = listSize >= 4 ? *(listPointer + offset + 3) : 0.0;
 
-  return Vector4<double>(first, second, third, fourth);
+  return Vector4<double>{first, second, third, fourth};
 }

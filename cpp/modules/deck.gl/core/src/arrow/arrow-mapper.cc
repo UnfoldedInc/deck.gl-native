@@ -24,15 +24,15 @@
 
 using namespace deckgl;
 
-auto ArrowMapper::mapFloatColumn(const std::shared_ptr<arrow::Table>& table, FloatTransform transform)
-    -> std::shared_ptr<arrow::Array> {
+auto ArrowMapper::mapFloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                 std::function<FloatAccessor> getValueFromRow) -> std::shared_ptr<arrow::Array> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
   arrow::FloatBuilder builder{pool};
 
   for (auto i = 0; i < table->num_rows(); ++i) {
     // TODO(ilija): Revisit as this is somewhat costly
     auto row = std::make_shared<Row>(table, i);
-    auto value = transform(row);
+    auto value = getValueFromRow(row);
 
     if (!builder.Append(value).ok()) {
       throw std::runtime_error("Unable to append vector data");
@@ -47,7 +47,8 @@ auto ArrowMapper::mapFloatColumn(const std::shared_ptr<arrow::Table>& table, Flo
   return resultArray;
 }
 
-auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& table, Vector3FloatTransform transform)
+auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                        std::function<Vector3FloatAccessor> getValueFromRow)
     -> std::shared_ptr<arrow::Array> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
   arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool), 3};
@@ -56,7 +57,7 @@ auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& tab
   for (auto i = 0; i < table->num_rows(); ++i) {
     // TODO(ilija): Revisit as this is somewhat costly
     auto row = std::make_shared<Row>(table, i);
-    auto vector = transform(row);
+    auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
       throw std::runtime_error("Unable to append vector data");
@@ -76,7 +77,8 @@ auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& tab
   return resultArray;
 }
 
-auto ArrowMapper::mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& table, Vector3DoubleTransform transform)
+auto ArrowMapper::mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& table,
+                                         std::function<Vector3DoubleAccessor> getValueFromRow)
     -> std::shared_ptr<arrow::Array> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
   arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::DoubleBuilder>(pool), 3};
@@ -85,7 +87,7 @@ auto ArrowMapper::mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& ta
   for (auto i = 0; i < table->num_rows(); ++i) {
     // TODO(ilija): Revisit as this is somewhat costly
     auto row = std::make_shared<Row>(table, i);
-    auto vector = transform(row);
+    auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
       throw std::runtime_error("Unable to append vector data");
@@ -105,7 +107,8 @@ auto ArrowMapper::mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& ta
   return resultArray;
 }
 
-auto ArrowMapper::mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& table, Vector4FloatTransform transform)
+auto ArrowMapper::mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                        std::function<Vector4FloatAccessor> getValueFromRow)
     -> std::shared_ptr<arrow::Array> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
   arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool), 4};
@@ -114,7 +117,7 @@ auto ArrowMapper::mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& tab
   for (auto i = 0; i < table->num_rows(); ++i) {
     // TODO(ilija): Revisit as this is somewhat costly
     auto row = std::make_shared<Row>(table, i);
-    auto vector = transform(row);
+    auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
       throw std::runtime_error("Unable to append vector data");
@@ -134,7 +137,8 @@ auto ArrowMapper::mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& tab
   return resultArray;
 }
 
-auto ArrowMapper::mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& table, Vector4DoubleTransform transform)
+auto ArrowMapper::mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& table,
+                                         std::function<Vector4DoubleAccessor> getValueFromRow)
     -> std::shared_ptr<arrow::Array> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
   arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::DoubleBuilder>(pool), 3};
@@ -143,7 +147,7 @@ auto ArrowMapper::mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& ta
   for (auto i = 0; i < table->num_rows(); ++i) {
     // TODO(ilija): Revisit as this is somewhat costly
     auto row = std::make_shared<Row>(table, i);
-    auto vector = transform(row);
+    auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
       throw std::runtime_error("Unable to append vector data");

@@ -40,7 +40,7 @@ class LineLayer : public Layer {
   explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
-  // TODO(ilija): Should these be public?
+  // TODO(ilija): These should be protected. Figure out how to test them without polluting with friend classes
   auto getSourcePositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -65,6 +65,9 @@ class LineLayer::Props : public Layer::Props {
   float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
   float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
   float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+
+  //  std::function<mathgl::Vector3<double>(Row&)> getSourcePosition{[](Row& row){ return
+  //  row.getDoubleVector3("sourcePosition"); }};
 
   /// Property accessors
   auto getSourcePosition(const std::shared_ptr<Row>& row) -> mathgl::Vector3<double> {

@@ -31,49 +31,52 @@
 
 namespace deckgl {
 
-using namespace mathgl;
-
 /// \brief Utility class that provides a way to easily map Arrow tables.
 class ArrowMapper {
  public:
-  using FloatTransform = std::function<float(std::shared_ptr<Row>)>;
-  /// \brief Maps table data using transform function, returning a new array containing the mapped data.
+  using FloatAccessor = auto(std::shared_ptr<Row>) -> float;
+  using Vector3FloatAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector3<float>;
+  using Vector3DoubleAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector3<double>;
+  using Vector4FloatAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector4<float>;
+  using Vector4DoubleAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector4<double>;
+
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.
-  /// \param transform Function that does the mapping on per-row basis.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
   /// \return Resulting array data.
-  static auto mapFloatColumn(const std::shared_ptr<arrow::Table>& table, FloatTransform transform)
+  static auto mapFloatColumn(const std::shared_ptr<arrow::Table>& table, std::function<FloatAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 
-  using Vector3FloatTransform = std::function<Vector3<float>(std::shared_ptr<Row>)>;
-  /// \brief Maps table data using transform function, returning a new array containing the mapped data.
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.
-  /// \param transform Function that does the mapping on per-row basis.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
   /// \return Resulting array data.
-  static auto mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& table, Vector3FloatTransform transform)
+  static auto mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                    std::function<Vector3FloatAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 
-  using Vector3DoubleTransform = std::function<Vector3<double>(std::shared_ptr<Row>)>;
-  /// \brief Maps table data using transform function, returning a new array containing the mapped data.
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.
-  /// \param transform Function that does the mapping on per-row basis.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
   /// \return Resulting array data.
-  static auto mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& table, Vector3DoubleTransform transform)
+  static auto mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& table,
+                                     std::function<Vector3DoubleAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 
-  using Vector4FloatTransform = std::function<Vector4<float>(std::shared_ptr<Row>)>;
-  /// \brief Maps table data using transform function, returning a new array containing the mapped data.
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.
-  /// \param transform Function that does the mapping on per-row basis.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
   /// \return Resulting array data.
-  static auto mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& table, Vector4FloatTransform transform)
+  static auto mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                    std::function<Vector4FloatAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 
-  using Vector4DoubleTransform = std::function<Vector4<double>(std::shared_ptr<Row>)>;
-  /// \brief Maps table data using transform function, returning a new array containing the mapped data.
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.
-  /// \param transform Function that does the mapping on per-row basis.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
   /// \return Resulting array data.
-  static auto mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& table, Vector4DoubleTransform transform)
+  static auto mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& table,
+                                     std::function<Vector4DoubleAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 };
 
