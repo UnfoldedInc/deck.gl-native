@@ -177,7 +177,8 @@ set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )
 set(DECKGL_CORE_TEST_HEADER_FILES
-    cpp/modules/deck.gl/core/test/views/json-data.h
+    cpp/modules/deck.gl/core/test/views/map-view-json-data.h
+    cpp/modules/deck.gl/core/test/views/view-json-data.h
     )
 
 ## deck.gl/layers

@@ -18,32 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
-
-#include <memory>
-
-#include "deck.gl/core.h"
-
-#include "./map-view-json-data.h"
-
-using namespace mathgl;
-using namespace deckgl;
-
-class MapViewTest : public ::testing::Test {
- protected:
-  MapViewTest() {
-    jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
-
-    registerJSONConvertersForDeckCore(jsonConverter.get());
-  }
-
-  std::unique_ptr<JSONConverter> jsonConverter;
-};
-
-TEST_F(MapViewTest, JSONParse) {
-  auto mapView = std::dynamic_pointer_cast<MapView>(jsonConverter->convertJson(mapViewJsonDataWidth));
-  auto view = jsonConverter->convertJson(viewJsonDataWidth);
-
-  EXPECT_FALSE(mapView->equals(view));
-  EXPECT_EQ(mapView->width, 1000);
+static auto viewJsonDataWidth = R"JSON(
+{
+    "@@type": "View",
+    "width": 1000
 }
+)JSON";
+
+static auto mapViewJsonDataWidth = R"JSON(
+{
+    "@@type": "MapView",
+    "width": 1000
+}
+)JSON";
