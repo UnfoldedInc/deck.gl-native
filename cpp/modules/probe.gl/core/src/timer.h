@@ -56,22 +56,22 @@ class Timer {
   double getAbsoluteTime();
 
  private:
-  bool mRunning{false};
+  bool running{false};
 #if defined(PROBEGL_PLATFORM_APPLE)
   // APPLE
-  uint64_t mStartTime;
-  uint64_t mStopTime;
-  double mSecondCoeff{0};
+  uint64_t startTime;
+  uint64_t stopTime;
+  double secondCoeff{0};
   auto _getSecondCoeff() -> double;
 #elif defined(PROBEGL_PLATFORM_POSIX)
   // POSIX
-  uint64_t mStartTimeNs;
-  uint64_t mStopTimeNs;
+  uint64_t startTimeNs;
+  uint64_t stopTimeNs;
 #elif defined(PROBEGL_PLATFORM_WINDOWS)
   // WINDOWS
-  LONGLONG mStartTime;
-  LONGLONG mStopTime;
-  LONGLONG mFrequency{0};
+  LONGLONG startTime;
+  LONGLONG stopTime;
+  LONGLONG frequency{0};
 #endif
 };
 
