@@ -152,6 +152,7 @@ TEST_F(LineLayerTest, GetTargetPositionData) {
 }
 
 TEST_F(LineLayerTest, GetColorData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
   auto layerProps = std::make_shared<LineLayer::Props>();
   layerProps->data = propData;
 
@@ -168,13 +169,14 @@ TEST_F(LineLayerTest, GetColorData) {
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
   auto listPointer = values->data()->GetValues<float>(1);
-  EXPECT_FLOAT_EQ(*listPointer, -4.3);
-  EXPECT_FLOAT_EQ(*(listPointer + 1), 3.2);
-  EXPECT_FLOAT_EQ(*(listPointer + 2), -2.1);
-  EXPECT_FLOAT_EQ(*(listPointer + 3), 0.1);
+  EXPECT_FLOAT_EQ(*listPointer, 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 1), 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 2), 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 3), 255.0);
 }
 
 TEST_F(LineLayerTest, GetWidthData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
   auto layerProps = std::make_shared<LineLayer::Props>();
   layerProps->data = propData;
 
@@ -185,7 +187,7 @@ TEST_F(LineLayerTest, GetWidthData) {
   EXPECT_EQ(values->length(), 1);
   EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
-  EXPECT_FLOAT_EQ(values->Value(0), 2.5);
+  EXPECT_FLOAT_EQ(values->Value(0), 1.0);
 }
 
 }  // namespace

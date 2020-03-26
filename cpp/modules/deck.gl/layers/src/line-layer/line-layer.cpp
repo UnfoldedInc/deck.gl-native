@@ -160,8 +160,7 @@ auto LineLayer::getSourcePositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  auto getSourcePosition = std::bind(&LineLayer::Props::getSourcePosition, props, std::placeholders::_1);
-  return ArrowMapper::mapVector3DoubleColumn(table, getSourcePosition);
+  return ArrowMapper::mapVector3DoubleColumn(table, props->getSourcePosition);
 }
 
 auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
@@ -170,8 +169,7 @@ auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  auto getTargetPosition = std::bind(&LineLayer::Props::getTargetPosition, props, std::placeholders::_1);
-  return ArrowMapper::mapVector3DoubleColumn(table, getTargetPosition);
+  return ArrowMapper::mapVector3DoubleColumn(table, props->getTargetPosition);
 }
 
 auto LineLayer::getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
@@ -180,8 +178,7 @@ auto LineLayer::getColorData(const std::shared_ptr<arrow::Table>& table) -> std:
     throw std::logic_error("Invalid layer properties");
   }
 
-  auto getColor = std::bind(&LineLayer::Props::getColor, props, std::placeholders::_1);
-  return ArrowMapper::mapVector4FloatColumn(table, getColor);
+  return ArrowMapper::mapVector4FloatColumn(table, props->getColor);
 }
 
 auto LineLayer::getWidthData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
@@ -190,6 +187,5 @@ auto LineLayer::getWidthData(const std::shared_ptr<arrow::Table>& table) -> std:
     throw std::logic_error("Invalid layer properties");
   }
 
-  auto getWidth = std::bind(&LineLayer::Props::getWidth, props, std::placeholders::_1);
-  return ArrowMapper::mapFloatColumn(table, getWidth);
+  return ArrowMapper::mapFloatColumn(table, props->getWidth);
 }
