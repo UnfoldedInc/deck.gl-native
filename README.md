@@ -11,6 +11,7 @@ This is an open-source C++ implementation of deck.gl
 - Layers: Only `ScatterplotLayer`, `LineLayer`, `SolidPolygonLayer`
 - Tables: Only Apache Arrow tables will be supported, apps will need to use Arrow libraries if data is not already in Arrow format.
 - loader support will be limited to CSV and line-delimited JSON.
+- iOS only: will only be tested on iOS (no serious attempts will be done to make deck.gl-native work on other platforms).
 
 
 ## Not Planned
@@ -24,12 +25,6 @@ Many features normally considered fundamental by deck.gl applications are not ev
 - No Extensive layer catalog
 - No Performance Optimizations
 - etc
-
-## Supporting this Effort
-
-This porting project is led by [Unfolded, Inc](www.unfolded.ai), and currently relies on initial funding provided by a customer as well as external contributions. At this stage, this is not an fully or independenly resourced project. It only targets a proof-of-concept prototype, it does not have a maintenance plan and is not set up to address feature requests etc. 
-
-Our hope is to see this project quickly grow into a living part of the core deck.gl project. If this project reaches a sufficient level of completeness / critical mass, the ambition is to make this project part of the main deck.gl project and transfer it to an open governance setup. 
 
 
 ## Software Architecture
@@ -78,6 +73,24 @@ To get started with Arrow, useful resources might be:
 - [Arrow Test Suite](https://github.com/apache/arrow/blob/master/cpp/src/arrow/table_test.cc) - Examples of working code.
 
 CSV and JSON table loaders are provided as part of the deck.gl library. To support additional table formats, the envisioned approach is to implement additional "loaders" that load various formats and "convert" the loaded tables to Arrow representation.
+
+### Dawn WebGPU as the Graphics Backend
+
+deck.gl-native is being built on top of the C++ WebGPU API using the [dawn](https://dawn.googlesource.com/dawn) framework.
+
+The dawn framework is a compelling choice for deck.gl:
+
+- The JavaScript version of deck.gl will inevitably move from WebGL to WebGPU, so having both C++ and JavaScript work against a common 3D API will signficantly increase the ease of aligning the JavaScript and C++ code bases.
+- The Dawn project has the ambition to provide backends on basically all platforms/rendering APIs of interest, including Vulkan, Metal, D3D12, and OpenGL. Ideally meaning that deck.gl-native itself will only have to implement a single backend, namely dawn.
+
+Note that Dawn is still a work in progress (with different levels of support for different platforms) and there is some risk with this technology choice. However, given the momentum behind WebGPU in browsers, we feel that the prospects are currently looking good.
+
+
+## Supporting this Effort
+
+This porting project is led by [Unfolded, Inc](www.unfolded.ai), and currently relies on initial funding provided by a customer as well as external contributions. At this stage, this is not an fully or independenly resourced project. It only targets a proof-of-concept prototype, it does not have a maintenance plan and is not set up to address feature requests etc. 
+
+Our hope is to see this project quickly grow into a living part of the core deck.gl project. If this project reaches a sufficient level of completeness / critical mass, the ambition is to make this project part of the main deck.gl project and transfer it to an open governance setup. 
 
 
 ## Setting up a Development Environment
@@ -143,8 +156,6 @@ brew install apache-arrow
 ```
 
 ## Graphics Dependencies
-
-deck.gl-native is built on top of the C++ WebGPU API using the Dawn framework.
 
 ### Dawn
 
