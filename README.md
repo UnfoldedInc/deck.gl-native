@@ -22,18 +22,63 @@ Many features normally considered fundamental by deck.gl applications are not ev
 - No Base map support (e.g. Mapbox integration)
 - No Interactivity (event handling, picking etc)
 - No Extensive layer catalog
+- No Performance Optimizations
 - etc
 
 ## Supporting this Effort
 
-The ongoing port is led by [Unfolded, Inc](www.unfolded.ai), and currently relies heavily on initial funding provided by a customer as well as external contributions. At this stage, this is not an independenly resourced project. It does not have a maintenance plan and is not set up to address external feature requests. 
+This porting project is led by [Unfolded, Inc](www.unfolded.ai), and currently relies on initial funding provided by a customer as well as external contributions. At this stage, this is not an fully or independenly resourced project. It only targets a proof-of-concept prototype, it does not have a maintenance plan and is not set up to address feature requests etc. 
 
-That said, our hope is to see this project quickly grow into a living part of the core deck.gl project. If this happens, Unfolded Inc, may consider transferring this to a foundation / open governance setup. 
-
-However, at this stage the project has yet to attain a sufficient level of completeness / critical mass. And additional work will happen only through direct engineering contributions or by providing additional funding. 
+Our hope is to see this project quickly grow into a living part of the core deck.gl project. If this project reaches a sufficient level of completeness / critical mass, the ambition is to make this project part of the main deck.gl project and transfer it to an open governance setup. 
 
 
-## Setting up Development Environment
+## Software Architecture
+
+A primary concern for the deck.gl-native port, if it matures, is how to keep it develop in sync with the deck.gl JavaScript codebase.
+
+### deck.gl JSON parity (with JavaScript)
+
+The deck.gl JSON API (See the [deck.gl playground](https://deck.gl/playground/)) is the primary "common API" that will be supported by both the JavaScript and C++ implementations of deck.gl. 
+
+This ensures that both C++ and JavaScript evolve in sync on a high level, always providing compatible features (where their layer selections etc overlap). 
+
+### C++ vs JS API
+
+Since the JSON compatiblity requirement helps ensure that the two deck.gl implementations do not diverge, this give some latitude for the actual C++ and JavaScript APIs to be different, to ensure they are both natural to use for programmers with backgrounds in the respective programming language.
+
+### C++ Module Structure
+
+To simplify for JavaScript maintainers to work in the deck.gl-native repo, a similar module structure has been set up, and similar file naming conventions are used.
+
+The JavaScript module structure is documented on the [vis.gl website](https://vis.gl/)
+
+| Module            |.Description |
+| --- | --- |
+| `probe.gl/core.h` | Platform/Compiler detection, assertions, logging and timers |
+| `math.gl/core.h`  | Vectors and Matrices |
+| `math.gl/web-mercator.h` | Geospatial math for Web Mercator projection |
+| `loaders.gl/csv.h`. | A CSV table loader |
+| `loaders.gl/json.h`. | A JSON table loader |
+| `luma.gl/core.h` | `Model`, `AnimationLoop` etc implemented on dawn API |
+| `luma.gl/webgpu.h` | Internal utilities for working with the WebGPU API (adaptions from the dawn repo) |
+| `deck.gl/core.h` | | The core deck.gl classes: `Deck`, `Layer`, `View`, etc. |
+| `deck.gl/layers.h` | The initial layer catalog |
+| `deck.gl/json.h` | Classes for parsing (deck.gl) JSON into C++ objects |
+
+At the moment, this module structure only affects how the source code is organized. Only a single `libdeckgl.a` library is provided, that contains the object files from all these modules..
+
+### Apache Arrow
+
+All in-memory table processing is based on the Apache Arrow C++ API. This will be almost invisible to applications if they use the provided loaders, however for more advanced table processing applications may need to work directly with the Arrow API.
+
+To get started with Arrow, useful resources might be:
+- [Arrow C++ API Docs](https://arrow.apache.org/docs/cpp/api.html)
+- [Arrow Test Suite](https://github.com/apache/arrow/blob/master/cpp/src/arrow/table_test.cc) - Examples of working code.
+
+CSV and JSON table loaders are provided as part of the deck.gl library. To support additional table formats, the envisioned approach is to implement additional "loaders" that load various formats and "convert" the loaded tables to Arrow representation.
+
+
+## Setting up a Development Environment
 
 ### gcc
 
