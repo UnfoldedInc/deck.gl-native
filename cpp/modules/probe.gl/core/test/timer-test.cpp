@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded Inc.
+// Copyright (c) 2020, Unfolded Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,14 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef PROBEGL_CORE
-#define PROBEGL_CORE
+#include <gtest/gtest.h>
 
-#include "./core/src/assert.h"
-#include "./core/src/compiler.h"
-#include "./core/src/log.h"
-#include "./core/src/platform.h"
-#include "./core/src/system-utils.h"
-#include "./core/src/timer.h"
+#include <memory>
 
-#endif  // PROBEGL_CORE
+#include "probe.gl/core.h"
+
+using namespace probegl;
+
+TEST(ProbeGL, Timer) {
+  Timer timer;
+  timer.start();
+  uSleep(10);
+  timer.stop();
+  EXPECT_GE(timer.getElapsedTime(), 0);
+}

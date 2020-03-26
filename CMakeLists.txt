@@ -40,19 +40,23 @@ include(CTest)
 ## probe.gl
 set(PROBEGL_CORE_HEADER_FILES
     cpp/modules/probe.gl/core.h
-    cpp/modules/probe.gl/core/src/platform.h
     cpp/modules/probe.gl/core/src/compiler.h
+    cpp/modules/probe.gl/core/src/platform.h
     cpp/modules/probe.gl/core/src/assert.h
     cpp/modules/probe.gl/core/src/log.h
     cpp/modules/probe.gl/core/src/system-utils.h
+    cpp/modules/probe.gl/core/src/timer.h
 )
 set(PROBEGL_CORE_SOURCE_FILES
     cpp/modules/probe.gl/core/src/assert.cpp
     cpp/modules/probe.gl/core/src/log.cpp
     cpp/modules/probe.gl/core/src/system-utils.cpp
+    cpp/modules/probe.gl/core/src/timer.cpp
 )
 set(PROBEGL_CORE_TEST_FILES
+    cpp/modules/probe.gl/core/test/timer-test.cpp
 )
+
 
 ## math.gl
 set(MATHGL_CORE_HEADER_FILES
