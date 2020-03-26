@@ -101,6 +101,21 @@ deck.gl-native is built on top of the C++ WebGPU API using the Dawn framework.
 
 ### Dawn
 
+[dawn](https://dawn.googlesource.com/dawn) C++ WebGPU implementation with a maturing list of backends for most platforms.
+
+### shaderc
+
+[shaderc](https://github.com/google/shaderc) for GLSL compilation.
+
+### GLFW
+
+[glfw](https://github.com/glfw/glfw) portable library for creating OS windows to render graphics in, and handling events.
+
+On linux a number of dependencies need to be installed for glfw to work:
+
+```sh
+sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev
+```
 
 ## Building
 

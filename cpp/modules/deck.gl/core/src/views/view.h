@@ -34,43 +34,11 @@ namespace deckgl {
 
 class ViewManager;
 
-class View : public Component {
+class View : public JSONObject {
   friend class ViewManager;
 
  public:
-  class Props;
-
-  explicit View(std::shared_ptr<View::Props> props);
-  ~View();
-
-  bool equals(const View *view);
-
-  auto getViewStateId() const -> std::string;
-
-  // Build a `Viewport` from a view descriptor
-  auto makeViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState)
-      -> std::shared_ptr<Viewport>;
-
- protected:
-  // Create actual viewport
-  virtual auto _getViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState) const
-      -> std::shared_ptr<Viewport>;
-
- private:
-  // Allows view to override (or completely define) viewState
-  auto filterViewState(std::shared_ptr<ViewState>) -> std::shared_ptr<ViewState>;
-
-  // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
-  // auto getDimensions(int width, int height) -> Rect...
-
-  // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
-  // _parseDimensions(int x, int y, int width, int height});
-};
-
-// TODO(ib) - how do we override viewstate? inherit from ViewState
-class View::Props : public Component::Props {
- public:
-  using super = Component::Props;
+  using super = JSONObject;
 
   std::string id;
 
@@ -92,9 +60,29 @@ class View::Props : public Component::Props {
   // Property type machinery
   static constexpr const char *getTypeName() { return "View"; }
   auto getProperties() const -> const Properties * override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> View * override {
-    return new View{std::dynamic_pointer_cast<View::Props>(props)};
-  }
+
+  virtual ~View();
+
+  auto getViewStateId() const -> std::string;
+
+  // Build a `Viewport` from a view descriptor
+  auto makeViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState)
+      -> std::shared_ptr<Viewport>;
+
+ protected:
+  // Create actual viewport
+  virtual auto _getViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState) const
+      -> std::shared_ptr<Viewport>;
+
+ private:
+  // Allows view to override (or completely define) viewState
+  auto filterViewState(std::shared_ptr<ViewState>) -> std::shared_ptr<ViewState>;
+
+  // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
+  // auto getDimensions(int width, int height) -> Rect...
+
+  // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
+  // _parseDimensions(int x, int y, int width, int height});
 };
 
 }  // namespace deckgl

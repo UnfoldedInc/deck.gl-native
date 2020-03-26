@@ -18,29 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWS_MAP_VIEW_H
-#define DECKGL_CORE_VIEWS_MAP_VIEW_H
+static auto viewJsonData = R"JSON(
+{
+    "@@type": "View"
+}
+)JSON";
 
-#include <memory>
+static auto viewJsonDataWidth = R"JSON(
+{
+    "@@type": "View",
+    "width": 1000
+}
+)JSON";
 
-#include "./view.h"  // {View}
-// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
-#include "math.gl/core.h"
-
-namespace deckgl {
-
-class MapView : public View {
- public:
-  using super = View;
-
-  static constexpr const char *getTypeName() { return "MapView"; }
-  auto getProperties() const -> const Properties * override;
-
- protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect,
-                    std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
-};
-
-}  // namespace deckgl
-
-#endif  // DECKGL_CORE_VIEWS_MAP_VIEW_H
+static auto viewJsonDataWidthAndHeight = R"JSON(
+{
+    "@@type": "View",
+    "width": 1000,
+    "height": 1000
+}
+)JSON";

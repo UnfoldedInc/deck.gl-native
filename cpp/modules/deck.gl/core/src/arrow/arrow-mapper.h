@@ -34,11 +34,11 @@ namespace deckgl {
 /// \brief Utility class that provides a way to easily map Arrow tables.
 class ArrowMapper {
  public:
-  using FloatAccessor = auto(std::shared_ptr<Row>) -> float;
-  using Vector3FloatAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector3<float>;
-  using Vector3DoubleAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector3<double>;
-  using Vector4FloatAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector4<float>;
-  using Vector4DoubleAccessor = auto(std::shared_ptr<Row>) -> mathgl::Vector4<double>;
+  using FloatAccessor = auto(const std::shared_ptr<Row>&) -> float;
+  using Vector3FloatAccessor = auto(const std::shared_ptr<Row>&) -> mathgl::Vector3<float>;
+  using Vector3DoubleAccessor = auto(const std::shared_ptr<Row>&) -> mathgl::Vector3<double>;
+  using Vector4FloatAccessor = auto(const std::shared_ptr<Row>&) -> mathgl::Vector4<float>;
+  using Vector4DoubleAccessor = auto(const std::shared_ptr<Row>&) -> mathgl::Vector4<double>;
 
   /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.

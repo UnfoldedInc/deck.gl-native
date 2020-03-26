@@ -25,7 +25,14 @@
 
 using namespace deckgl;
 
-auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
+auto JSONConverter::convertJson(const std::string &rawJson, const std::string &typeHint) const
+    -> std::shared_ptr<JSONObject> {
+  auto parsed = this->parseJson(rawJson);
+  auto converted = this->convertClass(parsed, typeHint);
+  return converted;
+}
+
+auto JSONConverter::parseJson(const std::string &rawJson) const -> Json::Value {
   Json::CharReaderBuilder builder;
   const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
@@ -36,12 +43,6 @@ auto JSONConverter::parseJson(const std::string &rawJson) -> Json::Value {
     throw std::runtime_error("JSON parsing failed: " + err);
   }
   return rootValue;
-}
-
-auto JSONConverter::convertJson(const Json::Value &value) const -> std::shared_ptr<JSONObject> {
-  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<JSONObject> { return nullptr; };
-  this->_traverseJson(value, visitor);
-  return nullptr;
 }
 
 auto JSONConverter::convertClass(const Json::Value &value, const std::string &typeHint) const

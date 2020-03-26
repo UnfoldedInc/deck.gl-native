@@ -28,6 +28,11 @@ using namespace std;
 using namespace deckgl;
 using namespace mathgl;
 
+auto MapView::getProperties() const -> const Properties* {
+  static Properties properties{Properties::from<MapView>("MapView", super::getProperties()->allProperties())};
+  return &properties;
+}
+
 auto MapView::_getViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) const -> shared_ptr<Viewport> {
   WebMercatorViewport::Options opts;
   opts.width = rect.w;

@@ -61,30 +61,25 @@ class LineLayer::Props : public Layer::Props {
   using super = Layer::Props;
   static constexpr const char* getTypeName() { return "LineLayer"; }
 
-  std::string widthUnits{"pixels"};                         // 'pixels',
-  float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
-  float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
-  float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
-
-  //  std::function<mathgl::Vector3<double>(Row&)> getSourcePosition{[](Row& row){ return
-  //  row.getDoubleVector3("sourcePosition"); }};
-
-  /// Property accessors
-  auto getSourcePosition(const std::shared_ptr<Row>& row) -> mathgl::Vector3<double> {
-    return row->getDoubleVector3("sourcePosition");
-  }
-  auto getTargetPosition(const std::shared_ptr<Row>& row) -> mathgl::Vector3<double> {
-    return row->getDoubleVector3("targetPosition");
-  }
-  // TODO(ilija): Is this supposed to return ColorRGBA? Adding another conversion back to Vector4 seems unnecessary
-  auto getColor(const std::shared_ptr<Row>& row) -> mathgl::Vector4<float> { return row->getFloatVector4("color"); }
-  auto getWidth(const std::shared_ptr<Row>& row) -> float { return row->getFloat("width"); }
-
   // Property Type Machinery
   auto getProperties() const -> const Properties* override;
   auto makeComponent(std::shared_ptr<Component::Props> props) const -> LineLayer* override {
     return new LineLayer{std::dynamic_pointer_cast<LineLayer::Props>(props)};
   }
+
+  std::string widthUnits{"pixels"};                         // 'pixels',
+  float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
+  float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
+  float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+
+  /// Property accessors
+  std::function<ArrowMapper::Vector3DoubleAccessor> getSourcePosition{
+      [](const std::shared_ptr<Row>& row) { return row->getDoubleVector3("sourcePosition"); }};
+  std::function<ArrowMapper::Vector3DoubleAccessor> getTargetPosition{
+      [](const std::shared_ptr<Row>& row) { return row->getDoubleVector3("targetPosition"); }};
+  std::function<ArrowMapper::Vector4FloatAccessor> getColor{
+      [](const std::shared_ptr<Row>& row) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+  std::function<ArrowMapper::FloatAccessor> getWidth{[](const std::shared_ptr<Row>& row) { return 1.0; }};
 };
 
 }  // namespace deckgl
