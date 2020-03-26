@@ -104,6 +104,16 @@ auto JSONObject::getProperty(const std::string& key) const -> const Property* {
 auto JSONObject::equals(const JSONObject* other) const -> bool {
   auto properties = this->getProperties();
 
+  if (other == nullptr) {
+    return false;
+  }
+  if (other == this) {
+    return true;
+  }
+  if (other->getProperties()->className != properties->className) {
+    return false;
+  }
+
   for (auto element : properties->_propTypeMap) {
     // Accessing KEY from element
     std::string name = element.first;
@@ -120,14 +130,23 @@ auto JSONObject::equals(const JSONObject* other) const -> bool {
 auto JSONObject::compare(const JSONObject* other) const -> std::optional<std::string> {
   auto properties = this->getProperties();
 
+  if (other == nullptr) {
+    return properties->className + " now is null";
+  }
+  if (other == this) {
+    return std::nullopt;
+  }
+  if (other->getProperties()->className != properties->className) {
+    return properties->className + " class changed";
+  }
+
   for (auto element : properties->_propTypeMap) {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.
     const Property* propType = element.second;
     if (!propType->equals(this, other)) {
-      std::string className{properties->className};
-      return className + "." + propType->name + " changed";
+      return properties->className + "." + propType->name + " changed";
     }
   }
 

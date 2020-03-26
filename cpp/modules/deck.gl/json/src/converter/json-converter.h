@@ -42,11 +42,13 @@ class JSONConverter {
   JSONConverter() {}
   explicit JSONConverter(const std::map<std::string, JsonValueToComponentConverter> &classes_) : classes{classes_} {}
 
+  // parse JSON into registered class
+  auto convertJson(const std::string &rawJson, const std::string &typeHint = "") const -> std::shared_ptr<JSONObject>;
+
   // parse JSON string using jsoncpp
-  auto parseJson(const std::string &rawJson) -> Json::Value;
+  auto parseJson(const std::string &rawJson) const -> Json::Value;
 
   // Convert parsed JSON into registered classes
-  auto convertJson(const Json::Value &) const -> std::shared_ptr<JSONObject>;
   auto convertClass(const Json::Value &, const std::string &typeHint) const -> std::shared_ptr<JSONObject>;
 
  private:

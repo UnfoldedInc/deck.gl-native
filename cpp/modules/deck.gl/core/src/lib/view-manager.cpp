@@ -184,19 +184,6 @@ void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
   }
 }
 
-void ViewManager::setViewsFromProps(const std::list<std::shared_ptr<View::Props>> &viewProps) {
-  // TODO(ib): Only update if views actually changed
-  auto viewsChanged = true;  // this->_diffViews(views, this->views);
-  if (viewsChanged) {
-    auto views =
-        viewProps |
-        ranges::views::transform([](auto props) { return std::shared_ptr<View>{props->makeComponent(props)}; }) |
-        ranges::to<std::list>();
-    this->views = views;
-    this->setNeedsUpdate("Views changed");
-  }
-}
-
 void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
   auto viewStateChanged = !viewState->equals(this->viewState);
 

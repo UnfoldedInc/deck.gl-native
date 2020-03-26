@@ -70,9 +70,7 @@ TEST_F(JSONConverterTest, JSONConfig) {
 }
 
 TEST_F(JSONConverterTest, JSONConverter) {
-  Json::Value rootValue;
-  rootValue = jsonConverter->parseJson(jsonDataSimple);
-  auto result = jsonConverter->convertJson(rootValue);
+  auto result = jsonConverter->convertJson(jsonDataSimple);
   // EXPECT_TRUE(result);
 }
 

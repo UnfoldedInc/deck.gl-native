@@ -26,4 +26,8 @@ void deckgl::registerJSONConvertersForDeckCore(JSONConverter *jsonConverter) {
   jsonConverter->classes["Deck"] = [](const Json::Value &) { return std::make_shared<Deck::Props>(); };
 
   jsonConverter->classes["ViewState"] = [](const Json::Value &) { return std::make_shared<ViewState>(); };
+
+  jsonConverter->classes["View"] = [](const Json::Value &) { return std::make_shared<View>(); };
+
+  jsonConverter->classes["MapView"] = [](const Json::Value &) { return std::make_shared<MapView>(); };
 }

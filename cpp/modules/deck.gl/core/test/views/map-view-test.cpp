@@ -18,29 +18,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_VIEWS_MAP_VIEW_H
-#define DECKGL_CORE_VIEWS_MAP_VIEW_H
+#include <gtest/gtest.h>
 
 #include <memory>
 
-#include "./view.h"  // {View}
-// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
-#include "math.gl/core.h"
+#include "deck.gl/core.h"
 
-namespace deckgl {
+#include "./map-view-json-data.h"
 
-class MapView : public View {
- public:
-  using super = View;
+using namespace mathgl;
+using namespace deckgl;
 
-  static constexpr const char *getTypeName() { return "MapView"; }
-  auto getProperties() const -> const Properties * override;
-
+class MapViewTest : public ::testing::Test {
  protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect,
-                    std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
+  MapViewTest() {
+    jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
+
+    registerJSONConvertersForDeckCore(jsonConverter.get());
+  }
+
+  std::unique_ptr<JSONConverter> jsonConverter;
 };
 
-}  // namespace deckgl
+TEST_F(MapViewTest, JSONParse) {
+  auto mapView = std::dynamic_pointer_cast<MapView>(jsonConverter->convertJson(mapViewJsonDataWidth));
+  auto view = jsonConverter->convertJson(viewJsonDataWidth);
 
-#endif  // DECKGL_CORE_VIEWS_MAP_VIEW_H
+  EXPECT_FALSE(mapView->equals(view));
+  EXPECT_EQ(mapView->width, 1000);
+}
