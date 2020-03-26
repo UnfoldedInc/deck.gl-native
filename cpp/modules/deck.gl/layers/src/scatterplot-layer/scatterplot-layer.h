@@ -38,20 +38,33 @@ class ScatterplotLayer : public Layer {
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
+  // TODO(ilija): These should be protected. Figure out how to test them without polluting with friend classes
+  auto getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getRadiusData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getFillColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getLineColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getLineWidthData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+
  protected:
   void initializeState() override;
-  void updateState(const ChangeFlags &, const Layer::Props *oldProps) override;
+  void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
   void finalizeState() override;
   void drawState() override;
 
  private:
-  auto _getModel(void *gl) -> std::shared_ptr<lumagl::Model>;
+  auto _getModel(void* gl) -> std::shared_ptr<lumagl::Model>;
 };
 
 class ScatterplotLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
-  static constexpr const char *getTypeName() { return "ScatterplotLayer"; }
+  static constexpr const char* getTypeName() { return "ScatterplotLayer"; }
+
+  // Property Type Machinery
+  auto getProperties() const -> const Properties* override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> ScatterplotLayer* override {
+    return new ScatterplotLayer{std::dynamic_pointer_cast<ScatterplotLayer::Props>(props)};
+  }
 
   bool filled{true};
   bool stroked{false};
@@ -65,20 +78,15 @@ class ScatterplotLayer::Props : public Layer::Props {
   float radiusMinPixels{1.0};  // min point radius in pixels
   float radiusMaxPixels{2.0};  // max point radius in pixels
 
-  // std::function<(auto row) -> Vector3<double>> getPosition,
-  // {type: 'accessor', value: x => x.position}, std::function<(auto row) -> float>
-  // getRadius,
-  // {type: 'accessor', value: 1}, std::function<(auto row) ->
-  // ColorRGBA> getFillColor, // {type: 'accessor', value: DEFAULT_COLOR},
-  // std::function<(auto row) -> ColorRGBA> getLineColor, // {type: 'accessor',
-  // value: DEFAULT_COLOR}, std::function<(auto row) -> float> getLineWidth, //
-  // {type: 'accessor', value: 1},
-
-  // Property Type Machinery
-  auto getProperties() const -> const Properties * override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> ScatterplotLayer * override {
-    return new ScatterplotLayer{std::dynamic_pointer_cast<ScatterplotLayer::Props>(props)};
-  }
+  /// Property accessors
+  std::function<ArrowMapper::Vector3DoubleAccessor> getPosition{
+      [](auto row) { return row->getDoubleVector3("position"); }};
+  std::function<ArrowMapper::FloatAccessor> getRadius{[](auto row) { return 1.0; }};
+  std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
+      [](auto row) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+  std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
+      [](auto row) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+  std::function<ArrowMapper::FloatAccessor> getLineWidth{[](auto row) { return 1.0; }};
 };
 
 }  // namespace deckgl

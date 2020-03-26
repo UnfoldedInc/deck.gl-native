@@ -118,45 +118,29 @@ Number.MAX_SAFE_INTEGER}, // max point radius in pixels
 // }
 
 void ScatterplotLayer::initializeState() {
-  /*
-  this->getAttributeManager()->addInstanced({
-    instancePositions: {
-      size: 3,
-      type: GL.DOUBLE,
-      fp64: this->use64bitPositions(),
-      transition: true,
-      accessor: 'getPosition'
-    },
-    instanceRadius: {
-      size: 1,
-      transition: true,
-      accessor: 'getRadius',
-      defaultValue: 1
-    },
-    instanceFillColors: {
-      size: this->props.colorFormat.length,
-      transition: true,
-      normalized: true,
-      type: GL.UNSIGNED_BYTE,
-      accessor: 'getFillColor',
-      defaultValue: [0, 0, 0, 255]
-    },
-    instanceLineColors: {
-      size: this->props.colorFormat.length,
-      transition: true,
-      normalized: true,
-      type: GL.UNSIGNED_BYTE,
-      accessor: 'getLineColor',
-      defaultValue: [0, 0, 0, 255]
-    },
-    instanceLineWidths: {
-      size: 1,
-      transition: true,
-      accessor: 'getLineWidth',
-      defaultValue: 1
-    }
-  });
-  */
+  // TODO(ilija): Guaranteed to crash when this layer goes out of scope, revisit
+  auto getPosition = std::bind(&ScatterplotLayer::getPositionData, this, std::placeholders::_1);
+  auto position = std::make_shared<AttributeDescriptor>("instancePositions",
+                                                        arrow::fixed_size_list(arrow::float64(), 3), getPosition);
+  this->attributeManager->add(position);
+
+  auto getRadius = std::bind(&ScatterplotLayer::getRadiusData, this, std::placeholders::_1);
+  auto radius = std::make_shared<AttributeDescriptor>("instanceRadius", arrow::float32(), getRadius);
+  this->attributeManager->add(radius);
+
+  auto getFillColor = std::bind(&ScatterplotLayer::getFillColorData, this, std::placeholders::_1);
+  auto fillColor = std::make_shared<AttributeDescriptor>("instanceFillColors",
+                                                         arrow::fixed_size_list(arrow::float32(), 4), getFillColor);
+  this->attributeManager->add(fillColor);
+
+  auto getLineColor = std::bind(&ScatterplotLayer::getLineColorData, this, std::placeholders::_1);
+  auto lineColor = std::make_shared<AttributeDescriptor>("instanceLineColors",
+                                                         arrow::fixed_size_list(arrow::float32(), 4), getLineColor);
+  this->attributeManager->add(lineColor);
+
+  auto getLineWidth = std::bind(&ScatterplotLayer::getLineWidthData, this, std::placeholders::_1);
+  auto lineWidth = std::make_shared<AttributeDescriptor>("instanceLineWidths", arrow::float32(), getLineWidth);
+  this->attributeManager->add(lineWidth);
 }
 
 void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -207,6 +191,51 @@ void ScatterplotLayer::drawState() {  // uniforms
       })
       .draw();
     */
+}
+
+auto ScatterplotLayer::getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  if (!props) {
+    throw std::logic_error("Invalid layer properties");
+  }
+
+  return ArrowMapper::mapVector3DoubleColumn(table, props->getPosition);
+}
+
+auto ScatterplotLayer::getRadiusData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  if (!props) {
+    throw std::logic_error("Invalid layer properties");
+  }
+
+  return ArrowMapper::mapFloatColumn(table, props->getRadius);
+}
+
+auto ScatterplotLayer::getFillColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  if (!props) {
+    throw std::logic_error("Invalid layer properties");
+  }
+
+  return ArrowMapper::mapVector4FloatColumn(table, props->getFillColor);
+}
+
+auto ScatterplotLayer::getLineColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  if (!props) {
+    throw std::logic_error("Invalid layer properties");
+  }
+
+  return ArrowMapper::mapVector4FloatColumn(table, props->getLineColor);
+}
+
+auto ScatterplotLayer::getLineWidthData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  if (!props) {
+    throw std::logic_error("Invalid layer properties");
+  }
+
+  return ArrowMapper::mapFloatColumn(table, props->getLineWidth);
 }
 
 auto ScatterplotLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
