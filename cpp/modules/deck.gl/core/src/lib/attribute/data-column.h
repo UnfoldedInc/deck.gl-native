@@ -21,16 +21,16 @@
 #ifndef DECKGL_CORE_LIB_ATTRIBUTE_DATA_COLUMN_H
 #define DECKGL_CORE_LIB_ATTRIBUTE_DATA_COLUMN_H
 
-// TODO(ilija): Placeholder types
-typedef void *UnknownType;
-typedef void *GLPlaceholder;
-typedef void *BufferPlaceholder;
-typedef void *ValuePlaceholder;
-typedef void *AccessorPlaceholder;
-
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "luma.gl/core.h"
+// TODO(ilija): Placeholder types
+typedef void *UnknownType;
+typedef void *BufferPlaceholder;
+typedef void *ValuePlaceholder;
+typedef void *AccessorPlaceholder;
 
 namespace deckgl {
 
@@ -58,7 +58,7 @@ struct DataColumnOptions {
 template <class DataType>
 class DataColumn {
  public:
-  DataColumn(GLPlaceholder gl, const DataColumnOptions<DataType> &options);
+  DataColumn(wgpuDevice device, const DataColumnOptions<DataType> &options);
 
   bool setData(const UnknownType options);
   void updateSubBuffer(const UnknownType options);
@@ -72,7 +72,7 @@ class DataColumn {
   ValuePlaceholder getValue();
   AccessorPlaceholder getAccessor();
 
-  GLPlaceholder gl;
+  wgpuDevice device;
   bool doublePrecision;
   DataType value;
 

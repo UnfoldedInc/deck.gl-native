@@ -26,5 +26,6 @@
 #include "./core/src/log.h"
 #include "./core/src/platform.h"
 #include "./core/src/system-utils.h"
+#include "./core/src/timer.h"
 
 #endif  // PROBEGL_CORE

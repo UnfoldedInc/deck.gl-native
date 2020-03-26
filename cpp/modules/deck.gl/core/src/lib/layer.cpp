@@ -404,9 +404,9 @@ void Layer::update() {
 // Common code for _initialize and _update
 void Layer::_updateState() {
   // Safely call subclass lifecycle methods
-  if (!this->context->gl) {
-    return;
-  }
+  // if (!this->context->gl) {
+  //   return;
+  // }
 
   this->updateState(this->_changeFlags, this->oldProps);
   // End subclass lifecycle methods

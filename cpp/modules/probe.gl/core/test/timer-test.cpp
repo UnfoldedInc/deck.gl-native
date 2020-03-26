@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded Inc.
+// Copyright (c) 2020, Unfolded Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,41 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_MODEL_H
-#define LUMAGL_CORE_MODEL_H
+#include <gtest/gtest.h>
 
-#include <dawn/webgpu_cpp.h>
+#include <memory>
 
-#include <string>
+#include "probe.gl/core.h"
 
-#include "luma.gl/webgpu.h"
+using namespace probegl;
 
-namespace lumagl {
-
-/// \brief Holds shaders compiled and linked into a pipeline
-/// pass.SetPipeline(model.pipeline)
-class Model {
- public:
-  class Options;
-
-  /// \brief construct a new Model
-  explicit Model(wgpuDevice device, const Options &);
-  explicit Model(wgpuDevice device);
-
-  void draw();
-
-  // wgpu::RenderPipeline pipeline;                 // rendering pipeline (pass.SetPipeline(model.pipeline)
-  // wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
-  // wgpu::ShaderModule vsModule;                   // Compiled vertex shader
-  // wgpu::ShaderModule fsModule;                   // Compiled fragment shader
-};
-
-class Model::Options {
- public:
-  std::string vs;  // vertex shader source
-  std::string fs;  // fragment shader source
-};
-
-}  // namespace lumagl
-
-#endif  // LUMAGL_CORE_MODEL_H
+TEST(ProbeGL, Timer) {
+  Timer timer;
+  timer.start();
+  uSleep(10);
+  timer.stop();
+  EXPECT_GE(timer.getElapsedTime(), 0);
+}

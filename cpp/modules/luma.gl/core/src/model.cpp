@@ -25,11 +25,18 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-auto GetPreferredSwapChainTextureFormat() { return WGPUTextureFormat_BGRA8Unorm; }
+// TODO
+auto getBackendBinding() -> BackendBinding * { return nullptr; };
 
-Model::Model(wgpu::Device device) : Model(device, Options{}) {}
+auto GetPreferredSwapChainTextureFormat() -> wgpu::TextureFormat {
+  BackendBinding *binding = getBackendBinding();
+  return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
+}
 
-Model::Model(wgpu::Device device, const Model::Options &options) {
+Model::Model(wgpuDevice device) : Model(device, Options{}) {}
+
+Model::Model(wgpuDevice device, const Model::Options &options) {
+  /*
   this->vsModule = utils::createShaderModule(device, utils::SingleShaderStage::Vertex, options.vs.c_str());
   this->fsModule = utils::createShaderModule(device, utils::SingleShaderStage::Fragment, options.fs.c_str());
 
@@ -44,6 +51,7 @@ Model::Model(wgpu::Device device, const Model::Options &options) {
   descriptor.layout = utils::makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
 
   this->pipeline = device.CreateRenderPipeline(&descriptor);
+  */
 }
 
 void Model::draw() {}

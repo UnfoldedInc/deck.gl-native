@@ -21,13 +21,15 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#ifndef PROBEGL_PLATFORM_H_
-#define PROBEGL_PLATFORM_H_
+#ifndef PROBEGL_PLATFORM_H
+#define PROBEGL_PLATFORM_H
 
-#if defined(_WIN32) || defined(_WIN64)
-#define PROBEGL_PLATFORM_WINDOWS 1
+// TODO(ib) - something in the include chain sets _WIN32, comment out for now
+// #if defined(_WIN32) || defined(_WIN64)
+// #define PROBEGL_PLATFORM_WINDOWS 1
+// #elif defined(__linux__)
 
-#elif defined(__linux__)
+#if defined(__linux__)
 #define PROBEGL_PLATFORM_LINUX 1
 #define PROBEGL_PLATFORM_POSIX 1
 #if defined(__ANDROID__)
@@ -65,4 +67,4 @@ static_assert(sizeof(sizeof(char)) == 4, "Expect sizeof(size_t) == 4");
 #error "Unsupported platform"
 #endif
 
-#endif  // PROBEGL_PLATFORM_H_
+#endif  // PROBEGL_PLATFORM_H

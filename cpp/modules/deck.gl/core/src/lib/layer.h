@@ -82,7 +82,7 @@ class Layer : public Component {
 
   explicit Layer(std::shared_ptr<Layer::Props> props)
       : Component{std::dynamic_pointer_cast<Component::Props>(props)},
-        attributeManager{new AttributeManager(0, "layer-identifier")} {}
+        attributeManager{new AttributeManager(nullptr, "layer-identifier")} {}
 
   // Update all props
   void setProps(std::shared_ptr<Layer::Props> newProps);

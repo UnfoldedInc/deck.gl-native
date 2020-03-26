@@ -107,3 +107,43 @@ int main(int argc, const char* argv[]) {
 
   // TODO(ib): do we need to release stuff?
 }
+
+
+/*
+bool InitSample(int argc, const char** argv) {
+    for (int i = 1; i < argc; i++) {
+        if (std::string("-b") == argv[i] || std::string("--backend") == argv[i]) {
+          i++;
+          if (i >= argc) {
+
+          }
+          auto backendType = i < argc getBackendTypeFromString()
+          fprintf(stderr, "--backend expects a backend name (opengl, metal, d3d12, null, vulkan)\n");
+          return false;
+        }
+
+        cmdBufType = CmdBufType::None;
+        if (std::string("-c") == argv[i] || std::string("--command-buffer") == argv[i]) {
+            i++;
+            if (i < argc && std::string("none") == argv[i]) {
+                cmdBufType = CmdBufType::None;
+                continue;
+            }
+            if (i < argc && std::string("terrible") == argv[i]) {
+                cmdBufType = CmdBufType::Terrible;
+                continue;
+            }
+            fprintf(stderr, "--command-buffer expects a command buffer name (none, terrible)\n");
+            return false;
+        }
+
+        if (std::string("-h") == argv[i] || std::string("--help") == argv[i]) {
+            printf("Usage: %s [-b BACKEND] [-c COMMAND_BUFFER]\n", argv[0]);
+            printf("  BACKEND is one of: d3d12, metal, null, opengl, vulkan\n");
+            printf("  COMMAND_BUFFER is one of: none, terrible\n");
+            return false;
+        }
+    }
+    return true;
+}
+*/

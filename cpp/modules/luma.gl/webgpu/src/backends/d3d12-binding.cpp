@@ -21,25 +21,44 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "./system-utils.h"  // NOLINT(build/include)
+#include "utils/BackendBinding.h"
 
-#include "./platform.h"
+#include "common/Assert.h"
+#include "dawn_native/D3D12Backend.h"
 
-#if defined(PROBEGL_PLATFORM_POSIX)
-#include <unistd.h>
-#elif defined(PROBEGL_PLATFORM_WINDOWS)
-#include <Windows.h>
-#error "Unsupported platform."
-#endif
+#include "GLFW/glfw3.h"
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include "GLFW/glfw3native.h"
 
-#if defined(PROBEGL_PLATFORM_POSIX)
+#include <memory>
 
-void probegl::uSleep(unsigned int usecs) { usleep(usecs); }
+namespace utils {
 
-#elif defined(PROBGL_PLATFORM_WINDOWS)
+    class D3D12Binding : public BackendBinding {
+      public:
+        D3D12Binding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
+        }
 
-void probegl::uSleep(unsigned int usecs) { Sleep(static_cast<DWORD>(usecs / 1000)); }
+        uint64_t GetSwapChainImplementation() override {
+            if (mSwapchainImpl.userData == nullptr) {
+                HWND win32Window = glfwGetWin32Window(mWindow);
+                mSwapchainImpl =
+                    dawn_native::d3d12::CreateNativeSwapChainImpl(mDevice, win32Window);
+            }
+            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+        }
 
-#else
-#error "Implement uSleep for your platform."
-#endif
+        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
+            ASSERT(mSwapchainImpl.userData != nullptr);
+            return dawn_native::d3d12::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
+        }
+
+      private:
+        DawnSwapChainImplementation mSwapchainImpl = {};
+    };
+
+    BackendBinding* CreateD3D12Binding(GLFWwindow* window, WGPUDevice device) {
+        return new D3D12Binding(window, device);
+    }
+
+}  // namespace utils

@@ -53,7 +53,7 @@ class LineLayer : public Layer {
   void drawState() override;
 
  private:
-  auto _getModel(void* gl) -> std::shared_ptr<lumagl::Model>;
+  auto _getModel(wgpuDevice) -> std::shared_ptr<lumagl::Model>;
 };
 
 class LineLayer::Props : public Layer::Props {

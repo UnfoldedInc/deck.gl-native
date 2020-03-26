@@ -26,25 +26,25 @@
 #include "probe.gl/core.h"
 
 // #include <shaderc/shaderc.hpp>
-enum shaderc_shader_kind { shaderc_glsl_vertex_shader, shaderc_glsl_fragment_shader, shaderc_glsl_compute_shader };
+// enum shaderc_shader_kind { shaderc_glsl_vertex_shader, shaderc_glsl_fragment_shader, shaderc_glsl_compute_shader };
 
 using namespace lumagl;
 using namespace lumagl::utils;
 
 namespace {
 
-auto shadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
-  switch (stage) {
-    case SingleShaderStage::Vertex:
-      return shaderc_glsl_vertex_shader;
-    case SingleShaderStage::Fragment:
-      return shaderc_glsl_fragment_shader;
-    case SingleShaderStage::Compute:
-      return shaderc_glsl_compute_shader;
-    default:
-      PROBEGL_UNREACHABLE();
-  }
-}
+// auto shadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
+//   switch (stage) {
+//     case SingleShaderStage::Vertex:
+//       return shaderc_glsl_vertex_shader;
+//     case SingleShaderStage::Fragment:
+//       return shaderc_glsl_fragment_shader;
+//     case SingleShaderStage::Compute:
+//       return shaderc_glsl_compute_shader;
+//     default:
+//       PROBEGL_UNREACHABLE();
+//   }
+// }
 
 /*
 auto createShaderModuleFromResult(const wgpu::Device& device, const shaderc::SpvCompilationResult& result)

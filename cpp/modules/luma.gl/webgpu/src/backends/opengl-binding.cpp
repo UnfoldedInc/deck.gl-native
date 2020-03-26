@@ -21,25 +21,43 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "./system-utils.h"  // NOLINT(build/include)
+#include "./backend-binding.h"
 
-#include "./platform.h"
+#include "./swap-chain-utils.h"
 
-#if defined(PROBEGL_PLATFORM_POSIX)
-#include <unistd.h>
-#elif defined(PROBEGL_PLATFORM_WINDOWS)
-#include <Windows.h>
-#error "Unsupported platform."
-#endif
+#include "dawn/dawn_wsi.h"
+#include "dawn_native/OpenGLBackend.h"
 
-#if defined(PROBEGL_PLATFORM_POSIX)
+#include <cstdio>
+#include "GLFW/glfw3.h"
 
-void probegl::uSleep(unsigned int usecs) { usleep(usecs); }
+namespace utils {
 
-#elif defined(PROBGL_PLATFORM_WINDOWS)
+    class OpenGLBinding : public BackendBinding {
+      public:
+        OpenGLBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
+        }
 
-void probegl::uSleep(unsigned int usecs) { Sleep(static_cast<DWORD>(usecs / 1000)); }
+        uint64_t GetSwapChainImplementation() override {
+            if (mSwapchainImpl.userData == nullptr) {
+                mSwapchainImpl = dawn_native::opengl::CreateNativeSwapChainImpl(
+                    mDevice,
+                    [](void* userdata) { glfwSwapBuffers(static_cast<GLFWwindow*>(userdata)); },
+                    mWindow);
+            }
+            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+        }
 
-#else
-#error "Implement uSleep for your platform."
-#endif
+        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
+            return dawn_native::opengl::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
+        }
+
+      private:
+        DawnSwapChainImplementation mSwapchainImpl = {};
+    };
+
+    BackendBinding* CreateOpenGLBinding(GLFWwindow* window, WGPUDevice device) {
+        return new OpenGLBinding(window, device);
+    }
+
+}  // namespace utils

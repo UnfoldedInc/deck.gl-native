@@ -21,25 +21,29 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "./system-utils.h"  // NOLINT(build/include)
+#ifndef LUMAGL_WEBGPU_SWAPCHAINUTILS_H_
+#define LUMAGL_WEBGPU_SWAPCHAINUTILS_H_
 
-#include "./platform.h"
+#include "dawn/dawn_wsi.h"
 
-#if defined(PROBEGL_PLATFORM_POSIX)
-#include <unistd.h>
-#elif defined(PROBEGL_PLATFORM_WINDOWS)
-#include <Windows.h>
-#error "Unsupported platform."
-#endif
+template <typename T>
+DawnSwapChainImplementation CreateSwapChainImplementation(T* swapChain) {
+  DawnSwapChainImplementation impl = {};
+  impl.userData = swapChain;
+  impl.Init = [](void* userData, void* wsiContext) {
+    auto* ctx = static_cast<typename T::WSIContext*>(wsiContext);
+    reinterpret_cast<T*>(userData)->Init(ctx);
+  };
+  impl.Destroy = [](void* userData) { delete reinterpret_cast<T*>(userData); };
+  impl.Configure = [](void* userData, WGPUTextureFormat format, WGPUTextureUsage allowedUsage, uint32_t width,
+                      uint32_t height) {
+    return static_cast<T*>(userData)->Configure(format, allowedUsage, width, height);
+  };
+  impl.GetNextTexture = [](void* userData, DawnSwapChainNextTexture* nextTexture) {
+    return static_cast<T*>(userData)->GetNextTexture(nextTexture);
+  };
+  impl.Present = [](void* userData) { return static_cast<T*>(userData)->Present(); };
+  return impl;
+}
 
-#if defined(PROBEGL_PLATFORM_POSIX)
-
-void probegl::uSleep(unsigned int usecs) { usleep(usecs); }
-
-#elif defined(PROBGL_PLATFORM_WINDOWS)
-
-void probegl::uSleep(unsigned int usecs) { Sleep(static_cast<DWORD>(usecs / 1000)); }
-
-#else
-#error "Implement uSleep for your platform."
-#endif
+#endif  // LUMAGL_WEBGPU_SWAPCHAINUTILS_H_

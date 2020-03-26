@@ -126,7 +126,7 @@ void LineLayer::drawState() {  // {uniforms}
   */
 }
 
-auto LineLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
+auto LineLayer::_getModel(wgpuDevice device) -> std::shared_ptr<lumagl::Model> {
   return std::shared_ptr<lumagl::Model>{nullptr};
   //
   //  (0, -1)-------------_(1, -1)

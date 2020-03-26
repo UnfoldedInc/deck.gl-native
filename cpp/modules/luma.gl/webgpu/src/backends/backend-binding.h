@@ -18,41 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_MODEL_H
-#define LUMAGL_CORE_MODEL_H
+// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
+// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include <dawn/webgpu_cpp.h>
+#ifndef LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
+#define LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
 
-#include <string>
+#include "dawn/webgpu_cpp.h"
+#include "dawn_native/DawnNative.h"
 
-#include "luma.gl/webgpu.h"
+struct GLFWwindow;
 
 namespace lumagl {
+namespace utils {
 
-/// \brief Holds shaders compiled and linked into a pipeline
-/// pass.SetPipeline(model.pipeline)
-class Model {
+class BackendBinding {
  public:
-  class Options;
+  virtual ~BackendBinding() = default;
 
-  /// \brief construct a new Model
-  explicit Model(wgpuDevice device, const Options &);
-  explicit Model(wgpuDevice device);
+  virtual uint64_t GetSwapChainImplementation() = 0;
+  virtual WGPUTextureFormat GetPreferredSwapChainTextureFormat() = 0;
 
-  void draw();
+ protected:
+  BackendBinding(GLFWwindow* window, WGPUDevice device);
 
-  // wgpu::RenderPipeline pipeline;                 // rendering pipeline (pass.SetPipeline(model.pipeline)
-  // wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
-  // wgpu::ShaderModule vsModule;                   // Compiled vertex shader
-  // wgpu::ShaderModule fsModule;                   // Compiled fragment shader
+  GLFWwindow* mWindow = nullptr;
+  WGPUDevice mDevice = nullptr;
 };
 
-class Model::Options {
- public:
-  std::string vs;  // vertex shader source
-  std::string fs;  // fragment shader source
-};
+void DiscoverAdapter(dawn_native::Instance* instance, GLFWwindow* window, wgpu::BackendType type);
+BackendBinding* CreateBinding(wgpu::BackendType type, GLFWwindow* window, WGPUDevice device);
 
+}  // namespace utils
 }  // namespace lumagl
 
-#endif  // LUMAGL_CORE_MODEL_H
+#endif  // LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H

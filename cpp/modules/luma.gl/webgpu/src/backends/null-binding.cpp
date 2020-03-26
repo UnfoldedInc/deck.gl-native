@@ -18,41 +18,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_MODEL_H
-#define LUMAGL_CORE_MODEL_H
+// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
+// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include <dawn/webgpu_cpp.h>
+#include "utils/BackendBinding.h"
 
-#include <string>
+#include "common/Assert.h"
+#include "dawn_native/NullBackend.h"
 
-#include "luma.gl/webgpu.h"
+#include <memory>
 
-namespace lumagl {
+namespace utils {
 
-/// \brief Holds shaders compiled and linked into a pipeline
-/// pass.SetPipeline(model.pipeline)
-class Model {
- public:
-  class Options;
+    class NullBinding : public BackendBinding {
+      public:
+        NullBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
+        }
 
-  /// \brief construct a new Model
-  explicit Model(wgpuDevice device, const Options &);
-  explicit Model(wgpuDevice device);
+        uint64_t GetSwapChainImplementation() override {
+            if (mSwapchainImpl.userData == nullptr) {
+                mSwapchainImpl = dawn_native::null::CreateNativeSwapChainImpl();
+            }
+            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+        }
+        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
+            return WGPUTextureFormat_RGBA8Unorm;
+        }
 
-  void draw();
+      private:
+        DawnSwapChainImplementation mSwapchainImpl = {};
+    };
 
-  // wgpu::RenderPipeline pipeline;                 // rendering pipeline (pass.SetPipeline(model.pipeline)
-  // wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
-  // wgpu::ShaderModule vsModule;                   // Compiled vertex shader
-  // wgpu::ShaderModule fsModule;                   // Compiled fragment shader
-};
+    BackendBinding* CreateNullBinding(GLFWwindow* window, WGPUDevice device) {
+        return new NullBinding(window, device);
+    }
 
-class Model::Options {
- public:
-  std::string vs;  // vertex shader source
-  std::string fs;  // fragment shader source
-};
-
-}  // namespace lumagl
-
-#endif  // LUMAGL_CORE_MODEL_H
+}  // namespace utils

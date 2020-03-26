@@ -21,31 +21,6 @@
 #include "luma.gl/webgpu.h"
 #include "probe.gl/core.h"
 
-wgpu::Device CreateCppDawnDevice();
-uint64_t GetSwapChainImplementation();
-wgpu::TextureFormat GetPreferredSwapChainTextureFormat();
-wgpu::SwapChain GetSwapChain(const wgpu::Device& device);
-wgpu::TextureView CreateDefaultDepthStencilView(const wgpu::Device& device);
-
-// Helpers
-
-enum class CmdBufType {
-  None,
-  Terrible,
-  // TODO(cwallez@chromium.org) double terrible cmdbuf
-};
-
-static CmdBufType cmdBufType = CmdBufType::Terrible;
-static std::unique_ptr<dawn_native::Instance> instance;
-static lumagl::utils::BackendBinding* binding = nullptr;
-
-static GLFWwindow* window = nullptr;
-
-static dawn_wire::WireServer* wireServer = nullptr;
-static dawn_wire::WireClient* wireClient = nullptr;
-static lumagl::utils::TerribleCommandBuffer* c2sBuf = nullptr;
-static lumagl::utils::TerribleCommandBuffer* s2cBuf = nullptr;
-
 #if defined(DAWN_PLATFORM_WINDOWS)
 #define GLFW_EXPOSE_NATIVE_WIN32
 #elif defined(DAWN_USE_X11)
@@ -55,7 +30,23 @@ static lumagl::utils::TerribleCommandBuffer* s2cBuf = nullptr;
 using namespace lumagl;
 
 // Helpers
+
+enum class CmdBufType {
+  None,
+  Terrible,
+  // TODO(cwallez@chromium.org) double terrible cmdbuf
+};
+
+// Helpers
 static void initializeGLFW(wgpu::BackendType);
+auto createCppDawnDevice(wgpu::BackendType) -> wgpu::Device;
+uint64_t getSwapChainImplementation();
+auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat;
+// Not used?
+auto getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain;
+auto createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
+
+// GLFWAnimationLoop
 
 GLFWAnimationLoop::GLFWAnimationLoop(wgpu::BackendType backendType) : AnimationLoop{} {
   initializeGLFW(backendType);
@@ -66,6 +57,113 @@ GLFWAnimationLoop::GLFWAnimationLoop(wgpu::BackendType backendType) : AnimationL
 }
 
 auto GLFWAnimationLoop::createDevice(wgpu::BackendType backendType) -> wgpu::Device {
+  return nullptr;  // createDevice(backendType);
+}
+
+bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->window); }
+
+// void GLFWAnimationLoop::flush() {
+//   // if (this->c2sBuf) {
+//   //   bool c2sSuccess = c2sBuf->Flush();
+//   //   ASSERT(c2sSuccess && s2cSuccess);
+//   // }
+//   // if (this->s2cBuf) {
+//   //   bool s2cSuccess = s2cBuf->Flush();
+//   //   ASSERT(c2sSuccess && s2cSuccess);
+//   // }
+//   glfwPollEvents();
+// }
+
+void GLFWAnimationLoop::flush() {
+  
+  if (c2sBuf) {
+    bool c2sSuccess = c2sBuf->Flush();
+    // ASSERT(c2sSuccess);
+  }
+  if (s2cBuf) {
+    bool s2cSuccess = s2cBuf->Flush();
+    // ASSERT(s2cSuccess);
+  }
+
+  glfwPollEvents();
+}
+
+
+GLFWwindow* window{nullptr};
+lumagl::utils::TerribleCommandBuffer* c2sBuf{nullptr};
+lumagl::utils::TerribleCommandBuffer* s2cBuf{nullptr};
+
+
+uint64_t getSwapChainImplementation() { return binding->GetSwapChainImplementation(); }
+
+wgpu::TextureFormat getPreferredSwapChainTextureFormat() {
+  DoFlush();
+  return static_cast<wgpu::TextureFormat>(binding->getPreferredSwapChainTextureFormat());
+}
+
+wgpu::SwapChain getSwapChain(const wgpu::Device& device) {
+  wgpu::SwapChainDescriptor swapChainDesc;
+  swapChainDesc.implementation = getSwapChainImplementation();
+  return device.CreateSwapChain(nullptr, &swapChainDesc);
+}
+
+wgpu::TextureView createDefaultDepthStencilView(const wgpu::Device& device) {
+  wgpu::TextureDescriptor descriptor;
+  descriptor.dimension = wgpu::TextureDimension::e2D;
+  descriptor.size.width = 640;
+  descriptor.size.height = 480;
+  descriptor.size.depth = 1;
+  descriptor.arrayLayerCount = 1;
+  descriptor.sampleCount = 1;
+  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
+  descriptor.mipLevelCount = 1;
+  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
+  auto depthStencilTexture = device.CreateTexture(&descriptor);
+  return depthStencilTexture.CreateView();
+}
+
+/// \brief initialize glwf library
+static void initializeGLFW(wgpu::BackendType backendType) {
+  // Set up an error logging callback
+  glfwSetErrorCallback([](int code, const char* message) {
+    // dawn::ErrorLog() << "GLFW error: " << code << " - " << message;
+  });
+
+  // Init the library
+  if (!glfwInit()) {
+    throw new std::runtime_error("Failed to initialize GLFW");
+  }
+
+  // Configure graphics context creation
+  switch (backendType) {
+    case wgpu::BackendType::OpenGL:
+      // Ask for OpenGL 4.4 which is what the GL backend requires for compute shaders and texture views.
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+      break;
+    default:
+      // Without this GLFW will initialize a GL context on the window, which prevents using
+      // the window with other APIs (by crashing in weird ways).
+      glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  }
+}
+
+// TODO(ib): restore or delete
+
+static CmdBufType cmdBufType = CmdBufType::Terrible;
+static std::unique_ptr<dawn_native::Instance> instance;
+static lumagl::utils::BackendBinding* binding = nullptr;
+
+
+static dawn_wire::WireServer* wireServer = nullptr;
+static dawn_wire::WireClient* wireClient = nullptr;
+static lumagl::utils::TerribleCommandBuffer* c2sBuf = nullptr;
+static lumagl::utils::TerribleCommandBuffer* s2cBuf = nullptr;
+
+auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
+
   instance = std::make_unique<dawn_native::Instance>();
   lumagl::utils::DiscoverAdapter(instance.get(), window, backendType);
 
@@ -135,131 +233,3 @@ auto GLFWAnimationLoop::createDevice(wgpu::BackendType backendType) -> wgpu::Dev
   wgpu::Device::Acquire(cDevice);
   return cDevice;
 }
-
-bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->window); }
-
-// void GLFWAnimationLoop::flush() {
-//   // if (this->c2sBuf) {
-//   //   bool c2sSuccess = c2sBuf->Flush();
-//   //   ASSERT(c2sSuccess && s2cSuccess);
-//   // }
-//   // if (this->s2cBuf) {
-//   //   bool s2cSuccess = s2cBuf->Flush();
-//   //   ASSERT(c2sSuccess && s2cSuccess);
-//   // }
-//   glfwPollEvents();
-// }
-
-void GLFWAnimationLoop::flush() {
-  if (c2sBuf) {
-    bool c2sSuccess = c2sBuf->Flush();
-    // ASSERT(c2sSuccess);
-  }
-  if (s2cBuf) {
-    bool s2cSuccess = s2cBuf->Flush();
-    // ASSERT(s2cSuccess);
-  }
-
-  glfwPollEvents();
-}
-
-GLFWwindow* window{nullptr};
-lumagl::utils::TerribleCommandBuffer* c2sBuf{nullptr};
-lumagl::utils::TerribleCommandBuffer* s2cBuf{nullptr};
-
-uint64_t GetSwapChainImplementation() { return binding->GetSwapChainImplementation(); }
-
-wgpu::TextureFormat GetPreferredSwapChainTextureFormat() {
-  DoFlush();
-  return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
-}
-
-wgpu::SwapChain GetSwapChain(const wgpu::Device& device) {
-  wgpu::SwapChainDescriptor swapChainDesc;
-  swapChainDesc.implementation = GetSwapChainImplementation();
-  return device.CreateSwapChain(nullptr, &swapChainDesc);
-}
-
-wgpu::TextureView CreateDefaultDepthStencilView(const wgpu::Device& device) {
-  wgpu::TextureDescriptor descriptor;
-  descriptor.dimension = wgpu::TextureDimension::e2D;
-  descriptor.size.width = 640;
-  descriptor.size.height = 480;
-  descriptor.size.depth = 1;
-  descriptor.arrayLayerCount = 1;
-  descriptor.sampleCount = 1;
-  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
-  descriptor.mipLevelCount = 1;
-  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
-  auto depthStencilTexture = device.CreateTexture(&descriptor);
-  return depthStencilTexture.CreateView();
-}
-
-/// \brief initialize glwf library
-static void initializeGLFW(wgpu::BackendType backendType) {
-  // Set up an error logging callback
-  glfwSetErrorCallback([](int code, const char* message) {
-    // dawn::ErrorLog() << "GLFW error: " << code << " - " << message;
-  });
-
-  // Init the library
-  if (!glfwInit()) {
-    throw new std::runtime_error("Failed to initialize GLFW");
-  }
-
-  // Configure graphics context creation
-  switch (backendType) {
-    case wgpu::BackendType::OpenGL:
-      // Ask for OpenGL 4.4 which is what the GL backend requires for compute shaders and texture views.
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-      break;
-    default:
-      // Without this GLFW will initialize a GL context on the window, which prevents using
-      // the window with other APIs (by crashing in weird ways).
-      glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  }
-}
-
-// TODO(ib): restore or delete
-
-/*
-bool InitSample(int argc, const char** argv) {
-    for (int i = 1; i < argc; i++) {
-        if (std::string("-b") == argv[i] || std::string("--backend") == argv[i]) {
-          i++;
-          if (i >= argc) {
-
-          }
-          auto backendType = i < argc getBackendTypeFromString()
-          fprintf(stderr, "--backend expects a backend name (opengl, metal, d3d12, null, vulkan)\n");
-          return false;
-        }
-
-        cmdBufType = CmdBufType::None;
-        if (std::string("-c") == argv[i] || std::string("--command-buffer") == argv[i]) {
-            i++;
-            if (i < argc && std::string("none") == argv[i]) {
-                cmdBufType = CmdBufType::None;
-                continue;
-            }
-            if (i < argc && std::string("terrible") == argv[i]) {
-                cmdBufType = CmdBufType::Terrible;
-                continue;
-            }
-            fprintf(stderr, "--command-buffer expects a command buffer name (none, terrible)\n");
-            return false;
-        }
-
-        if (std::string("-h") == argv[i] || std::string("--help") == argv[i]) {
-            printf("Usage: %s [-b BACKEND] [-c COMMAND_BUFFER]\n", argv[0]);
-            printf("  BACKEND is one of: d3d12, metal, null, opengl, vulkan\n");
-            printf("  COMMAND_BUFFER is one of: none, terrible\n");
-            return false;
-        }
-    }
-    return true;
-}
-*/

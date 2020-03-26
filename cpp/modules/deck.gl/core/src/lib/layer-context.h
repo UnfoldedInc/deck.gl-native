@@ -29,10 +29,8 @@ class LayerManager;
 // LayerContext is data shared between all layers
 class LayerContext {
  public:
-  void *gl;
   Deck *deck;
   LayerManager *layerManager;
-  // gl,
 
   // // General resources
   // stats: null, // for tracking lifecycle performance
