@@ -42,13 +42,15 @@ The deck.gl JSON API (See the [deck.gl playground](https://deck.gl/playground/))
 
 This ensures that both C++ and JavaScript evolve in sync on a high level, always providing compatible features (where their layer selections etc overlap). 
 
-### C++ vs JS API
+### C++ vs JavaScript: API Design Principles
 
 Since the JSON compatiblity requirement helps ensure that the two deck.gl implementations do not diverge, this give some latitude for the actual C++ and JavaScript APIs to be different, to ensure they are both natural to use for programmers with backgrounds in the respective programming language.
 
+This applies more to the API style (how arguments and options are passed etc). Generally, most classes are expected to have one-to-one counterparts in both implementations.
+
 ### C++ Module Structure
 
-To simplify for JavaScript maintainers to work in the deck.gl-native repo, a similar module structure has been set up, and similar file naming conventions are used.
+To make it easier for the deck.gl maintainers to find corresponding code in the deck.gl and the deck.gl-native repo, a similar module structure has been set up.
 
 The JavaScript module structure is documented on the [vis.gl website](https://vis.gl/)
 
@@ -61,7 +63,7 @@ The JavaScript module structure is documented on the [vis.gl website](https://vi
 | `loaders.gl/json.h`. | A JSON table loader |
 | `luma.gl/core.h` | `Model`, `AnimationLoop` etc implemented on dawn API |
 | `luma.gl/webgpu.h` | Internal utilities for working with the WebGPU API (adaptions from the dawn repo) |
-| `deck.gl/core.h` | | The core deck.gl classes: `Deck`, `Layer`, `View`, etc. |
+| `deck.gl/core.h` | The core deck.gl classes:\ `Deck`, `Layer`, `View`, etc. |
 | `deck.gl/layers.h` | The initial layer catalog |
 | `deck.gl/json.h` | Classes for parsing (deck.gl) JSON into C++ objects |
 
