@@ -25,23 +25,20 @@
 
 #include "./platform.h"
 
-#if defined(PROBEGL_PLATFORM_WINDOWS)
-#include <Windows.h>
-#elif defined(PROBEGL_PLATFORM_POSIX)
+#if defined(PROBEGL_PLATFORM_POSIX)
 #include <unistd.h>
-#else
+#elif defined(PROBEGL_PLATFORM_WINDOWS)
+#include <Windows.h>
 #error "Unsupported platform."
 #endif
 
-using namespace probegl;
+#if defined(PROBEGL_PLATFORM_POSIX)
 
-#if defined(PROBGL_PLATFORM_WINDOWS)
+void probegl::uSleep(unsigned int usecs) { usleep(usecs); }
 
-void uSleep(unsigned int usecs) { Sleep(static_cast<DWORD>(usecs / 1000)); }
+#elif defined(PROBGL_PLATFORM_WINDOWS)
 
-#elif defined(PROBEGL_PLATFORM_POSIX)
-
-void uSleep(unsigned int usecs) { usleep(usecs); }
+void probegl::uSleep(unsigned int usecs) { Sleep(static_cast<DWORD>(usecs / 1000)); }
 
 #else
 #error "Implement uSleep for your platform."
