@@ -64,22 +64,19 @@ auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std
 
   // Create an empty output table
   std::vector<std::shared_ptr<arrow::Field>> fields{};
-  auto schema = std::make_shared<arrow::Schema>(fields);
   std::vector<std::shared_ptr<arrow::Array>> arrays{};
-  auto processedTable = arrow::Table::Make(schema, arrays);
 
   // Iterate over descriptors and create one column per-descriptor
   for (auto descriptor : this->_descriptors) {
-    auto columnData = descriptor->accessor(table);
-
-    auto index = processedTable->num_columns();
     auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
-    auto column = std::make_shared<arrow::ChunkedArray>(columnData);
+    fields.push_back(field);
 
-    if (processedTable->AddColumn(index, field, column, &processedTable).ok()) {
-      probegl::WarningLog() << "AttributeManager: Unable to add column with name: " + descriptor->name;
-    }
+    auto columnData = descriptor->accessor(table);
+    arrays.push_back(columnData);
   }
+
+  auto schema = std::make_shared<arrow::Schema>(fields);
+  auto processedTable = arrow::Table::Make(schema, arrays);
 
   return processedTable;
 }
