@@ -99,10 +99,39 @@ set(LOADERSGL_JSON_TEST_FILES
 )
 
 ## luma.gl
-set(LUMAGL_CORE_HEADER_FILES
+set(LUMAGL_WEBGPU_HEADER_FILES
+    cpp/modules/luma.gl/webgpu.h
+    cpp/modules/luma.gl/webgpu/src/combo-render-pipeline-descriptor.h
+    cpp/modules/luma.gl/webgpu/src/shaderc-utils.h
+    cpp/modules/luma.gl/webgpu/src/swap-chain-utils.h
+    cpp/modules/luma.gl/webgpu/src/webgpu-constants.h
+    cpp/modules/luma.gl/webgpu/src/webgpu-utils.h
+    cpp/modules/luma.gl/webgpu/src/webgpu-helpers.h
+    cpp/modules/luma.gl/webgpu/src/backends/backend-binding.h
+    cpp/modules/luma.gl/webgpu/src/backends/backend-binding.cpp
+    # TODO this file may need to go into a mac os specific library
+    cpp/modules/luma.gl/webgpu/src/backends/metal-binding.mm
+    )
+set(LUMAGL_WEBGPU_SOURCE_FILES
+    cpp/modules/luma.gl/webgpu/src/combo-render-pipeline-descriptor.cpp
+    cpp/modules/luma.gl/webgpu/src/shaderc-utils.cpp
+    cpp/modules/luma.gl/webgpu/src/webgpu-utils.cpp
+    cpp/modules/luma.gl/webgpu/src/webgpu-helpers.cpp
+    )
+set(LUMAGL_WEBGPU_TEST_FILES
+    cpp/modules/luma.gl/webgpu/test/webgpu-test.cpp
+    )
+
+    set(LUMAGL_CORE_HEADER_FILES
     cpp/modules/luma.gl/core.h
+    cpp/modules/luma.gl/core/src/animation-loop.h
+    cpp/modules/luma.gl/core/src/glfw-animation-loop.h
+    cpp/modules/luma.gl/core/src/model.h
     )
 set(LUMAGL_CORE_SOURCE_FILES
+    cpp/modules/luma.gl/core/src/animation-loop.cpp
+    # cpp/modules/luma.gl/core/src/glfw-animation-loop.cpp
+    cpp/modules/luma.gl/core/src/model.cpp
     )
 set(LUMAGL_CORE_TEST_FILES
     )
@@ -207,21 +236,21 @@ set(LIB_HEADER_FILES
     ${PROBEGL_CORE_HEADER_FILES}
     ${MATHGL_CORE_HEADER_FILES}
     ${LOADERSGL_CSV_HEADER_FILES} ${LOADERSGL_JSON_HEADER_FILES}
-    ${LUMAGL_CORE_HEADER_FILES}
+    ${LUMAGL_CORE_HEADER_FILES} ${LUMAGL_WEBGPU_HEADER_FILES}
     ${DECKGL_JSON_HEADER_FILES} ${DECKGL_CORE_HEADER_FILES} ${DECKGL_LAYERS_HEADER_FILES}
     )
 set(LIB_SOURCE_FILES
     ${PROBEGL_CORE_SOURCE_FILES}
     ${MATHGL_CORE_SOURCE_FILES}
     ${LOADERSGL_CSV_SOURCE_FILES} ${LOADERSGL_JSON_SOURCE_FILES}
-    ${LUMAGL_CORE_SOURCE_FILES}
+    ${LUMAGL_CORE_SOURCE_FILES} ${LUMAGL_WEBGPU_SOURCE_FILES}
     ${DECKGL_JSON_SOURCE_FILES} ${DECKGL_CORE_SOURCE_FILES} ${DECKGL_LAYERS_SOURCE_FILES}
     )
 set(TEST_SOURCE_FILES
     ${PROBEGL_CORE_TEST_FILES}
     ${MATHGL_CORE_TEST_FILES}
     ${LOADERSGL_CSV_TEST_FILES} ${LOADERSGL_JSON_TEST_FILES}
-    ${LUMAGL_CORE_TEST_FILES}
+    ${LUMAGL_CORE_TEST_FILES} ${LUMAGL_WEBGPU_TEST_FILES}
     ${DECKGL_JSON_TEST_FILES} ${DECKGL_CORE_TEST_FILES} ${DECKGL_LAYERS_TEST_FILES}
     cpp/tests/main.cpp
     )
@@ -235,6 +264,7 @@ set(ALL_SOURCE_FILES
 
 ## Dependencies
 
+# TODO: Remove. Workaround for not being able to install apache through vcpkg and using Homebrew instead
 # TODO: Workaround for using Homebrew
 #  due to not being able to (efficiently or otherwise) install certain modules through vcpkg
 include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)

@@ -108,7 +108,7 @@ TEST_F(LineLayerTest, Create) {
 }
 
 TEST_F(LineLayerTest, GetSourcePositionData) {
-  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  // TODO(ilija@unfolded.ai): Props should be mocked in order for this test to be decoupled and make sense
   auto layerProps = std::make_shared<LineLayer::Props>();
   layerProps->data = propData;
 
@@ -131,7 +131,7 @@ TEST_F(LineLayerTest, GetSourcePositionData) {
 }
 
 TEST_F(LineLayerTest, GetTargetPositionData) {
-  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  // TODO(ilija@unfolded.ai): Props should be mocked in order for this test to be decoupled and make sense
   auto layerProps = std::make_shared<LineLayer::Props>();
   layerProps->data = propData;
 
@@ -154,7 +154,7 @@ TEST_F(LineLayerTest, GetTargetPositionData) {
 }
 
 TEST_F(LineLayerTest, GetColorData) {
-  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  // TODO(ilija@unfolded.ai): Props should be mocked in order for this test to be decoupled and make sense
   auto layerProps = std::make_shared<LineLayer::Props>();
   layerProps->data = propData;
 
@@ -178,7 +178,7 @@ TEST_F(LineLayerTest, GetColorData) {
 }
 
 TEST_F(LineLayerTest, GetWidthData) {
-  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  // TODO(ilija@unfolded.ai): Props should be mocked in order for this test to be decoupled and make sense
   auto layerProps = std::make_shared<LineLayer::Props>();
   layerProps->data = propData;
 

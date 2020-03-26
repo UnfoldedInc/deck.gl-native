@@ -18,21 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_CORE_H
-#define LUMAGL_CORE_CORE_H
+#ifndef LUMAGL_CORE_H
+#define LUMAGL_CORE_H
 
-// This include is here only to verify that dawn can be included.
-// It doesn't do anything.
-#include <dawn/webgpu_cpp.h>
+using wgpuDevice = void*;
 
-namespace lumagl {
-
-class Model {
- public:
-  explicit Model(void* gl) {}
-  void draw() {}
-};
-
-}  // namespace lumagl
+#include "./core/src/model.h"
 
 #endif  // LUMAGL_CORE_CORE_H

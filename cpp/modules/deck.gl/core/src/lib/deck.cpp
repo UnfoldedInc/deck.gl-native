@@ -25,7 +25,7 @@
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO(ib): auto generate from language-independent prop definition schema
+// TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
 
 static const std::vector<const Property*> propTypeDefs = {
     new PropertyT<std::list<std::shared_ptr<Layer::Props>>>{
@@ -195,7 +195,7 @@ pickObjects(opts) {
 // Private Methods
 // Get the most relevant view state: props->viewState, if supplied,
 // shadows internal viewState
-// TODO(ib): For backwards compatibility ensure numeric width and height is
+// TODO(ib@unfolded.ai): For backwards compatibility ensure numeric width and height is
 // added to the viewState
 // auto _getViewState() -> ViewState* { return this->props->viewState || this->viewState; }
 

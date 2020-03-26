@@ -29,11 +29,9 @@
 #include <vector>
 
 #include "./attribute.h"
+#include "luma.gl/core.h"
 
 namespace deckgl {
-
-// TODO(ilija): Placeholder types
-typedef void* GLPlaceholder;
 
 /*
  * Automated attribute generation and management. Suitable when a set of
@@ -59,7 +57,7 @@ typedef void* GLPlaceholder;
  */
 class AttributeManager {
  public:
-  AttributeManager(const GLPlaceholder gl, const std::string& identifier) : gl(gl), identifier(identifier) {}
+  AttributeManager(wgpuDevice device, const std::string& id) : id{id}, device{device} {}
 
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> bool;
   void setNeedsRedraw();
@@ -73,8 +71,8 @@ class AttributeManager {
 
   void update(const std::shared_ptr<arrow::Table>& table);
 
-  GLPlaceholder gl;
-  std::string identifier;
+  std::string id;
+  wgpuDevice device;
 
  private:
   void _add(const std::shared_ptr<AttributeDescriptor>& descriptor, bool isInstanced = false);

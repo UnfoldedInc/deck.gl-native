@@ -71,7 +71,7 @@ const defaultProps = {
 // }
 
 void LineLayer::initializeState() {
-  // TODO(ilija): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition = std::make_shared<AttributeDescriptor>(
       "instanceSourcePositions", arrow::fixed_size_list(arrow::float64(), 3), getSourcePosition);
@@ -126,7 +126,7 @@ void LineLayer::drawState() {  // {uniforms}
   */
 }
 
-auto LineLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
+auto LineLayer::_getModel(wgpuDevice device) -> std::shared_ptr<lumagl::Model> {
   return std::shared_ptr<lumagl::Model>{nullptr};
   //
   //  (0, -1)-------------_(1, -1)

@@ -118,7 +118,7 @@ Number.MAX_SAFE_INTEGER}, // max point radius in pixels
 // }
 
 void ScatterplotLayer::initializeState() {
-  // TODO(ilija): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   auto getPosition = std::bind(&ScatterplotLayer::getPositionData, this, std::placeholders::_1);
   auto position = std::make_shared<AttributeDescriptor>("instancePositions",
                                                         arrow::fixed_size_list(arrow::float64(), 3), getPosition);
@@ -238,11 +238,11 @@ auto ScatterplotLayer::getLineWidthData(const std::shared_ptr<arrow::Table>& tab
   return ArrowMapper::mapFloatColumn(table, props->getLineWidth);
 }
 
-auto ScatterplotLayer::_getModel(void* gl) -> std::shared_ptr<lumagl::Model> {
+auto ScatterplotLayer::_getModel(wgpuDevice device) -> std::shared_ptr<lumagl::Model> {
   // a square that minimally cover the unit circle
   // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
-  return std::shared_ptr<lumagl::Model>(new lumagl::Model(gl));
+  return std::shared_ptr<lumagl::Model>(new lumagl::Model(device));
   // Object.assign(this->getShaders(), {
   //   id: this->props.id,
   //   geometry: new Geometry({

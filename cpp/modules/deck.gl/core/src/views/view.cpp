@@ -68,7 +68,7 @@ auto View::makeViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewSt
   //   if (this->viewportInstance) {
   //     return this->viewportInstance;
   //   }
-  // TODO(ib): calculate rect and filter view state
+  // TODO(ib@unfolded.ai): calculate rect and filter view state
   // viewState = this->filterViewState(viewState);
   return this->_getViewport(rect, viewState);
 }

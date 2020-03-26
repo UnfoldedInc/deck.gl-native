@@ -26,7 +26,7 @@ using namespace mathgl;
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO(ib): auto generate from language-independent prop definition schema
+// TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
 
 static const std::vector<const Property*> propTypeDefs = {
     new PropertyT<bool>{
@@ -404,9 +404,9 @@ void Layer::update() {
 // Common code for _initialize and _update
 void Layer::_updateState() {
   // Safely call subclass lifecycle methods
-  if (!this->context->gl) {
-    return;
-  }
+  // if (!this->context->gl) {
+  //   return;
+  // }
 
   this->updateState(this->_changeFlags, this->oldProps);
   // End subclass lifecycle methods

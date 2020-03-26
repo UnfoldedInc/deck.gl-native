@@ -56,7 +56,7 @@ namespace deckgl {
 // const TRACE_FINALIZE = "layer.finalize";
 // const TRACE_MATCHED = "layer.matched";
 
-// TODO(ib): these should be imported from other files
+// TODO(ib@unfolded.ai): these should be imported from other files
 
 // let pickingColorCache = new Uint8ClampedArray(0);
 class ColorRGBA {
@@ -82,7 +82,7 @@ class Layer : public Component {
 
   explicit Layer(std::shared_ptr<Layer::Props> props)
       : Component{std::dynamic_pointer_cast<Component::Props>(props)},
-        attributeManager{new AttributeManager(0, "layer-identifier")} {}
+        attributeManager{new AttributeManager(nullptr, "layer-identifier")} {}
 
   // Update all props
   void setProps(std::shared_ptr<Layer::Props> newProps);

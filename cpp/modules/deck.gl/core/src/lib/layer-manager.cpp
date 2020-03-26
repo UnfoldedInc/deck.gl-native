@@ -105,19 +105,19 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
     auto matchedLayerIterator = oldLayerMap.find(layerProps->id);
     if (matchedLayerIterator != oldLayerMap.end()) {
       // If a layer with this id is present, set the props
-      // TODO(ib): catch exceptions and continue
+      // TODO(ib@unfolded.ai): catch exceptions and continue
       auto matchedLayer = matchedLayerIterator->second;
       matchedLayer->setProps(layerProps);
       oldLayerMap.erase(matchedLayerIterator);
     } else {
-      // TODO(ib): handle exceptions
+      // TODO(ib@unfolded.ai): handle exceptions
       this->addLayer(std::shared_ptr<Layer>{layerProps->makeComponent(layerProps)});
     }
   }
 
   // Remove any unmatched layers
   for (const auto &unmatchedLayerId : oldLayerMap | ranges::views::keys) {
-    // TODO(ib): handle exceptions
+    // TODO(ib@unfolded.ai): handle exceptions
     this->removeLayer(unmatchedLayerId);
   }
 }
@@ -158,7 +158,7 @@ void LayerManager::removeAllLayers() {
 // Update layers from last cycle if `setNeedsUpdate()` has been called
 void LayerManager::updateLayers() {
   for (auto layer : this->layers) {
-    // TODO(ib): handle exceptions
+    // TODO(ib@unfolded.ai): handle exceptions
     layer->update();
   }
 }
@@ -187,7 +187,7 @@ LayerManager::setProps(props) {
     this->context.userData = props.userData;
   }
 
-  // TODO(ib): - For now we set layers before viewports to preserve changeFlags
+  // TODO(ib@unfolded.ai): - For now we set layers before viewports to preserve changeFlags
   if ('layers' in props) {
     this->setLayers(props.layers);
   }
@@ -202,7 +202,7 @@ LayerManager::setProps(props) {
 // matching
 /*
 void LayerManager::setLayers(std::list<Layer *> newLayers, bool forceUpdate) {
-  // TODO(ib): - something is generating state updates that cause rerender of
+  // TODO(ib@unfolded.ai): - something is generating state updates that cause rerender of
   // the same
   const shouldUpdate = forceUpdate || newLayers != = this->lastRenderedLayers;
   // debug(TRACE_SET_LAYERS, this, shouldUpdate, newLayers);
@@ -212,7 +212,7 @@ void LayerManager::setLayers(std::list<Layer *> newLayers, bool forceUpdate) {
   }
   this->lastRenderedLayers = newLayers;
 
-  // TODO(ib): array flattening needs to be done during JSON conversion?
+  // TODO(ib@unfolded.ai): array flattening needs to be done during JSON conversion?
   // newLayers = flatten(newLayers, {filter : Boolean});
 
   for (auto layer : newLayers) {
@@ -231,7 +231,7 @@ void LayerManager::updateLayers() {
   // different sublayers are rendered
   auto reason = this->needsUpdate();
   if (reason) {
-    this->setNeedsRedraw("updating layers : $ { reason }");  // TODO(ib): string
+    this->setNeedsRedraw("updating layers : $ { reason }");  // TODO(ib@unfolded.ai): string
     // Force a full update
     auto forceUpdate = true;
     this->setLayers(this->lastRenderedLayers, forceUpdate);
@@ -280,7 +280,7 @@ LayerManager::activateViewport(viewport) {
 
 // Match all layers, checking for caught errors
 // To avoid having an exception in one layer disrupt other layers
-// TODO(ib): - mark layers with exceptions as bad and remove from rendering
+// TODO(ib@unfolded.ai): - mark layers with exceptions as bad and remove from rendering
 // cycle?
 /*
 void LayerManager::_updateLayers(oldLayers, newLayers) {

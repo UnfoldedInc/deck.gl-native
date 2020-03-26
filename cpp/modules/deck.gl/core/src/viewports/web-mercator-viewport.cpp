@@ -40,13 +40,13 @@ ViewMatrixOptions calculateViewMatrixOptions(const WebMercatorViewport::Options&
 
   auto viewOpts = ViewMatrixOptions();
   viewOpts.viewMatrix = viewMatrixUncentered;
-  viewOpts.isGeospatial = true;  // TODO(isaac): ???
+  viewOpts.isGeospatial = true;  // TODO(isaac@unfolded.ai): ???
   viewOpts.longitude = opts.longitude;
   viewOpts.latitude = opts.latitude;
   viewOpts.zoom = opts.zoom;
   viewOpts.position = Vector3<double>();
-  // viewOpts.modelMatrix // TODO(isaac):
-  // viewOpts.distanceScales // TODO(isaac):
+  // viewOpts.modelMatrix // TODO(isaac@unfolded.ai):
+  // viewOpts.distanceScales // TODO(isaac@unfolded.ai):
   return viewOpts;
 }
 
@@ -55,7 +55,7 @@ ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewpo
   double adjustedHeight = opts.height == 0 ? 1 : opts.height;
 
   // Altitude - prevent division by 0
-  // TODO(isaac): - just throw an Error instead?
+  // TODO(isaac@unfolded.ai): - just throw an Error instead?
   double adjustedAltitude = max(0.75, opts.altitude);
 
   return getProjectionParameters(adjustedWidth, adjustedHeight, adjustedAltitude, opts.pitch, opts.nearZMultiplier,
@@ -65,10 +65,10 @@ ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewpo
 WebMercatorViewport::WebMercatorViewport(const WebMercatorViewport::Options& opts)
     : Viewport("web-mercator-viewport", calculateViewMatrixOptions(opts), calculateProjectionMatrixOptions(opts), 0, 0,
                opts.width == 0 ? 1 : opts.width, opts.height == 0 ? 1 : opts.height) {
-  // TODO(isaac): Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
+  // TODO(isaac@unfolded.ai): Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
   // but that can't be done in C++. Perhaps just call a non-virtual _init method instead?
 
-  // TODO(isaac):
+  // TODO(isaac@unfolded.ai):
   // if (worldOffset) {
   //   const viewOffset = new Matrix4().translate([512 * worldOffset, 0, 0]);
   //   viewMatrixUncentered = viewOffset.multiplyLeft(viewMatrixUncentered);

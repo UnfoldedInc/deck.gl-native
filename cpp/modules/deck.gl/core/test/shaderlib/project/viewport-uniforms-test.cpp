@@ -28,8 +28,8 @@ using namespace mathgl;
 using namespace deckgl;
 
 TEST(ViewportUniforms, Simple) {
-  // TODO(isaac): Add tests
+  // TODO(isaac@unfolded.ai): Add tests
 
-  // TODO(isaac): Check for non-finite outputs
-  // TODO(isaac): Check for coordinate origin (copy from JS)
+  // TODO(isaac@unfolded.ai): Check for non-finite outputs
+  // TODO(isaac@unfolded.ai): Check for coordinate origin (copy from JS)
 }

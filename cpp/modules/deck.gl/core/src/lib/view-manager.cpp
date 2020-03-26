@@ -83,7 +83,7 @@ auto ViewManager::getViews() -> std::list<std::shared_ptr<View>> {
 
 // Resolves a viewId string to a View, if already a View returns it.
 auto ViewManager::getView(const std::string &viewId) -> std::shared_ptr<View> {
-  // TODO(ib): implement a lookup
+  // TODO(ib@unfolded.ai): implement a lookup
   return this->views.front();
 }
 
@@ -176,7 +176,7 @@ void ViewManager::setHeight(int height) {
 // Update the view descriptor list and set change flag if needed
 // Does not actually rebuild the `Viewport`s until `getViewports` is called
 void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
-  // TODO(ib): Only update if views actually changed
+  // TODO(ib@unfolded.ai): Only update if views actually changed
   auto viewsChanged = true;  // this->_diffViews(views, this->views);
   if (viewsChanged) {
     this->views = views;

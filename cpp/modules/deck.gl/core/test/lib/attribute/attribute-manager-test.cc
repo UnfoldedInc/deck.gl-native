@@ -29,7 +29,7 @@ namespace {
  */
 class AttributeManagerTest : public ::testing::Test {
  protected:
-  AttributeManagerTest() : manager{0, "identifier"} {
+  AttributeManagerTest() : manager{nullptr, "identifier"} {
     // You can do set-up work for each test here.
   }
 
@@ -37,7 +37,7 @@ class AttributeManagerTest : public ::testing::Test {
 };
 
 // Tests that the AttributeManager initializes properly.
-TEST_F(AttributeManagerTest, Initialization) { EXPECT_EQ(manager.identifier, "identifier"); }
+TEST_F(AttributeManagerTest, Initialization) { EXPECT_EQ(manager.id, "identifier"); }
 
 // Tests that AttributeManager sets redraw flag properly.
 TEST_F(AttributeManagerTest, Redraw) {

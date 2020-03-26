@@ -40,7 +40,7 @@ class LineLayer : public Layer {
   explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
-  // TODO(ilija): These should be protected. Figure out how to test them without polluting with friend classes
+  // TODO(ilija@unfolded.ai): These should be protected. Figure out how to test them without polluting with friend classes
   auto getSourcePositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -53,7 +53,7 @@ class LineLayer : public Layer {
   void drawState() override;
 
  private:
-  auto _getModel(void* gl) -> std::shared_ptr<lumagl::Model>;
+  auto _getModel(wgpuDevice) -> std::shared_ptr<lumagl::Model>;
 };
 
 class LineLayer::Props : public Layer::Props {

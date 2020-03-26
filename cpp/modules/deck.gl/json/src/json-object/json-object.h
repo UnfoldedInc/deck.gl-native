@@ -107,7 +107,7 @@ class Property {
 template <class T>
 class PropertyT : public Property {
  public:
-  std::function<auto(JSONObject const*)->T> get;  // TODO(ib): return const T& ?
+  std::function<auto(JSONObject const*)->T> get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, T)> set;
   T defaultValue;
 
@@ -127,7 +127,7 @@ class PropertyT : public Property {
 template <class T>
 struct PropertyT<std::optional<T>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::optional<T>&> get;  // TODO(ib): return const T& ?
+  std::function<auto(JSONObject const*)->const std::optional<T>&> get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const T&)> set;
   T defaultValue;
 
@@ -151,7 +151,7 @@ struct PropertyT<std::optional<T>> : public Property {
 template <class T>
 struct PropertyT<std::shared_ptr<T>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::shared_ptr<T>&> get;  // TODO(ib): return const T& ?
+  std::function<auto(JSONObject const*)->const std::shared_ptr<T>&> get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const std::shared_ptr<T>&)> set;
   std::shared_ptr<T> defaultValue;
 
@@ -180,7 +180,7 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
 template <class T>
 struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO(ib): return const T& ?
+  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
 
