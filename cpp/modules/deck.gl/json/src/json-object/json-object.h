@@ -180,7 +180,8 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
 template <class T>
 struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO(ib@unfolded.ai): return const T& ?
+  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&>
+      get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
 
@@ -217,7 +218,9 @@ class Properties {
  public:
   // static methods
   template <typename JSONObjectT>
-  static auto from(const std::string& className, const std::vector<const Property*>& properties) -> deckgl::Properties {
+  static auto from(const std::string& className,
+                   const std::vector<const Property*>& properties = std::vector<const Property*>())
+      -> deckgl::Properties {
     typename JSONObjectT::super parentProps;
     return Properties{className, parentProps.getProperties(), properties};
   }

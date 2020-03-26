@@ -65,8 +65,8 @@ ProjectionMatrixOptions calculateProjectionMatrixOptions(const WebMercatorViewpo
 WebMercatorViewport::WebMercatorViewport(const WebMercatorViewport::Options& opts)
     : Viewport("web-mercator-viewport", calculateViewMatrixOptions(opts), calculateProjectionMatrixOptions(opts), 0, 0,
                opts.width == 0 ? 1 : opts.width, opts.height == 0 ? 1 : opts.height) {
-  // TODO(isaac@unfolded.ai): Need to cleanup the call to the superclass ctor. In JS this is done partway through this ctor,
-  // but that can't be done in C++. Perhaps just call a non-virtual _init method instead?
+  // TODO(isaac@unfolded.ai): Need to cleanup the call to the superclass ctor. In JS this is done partway through this
+  // ctor, but that can't be done in C++. Perhaps just call a non-virtual _init method instead?
 
   // TODO(isaac@unfolded.ai):
   // if (worldOffset) {

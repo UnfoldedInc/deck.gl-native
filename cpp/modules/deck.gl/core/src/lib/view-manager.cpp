@@ -185,7 +185,7 @@ void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
 }
 
 void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
-  auto viewStateChanged = !viewState->equals(this->viewState);
+  auto viewStateChanged = viewState && !viewState->equals(this->viewState);
 
   if (viewStateChanged) {
     this->viewState = viewState;

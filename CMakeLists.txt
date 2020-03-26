@@ -122,7 +122,7 @@ set(LUMAGL_WEBGPU_TEST_FILES
     cpp/modules/luma.gl/webgpu/test/webgpu-test.cpp
     )
 
-    set(LUMAGL_CORE_HEADER_FILES
+set(LUMAGL_CORE_HEADER_FILES
     cpp/modules/luma.gl/core.h
     cpp/modules/luma.gl/core/src/animation-loop.h
     cpp/modules/luma.gl/core/src/glfw-animation-loop.h
@@ -231,6 +231,13 @@ set(DECKGL_LAYERS_TEST_FILES
     cpp/modules/deck.gl/layers/test/scatterplot-layer-test.cpp
     )
 
+## deck.gl examples
+set(DECKGL_EXAMPLE_SOURCE_FILES
+    cpp/examples/deck.gl/stdinout.cpp
+    )
+set(DECKGL_EXAMPLE_HEADER_FILES
+    )
+
 # Define source file lists per type
 set(LIB_HEADER_FILES
     ${PROBEGL_CORE_HEADER_FILES}
@@ -258,9 +265,17 @@ SET(TEST_HEADER_FILES
     ${DECKGL_CORE_TEST_HEADER_FILES}
     ${MATHGL_CORE_TEST_HEADER_FILES}
     )
+SET(EXAMPLE_SOURCE_FILES
+    ${DECKGL_EXAMPLE_SOURCE_FILES}
+    )
+SET(EXAMPLE_HEADER_FILES
+    ${DECKGL_EXAMPLE_HEADER_FILES}
+    )
 
 set(ALL_SOURCE_FILES
-    ${LIB_SOURCE_FILES} ${TEST_SOURCE_FILES} ${LIB_HEADER_FILES} ${TEST_HEADER_FILES})
+    ${LIB_SOURCE_FILES} ${TEST_SOURCE_FILES} ${EXAMPLE_SOURCE_FILES}
+    ${LIB_HEADER_FILES} ${TEST_HEADER_FILES} ${EXAMPLE_HEADER_FILES}
+    )
 
 ## Dependencies
 
@@ -290,8 +305,8 @@ add_library(deck.gl ${LIB_SOURCE_FILES})
 
 # TODO: dawn can be included but is not linked yet.
 target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/dawn/include/>)
-target_compile_options(deck.gl PRIVATE ${DECK_COMPILE_FLAGS})
-target_link_libraries(deck.gl PRIVATE ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 fmt::fmt arrow glfw)
+target_compile_options(deck.gl PUBLIC ${DECK_COMPILE_FLAGS})
+target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} jsoncpp_lib range-v3::range-v3 fmt::fmt arrow glfw)
 
 if(BUILD_SHARED_LIBS)
     set_target_properties(deck.gl PROPERTIES SOVERSION 1)
@@ -321,6 +336,13 @@ elseif(NOT CLANG_FORMAT_PATH)
     message(WARNING "clang-format was not detected, "
                     "so automatic source code reformatting is disabled")
 endif()
+
+# examples
+foreach(example_cpp_file ${DECKGL_EXAMPLE_SOURCE_FILES})
+    get_filename_component(example ${example_cpp_file} NAME_WE)
+    add_executable(${example} ${example_cpp_file})
+    target_link_libraries(${example} PRIVATE deck.gl)
+endforeach()
 
 # Testing
 enable_testing()

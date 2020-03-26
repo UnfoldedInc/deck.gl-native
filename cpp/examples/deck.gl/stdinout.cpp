@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Unfolded Inc
+// Copyright (c) 2020 Unfolded Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,40 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./map-view.h"  // {MapView} NOLINT(build/include)
-
-#include <vector>
-
-#include "../viewports/web-mercator-viewport.h"  // {WebMercatorViewport}
+#include <iostream>
+#include "deck.gl/core.h"
+#include "deck.gl/json.h"
+#include "deck.gl/layers.h"
 
 using namespace std;
 using namespace deckgl;
-using namespace mathgl;
 
-auto MapView::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<MapView>("MapView")};
-  return &properties;
-}
+int main(int argc, char** argv) {
+  auto jsonConverter = unique_ptr<JSONConverter>(new JSONConverter());
+  registerJSONConvertersForDeckCore(jsonConverter.get());
+  registerJSONConvertersForDeckLayers(jsonConverter.get());
 
-auto MapView::_getViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) const -> shared_ptr<Viewport> {
-  WebMercatorViewport::Options opts;
-  opts.width = rect.w;
-  opts.height = rect.h;
-  if (viewState->longitude) {
-    opts.longitude = viewState->longitude.value();
-  }
-  if (viewState->latitude) {
-    opts.latitude = viewState->latitude.value();
-  }
-  if (viewState->zoom) {
-    opts.zoom = viewState->zoom.value();
-  }
-  if (viewState->pitch) {
-    opts.pitch = viewState->pitch.value();
-  }
-  if (viewState->bearing) {
-    opts.bearing = viewState->bearing.value();
-  }
+  auto deckProps = make_shared<Deck::Props>();
+  auto deck = unique_ptr<Deck>(new Deck(deckProps));
 
-  return make_shared<WebMercatorViewport>(opts);
+  while (true) {
+    cout << "> ";
+    string jsonStr;
+    getline(cin, jsonStr);
+
+    if (cin.eof()) {
+      return 0;
+    }
+
+    auto newProps = jsonConverter->convertJson(jsonStr, "Deck");
+    auto typedNewProps = dynamic_pointer_cast<Deck::Props>(newProps);
+
+    deck->setProps(typedNewProps.get());
+
+    cout << deck->viewManager->getNeedsRedraw(true).value_or("no") << endl;
+  }
+  return 0;
 }
