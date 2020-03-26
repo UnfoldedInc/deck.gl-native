@@ -56,7 +56,7 @@ namespace deckgl {
 // const TRACE_FINALIZE = "layer.finalize";
 // const TRACE_MATCHED = "layer.matched";
 
-// TODO(ib): these should be imported from other files
+// TODO(ib@unfolded.ai): these should be imported from other files
 
 // let pickingColorCache = new Uint8ClampedArray(0);
 class ColorRGBA {

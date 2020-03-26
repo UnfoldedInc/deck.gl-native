@@ -133,7 +133,7 @@ void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
   this->scale = pow(2, this->zoom);
 
   auto lngLat = Vector2<double>(viewMatrixOptions.longitude, viewMatrixOptions.latitude);
-  // TODO(isaac): doesn't support default distance scales
+  // TODO(isaac@unfolded.ai): doesn't support default distance scales
   this->distanceScales = this->isGeospatial ? getDistanceScales(lngLat) : viewMatrixOptions.distanceScales;
   this->focalDistance = viewMatrixOptions.focalDistance;
 
@@ -153,7 +153,7 @@ void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
 
   this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
   // Make a centered version of the matrix for projection modes without an offset
-  // TODO(isaac): NEEDED
+  // TODO(isaac@unfolded.ai): NEEDED
   // this->viewMatrix = Matrix4<double>()
   //                        // Apply the uncentered view matrix
   //                        .multiplyRight(this->viewMatrixUncentered)
@@ -171,7 +171,7 @@ void Viewport::_initProjectionMatrix(const ProjectionMatrixOptions& opts) {
 
 auto Viewport::_createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
                                        double near, double far) -> mathgl::Matrix4<double> {
-  // TODO(isaac): support orthographic
+  // TODO(isaac@unfolded.ai): support orthographic
   return orthographic ? throw new std::logic_error("orthographic not supported")
                       : Matrix4<double>::makePerspective(fovyRadians, aspect, near, far);
 }

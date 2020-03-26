@@ -33,7 +33,7 @@ ProjectionMatrixOptions::ProjectionMatrixOptions()
 
 ProjectionMatrixOptions::ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near,
                                                  double far)
-    // TODO(isaac): suspicious reuse of the fovy/fov field here
+    // TODO(isaac@unfolded.ai): suspicious reuse of the fovy/fov field here
     : orthographic{false}, fovy(fov), aspect(aspect), near(near), far(far), focalDistance(focalDistance) {}
 
 auto zoomToScale(double zoom) -> double { return pow(2, zoom); }

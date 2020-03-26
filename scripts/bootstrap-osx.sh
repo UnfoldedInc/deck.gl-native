@@ -7,7 +7,7 @@ VCPKG_ROOT=${VCPKG_ROOT:-../vcpkg}
 
 ## Graphics dependencies for luma.gl
 "${VCPKG_ROOT}/vcpkg" install glfw3
-"${VCPKG_ROOT}/vcpkg" install shaderc # TODO(ib): compiling shaderc from vcpkg is very slow!
+"${VCPKG_ROOT}/vcpkg" install shaderc # TODO(ib@unfolded.ai): compiling shaderc from vcpkg is very slow!
 
 ## Install loaders.gl dependencies
 brew update

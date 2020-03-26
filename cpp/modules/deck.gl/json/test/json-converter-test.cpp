@@ -62,7 +62,7 @@ TEST_F(JSONConverterTest, JSONConfig) {
     Json::Value rootValue = jsonConverter->parseJson(jsonDataSimple);
     auto classConverter = jsonConverter->classes["LineLayer"];
 
-    // TODO(ib): bizarre test that parses a Deck as a LineLayer...
+    // TODO(ib@unfolded.ai): bizarre test that parses a Deck as a LineLayer...
     auto lineLayerProps = classConverter(rootValue);
     EXPECT_TRUE(lineLayerProps);
     EXPECT_TRUE(std::dynamic_pointer_cast<LineLayer::Props>(lineLayerProps));

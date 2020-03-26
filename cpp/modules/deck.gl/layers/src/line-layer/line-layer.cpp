@@ -71,7 +71,7 @@ const defaultProps = {
 // }
 
 void LineLayer::initializeState() {
-  // TODO(ilija): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition = std::make_shared<AttributeDescriptor>(
       "instanceSourcePositions", arrow::fixed_size_list(arrow::float64(), 3), getSourcePosition);

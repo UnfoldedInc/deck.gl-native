@@ -51,7 +51,7 @@ void AttributeManager::invalidate(const std::string& attributeName) { this->inva
 
 void AttributeManager::invalidateAll() {
   std::cout << "AttributeManager: invalidating all attributes" << std::endl;
-  // TODO(ilija): This should trigger redraw?
+  // TODO(ilija@unfolded.ai): This should trigger redraw?
 }
 
 void AttributeManager::update(const std::shared_ptr<arrow::Table>& table) {
@@ -60,8 +60,8 @@ void AttributeManager::update(const std::shared_ptr<arrow::Table>& table) {
     return;
   }
 
-  // TODO(ilija): Call accessor with appropriate row data
-  // TODO(ilija): Set attribute table data to accessor result
+  // TODO(ilija@unfolded.ai): Call accessor with appropriate row data
+  // TODO(ilija@unfolded.ai): Set attribute table data to accessor result
 }
 
 void AttributeManager::_add(const std::shared_ptr<AttributeDescriptor>& descriptor, bool isInstanced) {

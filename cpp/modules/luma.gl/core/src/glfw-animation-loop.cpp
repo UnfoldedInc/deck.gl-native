@@ -150,7 +150,7 @@ static void initializeGLFW(wgpu::BackendType backendType) {
   }
 }
 
-// TODO(ib): restore or delete
+// TODO(ib@unfolded.ai): restore or delete
 
 static CmdBufType cmdBufType = CmdBufType::Terrible;
 static std::unique_ptr<dawn_native::Instance> instance;

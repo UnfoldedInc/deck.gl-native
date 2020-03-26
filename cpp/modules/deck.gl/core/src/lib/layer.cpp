@@ -26,7 +26,7 @@ using namespace mathgl;
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO(ib): auto generate from language-independent prop definition schema
+// TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
 
 static const std::vector<const Property*> propTypeDefs = {
     new PropertyT<bool>{

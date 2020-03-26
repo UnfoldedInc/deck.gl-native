@@ -118,7 +118,7 @@ Number.MAX_SAFE_INTEGER}, // max point radius in pixels
 // }
 
 void ScatterplotLayer::initializeState() {
-  // TODO(ilija): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   auto getPosition = std::bind(&ScatterplotLayer::getPositionData, this, std::placeholders::_1);
   auto position = std::make_shared<AttributeDescriptor>("instancePositions",
                                                         arrow::fixed_size_list(arrow::float64(), 3), getPosition);

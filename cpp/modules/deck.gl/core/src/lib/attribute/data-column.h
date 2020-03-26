@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "luma.gl/core.h"
-// TODO(ilija): Placeholder types
+// TODO(ilija@unfolded.ai): Placeholder types
 typedef void *UnknownType;
 typedef void *BufferPlaceholder;
 typedef void *ValuePlaceholder;
@@ -47,7 +47,7 @@ struct DataColumnOptions {
   bool isIndexed;
   bool fp64;
 
-  // TODO(ilija): Not needed?
+  // TODO(ilija@unfolded.ai): Not needed?
   //    void *logicalType;
   //    void *type;
 };
@@ -67,7 +67,7 @@ class DataColumn {
   BufferPlaceholder buffer();
   int byteOffset();
   void release();
-  // TODO(ilija): Unfortunate naming as we already have these getter?
+  // TODO(ilija@unfolded.ai): Unfortunate naming as we already have these getter?
   BufferPlaceholder getBuffer();
   ValuePlaceholder getValue();
   AccessorPlaceholder getAccessor();
@@ -76,7 +76,7 @@ class DataColumn {
   bool doublePrecision;
   DataType value;
 
-  // TODO(ilija): Not needed?
+  // TODO(ilija@unfolded.ai): Not needed?
   //    void *defaultType;
   //    void *settings;
   //    void *state;

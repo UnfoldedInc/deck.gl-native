@@ -42,7 +42,7 @@ void AnimationLoop::setSize(int width, int height) {
   this->height = height;
 
   if (sizeChanged) {
-    // auto swapchain = GetSwapChain(device);  TODO(ib): better to just query for swap chain before use?
+    // auto swapchain = GetSwapChain(device);  TODO(ib@unfolded.ai): better to just query for swap chain before use?
     // this->swapchain.Configure(GetPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment,
     // this->width,
     //                           this->height);
@@ -58,7 +58,7 @@ void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   this->running = true;
   while (this->running && !this->shouldQuit()) {
     this->frame(onRender);
-    // TODO(ib): We should not wait 16ms, we should wait **max** 16ms.
+    // TODO(ib@unfolded.ai): We should not wait 16ms, we should wait **max** 16ms.
     // uSleep(16000);
   }
   this->running = false;
@@ -83,7 +83,7 @@ void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender)
   {
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPass);
 
-    onRender(pass);  // TODO(ib): protect with try catch
+    onRender(pass);  // TODO(ib@unfolded.ai): protect with try catch
 
     pass.EndPass();
   }

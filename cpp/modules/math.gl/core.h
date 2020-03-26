@@ -21,7 +21,7 @@
 #ifndef MATHGL_CORE
 #define MATHGL_CORE
 
-// TODO(ib): Split into matrix.h, vector.h etc?
+// TODO(ib@unfolded.ai): Split into matrix.h, vector.h etc?
 #include "./core/src/core.h"
 #include "./core/src/rectangle.h"
 

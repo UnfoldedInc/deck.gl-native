@@ -28,6 +28,7 @@ using namespace lumagl;
 using namespace lumagl::utils;
 
 auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
+  // TODO(ib@unfolded.ai) replace dawn macros here
 #if defined(DAWN_ENABLE_BACKEND_D3D12)
   return wgpu::BackendType::D3D12;
 #elif defined(DAWN_ENABLE_BACKEND_METAL)
@@ -37,7 +38,7 @@ auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
 #elif defined(DAWN_ENABLE_BACKEND_OPENGL)
   return wgpu::BackendType::OpenGL;
 #else
-#warning "No DAWN_ENABLE_BACKEND_ constant set"
+  // #warning "No DAWN_ENABLE_BACKEND_ constant set"
   return wgpu::BackendType::Metal;
 #endif
 }

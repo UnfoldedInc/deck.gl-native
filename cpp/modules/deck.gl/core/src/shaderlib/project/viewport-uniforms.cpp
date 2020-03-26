@@ -29,10 +29,10 @@ namespace deckgl {
 auto const VECTOR_TO_POINT_MATRIX = Matrix4<double>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 auto const DEFAULT_PIXELS_PER_UNIT2 = Vector3<double>();
 
-// TODO(isaac): consider finding another way rather than these structs. Perhaps make the functions
+// TODO(isaac@unfolded.ai): consider finding another way rather than these structs. Perhaps make the functions
 // that build them constructors?
 struct OffsetOrigin {
-  // TODO(isaac): temporarily replicating the JS logic of this possibly being null
+  // TODO(isaac@unfolded.ai): temporarily replicating the JS logic of this possibly being null
   std::optional<mathgl::Vector3<double>> geospatialOrigin;
   mathgl::Vector3<double> shaderCoordinateOrigin;
   bool offsetMode;
@@ -69,7 +69,7 @@ auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, math
     case PROJECTION_MODE::WEB_MERCATOR_AUTO_OFFSET:
       if (coordinateSystem == COORDINATE_SYSTEM::LNGLAT) {
         // viewport center in world space
-        // TODO(isaac): This must not be null per original logic but unclear how to prove that here
+        // TODO(isaac@unfolded.ai): This must not be null per original logic but unclear how to prove that here
         shaderCoordinateOrigin = geospatialOrigin.value();
       } else if (coordinateSystem == COORDINATE_SYSTEM::CARTESIAN) {
         // viewport center in common space
@@ -120,7 +120,7 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
     projectionCenter = viewProjectionMatrix.transform(positionCommonSpace);
 
     // Always apply uncentered projection matrix if available (shader adds center)
-    // TODO(isaac): elided default of viewport.viewMatrix
+    // TODO(isaac@unfolded.ai): elided default of viewport.viewMatrix
     viewMatrix = viewMatrixUncentered;
 
     // Zero out 4th coordinate ("after" model matrix) - avoids further translations
@@ -174,7 +174,7 @@ auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORD
                                .project_uDevicePixelRatio = devicePixelRatio,
 
                                // Distance at which screen pixels are projected
-                               // TODO(isaac): optional focalDistance
+                               // TODO(isaac@unfolded.ai): optional focalDistance
                                .project_uFocalDistance = viewport.focalDistance,
                                .project_uCommonUnitsPerMeter = distanceScales.unitsPerMeter,
                                .project_uCommonUnitsPerWorldUnit = distanceScales.unitsPerMeter,

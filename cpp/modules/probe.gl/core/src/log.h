@@ -24,7 +24,7 @@
 #ifndef PROBEGL_LOG_H_
 #define PROBEGL_LOG_H_
 
-// TODO(ib): Redesign to use C++20 fmt via https://github.com/fmtlib/fmt library.
+// TODO(ib@unfolded.ai): Redesign to use C++20 fmt via https://github.com/fmtlib/fmt library.
 
 // Don't use iostream or printf directly for several reasons:
 //  - iostream adds static initializers which we want to avoid.

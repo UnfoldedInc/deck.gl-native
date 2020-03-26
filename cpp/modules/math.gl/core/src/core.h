@@ -786,7 +786,7 @@ template <typename coord>
 auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord> {
   auto f = 1.0 / tan(fovy / 2.0);
   auto nf = 1.0 / (near - far);
-  // TODO(ib): Doesn't support far not being set or far being Infinity
+  // TODO(ib@unfolded.ai): Doesn't support far not being set or far being Infinity
   return Matrix4<coord>(f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2.0 * far * near * nf, 0);
 }
 

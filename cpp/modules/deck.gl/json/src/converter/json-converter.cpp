@@ -101,7 +101,7 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, const std::str
     throw std::runtime_error("JSON contains object of unknown @@type");
   }
 
-  // TODO(ib): since these can subclasses we can only check after we instantiate
+  // TODO(ib@unfolded.ai): since these can subclasses we can only check after we instantiate
   // if (!typeHint.empty() && className != typeHint) {
   //   throw std::runtime_error("JSON contains class with wrong @@type: \"" + className + "\", expected " + typeHint);
   // }
