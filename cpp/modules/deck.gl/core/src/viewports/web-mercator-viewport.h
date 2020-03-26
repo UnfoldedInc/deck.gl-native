@@ -65,7 +65,7 @@ class WebMercatorViewport : public Viewport {
     double worldOffset = DEFAULT_WORLD_OFFSET;
   };
 
-  WebMercatorViewport(const Options& options);
+  explicit WebMercatorViewport(const Options& options);
 
   // elided subViewports feature
   // get subViewports()

@@ -22,9 +22,8 @@
 
 #include <memory>
 
-#include "deck.gl/core.h"
-
 #include "./view-json-data.h"
+#include "deck.gl/core.h"
 
 using namespace mathgl;
 using namespace deckgl;

@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <arrow/builder.h>
+#include <arrow/table.h>
 #include <gtest/gtest.h>
 
 #include <memory>
@@ -28,13 +30,144 @@ using namespace deckgl;
 
 namespace {
 
-TEST(ScatterplotLayer, Props) {
-  auto layerProps1 = std::unique_ptr<ScatterplotLayer::Props>(new ScatterplotLayer::Props());
-  auto layerProps2 = std::unique_ptr<ScatterplotLayer::Props>(new ScatterplotLayer::Props());
+/// \brief ScatterplotLayer test suite.
+class ScatterplotLayerTest : public ::testing::Test {
+ protected:
+  ScatterplotLayerTest() { this->propData = this->_createPropDataTable(); }
+
+  std::shared_ptr<arrow::Table> propData;
+
+ private:
+  auto _createPropDataTable() -> std::shared_ptr<arrow::Table> {
+    arrow::MemoryPool* pool = arrow::default_memory_pool();
+
+    // Positions
+    arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::DoubleBuilder>(pool), 3};
+    arrow::DoubleBuilder& valueBuilder = *(static_cast<arrow::DoubleBuilder*>(listBuilder.value_builder()));
+
+    EXPECT_TRUE(listBuilder.Append().ok());
+    std::vector<double> position{1.2, 2.3, -3.4};
+    EXPECT_TRUE(valueBuilder.AppendValues(position.data(), position.size()).ok());
+
+    std::shared_ptr<arrow::Array> positions;
+    EXPECT_TRUE(listBuilder.Finish(&positions).ok());
+
+    std::vector<std::shared_ptr<arrow::Field>> schemaVector = {
+        arrow::field("position", arrow::fixed_size_list(arrow::float64(), 3))};
+
+    auto schema = std::make_shared<arrow::Schema>(schemaVector);
+    return arrow::Table::Make(schema, {positions});
+  }
+};
+
+TEST_F(ScatterplotLayerTest, Props) {
+  auto layerProps1 = std::make_unique<ScatterplotLayer::Props>();
+  auto layerProps2 = std::make_unique<ScatterplotLayer::Props>();
 
   EXPECT_TRUE(layerProps1->equals(layerProps2.get()));
   layerProps2->opacity = 0.5;
   EXPECT_FALSE(layerProps1->equals(layerProps2.get()));
+}
+
+TEST_F(ScatterplotLayerTest, GetPositionData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  auto layerProps = std::make_shared<ScatterplotLayer::Props>();
+  layerProps->data = propData;
+
+  auto layer = std::make_shared<ScatterplotLayer>(layerProps);
+  auto positionData = layer->getPositionData(layerProps->data);
+
+  EXPECT_EQ(positionData->length(), 1);
+  EXPECT_EQ(positionData->type_id(), arrow::Type::FIXED_SIZE_LIST);
+
+  auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(positionData);
+  auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
+  EXPECT_EQ(values->length(), 3);
+  EXPECT_EQ(values->type_id(), arrow::Type::DOUBLE);
+
+  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  auto listPointer = values->data()->GetValues<double>(1);
+  EXPECT_DOUBLE_EQ(*listPointer, 1.2);
+  EXPECT_DOUBLE_EQ(*(listPointer + 1), 2.3);
+  EXPECT_DOUBLE_EQ(*(listPointer + 2), -3.4);
+}
+
+TEST_F(ScatterplotLayerTest, GetRadiusData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  auto layerProps = std::make_shared<ScatterplotLayer::Props>();
+  layerProps->data = propData;
+
+  auto layer = std::make_shared<ScatterplotLayer>(layerProps);
+  auto radiusData = layer->getRadiusData(layerProps->data);
+
+  auto values = std::static_pointer_cast<arrow::FloatArray>(radiusData);
+  EXPECT_EQ(values->length(), 1);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
+
+  EXPECT_FLOAT_EQ(values->Value(0), 1.0);
+}
+
+TEST_F(ScatterplotLayerTest, GetFillColorData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  auto layerProps = std::make_shared<ScatterplotLayer::Props>();
+  layerProps->data = propData;
+
+  auto layer = std::make_shared<ScatterplotLayer>(layerProps);
+  auto colorData = layer->getFillColorData(layerProps->data);
+
+  EXPECT_EQ(colorData->length(), 1);
+  EXPECT_EQ(colorData->type_id(), arrow::Type::FIXED_SIZE_LIST);
+
+  auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(colorData);
+  auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
+  EXPECT_EQ(values->length(), 4);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
+
+  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  auto listPointer = values->data()->GetValues<float>(1);
+  EXPECT_FLOAT_EQ(*listPointer, 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 1), 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 2), 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 3), 255.0);
+}
+
+TEST_F(ScatterplotLayerTest, GetLineColorData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  auto layerProps = std::make_shared<ScatterplotLayer::Props>();
+  layerProps->data = propData;
+
+  auto layer = std::make_shared<ScatterplotLayer>(layerProps);
+  auto colorData = layer->getLineColorData(layerProps->data);
+
+  EXPECT_EQ(colorData->length(), 1);
+  EXPECT_EQ(colorData->type_id(), arrow::Type::FIXED_SIZE_LIST);
+
+  auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(colorData);
+  auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
+  EXPECT_EQ(values->length(), 4);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
+
+  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  auto listPointer = values->data()->GetValues<float>(1);
+  EXPECT_FLOAT_EQ(*listPointer, 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 1), 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 2), 0.0);
+  EXPECT_FLOAT_EQ(*(listPointer + 3), 255.0);
+}
+
+TEST_F(ScatterplotLayerTest, GetLineWidthData) {
+  // TODO(ilija): Props should be mocked in order for this test to be decoupled and make sense
+  auto layerProps = std::make_shared<ScatterplotLayer::Props>();
+  layerProps->data = propData;
+
+  auto layer = std::make_shared<ScatterplotLayer>(layerProps);
+  auto widthData = layer->getLineWidthData(layerProps->data);
+
+  auto values = std::static_pointer_cast<arrow::FloatArray>(widthData);
+  EXPECT_EQ(values->length(), 1);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
+
+  EXPECT_FLOAT_EQ(values->Value(0), 1.0);
 }
 
 }  // namespace
