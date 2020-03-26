@@ -69,7 +69,9 @@ class AttributeManager {
   void invalidate(const std::string& attributeName);
   void invalidateAll();
 
-  void update(const std::shared_ptr<arrow::Table>& table);
+  // TODO(ilija): Temporarily returning a table here in order to be able to test the update functionality
+  // Rename the method?
+  auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table>;
 
   std::string id;
   wgpuDevice device;

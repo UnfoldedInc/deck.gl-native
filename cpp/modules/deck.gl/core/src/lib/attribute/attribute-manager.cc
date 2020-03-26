@@ -20,7 +20,7 @@
 
 #include "./attribute-manager.h"  // NOLINT(build/include)
 
-#include <iostream>
+#include "probe.gl/core.h"
 
 using namespace deckgl;
 
@@ -35,6 +35,7 @@ void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) { this->_add(descriptor); }
 
 void AttributeManager::initialize() {
+  // TODO(ilija): Not needed as we're creating a new table when updating?
   // Create a new table based on previously added descriptors
   std::vector<std::shared_ptr<arrow::Field>> fields = {};
   for (auto descriptor : this->_descriptors) {
@@ -43,25 +44,44 @@ void AttributeManager::initialize() {
   }
   auto schema = std::make_shared<arrow::Schema>(fields);
 
-  std::vector<std::shared_ptr<arrow::Array>> arrays = {};
+  std::vector<std::shared_ptr<arrow::Array>> arrays{};
   this->_attributeTable = arrow::Table::Make(schema, arrays);
 }
 
 void AttributeManager::invalidate(const std::string& attributeName) { this->invalidateAll(); }
 
 void AttributeManager::invalidateAll() {
-  std::cout << "AttributeManager: invalidating all attributes" << std::endl;
+  probegl::DebugLog() << "AttributeManager: invalidating all attributes";
   // TODO(ilija@unfolded.ai): This should trigger redraw?
 }
 
-void AttributeManager::update(const std::shared_ptr<arrow::Table>& table) {
+auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table> {
   // initialize not called
   if (!this->_attributeTable) {
-    return;
+    probegl::WarningLog() << "AttributeManager: Update failed, initialize not called";
+    return nullptr;
   }
 
-  // TODO(ilija@unfolded.ai): Call accessor with appropriate row data
-  // TODO(ilija@unfolded.ai): Set attribute table data to accessor result
+  // Create an empty output table
+  std::vector<std::shared_ptr<arrow::Field>> fields{};
+  auto schema = std::make_shared<arrow::Schema>(fields);
+  std::vector<std::shared_ptr<arrow::Array>> arrays{};
+  auto processedTable = arrow::Table::Make(schema, arrays);
+
+  // Iterate over descriptors and create one column per-descriptor
+  for (auto descriptor : this->_descriptors) {
+    auto columnData = descriptor->accessor(table);
+
+    auto index = processedTable->num_columns();
+    auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
+    auto column = std::make_shared<arrow::ChunkedArray>(columnData);
+
+    if (processedTable->AddColumn(index, field, column, &processedTable).ok()) {
+      probegl::WarningLog() << "AttributeManager: Unable to add column with name: " + descriptor->name;
+    }
+  }
+
+  return processedTable;
 }
 
 void AttributeManager::_add(const std::shared_ptr<AttributeDescriptor>& descriptor, bool isInstanced) {
