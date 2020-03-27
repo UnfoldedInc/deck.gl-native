@@ -57,29 +57,24 @@ namespace deckgl {
  */
 class AttributeManager {
  public:
-  AttributeManager(wgpuDevice device, const std::string& id) : id{id}, device{device} {}
+  AttributeManager(const std::string& id, wgpuDevice device) : id{id}, device{device} {}
 
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> bool;
   void setNeedsRedraw();
 
   void add(const std::shared_ptr<AttributeDescriptor>& descriptor);
 
-  void initialize();
-
   void invalidate(const std::string& attributeName);
   void invalidateAll();
 
-  void update(const std::shared_ptr<arrow::Table>& table);
+  auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table>;
 
   std::string id;
   wgpuDevice device;
 
  private:
-  void _add(const std::shared_ptr<AttributeDescriptor>& descriptor, bool isInstanced = false);
-
   bool _needsRedraw{false};
   std::vector<std::shared_ptr<AttributeDescriptor>> _descriptors;
-  std::shared_ptr<arrow::Table> _attributeTable;
 };
 
 }  // namespace deckgl

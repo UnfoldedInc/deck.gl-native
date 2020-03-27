@@ -38,7 +38,8 @@ class ScatterplotLayer : public Layer {
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
-  // TODO(ilija@unfolded.ai): These should be protected. Figure out how to test them without polluting with friend classes
+  // TODO(ilija@unfolded.ai): These should be protected. Figure out how to test them without polluting with friend
+  // classes
   auto getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getRadiusData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getFillColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;

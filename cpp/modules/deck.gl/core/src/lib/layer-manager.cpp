@@ -49,6 +49,7 @@ LayerManager::~LayerManager() {
 auto LayerManager::needsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
   return "TODO: redraw checking not implemented, so we always redraw";
 
+  /*
   auto redraw = this->_needsRedraw;
   if (clearRedrawFlags) {
     this->_needsRedraw = "";
@@ -63,6 +64,7 @@ auto LayerManager::needsRedraw(bool clearRedrawFlags) -> std::optional<std::stri
   }
 
   return redraw;
+  */
 }
 
 // Check if a deep update of all layers is needed

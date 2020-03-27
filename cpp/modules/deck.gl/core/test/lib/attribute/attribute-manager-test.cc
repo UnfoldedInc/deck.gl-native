@@ -18,32 +18,75 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "deck.gl/core/src/lib/attribute/attribute-manager.h"
-
+#include <arrow/builder.h>
+#include <arrow/table.h>
 #include <gtest/gtest.h>
+
+#include <memory>
+
+#include "deck.gl/core.h"
+#include "deck.gl/layers.h"
+
+using namespace deckgl;
 
 namespace {
 
-/**
- * The fixture for testing class AttributeManager.
- */
+/// \brief The fixture for testing class AttributeManager.
 class AttributeManagerTest : public ::testing::Test {
  protected:
-  AttributeManagerTest() : manager{nullptr, "identifier"} {
-    // You can do set-up work for each test here.
+  AttributeManagerTest() {
+    this->manager = std::make_shared<AttributeManager>(this->managerId, nullptr);
+
+    std::vector<std::shared_ptr<arrow::Field>> fields{};
+    auto schema = std::make_shared<arrow::Schema>(fields);
+    std::vector<std::shared_ptr<arrow::Array>> arrays{};
+    this->emptyTable = arrow::Table::Make(schema, arrays);
   }
 
-  deckgl::AttributeManager manager;
+  std::shared_ptr<AttributeManager> manager;
+  std::string managerId{"test-id"};
+  std::shared_ptr<arrow::Table> emptyTable;
 };
 
-// Tests that the AttributeManager initializes properly.
-TEST_F(AttributeManagerTest, Initialization) { EXPECT_EQ(manager.id, "identifier"); }
+/// Tests that the AttributeManager initializes properly.
+TEST_F(AttributeManagerTest, Initialization) { EXPECT_EQ(manager->id, managerId); }
 
-// Tests that AttributeManager sets redraw flag properly.
+/// Tests that AttributeManager sets redraw flag properly.
 TEST_F(AttributeManagerTest, Redraw) {
-  EXPECT_FALSE(manager.getNeedsRedraw());
-  manager.setNeedsRedraw();
-  EXPECT_TRUE(manager.getNeedsRedraw());
+  EXPECT_FALSE(manager->getNeedsRedraw());
+  manager->setNeedsRedraw();
+  EXPECT_TRUE(manager->getNeedsRedraw());
+}
+
+/// Tests that the update is performed correctly.
+TEST_F(AttributeManagerTest, Update) {
+  std::function<auto(const std::shared_ptr<arrow::Table>&)->std::shared_ptr<arrow::Array>> attributeUpdater{
+      [](const std::shared_ptr<arrow::Table>& table) {
+        arrow::MemoryPool* pool = arrow::default_memory_pool();
+        arrow::FloatBuilder builder{pool};
+
+        EXPECT_TRUE(builder.Append(1.0).ok());
+        EXPECT_TRUE(builder.Append(-2.0).ok());
+        EXPECT_TRUE(builder.Append(3.0).ok());
+
+        std::shared_ptr<arrow::Array> resultArray;
+        EXPECT_TRUE(builder.Finish(&resultArray).ok());
+
+        return resultArray;
+      }};
+  manager->add(std::make_shared<AttributeDescriptor>("attribute-one", arrow::float32(), attributeUpdater));
+  manager->add(std::make_shared<AttributeDescriptor>("attribute-two", arrow::float32(), attributeUpdater));
+
+  auto resultTable = manager->update(emptyTable);
+  EXPECT_EQ(resultTable->num_rows(), 3);
+  EXPECT_EQ(resultTable->num_columns(), 2);
+  EXPECT_EQ(resultTable->ColumnNames()[0], "attribute-one");
+  EXPECT_EQ(resultTable->ColumnNames()[1], "attribute-two");
+
+  auto testData = std::static_pointer_cast<arrow::FloatArray>(resultTable->column(0)->chunk(0));
+  EXPECT_EQ(testData->Value(0), 1.0);
+  EXPECT_EQ(testData->Value(1), -2.0);
+  EXPECT_EQ(testData->Value(2), 3.0);
 }
 
 }  // namespace

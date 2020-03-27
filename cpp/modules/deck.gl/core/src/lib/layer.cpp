@@ -326,7 +326,7 @@ void Layer::finalizeState() {}
 
 // If state has a model, draw it with supplied uniforms
 void Layer::drawState() {
-  for (const auto model : this->getModels()) {
+  for (auto model : this->getModels()) {
     model->draw();
   }
 }

@@ -124,10 +124,10 @@ TEST_F(LineLayerTest, GetSourcePositionData) {
   EXPECT_EQ(values->type_id(), arrow::Type::DOUBLE);
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto listPointer = values->data()->GetValues<double>(1);
-  EXPECT_DOUBLE_EQ(*listPointer, 1.2);
-  EXPECT_DOUBLE_EQ(*(listPointer + 1), 2.3);
-  EXPECT_DOUBLE_EQ(*(listPointer + 2), -3.4);
+  auto dataPointer = values->data()->GetValues<double>(1);
+  EXPECT_DOUBLE_EQ(*dataPointer, 1.2);
+  EXPECT_DOUBLE_EQ(*(dataPointer + 1), 2.3);
+  EXPECT_DOUBLE_EQ(*(dataPointer + 2), -3.4);
 }
 
 TEST_F(LineLayerTest, GetTargetPositionData) {
@@ -147,10 +147,10 @@ TEST_F(LineLayerTest, GetTargetPositionData) {
   EXPECT_EQ(values->type_id(), arrow::Type::DOUBLE);
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto listPointer = values->data()->GetValues<double>(1);
-  EXPECT_DOUBLE_EQ(*listPointer, 1.2);
-  EXPECT_DOUBLE_EQ(*(listPointer + 1), 2.3);
-  EXPECT_DOUBLE_EQ(*(listPointer + 2), -3.4);
+  auto dataPointer = values->data()->GetValues<double>(1);
+  EXPECT_DOUBLE_EQ(*dataPointer, 1.2);
+  EXPECT_DOUBLE_EQ(*(dataPointer + 1), 2.3);
+  EXPECT_DOUBLE_EQ(*(dataPointer + 2), -3.4);
 }
 
 TEST_F(LineLayerTest, GetColorData) {
@@ -170,11 +170,11 @@ TEST_F(LineLayerTest, GetColorData) {
   EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto listPointer = values->data()->GetValues<float>(1);
-  EXPECT_FLOAT_EQ(*listPointer, 0.0);
-  EXPECT_FLOAT_EQ(*(listPointer + 1), 0.0);
-  EXPECT_FLOAT_EQ(*(listPointer + 2), 0.0);
-  EXPECT_FLOAT_EQ(*(listPointer + 3), 255.0);
+  auto dataPointer = values->data()->GetValues<float>(1);
+  EXPECT_FLOAT_EQ(*dataPointer, 0.0);
+  EXPECT_FLOAT_EQ(*(dataPointer + 1), 0.0);
+  EXPECT_FLOAT_EQ(*(dataPointer + 2), 0.0);
+  EXPECT_FLOAT_EQ(*(dataPointer + 3), 255.0);
 }
 
 TEST_F(LineLayerTest, GetWidthData) {

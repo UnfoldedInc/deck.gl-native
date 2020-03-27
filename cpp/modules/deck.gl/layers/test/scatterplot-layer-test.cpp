@@ -52,10 +52,10 @@ class ScatterplotLayerTest : public ::testing::Test {
     std::shared_ptr<arrow::Array> positions;
     EXPECT_TRUE(listBuilder.Finish(&positions).ok());
 
-    std::vector<std::shared_ptr<arrow::Field>> schemaVector = {
+    std::vector<std::shared_ptr<arrow::Field>> fields = {
         arrow::field("position", arrow::fixed_size_list(arrow::float64(), 3))};
 
-    auto schema = std::make_shared<arrow::Schema>(schemaVector);
+    auto schema = std::make_shared<arrow::Schema>(fields);
     return arrow::Table::Make(schema, {positions});
   }
 };

@@ -20,7 +20,7 @@
 
 #include "./attribute-manager.h"  // NOLINT(build/include)
 
-#include <iostream>
+#include "probe.gl/core.h"
 
 using namespace deckgl;
 
@@ -32,38 +32,34 @@ auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
 
 void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
-void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) { this->_add(descriptor); }
-
-void AttributeManager::initialize() {
-  // Create a new table based on previously added descriptors
-  std::vector<std::shared_ptr<arrow::Field>> fields = {};
-  for (auto descriptor : this->_descriptors) {
-    auto field = arrow::field(descriptor->name, descriptor->type);
-    fields.push_back(field);
-  }
-  auto schema = std::make_shared<arrow::Schema>(fields);
-
-  std::vector<std::shared_ptr<arrow::Array>> arrays = {};
-  this->_attributeTable = arrow::Table::Make(schema, arrays);
+void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) {
+  this->_descriptors.push_back(descriptor);
 }
 
-void AttributeManager::invalidate(const std::string& attributeName) { this->invalidateAll(); }
+void AttributeManager::invalidate(const std::string& attributeName) {
+  // TODO(ilija@unfolded.ai): Implement
+  this->invalidateAll();
+}
 
 void AttributeManager::invalidateAll() {
-  std::cout << "AttributeManager: invalidating all attributes" << std::endl;
-  // TODO(ilija@unfolded.ai): This should trigger redraw?
+  // TODO(ilija@unfolded.ai): Implement
+  probegl::DebugLog() << "AttributeManager: invalidating all attributes";
 }
 
-void AttributeManager::update(const std::shared_ptr<arrow::Table>& table) {
-  // initialize not called
-  if (!this->_attributeTable) {
-    return;
+auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table> {
+  // Create an empty output table
+  std::vector<std::shared_ptr<arrow::Field>> fields{};
+  std::vector<std::shared_ptr<arrow::Array>> arrays{};
+
+  // Iterate over descriptors and create one column per-descriptor
+  for (auto descriptor : this->_descriptors) {
+    auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
+    fields.push_back(field);
+
+    auto columnData = descriptor->accessor(table);
+    arrays.push_back(columnData);
   }
 
-  // TODO(ilija@unfolded.ai): Call accessor with appropriate row data
-  // TODO(ilija@unfolded.ai): Set attribute table data to accessor result
-}
-
-void AttributeManager::_add(const std::shared_ptr<AttributeDescriptor>& descriptor, bool isInstanced) {
-  this->_descriptors.push_back(descriptor);
+  auto schema = std::make_shared<arrow::Schema>(fields);
+  return arrow::Table::Make(schema, arrays);
 }
