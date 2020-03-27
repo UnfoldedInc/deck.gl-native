@@ -56,7 +56,7 @@ auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std
     auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
     fields.push_back(field);
 
-    auto columnData = descriptor->accessor(table);
+    auto columnData = descriptor->attributeBuilder(table);
     arrays.push_back(columnData);
   }
 

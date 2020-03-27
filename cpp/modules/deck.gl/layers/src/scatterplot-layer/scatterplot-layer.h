@@ -81,12 +81,12 @@ class ScatterplotLayer::Props : public Layer::Props {
 
   /// Property accessors
   std::function<ArrowMapper::Vector3DoubleAccessor> getPosition{
-      [](auto row) { return row->getDoubleVector3("position"); }};
-  std::function<ArrowMapper::FloatAccessor> getRadius{[](auto row) { return 1.0; }};
+      [](const Row& row) { return row.getDoubleVector3("position"); }};
+  std::function<ArrowMapper::FloatAccessor> getRadius{[](const Row&) { return 1.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
-      [](auto row) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+      [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
-      [](auto row) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+      [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getLineWidth{[](auto row) { return 1.0; }};
 };
 

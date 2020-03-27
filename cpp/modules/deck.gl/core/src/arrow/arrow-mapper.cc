@@ -30,8 +30,8 @@ auto ArrowMapper::mapFloatColumn(const std::shared_ptr<arrow::Table>& table,
   arrow::FloatBuilder builder{pool};
 
   for (auto i = 0; i < table->num_rows(); ++i) {
-    // TODO(ilija@unfolded.ai): Revisit as this is somewhat costly
-    auto row = std::make_shared<Row>(table, i);
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
     auto value = getValueFromRow(row);
 
     if (!builder.Append(value).ok()) {
@@ -55,8 +55,8 @@ auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& tab
   arrow::FloatBuilder& valueBuilder = *(static_cast<arrow::FloatBuilder*>(listBuilder.value_builder()));
 
   for (auto i = 0; i < table->num_rows(); ++i) {
-    // TODO(ilija@unfolded.ai): Revisit as this is somewhat costly
-    auto row = std::make_shared<Row>(table, i);
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
     auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
@@ -85,8 +85,8 @@ auto ArrowMapper::mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& ta
   arrow::DoubleBuilder& valueBuilder = *(static_cast<arrow::DoubleBuilder*>(listBuilder.value_builder()));
 
   for (auto i = 0; i < table->num_rows(); ++i) {
-    // TODO(ilija@unfolded.ai): Revisit as this is somewhat costly
-    auto row = std::make_shared<Row>(table, i);
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
     auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
@@ -115,8 +115,8 @@ auto ArrowMapper::mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& tab
   arrow::FloatBuilder& valueBuilder = *(static_cast<arrow::FloatBuilder*>(listBuilder.value_builder()));
 
   for (auto i = 0; i < table->num_rows(); ++i) {
-    // TODO(ilija@unfolded.ai): Revisit as this is somewhat costly
-    auto row = std::make_shared<Row>(table, i);
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
     auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {
@@ -145,8 +145,8 @@ auto ArrowMapper::mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& ta
   arrow::DoubleBuilder& valueBuilder = *(static_cast<arrow::DoubleBuilder*>(listBuilder.value_builder()));
 
   for (auto i = 0; i < table->num_rows(); ++i) {
-    // TODO(ilija@unfolded.ai): Revisit as this is somewhat costly
-    auto row = std::make_shared<Row>(table, i);
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
     auto vector = getValueFromRow(row);
 
     if (!listBuilder.Append().ok()) {

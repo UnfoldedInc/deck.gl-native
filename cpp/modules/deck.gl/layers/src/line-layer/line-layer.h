@@ -75,12 +75,12 @@ class LineLayer::Props : public Layer::Props {
 
   /// Property accessors
   std::function<ArrowMapper::Vector3DoubleAccessor> getSourcePosition{
-      [](const std::shared_ptr<Row>& row) { return row->getDoubleVector3("sourcePosition"); }};
+      [](const Row& row) { return row.getDoubleVector3("sourcePosition"); }};
   std::function<ArrowMapper::Vector3DoubleAccessor> getTargetPosition{
-      [](const std::shared_ptr<Row>& row) { return row->getDoubleVector3("targetPosition"); }};
+      [](const Row& row) { return row.getDoubleVector3("targetPosition"); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getColor{
-      [](const std::shared_ptr<Row>& row) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
-  std::function<ArrowMapper::FloatAccessor> getWidth{[](const std::shared_ptr<Row>& row) { return 1.0; }};
+      [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+  std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};
 };
 
 }  // namespace deckgl
