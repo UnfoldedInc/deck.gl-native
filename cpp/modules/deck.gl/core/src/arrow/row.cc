@@ -34,7 +34,7 @@ Row::Row(const std::shared_ptr<arrow::Table>& table, int64_t rowIndex) : _table{
 
 // NOTE: Accessors largely based on https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
 
-auto Row::getInt(const std::string& columnName, int defaultValue) -> int {
+auto Row::getInt(const std::string& columnName, int defaultValue) const -> int {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -48,7 +48,7 @@ auto Row::getInt(const std::string& columnName, int defaultValue) -> int {
   return defaultValue;
 }
 
-auto Row::getFloat(const std::string& columnName, float defaultValue) -> float {
+auto Row::getFloat(const std::string& columnName, float defaultValue) const -> float {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -62,7 +62,7 @@ auto Row::getFloat(const std::string& columnName, float defaultValue) -> float {
   return defaultValue;
 }
 
-auto Row::getDouble(const std::string& columnName, double defaultValue) -> double {
+auto Row::getDouble(const std::string& columnName, double defaultValue) const -> double {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -76,7 +76,7 @@ auto Row::getDouble(const std::string& columnName, double defaultValue) -> doubl
   return defaultValue;
 }
 
-auto Row::getBool(const std::string& columnName, bool defaultValue) -> bool {
+auto Row::getBool(const std::string& columnName, bool defaultValue) const -> bool {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -91,7 +91,7 @@ auto Row::getBool(const std::string& columnName, bool defaultValue) -> bool {
   return defaultValue;
 }
 
-auto Row::getString(const std::string& columnName, const std::string& defaultValue) -> std::string {
+auto Row::getString(const std::string& columnName, const std::string& defaultValue) const -> std::string {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -104,7 +104,7 @@ auto Row::getString(const std::string& columnName, const std::string& defaultVal
   return defaultValue;
 }
 
-auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& defaultValue) -> Vector2<float> {
+auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& defaultValue) const -> Vector2<float> {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -131,7 +131,8 @@ auto Row::getFloatVector2(const std::string& columnName, const Vector2<float>& d
   }
 }
 
-auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>& defaultValue) -> Vector2<double> {
+auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>& defaultValue) const
+    -> Vector2<double> {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -158,7 +159,7 @@ auto Row::getDoubleVector2(const std::string& columnName, const Vector2<double>&
   }
 }
 
-auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& defaultValue) -> Vector3<float> {
+auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& defaultValue) const -> Vector3<float> {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -185,7 +186,8 @@ auto Row::getFloatVector3(const std::string& columnName, const Vector3<float>& d
   }
 }
 
-auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>& defaultValue) -> Vector3<double> {
+auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>& defaultValue) const
+    -> Vector3<double> {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -212,7 +214,7 @@ auto Row::getDoubleVector3(const std::string& columnName, const Vector3<double>&
   }
 }
 
-auto Row::getFloatVector4(const std::string& columnName, const Vector4<float>& defaultValue) -> Vector4<float> {
+auto Row::getFloatVector4(const std::string& columnName, const Vector4<float>& defaultValue) const -> Vector4<float> {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -239,7 +241,8 @@ auto Row::getFloatVector4(const std::string& columnName, const Vector4<float>& d
   }
 }
 
-auto Row::getDoubleVector4(const std::string& columnName, const Vector4<double>& defaultValue) -> Vector4<double> {
+auto Row::getDoubleVector4(const std::string& columnName, const Vector4<double>& defaultValue) const
+    -> Vector4<double> {
   if (!this->isValid(columnName)) {
     return defaultValue;
   }
@@ -266,7 +269,7 @@ auto Row::getDoubleVector4(const std::string& columnName, const Vector4<double>&
   }
 }
 
-auto Row::isValid(const std::string& columnName) -> bool {
+auto Row::isValid(const std::string& columnName) const -> bool {
   try {
     auto chunk = this->_getChunk(columnName);
     return chunk->IsValid(this->_rowIndex);
@@ -301,7 +304,7 @@ void Row::incrementRowIndex(uint64_t increment) {
   this->_rowIndex = newRowIndex;
 }
 
-auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Array> {
+auto Row::_getChunk(const std::string& columnName) const -> std::shared_ptr<arrow::Array> {
   auto column = this->_table->GetColumnByName(columnName);
   if (column == nullptr) {
     throw std::logic_error("Invalid column name");
@@ -321,7 +324,8 @@ auto Row::_getChunk(const std::string& columnName) -> std::shared_ptr<arrow::Arr
   throw std::logic_error("Invalid chunk lookup");
 }
 
-auto Row::_getRowChunkData(const std::shared_ptr<arrow::Table>& table, int64_t rowIndex) -> std::tuple<int, int64_t> {
+auto Row::_getRowChunkData(const std::shared_ptr<arrow::Table>& table, int64_t rowIndex) const
+    -> std::tuple<int, int64_t> {
   if (rowIndex >= table->num_rows()) {
     throw std::range_error("Invalid row index");
   }
@@ -345,7 +349,7 @@ auto Row::_getRowChunkData(const std::shared_ptr<arrow::Table>& table, int64_t r
 }
 
 // TODO(ilija@unfolded.ai): Sacrificing performance and precision for conciseness, revisit
-auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optional<double> {
+auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) const -> std::optional<double> {
   switch (chunk->type_id()) {
     case arrow::Type::DOUBLE:
       return std::static_pointer_cast<arrow::DoubleArray>(chunk)->Value(this->_chunkRowIndex);
@@ -362,7 +366,7 @@ auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) -> std::optiona
 }
 
 auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
-                                 const Vector2<float>& defaultValue) -> Vector2<float> {
+                                 const Vector2<float>& defaultValue) const -> Vector2<float> {
   if (values->type_id() != arrow::Type::FLOAT) {
     return defaultValue;
   }
@@ -379,7 +383,7 @@ auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 }
 
 auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
-                                  const Vector2<double>& defaultValue) -> Vector2<double> {
+                                  const Vector2<double>& defaultValue) const -> Vector2<double> {
   if (values->type_id() != arrow::Type::DOUBLE) {
     return defaultValue;
   }
@@ -396,7 +400,7 @@ auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
 }
 
 auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
-                                 const Vector3<float>& defaultValue) -> Vector3<float> {
+                                 const Vector3<float>& defaultValue) const -> Vector3<float> {
   if (values->type_id() != arrow::Type::FLOAT) {
     return defaultValue;
   }
@@ -414,7 +418,7 @@ auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 }
 
 auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
-                                  const Vector3<double>& defaultValue) -> Vector3<double> {
+                                  const Vector3<double>& defaultValue) const -> Vector3<double> {
   if (values->type_id() != arrow::Type::DOUBLE) {
     return defaultValue;
   }
@@ -432,7 +436,7 @@ auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
 }
 
 auto Row::_vector4FromFloatArray(const std::shared_ptr<arrow::FloatArray>& values, int32_t offset, int32_t listSize,
-                                 const Vector4<float>& defaultValue) -> Vector4<float> {
+                                 const Vector4<float>& defaultValue) const -> Vector4<float> {
   if (values->type_id() != arrow::Type::FLOAT) {
     return defaultValue;
   }
@@ -451,7 +455,7 @@ auto Row::_vector4FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
 }
 
 auto Row::_vector4FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& values, int32_t offset, int32_t listSize,
-                                  const Vector4<double>& defaultValue) -> Vector4<double> {
+                                  const Vector4<double>& defaultValue) const -> Vector4<double> {
   if (values->type_id() != arrow::Type::DOUBLE) {
     return defaultValue;
   }

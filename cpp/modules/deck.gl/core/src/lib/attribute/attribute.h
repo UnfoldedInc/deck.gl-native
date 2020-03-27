@@ -34,14 +34,14 @@ namespace deckgl {
 
 struct AttributeDescriptor {
  public:
-  using Accessor = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
+  using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
   AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
-                      std::function<Accessor> accessor)
-      : name{std::move(name)}, type{type}, accessor{std::move(accessor)} {}
+                      std::function<AttributeBuilder> attributeBuilder)
+      : name{std::move(name)}, type{type}, attributeBuilder{std::move(attributeBuilder)} {}
 
   std::string name;
   std::shared_ptr<arrow::DataType> type;
-  std::function<Accessor> accessor;
+  std::function<AttributeBuilder> attributeBuilder;
 };
 
 }  // namespace deckgl
