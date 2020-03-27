@@ -35,7 +35,7 @@ namespace {
 class AttributeManagerTest : public ::testing::Test {
  protected:
   AttributeManagerTest() {
-    this->manager = std::make_shared<AttributeManager>(nullptr, this->managerId);
+    this->manager = std::make_shared<AttributeManager>(this->managerId, nullptr);
 
     std::vector<std::shared_ptr<arrow::Field>> fields{};
     auto schema = std::make_shared<arrow::Schema>(fields);

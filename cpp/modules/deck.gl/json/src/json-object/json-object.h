@@ -180,7 +180,8 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
 template <class T>
 struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&> get;  // TODO(ib@unfolded.ai): return const T& ?
+  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&>
+      get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
 

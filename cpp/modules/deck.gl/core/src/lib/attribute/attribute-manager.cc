@@ -44,7 +44,6 @@ void AttributeManager::invalidate(const std::string& attributeName) {
 void AttributeManager::invalidateAll() {
   // TODO(ilija@unfolded.ai): Implement
   probegl::DebugLog() << "AttributeManager: invalidating all attributes";
-
 }
 
 auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table> {
