@@ -23,13 +23,12 @@
 namespace mathgl {
 
 ViewMatrixOptions::ViewMatrixOptions()
-    : viewMatrix{Matrix4<double>()},  // identity
-      focalDistance{1} {}
+    : viewMatrix{Matrix4<double>()}  // identity
+{}
 
-ViewMatrixOptions::ViewMatrixOptions(Matrix4<double> viewMatrix) : viewMatrix{viewMatrix}, focalDistance{1} {}
+ViewMatrixOptions::ViewMatrixOptions(Matrix4<double> viewMatrix) : viewMatrix{viewMatrix} {}
 
-ProjectionMatrixOptions::ProjectionMatrixOptions()
-    : orthographic{false}, fovy{75}, near{0.1}, far{1000}, focalDistance{1} {}
+ProjectionMatrixOptions::ProjectionMatrixOptions() {}
 
 ProjectionMatrixOptions::ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near,
                                                  double far)
