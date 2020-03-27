@@ -18,9 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
-#include <arrow/table.h>
 #include <arrow/builder.h>
+#include <arrow/table.h>
+#include <gtest/gtest.h>
 
 #include <memory>
 
@@ -35,7 +35,7 @@ namespace {
 class AttributeManagerTest : public ::testing::Test {
  protected:
   AttributeManagerTest() {
-    this->manager = std::make_shared<AttributeManager>(nullptr, this->managerIdentifier);
+    this->manager = std::make_shared<AttributeManager>(nullptr, this->managerId);
 
     std::vector<std::shared_ptr<arrow::Field>> fields{};
     auto schema = std::make_shared<arrow::Schema>(fields);
@@ -44,12 +44,12 @@ class AttributeManagerTest : public ::testing::Test {
   }
 
   std::shared_ptr<AttributeManager> manager;
-  std::string managerIdentifier{"identifier"};
+  std::string managerId{"test-id"};
   std::shared_ptr<arrow::Table> emptyTable;
 };
 
 /// Tests that the AttributeManager initializes properly.
-TEST_F(AttributeManagerTest, Initialization) { EXPECT_EQ(manager->id, managerIdentifier); }
+TEST_F(AttributeManagerTest, Initialization) { EXPECT_EQ(manager->id, managerId); }
 
 /// Tests that AttributeManager sets redraw flag properly.
 TEST_F(AttributeManagerTest, Redraw) {
@@ -60,24 +60,22 @@ TEST_F(AttributeManagerTest, Redraw) {
 
 /// Tests that the update is performed correctly.
 TEST_F(AttributeManagerTest, Update) {
-  std::function<auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>> accessor{
-    [](const std::shared_ptr<arrow::Table>& table)  {
-      arrow::MemoryPool* pool = arrow::default_memory_pool();
-      arrow::FloatBuilder builder{pool};
+  std::function<auto(const std::shared_ptr<arrow::Table>&)->std::shared_ptr<arrow::Array>> attributeUpdater{
+      [](const std::shared_ptr<arrow::Table>& table) {
+        arrow::MemoryPool* pool = arrow::default_memory_pool();
+        arrow::FloatBuilder builder{pool};
 
-      EXPECT_TRUE(builder.Append(1.0).ok());
-      EXPECT_TRUE(builder.Append(-2.0).ok());
-      EXPECT_TRUE(builder.Append(3.0).ok());
+        EXPECT_TRUE(builder.Append(1.0).ok());
+        EXPECT_TRUE(builder.Append(-2.0).ok());
+        EXPECT_TRUE(builder.Append(3.0).ok());
 
-      std::shared_ptr<arrow::Array> resultArray;
-      EXPECT_TRUE(builder.Finish(&resultArray).ok());
+        std::shared_ptr<arrow::Array> resultArray;
+        EXPECT_TRUE(builder.Finish(&resultArray).ok());
 
-      return resultArray;
-    }
-  };
-  manager->add(std::make_shared<AttributeDescriptor>("attribute-one", arrow::float32(), accessor));
-  manager->add(std::make_shared<AttributeDescriptor>("attribute-two", arrow::float32(), accessor));
-  manager->initialize();
+        return resultArray;
+      }};
+  manager->add(std::make_shared<AttributeDescriptor>("attribute-one", arrow::float32(), attributeUpdater));
+  manager->add(std::make_shared<AttributeDescriptor>("attribute-two", arrow::float32(), attributeUpdater));
 
   auto resultTable = manager->update(emptyTable);
   EXPECT_EQ(resultTable->num_rows(), 3);

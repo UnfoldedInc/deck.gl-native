@@ -32,36 +32,22 @@ auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
 
 void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
-void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) { this->_add(descriptor); }
-
-void AttributeManager::initialize() {
-  // TODO(ilija): Not needed as we're creating a new table when updating?
-  // Create a new table based on previously added descriptors
-  std::vector<std::shared_ptr<arrow::Field>> fields = {};
-  for (auto descriptor : this->_descriptors) {
-    auto field = arrow::field(descriptor->name, descriptor->type);
-    fields.push_back(field);
-  }
-  auto schema = std::make_shared<arrow::Schema>(fields);
-
-  std::vector<std::shared_ptr<arrow::Array>> arrays{};
-  this->_attributeTable = arrow::Table::Make(schema, arrays);
+void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) {
+  this->_descriptors.push_back(descriptor);
 }
 
-void AttributeManager::invalidate(const std::string& attributeName) { this->invalidateAll(); }
+void AttributeManager::invalidate(const std::string& attributeName) {
+  // TODO(ilija@unfolded.ai): Implement
+  this->invalidateAll();
+}
 
 void AttributeManager::invalidateAll() {
+  // TODO(ilija@unfolded.ai): Implement
   probegl::DebugLog() << "AttributeManager: invalidating all attributes";
-  // TODO(ilija@unfolded.ai): This should trigger redraw?
+
 }
 
 auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table> {
-  // initialize not called
-  if (!this->_attributeTable) {
-    probegl::WarningLog() << "AttributeManager: Update failed, initialize not called";
-    return nullptr;
-  }
-
   // Create an empty output table
   std::vector<std::shared_ptr<arrow::Field>> fields{};
   std::vector<std::shared_ptr<arrow::Array>> arrays{};
@@ -76,11 +62,5 @@ auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std
   }
 
   auto schema = std::make_shared<arrow::Schema>(fields);
-  auto processedTable = arrow::Table::Make(schema, arrays);
-
-  return processedTable;
-}
-
-void AttributeManager::_add(const std::shared_ptr<AttributeDescriptor>& descriptor, bool isInstanced) {
-  this->_descriptors.push_back(descriptor);
+  return arrow::Table::Make(schema, arrays);
 }

@@ -35,10 +35,7 @@ class ScatterplotLayer : public Layer {
  public:
   class Props;
   explicit ScatterplotLayer(std::shared_ptr<ScatterplotLayer::Props> props)
-      : ScatterplotLayer{props, std::make_shared<AttributeManager>(nullptr, "layer-identifier")} {}
-  ScatterplotLayer(std::shared_ptr<ScatterplotLayer::Props> props, std::shared_ptr<AttributeManager> attributeManager)
-      : Layer{std::dynamic_pointer_cast<Layer::Props>(props), attributeManager} {}
-
+      : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
   // TODO(ilija@unfolded.ai): These should be protected. Figure out how to test them without polluting with friend classes

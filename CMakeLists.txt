@@ -161,7 +161,6 @@ set(DECKGL_JSON_TEST_FILES
 set(DECKGL_CORE_HEADER_FILES
     cpp/modules/deck.gl/core.h
     cpp/modules/deck.gl/core/src/core.h
-    cpp/modules/deck.gl/core/src/lib/attribute/data-column.h
     cpp/modules/deck.gl/core/src/lib/attribute/attribute.h
     cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.h
     cpp/modules/deck.gl/core/src/lib/component.h
@@ -181,8 +180,6 @@ set(DECKGL_CORE_HEADER_FILES
     )
 set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/core.cpp
-    cpp/modules/deck.gl/core/src/lib/attribute/data-column.cc
-    cpp/modules/deck.gl/core/src/lib/attribute/attribute.cc
     cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.cc
     cpp/modules/deck.gl/core/src/lib/deck.cpp
     cpp/modules/deck.gl/core/src/lib/layer.cpp
