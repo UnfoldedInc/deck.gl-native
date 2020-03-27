@@ -92,5 +92,5 @@ before_script:
   - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ..
 
 script:
-  - make -j
+  - make -j 16
   - CTEST_OUTPUT_ON_FAILURE=1 make test
