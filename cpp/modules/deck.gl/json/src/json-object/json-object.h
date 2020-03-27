@@ -81,12 +81,6 @@ class JSONObject {
   std::unique_ptr<Properties> _properties;
 };
 
-auto operator<<(std::ostream& os, const JSONObject& obj) -> std::ostream&;
-auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool;
-auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
-auto operator!=(const JSONObject& lhs, const JSONObject& rhs) -> bool;
-auto operator!=(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
-
 class Property {
  public:
   // The name of the field (this string matches the name of the field in the C++ Prop class)
@@ -341,5 +335,12 @@ auto JSONObject::getPropertyT(const std::string& key) const -> const PropertyT<T
 }
 
 }  // namespace deckgl
+
+
+auto operator<<(std::ostream& os, const JSONObject& obj) -> std::ostream&;
+auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool;
+auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
+auto operator!=(const JSONObject& lhs, const JSONObject& rhs) -> bool;
+auto operator!=(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
 
 #endif  // DECKGL_JSON_JSON_OBJECT_H
