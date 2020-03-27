@@ -1,6 +1,9 @@
 #/bin/bash
 
-#VCPKG_ROOT=${VCPKG_ROOT:-../vcpkg}
+VCPKG_ROOT=${VCPKG_ROOT:-../vcpkg}
+
+## Platform independent bootstrap (mainly vcpkg installs)
+./scripts/internal/bootstrap-common.sh
 
 # Install arrow
 pushd $HOME
@@ -16,6 +19,3 @@ sudo apt install libgdal-dev libgdal20  # For GDAL
 ## Graphics Dependencies
 sudo apt install libglwf3-dev
 sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev # For GLFW
-
-## Platform independent bootstrap (mainly vcpkg installs)
-./scripts/bootstrap.sh

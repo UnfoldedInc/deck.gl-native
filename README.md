@@ -1,6 +1,6 @@
 # deck.gl-native
 
-This is an open-source C++ implementation of deck.gl 
+This is an open-source C++ implementation of deck.gl.
 
 > Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, the initial `deck.gl-native` release is unlikely to meet the requirements of most applications. At this stage, asking for delivery dates and additional features without contributing to implementation or providing additional funding is unlikely to be helpful.
 
@@ -74,7 +74,7 @@ To get started with Arrow, useful resources might be:
 
 CSV and JSON table loaders are provided as part of the deck.gl library. To support additional table formats, the envisioned approach is to implement additional "loaders" that load various formats and "convert" the loaded tables to Arrow representation.
 
-### Dawn WebGPU as the Graphics Backend
+### WebGPU via dawn as the Graphics Backend
 
 deck.gl-native is being built on top of the C++ WebGPU API using the [dawn](https://dawn.googlesource.com/dawn) framework.
 
@@ -94,6 +94,23 @@ Our hope is to see this project quickly grow into a living part of the core deck
 
 
 ## Setting up a Development Environment
+
+Development can be done on MacOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
+
+For a quick setup:
+- Run `./scripts/bootstrap-repos.sh` **once** (before cloning the deck.gl-native repo) in the folder where you want repos installed. This will clone key repos, set up vcpkg package manager and build the dawn libraries.
+- On OSX, run `./scripts/bootstrap.sh` (inside the deck.gl-native repo!) when you need to install any new dependencies (e.g. after pulling master from the deck.gl-native repo).
+- On Linux, run `./scripts/bootstrap-linux.sh` instead of `./scripts/bootstrap.sh`.
+
+Detailed instructions below.
+
+### XCode (MacOS only)
+
+If you haven't already configured XCode: 
+- Install Xcode
+- launch it
+- accept the license agreement
+- run `sudo xcode-select -s /Applications/Xcode.app` (Subsitute with path to your Xcode app if different).
 
 ### gcc
 
@@ -116,35 +133,58 @@ Notes:
 - Check that the bootstrap script compiles successfully, should generate `vcpkg` binary in root folder
 - requires GCC 6 or higher, Apple Clang won't work.
 
-## Dependencies
+## Depot Tools
 
-### Google Test
-
-- [Google Test](https://github.com/google/googletest)
-
-```sh
-../vcpkg install gtest
-```
-
-### jsoncpp
-
-- [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
+Only needed to build dawn: Dawn uses the Chromium build system and dependency management so you need to install [depot_tools](http://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
+)) and add it to the PATH.
 
 ```sh
-../vcpkg install jsoncpp
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+export PATH=$PATH:$PWD/depot_tools # /path/to/depot_tools
 ```
 
-### range v3
+## Building dawn
 
-Used as a placeholder until clang/gcc compilers become C++20 compatible.
-
-- [Range v3](https://github.com/ericniebler/range-v3)
+See [building dawn[(https://dawn.googlesource.com/dawn/+/HEAD/docs/buiding.md)
 
 ```sh
-../vcpkg install range-v3
+cd dawn
+# Bootstrap the gclient configuration
+cp scripts/standalone.gclient .gclient
+# Fetch external dependencies and toolchains with gclient
+gclient sync
+# Then generate build files (type `is_debug=true` in text editor)
+gn args out/Debug
+# Build dawn
+ninja -C out/Debug
+# Test dawn
+./out/Debug/dawn_end2end_tests to run the tests.
+# Build examples
+cmake -DDAWN_ENABLE_METAL=1 -DDAWN_BUILD_EXAMPLES=1 -DSHADERC_ENABLE_INSTALL=1 .
+# Run Examples
+cd examples
+./Animometer
+./CppHelloTriangle
+./CubeReflection
+./ComputeBoids
 ```
+
+## Installing Dependencies
+
+First, try running `./scripts/bootstrap-osx.sh` (or `./scripts/bootstrap-linux.sh`).
+
+To install dependencies individually, see below
+
+| Dependency | Install | Documentation
+| --- | --- | ---
+| [Google Test](https://github.com/google/googletest) | `../vcpkg install gtest` |  Testing framework
+| [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | `../vcpkg install jsoncpp` | JSON parser
+| [Range v3](https://github.com/ericniebler/range-v3) | `../vcpkg install range-v3` | C++20 ranges for C++17 compilers
+| [fmt](https://fmt.dev/latest/index.html) | `../vcpkg install fmt` | C++20 string formatting for C++17 compilers
 
 ### Arrow
+
+> There are currently issues with installing Arrow from vcpkg, use the following instructions
 
 - [Arrow](https://arrow.apache.org/install/)
 
@@ -154,8 +194,6 @@ and `apache-arrow` on Mac OSX:
 ```sh
 brew install apache-arrow
 ```
-
-## Graphics Dependencies
 
 ### Dawn
 
@@ -181,7 +219,7 @@ sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev
 mkdir build
 cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_VCPKG>/scripts/buildsystems/vcpkg.cmake ..
-make -j
+make -j 16
 ```
 
 To use different compilers, set the build options `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER` on the `cmake` command line.
