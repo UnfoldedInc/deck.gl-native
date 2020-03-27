@@ -102,9 +102,9 @@ TEST_F(LineLayerTest, PropAccess) {
 TEST_F(LineLayerTest, Create) {
   auto layerProps = std::make_shared<LineLayer::Props>();
 
-  auto lineLayer = new LineLayer(layerProps);
+  auto lineLayer = LineLayer(layerProps);
 
-  EXPECT_EQ(lineLayer->props(), layerProps);
+  EXPECT_EQ(lineLayer.props(), layerProps);
 }
 
 TEST_F(LineLayerTest, GetSourcePositionData) {

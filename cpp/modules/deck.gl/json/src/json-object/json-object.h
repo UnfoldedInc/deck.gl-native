@@ -84,6 +84,8 @@ class JSONObject {
 auto operator<<(std::ostream& os, const JSONObject& obj) -> std::ostream&;
 auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool;
 auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
+auto operator!=(const JSONObject& lhs, const JSONObject& rhs) -> bool;
+auto operator!=(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
 
 class Property {
  public:

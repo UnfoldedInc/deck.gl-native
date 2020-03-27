@@ -170,3 +170,9 @@ auto deckgl::operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool { 
 auto deckgl::operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool {
   return lhs->equals(rhs);
 }
+
+auto deckgl::operator!=(const JSONObject& lhs, const JSONObject& rhs) -> bool { return !(lhs == rhs); }
+
+auto operator!=(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool {
+  return !(lhs == rhs);
+}
