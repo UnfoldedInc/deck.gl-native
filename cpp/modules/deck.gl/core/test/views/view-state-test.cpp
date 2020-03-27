@@ -18,22 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./view-state.h"  // NOLINT(build/include)
+#include <gtest/gtest.h>
 
+#include "deck.gl/core.h"
+
+using namespace std;
 using namespace deckgl;
 
-const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<std::optional<double>>{
-        "longitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->longitude; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->longitude = value; }, 0.0},
-    new PropertyT<std::optional<double>>{
-        "latitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->latitude; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->latitude = value; }, 0.0},
-    new PropertyT<std::optional<double>>{
-        "zoom", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->zoom; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->zoom = value; }, 10}};
+TEST(ViewStateTest, Equality) {
+  auto vs1 = make_shared<ViewState>();
+  auto vs2 = make_shared<ViewState>();
 
-auto ViewState::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<ViewState>("ViewState", propTypeDefs)};
-  return &properties;
+  vs1->latitude = 10;
+  vs2->latitude = 10;
+  EXPECT_EQ(*vs1, *vs2);
+
+  vs2->longitude = 10;
+  EXPECT_NE(*vs1, *vs2);
 }

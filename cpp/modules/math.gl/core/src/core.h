@@ -319,10 +319,19 @@ auto operator-(const Matrix3<T> &, const Matrix3<T> &) -> Matrix3<T>;
 template <class T>
 auto operator*(const Matrix3<T> &, const Matrix3<T> &) -> Matrix3<T>;
 
-template <class T>
-auto operator<<(std::ostream &, Matrix3<T> &) -> std::ostream &;
-template <class T>
-auto operator>>(std::istream &, Matrix3<T> &) -> std::istream &;
+template <typename coord>
+auto operator>>(std::istream &is, Matrix3<coord> &m) -> std::istream & {
+  is >> m(0, 0) >> m(0, 1) >> m(0, 2) >> m(1, 0) >> m(1, 1) >> m(1, 2) >> m(2, 0) >> m(2, 1) >> m(2, 2);
+  return is;
+}
+
+template <typename coord>
+auto operator<<(std::ostream &os, const Matrix3<coord> &m) -> std::ostream & {
+  os << "[[" << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << "]"
+     << " [" << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << "]"
+     << " [" << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << "]]";
+  return os;
+}
 
 ///////////////////////////////////////////////////////////
 // Four-dimensional matrix support, 3D homogenous coordinates
@@ -371,6 +380,22 @@ class Matrix4 {
 
   coord m[4][4];
 };
+
+template <typename coord>
+auto operator>>(std::istream &is, Matrix4<coord> &m) -> std::istream & {
+  is >> m(0, 0) >> m(0, 1) >> m(0, 2) >> m(0, 3) >> m(1, 0) >> m(1, 1) >> m(1, 2) >> m(1, 3) >> m(2, 0) >> m(2, 1) >>
+      m(2, 2) >> m(2, 3) >> m(3, 0) >> m(3, 1) >> m(3, 2) >> m(3, 3);
+  return is;
+}
+
+template <typename coord>
+auto operator<<(std::ostream &os, const Matrix4<coord> &m) -> std::ostream & {
+  os << "[[" << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " " << m(0, 3) << "]"
+     << " [" << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << " " << m(1, 3) << "]"
+     << " [" << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " " << m(2, 3) << "]"
+     << " [" << m(3, 0) << " " << m(3, 1) << " " << m(3, 2) << " " << m(3, 3) << "]]";
+  return os;
+}
 
 template <typename coord>
 auto operator==(const Matrix4<coord> &m1, const Matrix4<coord> &m2) -> bool {

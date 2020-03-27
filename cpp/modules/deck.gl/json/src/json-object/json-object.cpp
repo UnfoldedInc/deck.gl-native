@@ -153,8 +153,20 @@ auto JSONObject::compare(const JSONObject* other) const -> std::optional<std::st
   return std::nullopt;
 }
 
-auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool { return lhs.equals(&rhs); }
+auto deckgl::operator<<(std::ostream& os, const JSONObject& obj) -> std::ostream& {
+  // Debug output, not for serialization
+  auto properties = obj.getProperties();
+  os << properties->className << "{";
+  for (auto prop : properties->allProperties()) {
+    auto propName = prop->getName();
+    os << "\n\t" << propName << ": " << prop->toString(&obj);
+  }
+  os << "\n}";
+  return os;
+}
 
-auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool {
+auto deckgl::operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool { return lhs.equals(&rhs); }
+
+auto deckgl::operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool {
   return lhs->equals(rhs);
 }
