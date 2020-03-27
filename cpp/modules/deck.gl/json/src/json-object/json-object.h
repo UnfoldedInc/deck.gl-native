@@ -34,6 +34,17 @@
 #include "json/json.h"                       // {Json::Value}
 
 namespace deckgl {
+// Forward declarations for operators
+class JSONObject;
+}  // namespace deckgl
+
+auto operator<<(std::ostream& os, const deckgl::JSONObject& obj) -> std::ostream&;
+auto operator==(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) -> bool;
+auto operator==(const std::shared_ptr<deckgl::JSONObject> lhs, const std::shared_ptr<deckgl::JSONObject> rhs) -> bool;
+auto operator!=(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) -> bool;
+auto operator!=(const std::shared_ptr<deckgl::JSONObject> lhs, const std::shared_ptr<deckgl::JSONObject> rhs) -> bool;
+
+namespace deckgl {
 
 // Forward declarations from other files
 class JSONConverter;  // #include "../converter/json-converter.h"
@@ -97,7 +108,7 @@ class Property {
   virtual bool equals(const JSONObject*, const JSONObject*) const = 0;
   virtual void setPropertyFromJson(JSONObject*, const Json::Value&, const JSONConverter*) const {}
 
-  virtual std::string toString(const JSONObject* obj) const = 0;
+  virtual auto toString(const JSONObject* obj) const -> std::string = 0;
 
  protected:
   auto _getPropFromJson(JSONObject* props, const Json::Value& jsonValue, const JSONConverter* jsonConverter) const
@@ -125,7 +136,7 @@ class PropertyT : public Property {
     this->set(props, fromJson<T>(jsonValue));
   }
 
-  std::string toString(const JSONObject* obj) const override {
+  auto toString(const JSONObject* obj) const -> std::string override {
     auto buf = std::stringstream();
     buf << this->get(obj);
     return buf.str();
@@ -155,7 +166,7 @@ struct PropertyT<std::optional<T>> : public Property {
     this->set(props, fromJson<T>(jsonValue));
   }
 
-  std::string toString(const JSONObject* obj) const override {
+  auto toString(const JSONObject* obj) const -> std::string override {
     auto buf = std::stringstream();
     auto optional = this->get(obj);
     if (optional) {
@@ -195,7 +206,7 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
     this->set(props, typedProp);
   }
 
-  std::string toString(const JSONObject* obj) const override {
+  auto toString(const JSONObject* obj) const -> std::string override {
     auto buf = std::stringstream();
     auto sharedPtr = this->get(obj);
     if (sharedPtr) {
@@ -242,7 +253,7 @@ struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
     this->set(props, list);
   }
 
-  std::string toString(const JSONObject* obj) const override {
+  auto toString(const JSONObject* obj) const -> std::string override {
     auto buf = std::stringstream();
     buf << "[";
     auto first = true;
@@ -335,12 +346,5 @@ auto JSONObject::getPropertyT(const std::string& key) const -> const PropertyT<T
 }
 
 }  // namespace deckgl
-
-
-auto operator<<(std::ostream& os, const JSONObject& obj) -> std::ostream&;
-auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool;
-auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
-auto operator!=(const JSONObject& lhs, const JSONObject& rhs) -> bool;
-auto operator!=(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
 
 #endif  // DECKGL_JSON_JSON_OBJECT_H
