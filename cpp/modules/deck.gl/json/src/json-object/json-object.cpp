@@ -152,3 +152,9 @@ auto JSONObject::compare(const JSONObject* other) const -> std::optional<std::st
 
   return std::nullopt;
 }
+
+auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool { return lhs.equals(&rhs); }
+
+auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool {
+  return lhs->equals(rhs);
+}

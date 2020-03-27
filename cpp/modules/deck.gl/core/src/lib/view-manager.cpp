@@ -84,7 +84,12 @@ auto ViewManager::getViews() -> std::list<std::shared_ptr<View>> {
 // Resolves a viewId string to a View, if already a View returns it.
 auto ViewManager::getView(const std::string &viewId) -> std::shared_ptr<View> {
   // TODO(ib@unfolded.ai): implement a lookup
-  return this->views.front();
+  for (auto view : this->views) {
+    if (view->id == viewId) {
+      return view;
+    }
+  }
+  return nullptr;
 }
 
 // Returns the viewState for a specific viewId. Matches the viewState by
