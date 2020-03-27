@@ -34,8 +34,6 @@ namespace deckgl {
 /// \brief Utility class that provides a way to easily map Arrow tables.
 class ArrowMapper {
  public:
-  template <class T>
-  using Accessor = auto(const Row &) -> T;
   using FloatAccessor = auto(const Row &) -> float;
   using Vector3FloatAccessor = auto(const Row &) -> mathgl::Vector3<float>;
   using Vector3DoubleAccessor = auto(const Row &) -> mathgl::Vector3<double>;
