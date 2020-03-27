@@ -127,16 +127,22 @@ set(LUMAGL_WEBGPU_HEADER_FILES
     cpp/modules/luma.gl/webgpu/src/webgpu-constants.h
     cpp/modules/luma.gl/webgpu/src/webgpu-utils.h
     cpp/modules/luma.gl/webgpu/src/webgpu-helpers.h
+    cpp/modules/luma.gl/webgpu/src/terrible-command-buffer.h
     cpp/modules/luma.gl/webgpu/src/backends/backend-binding.h
-    cpp/modules/luma.gl/webgpu/src/backends/backend-binding.cpp
-    # TODO this file may need to go into a mac os specific library
-    cpp/modules/luma.gl/webgpu/src/backends/metal-binding.mm
     )
 set(LUMAGL_WEBGPU_SOURCE_FILES
     cpp/modules/luma.gl/webgpu/src/combo-render-pipeline-descriptor.cpp
     cpp/modules/luma.gl/webgpu/src/shaderc-utils.cpp
+    cpp/modules/luma.gl/webgpu/src/terrible-command-buffer.cpp
     cpp/modules/luma.gl/webgpu/src/webgpu-utils.cpp
     cpp/modules/luma.gl/webgpu/src/webgpu-helpers.cpp
+    cpp/modules/luma.gl/webgpu/src/backends/backend-binding.cpp
+    # TODO: These should be included on per-platform basis. See src/utils/CMakeLists.txt in dawn repo
+    cpp/modules/luma.gl/webgpu/src/backends/metal-binding.mm
+    #cpp/modules/luma.gl/webgpu/src/backends/vulkan-binding.cpp
+    #cpp/modules/luma.gl/webgpu/src/backends/d3d12-binding.cpp
+    #cpp/modules/luma.gl/webgpu/src/backends/null-binding.cpp
+    #cpp/modules/luma.gl/webgpu/src/backends/opengl-binding.cpp
     )
 set(LUMAGL_WEBGPU_TEST_FILES
     cpp/modules/luma.gl/webgpu/test/webgpu-test.cpp

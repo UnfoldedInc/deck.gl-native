@@ -36,8 +36,8 @@ class Model {
   class Options;
 
   /// \brief construct a new Model
-  explicit Model(wgpuDevice device, const Options &);
-  explicit Model(wgpuDevice device);
+  explicit Model(wgpu::Device device, const Options&);
+  explicit Model(wgpu::Device device);
 
   void draw();
 
@@ -49,6 +49,9 @@ class Model {
 
 class Model::Options {
  public:
+  Options() {}
+  Options(const std::string& vs, const std::string& fs) : vs{vs}, fs{fs} {}
+
   std::string vs;  // vertex shader source
   std::string fs;  // fragment shader source
 };

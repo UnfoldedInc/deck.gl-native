@@ -225,7 +225,7 @@ auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layo
 
   wgpu::BindGroupDescriptor descriptor;
   descriptor.layout = layout;
-  descriptor.bindingCount = bindings.size();
+  descriptor.bindingCount = static_cast<uint32_t>(bindings.size());
   descriptor.bindings = bindings.data();
 
   return device.CreateBindGroup(&descriptor);

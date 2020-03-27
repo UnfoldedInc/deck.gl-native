@@ -21,8 +21,7 @@
 #ifndef LUMAGL_CORE_H
 #define LUMAGL_CORE_H
 
-using wgpuDevice = void*;
-
+#include "./core/src/glfw-animation-loop.h"
 #include "./core/src/model.h"
 
 #endif  // LUMAGL_CORE_CORE_H

@@ -57,7 +57,7 @@ namespace deckgl {
  */
 class AttributeManager {
  public:
-  AttributeManager(const std::string& id, wgpuDevice device) : id{id}, device{device} {}
+  AttributeManager(const std::string& id, wgpu::Device device) : id{id}, device{device} {}
 
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> bool;
   void setNeedsRedraw();
@@ -70,7 +70,7 @@ class AttributeManager {
   auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table>;
 
   std::string id;
-  wgpuDevice device;
+  wgpu::Device device;
 
  private:
   bool _needsRedraw{false};
