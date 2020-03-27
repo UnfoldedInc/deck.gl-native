@@ -79,14 +79,15 @@ void Deck::setProps(Deck::Props* props) {
 
   // ViewState tracking
   if (props->initialViewState) {
-    if (!this->props()->initialViewState || !this->props()->initialViewState->equals(this->props()->initialViewState)) {
+    if (!props->initialViewState->equals(this->initialViewState)) {
       // Overwrite internal view state
       this->initialViewState = props->initialViewState;
+      this->viewState = props->initialViewState;
     }
   }
 
   if (props->viewState) {
-    if (!this->props()->viewState || !this->props()->viewState->equals(this->props()->viewState)) {
+    if (!props->viewState->equals(this->viewState)) {
       // Overwrite internal view state
       this->viewState = props->viewState;
     }

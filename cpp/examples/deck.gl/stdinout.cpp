@@ -26,6 +26,8 @@
 using namespace std;
 using namespace deckgl;
 
+// Simple application that reads deck.gl configurations from standard in
+// (one configuration per line) and applies them to the deck.gl state.
 int main(int argc, char** argv) {
   auto jsonConverter = unique_ptr<JSONConverter>(new JSONConverter());
   registerJSONConvertersForDeckCore(jsonConverter.get());
@@ -44,11 +46,11 @@ int main(int argc, char** argv) {
     }
 
     auto newProps = jsonConverter->convertJson(jsonStr, "Deck");
-    auto typedNewProps = dynamic_pointer_cast<Deck::Props>(newProps);
+    auto deckProps = dynamic_pointer_cast<Deck::Props>(newProps);
 
-    deck->setProps(typedNewProps.get());
+    deck->setProps(deckProps.get());
 
-    cout << deck->viewManager->getNeedsRedraw(true).value_or("no") << endl;
+    cout << deck->viewManager->getNeedsRedraw(true).value_or("no redraw needed") << endl;
   }
   return 0;
 }

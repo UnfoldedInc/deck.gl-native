@@ -275,11 +275,6 @@ auto ViewManager::_diffViews(const std::list<std::shared_ptr<View>> &newViews,
     return true;
   }
 
-  auto oi = oldViews.begin();
-  for (auto ni = newViews.begin(); ni != newViews.end() && oi != oldViews.end(); ni++, oi++) {
-    if (!ni->get()->equals(*oi)) {
-      return true;
-    }
-  }
-  return false;
+  return !std::equal(oldViews.begin(), oldViews.end(), newViews.begin(), newViews.end(),
+                     [](auto a, auto b) { return a.get()->equals(b); });
 }
