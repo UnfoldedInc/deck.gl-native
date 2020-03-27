@@ -81,6 +81,9 @@ class JSONObject {
   std::unique_ptr<Properties> _properties;
 };
 
+auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool;
+auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
+
 class Property {
  public:
   // The name of the field (this string matches the name of the field in the C++ Prop class)
@@ -218,7 +221,8 @@ class Properties {
  public:
   // static methods
   template <typename JSONObjectT>
-  static auto from(const std::string& className, const std::vector<const Property*>& properties) -> deckgl::Properties {
+  static auto from(const std::string& className, const std::vector<const Property*>& properties = {})
+      -> deckgl::Properties {
     typename JSONObjectT::super parentProps;
     return Properties{className, parentProps.getProperties(), properties};
   }

@@ -127,11 +127,12 @@ class ViewManager {
   void _updateController(view, viewState, viewport, controller);
 
   void _buildViewportMap();
+*/
 
   // Check if viewport array has changed, returns true if any change
   // Note that descriptors can be the same
-  void _diffViews(newViews, oldViews);
-  */
+  auto _diffViews(const std::list<std::shared_ptr<View>> &newViews,
+                  const std::list<std::shared_ptr<View>> &oldViews) const -> bool;
 };
 
 }  // namespace deckgl

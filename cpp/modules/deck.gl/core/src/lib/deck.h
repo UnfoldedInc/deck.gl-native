@@ -73,6 +73,7 @@ class Deck : public Component {
   std::shared_ptr<LayerContext> context{new LayerContext{this}};
   std::shared_ptr<ViewManager> viewManager{new ViewManager()};
   std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
+  std::shared_ptr<ViewState> initialViewState;
   std::shared_ptr<ViewState> viewState;
 
   //  private:

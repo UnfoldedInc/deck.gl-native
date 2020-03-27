@@ -27,6 +27,8 @@ using namespace deckgl;
 using namespace mathgl;
 
 const std::vector<const Property*> propTypeDefs = {
+    new PropertyT<string>{"id", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->id; },
+                          [](JSONObject* props, string value) { return dynamic_cast<View*>(props)->id = value; }, ""},
     new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->x; },
                        [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->x = value; }, 0},
     new PropertyT<int>{"y", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->y; },

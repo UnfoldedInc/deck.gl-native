@@ -60,4 +60,42 @@ TEST(ViewManager, RedrawFlag) {
   EXPECT_TRUE(viewManager->getNeedsRedraw(true));
 }
 
+TEST(ViewManager, SetViews) {
+  auto viewManager = make_shared<ViewManager>();
+  // Clear redraw flag
+  viewManager->getNeedsRedraw(true);
+
+  auto view1 = make_shared<View>();
+  view1->setProperty("width", 100);
+  string view1Id = "view1";
+  view1->setProperty("id", view1Id);
+  auto view2 = make_shared<View>();
+  view2->setProperty("height", 200);
+  string view2Id = "view2";
+  view2->setProperty("id", view2Id);
+
+  // Setting view causes redraw
+  viewManager->setViews({view1});
+  EXPECT_TRUE(viewManager->getNeedsRedraw(true));
+  EXPECT_EQ(1, viewManager->getViews().size());
+  // Same view does not cause redraw
+  viewManager->setViews({view1});
+  EXPECT_FALSE(viewManager->getNeedsRedraw());
+  EXPECT_EQ(1, viewManager->getViews().size());
+  // Adding a view causes redraw
+  viewManager->setViews({view1, view2});
+  EXPECT_TRUE(viewManager->getNeedsRedraw(true));
+  EXPECT_EQ(2, viewManager->getViews().size());
+  // Ordering matters
+  viewManager->setViews({view2, view1});
+  EXPECT_TRUE(viewManager->getNeedsRedraw(true));
+  EXPECT_EQ(2, viewManager->getViews().size());
+
+  EXPECT_EQ(view2, *(viewManager->getViews().begin()));
+  EXPECT_EQ(view1, *(++(viewManager->getViews().begin())));
+  EXPECT_EQ(view2, viewManager->getView("view2"));
+  EXPECT_EQ(view1, viewManager->getView("view1"));
+  EXPECT_EQ(nullptr, viewManager->getView("view doesn't exist"));
+}
+
 }  // namespace

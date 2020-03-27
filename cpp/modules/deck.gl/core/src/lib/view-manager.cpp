@@ -84,7 +84,12 @@ auto ViewManager::getViews() -> std::list<std::shared_ptr<View>> {
 // Resolves a viewId string to a View, if already a View returns it.
 auto ViewManager::getView(const std::string &viewId) -> std::shared_ptr<View> {
   // TODO(ib@unfolded.ai): implement a lookup
-  return this->views.front();
+  for (auto view : this->views) {
+    if (view->id == viewId) {
+      return view;
+    }
+  }
+  return nullptr;
 }
 
 // Returns the viewState for a specific viewId. Matches the viewState by
@@ -176,8 +181,7 @@ void ViewManager::setHeight(int height) {
 // Update the view descriptor list and set change flag if needed
 // Does not actually rebuild the `Viewport`s until `getViewports` is called
 void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
-  // TODO(ib@unfolded.ai): Only update if views actually changed
-  auto viewsChanged = true;  // this->_diffViews(views, this->views);
+  auto viewsChanged = this->_diffViews(views, this->views);
   if (viewsChanged) {
     this->views = views;
     this->setNeedsUpdate("Views changed");
@@ -185,7 +189,7 @@ void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
 }
 
 void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
-  auto viewStateChanged = !viewState->equals(this->viewState);
+  auto viewStateChanged = viewState && !viewState->equals(this->viewState);
 
   if (viewStateChanged) {
     this->viewState = viewState;
@@ -270,12 +274,12 @@ void ViewManager::_rebuildViewports() {
 
 // Check if viewport array has changed, returns true if any change
 // Note that descriptors can be the same
-// ViewManager::_diffViews(const std::list<std::shared_ptr<View>> &views, const std::list<std::shared_ptr<View>>
-// &views)
-// {
-//   if (newViews.length != = oldViews.length) {
-//     return true;
-//   }
+auto ViewManager::_diffViews(const std::list<std::shared_ptr<View>> &newViews,
+                             const std::list<std::shared_ptr<View>> &oldViews) const -> bool {
+  if (newViews.size() != oldViews.size()) {
+    return true;
+  }
 
-//   return newViews.some((_, i) = > !newViews[i].equals(oldViews[i]));
-// }
+  return !std::equal(oldViews.begin(), oldViews.end(), newViews.begin(), newViews.end(),
+                     [](auto a, auto b) { return a.get()->equals(b); });
+}
