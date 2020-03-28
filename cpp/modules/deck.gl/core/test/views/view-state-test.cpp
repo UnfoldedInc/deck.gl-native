@@ -31,8 +31,8 @@ TEST(ViewStateTest, Equality) {
 
   vs1->latitude = 10;
   vs2->latitude = 10;
-  EXPECT_EQ(*vs1, *vs2);
+  EXPECT_TRUE(*vs1 == *vs2);
 
   vs2->longitude = 10;
-  EXPECT_NE(*vs1, *vs2);
+  EXPECT_TRUE(*vs1 != *vs2);
 }

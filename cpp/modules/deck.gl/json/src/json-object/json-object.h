@@ -40,9 +40,7 @@ class JSONObject;
 
 auto operator<<(std::ostream& os, const deckgl::JSONObject& obj) -> std::ostream&;
 auto operator==(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) -> bool;
-auto operator==(const std::shared_ptr<deckgl::JSONObject> lhs, const std::shared_ptr<deckgl::JSONObject> rhs) -> bool;
 auto operator!=(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) -> bool;
-auto operator!=(const std::shared_ptr<deckgl::JSONObject> lhs, const std::shared_ptr<deckgl::JSONObject> rhs) -> bool;
 
 namespace deckgl {
 
