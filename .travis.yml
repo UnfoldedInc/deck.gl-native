@@ -67,13 +67,14 @@ before_install:
 install:
   # Install vcpkg and dependencies
   - pushd $HOME
-  - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
+  - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; VCPKG_CACHED=1 ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
   - cd vcpkg
   - git checkout .
   - CURRENT_VCPKG_REV="$(git rev-parse HEAD)"
   - git pull
   - NEW_VCPKG_REV="$(git rev-parse HEAD)"
-  - if [ "$NEW_VCPKG_REV" == "$CURRENT_VCPKG_REV" ] ; then echo vcpkg bootstrap skipped ; else ./bootstrap-vcpkg.sh ; fi
+  # Avoid rebuilding vcpkg itself unless it was not cached, or an update has been pulled.
+  - if [ "$VCPKG_CACHED" -a "$NEW_VCPKG_REV" == "$CURRENT_VCPKG_REV" ] ; then echo vcpkg bootstrap skipped ; else ./bootstrap-vcpkg.sh ; fi
   # Try to avoid building unneeded debug versions of dependencies
   - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
   - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
