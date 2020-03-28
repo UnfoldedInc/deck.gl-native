@@ -35,7 +35,7 @@ matrix:
     - name: "Linux (Clang)"
       os: linux
       compiler: clang
-    - name: "Linux (GCC)"
+    - name: "Linux (GCC) with Valgrind"
       os: linux
       compiler: gcc
       addons:
