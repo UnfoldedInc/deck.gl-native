@@ -54,19 +54,19 @@ struct DistanceScales {
 };
 
 struct ViewMatrixOptions {
-  Matrix4<double> viewMatrix;
-  bool isGeospatial;
+  Matrix4<double> viewMatrix{};
+  bool isGeospatial{false};
   // Anchor: lng lat zoom makes viewport work w/ geospatial coordinate systems
-  double longitude;
-  double latitude;
-  double zoom;
+  double longitude{0};
+  double latitude{0};
+  double zoom{0};
   // Anchor position offset (in meters for geospatial viewports)
-  Vector3<double> position;
+  Vector3<double> position{0, 0, 0};
   // A model matrix to be applied to position, to match the layer props API
-  Matrix4<double> modelMatrix;
+  Matrix4<double> modelMatrix{};
   // Only needed for orthographic views
-  double focalDistance;
-  DistanceScales distanceScales;
+  double focalDistance{1};
+  DistanceScales distanceScales{};
 
   ViewMatrixOptions();
   explicit ViewMatrixOptions(Matrix4<double> viewMatrix);
@@ -74,18 +74,18 @@ struct ViewMatrixOptions {
 
 struct ProjectionMatrixOptions {
   // Projection matrix
-  std::optional<Matrix4<double>> projectionMatrix;
+  std::optional<Matrix4<double>> projectionMatrix{};
 
   // Projection matrix parameters, used if projectionMatrix not supplied
-  bool orthographic;
-  double fovyRadians;
-  double fovy;
-  double aspect;
+  bool orthographic{false};
+  double fovyRadians{0};
+  double fovy{75};
+  double aspect{0};
   // Distance of near clipping plane
-  double near;
+  double near{0.1};
   // Distance of far clipping plane
-  double far;
-  double focalDistance;
+  double far{1000};
+  double focalDistance{1};
 
   ProjectionMatrixOptions();
   ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near, double far);

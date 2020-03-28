@@ -102,7 +102,7 @@ TEST_F(LineLayerTest, PropAccess) {
 TEST_F(LineLayerTest, Create) {
   auto layerProps = std::make_shared<LineLayer::Props>();
 
-  auto lineLayer = new LineLayer(layerProps);
+  auto lineLayer = std::make_unique<LineLayer>(layerProps);
 
   EXPECT_EQ(lineLayer->props(), layerProps);
 }

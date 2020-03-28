@@ -181,6 +181,7 @@ set(DECKGL_CORE_HEADER_FILES
 set(DECKGL_CORE_SOURCE_FILES
     cpp/modules/deck.gl/core/src/core.cpp
     cpp/modules/deck.gl/core/src/lib/attribute/attribute-manager.cc
+    cpp/modules/deck.gl/core/src/lib/constants.cpp
     cpp/modules/deck.gl/core/src/lib/deck.cpp
     cpp/modules/deck.gl/core/src/lib/layer.cpp
     cpp/modules/deck.gl/core/src/lib/layer-manager.cpp
@@ -203,6 +204,7 @@ set(DECKGL_CORE_TEST_FILES
     cpp/modules/deck.gl/core/test/viewports/viewport-test.cpp
     cpp/modules/deck.gl/core/test/viewports/web-mercator-viewport-test.cpp
     cpp/modules/deck.gl/core/test/views/map-view-test.cpp
+    cpp/modules/deck.gl/core/test/views/view-state-test.cpp
     cpp/modules/deck.gl/core/test/views/view-test.cpp
     cpp/modules/deck.gl/core/test/arrow/row-test.cc
     )

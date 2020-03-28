@@ -34,6 +34,15 @@
 #include "json/json.h"                       // {Json::Value}
 
 namespace deckgl {
+// Forward declarations for operators
+class JSONObject;
+}  // namespace deckgl
+
+auto operator<<(std::ostream& os, const deckgl::JSONObject& obj) -> std::ostream&;
+auto operator==(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) -> bool;
+auto operator!=(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) -> bool;
+
+namespace deckgl {
 
 // Forward declarations from other files
 class JSONConverter;  // #include "../converter/json-converter.h"
@@ -81,9 +90,6 @@ class JSONObject {
   std::unique_ptr<Properties> _properties;
 };
 
-auto operator==(const JSONObject& lhs, const JSONObject& rhs) -> bool;
-auto operator==(const std::shared_ptr<JSONObject> lhs, const std::shared_ptr<JSONObject> rhs) -> bool;
-
 class Property {
  public:
   // The name of the field (this string matches the name of the field in the C++ Prop class)
@@ -100,6 +106,8 @@ class Property {
   virtual bool equals(const JSONObject*, const JSONObject*) const = 0;
   virtual void setPropertyFromJson(JSONObject*, const Json::Value&, const JSONConverter*) const {}
 
+  virtual auto toString(const JSONObject* obj) const -> std::string = 0;
+
  protected:
   auto _getPropFromJson(JSONObject* props, const Json::Value& jsonValue, const JSONConverter* jsonConverter) const
       -> std::shared_ptr<JSONObject>;
@@ -111,7 +119,7 @@ template <class T>
 class PropertyT : public Property {
  public:
   std::function<auto(JSONObject const*)->T> get;  // TODO(ib@unfolded.ai): return const T& ?
-  std::function<void(JSONObject*, T)> set;
+  std::function<void(JSONObject*, const T&)> set;
   T defaultValue;
 
   PropertyT<T>(const char* name_, const std::function<auto(JSONObject const*)->T>& get_,
@@ -125,16 +133,22 @@ class PropertyT : public Property {
   void setPropertyFromJson(JSONObject* props, const Json::Value& jsonValue, const JSONConverter*) const override {
     this->set(props, fromJson<T>(jsonValue));
   }
+
+  auto toString(const JSONObject* obj) const -> std::string override {
+    auto buf = std::stringstream();
+    buf << this->get(obj);
+    return buf.str();
+  }
 };
 
 template <class T>
 struct PropertyT<std::optional<T>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::optional<T>&> get;  // TODO(ib@unfolded.ai): return const T& ?
+  std::function<auto(JSONObject const*)->std::optional<T>> get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const T&)> set;
   T defaultValue;
 
-  PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::optional<T>&>& get_,
+  PropertyT(const char* name_, const std::function<auto(JSONObject const*)->std::optional<T>>& get_,
             const std::function<void(JSONObject*, const T&)>& set_, const T& _defaultValue)
       : Property{name_}, get{get_}, set{set_}, defaultValue{_defaultValue} {
     this->typeName = "optional";  // T::getTypeName();
@@ -149,17 +163,28 @@ struct PropertyT<std::optional<T>> : public Property {
                            const JSONConverter* jsonConverter) const override {
     this->set(props, fromJson<T>(jsonValue));
   }
+
+  auto toString(const JSONObject* obj) const -> std::string override {
+    auto buf = std::stringstream();
+    auto optional = this->get(obj);
+    if (optional) {
+      buf << optional.value();
+    } else {
+      buf << "null";
+    }
+    return buf.str();
+  }
 };
 
 template <class T>
 struct PropertyT<std::shared_ptr<T>> : public Property {
  public:
-  std::function<auto(JSONObject const*)->const std::shared_ptr<T>&> get;  // TODO(ib@unfolded.ai): return const T& ?
-  std::function<void(JSONObject*, const std::shared_ptr<T>&)> set;
+  std::function<auto(JSONObject const*)->std::shared_ptr<T>> get;  // TODO(ib@unfolded.ai): return const T& ?
+  std::function<void(JSONObject*, std::shared_ptr<T>)> set;
   std::shared_ptr<T> defaultValue;
 
-  PropertyT(const char* name_, const std::function<auto(JSONObject const*)->const std::shared_ptr<T>&>& get_,
-            const std::function<void(JSONObject*, const std::shared_ptr<T>&)>& set_)
+  PropertyT(const char* name_, const std::function<auto(JSONObject const*)->std::shared_ptr<T>>& get_,
+            const std::function<void(JSONObject*, std::shared_ptr<T>)>& set_)
       : Property{name_}, get{get_}, set{set_} {
     this->typeName = T::getTypeName();
   }
@@ -178,11 +203,23 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
     }
     this->set(props, typedProp);
   }
+
+  auto toString(const JSONObject* obj) const -> std::string override {
+    auto buf = std::stringstream();
+    auto sharedPtr = this->get(obj);
+    if (sharedPtr) {
+      buf << sharedPtr.get();
+    } else {
+      buf << "null";
+    }
+    return buf.str();
+  }
 };
 
 template <class T>
 struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
  public:
+  // TODO(isaac@unfolded.ai): Possibly incorrect passing of references here
   std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&>
       get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)> set;
@@ -212,6 +249,26 @@ struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
       list.push_back(typedProp);
     }
     this->set(props, list);
+  }
+
+  auto toString(const JSONObject* obj) const -> std::string override {
+    auto buf = std::stringstream();
+    buf << "[";
+    auto first = true;
+    for (auto item : this->get(obj)) {
+      if (!first) {
+        buf << ", ";
+      } else {
+        first = false;
+      }
+      if (item) {
+        buf << item.get();
+      } else {
+        buf << "null";
+      }
+    }
+    buf << "]";
+    return buf.str();
   }
 };
 
