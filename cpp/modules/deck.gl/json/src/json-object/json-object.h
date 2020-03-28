@@ -208,7 +208,7 @@ struct PropertyT<std::shared_ptr<T>> : public Property {
     auto buf = std::stringstream();
     auto sharedPtr = this->get(obj);
     if (sharedPtr) {
-      buf << *sharedPtr;
+      buf << sharedPtr.get();
     } else {
       buf << "null";
     }
@@ -262,7 +262,7 @@ struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
         first = false;
       }
       if (item) {
-        buf << *item;
+        buf << item.get();
       } else {
         buf << "null";
       }
