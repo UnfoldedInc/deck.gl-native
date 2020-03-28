@@ -1,9 +1,6 @@
 # Inspired by https://github.com/uber/h3/blob/master/.travis.yml
 # and https://github.com/google/s2geometry/blob/master/.travis.yml
 
-# Many builds are disabled here to save time. They should be enabled
-# later (and they should be working.)
-
 language: c
 
 os: linux
@@ -19,27 +16,17 @@ env:
 
 matrix:
   include:
-      # Check that clang-format doesn't detect some files are not formatted.
-    # - name: "Formatting check"
-    #   compiler: clang
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - llvm-toolchain-trusty-5.0
-    #       packages:
-    #         - clang-format-5.0
-    #   script: make format && git diff --exit-code
-    # - name: "Valgrind test"
-    #   compiler: gcc
-    #   addons:
-    #     apt:
-    #       packages:
-    #         - valgrind
-    #   before_script:
-    #     - cmake -DCMAKE_BUILD_TYPE=Debug -DWRAP_VALGRIND=ON -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake .
-    #   script:
-    #     - make
-    #     - CTEST_OUTPUT_ON_FAILURE=1 make test
+    # Check that clang-format doesn't detect some files are not formatted.
+    - name: "Formatting check"
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-format-9
+      script: make format && git diff --exit-code
     # TODO: Doesn't install arrow correctly on OSX
     # - name: "Mac OSX (Xcode 11.3)"
     #   os: osx
@@ -51,6 +38,13 @@ matrix:
     - name: "Linux (GCC)"
       os: linux
       compiler: gcc
+      addons:
+        apt:
+          packages:
+            - valgrind
+      script:
+        - make -j
+        - valgrind --error-exitcode=99 ./tests
 
 before_install:
   # Install arrow
