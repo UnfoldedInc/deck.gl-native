@@ -24,8 +24,8 @@
 
 #include <map>
 
-using namespace lumagl;
-using namespace lumagl::utils;
+namespace lumagl {
+namespace utils {
 
 auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
 #if defined(LUMAGL_ENABLE_BACKEND_D3D12)
@@ -62,3 +62,6 @@ std::map<WGPUErrorType, const char *> errorTypeToNameMap = {
 };
 
 auto getWebGPUErrorName(WGPUErrorType errorType) -> const char * { return errorTypeToNameMap[errorType]; }
+
+}  // namespace utils
+}  // namespace lumagl

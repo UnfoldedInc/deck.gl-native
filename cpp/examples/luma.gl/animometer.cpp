@@ -94,15 +94,22 @@ int main(int argc, const char* argv[]) {
 //  init();
 
   animationLoop.onBeforeRender = [](AnimationLoop*) {
+//    static int f = 0;
+//    f++;
+//    for (auto& data : shaderData) {
+//        data.time = f / 60.0f;
+//    }
+//    ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
+  };
+
+  animationLoop.run([model](wgpu::RenderPassEncoder pass) {
     static int f = 0;
     f++;
     for (auto& data : shaderData) {
         data.time = f / 60.0f;
     }
     ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
-  }
 
-  animationLoop.run([](wgpu::RenderPassEncoder pass) {
     pass.SetPipeline(model.pipeline);
     for (size_t i = 0; i < kNumTriangles; i++) {
       uint32_t offset = i * sizeof(ShaderData);

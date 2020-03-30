@@ -15,8 +15,6 @@
 #ifndef DAWNNATIVE_VULKANBACKEND_H_
 #define DAWNNATIVE_VULKANBACKEND_H_
 
-// TODO(ilija@unfolded.ai): Undo
-/*
 #include <dawn/dawn_wsi.h>
 #include <dawn_native/DawnNative.h>
 
@@ -75,7 +73,5 @@ namespace dawn_native { namespace vulkan {
                                                        const ExternalImageDescriptor* descriptor);
 #endif  // __linux__
 }}  // namespace dawn_native::vulkan
-
-*/
 
 #endif  // DAWNNATIVE_VULKANBACKEND_H_
