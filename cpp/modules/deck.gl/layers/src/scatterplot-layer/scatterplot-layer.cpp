@@ -238,7 +238,7 @@ auto ScatterplotLayer::getLineWidthData(const std::shared_ptr<arrow::Table>& tab
   return ArrowMapper::mapFloatColumn(table, props->getLineWidth);
 }
 
-auto ScatterplotLayer::_getModel(wgpuDevice device) -> std::shared_ptr<lumagl::Model> {
+auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model> {
   // a square that minimally cover the unit circle
   // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 

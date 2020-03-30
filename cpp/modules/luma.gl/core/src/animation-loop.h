@@ -37,10 +37,10 @@ class AnimationLoop {
   void frame(std::function<void(wgpu::RenderPassEncoder)>);
   void stop();
 
-  // std::function<bool(AnimationLoop *)> onNeedsRedraw{[](AnimationLoop *) { return true; }};
-  // std::function<void(AnimationLoop *)> onBeforeRender{[](AnimationLoop *) {}};
-  // std::function<void(AnimationLoop *)> onRender{[](AnimationLoop *, ) {}};
-  // std::function<void(AnimationLoop *)> onAfterRender{[](AnimationLoop *) {}};
+  std::function<bool(AnimationLoop *)> onNeedsRedraw{[](AnimationLoop *) { return true; }};
+  std::function<void(AnimationLoop *)> onBeforeRender{[](AnimationLoop *) {}};
+  std::function<void(AnimationLoop *)> onRender{[](AnimationLoop *) {}};
+  std::function<void(AnimationLoop *)> onAfterRender{[](AnimationLoop *) {}};
 
   virtual auto createDevice(wgpu::BackendType) -> wgpu::Device;
   virtual bool shouldQuit() { return false; }

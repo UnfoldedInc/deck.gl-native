@@ -28,6 +28,7 @@
 #endif
 
 using namespace lumagl;
+using namespace lumagl::utils;
 
 // Helpers
 
@@ -45,6 +46,18 @@ auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat;
 // Not used?
 auto getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain;
 auto createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
+void doFlush();
+
+static CmdBufType cmdBufType = CmdBufType::Terrible;
+static std::unique_ptr<dawn_native::Instance> instance;
+static BackendBinding* binding = nullptr;
+
+static GLFWwindow* window{nullptr};
+
+static dawn_wire::WireServer* wireServer{nullptr};
+static dawn_wire::WireClient* wireClient{nullptr};
+static TerribleCommandBuffer* c2sBuf{nullptr};
+static TerribleCommandBuffer* s2cBuf{nullptr};
 
 // GLFWAnimationLoop
 
@@ -57,48 +70,20 @@ GLFWAnimationLoop::GLFWAnimationLoop(wgpu::BackendType backendType) : AnimationL
 }
 
 auto GLFWAnimationLoop::createDevice(wgpu::BackendType backendType) -> wgpu::Device {
-  return nullptr;  // createDevice(backendType);
+  return createCppDawnDevice(backendType);
 }
 
 bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->window); }
 
-// void GLFWAnimationLoop::flush() {
-//   // if (this->c2sBuf) {
-//   //   bool c2sSuccess = c2sBuf->Flush();
-//   //   ASSERT(c2sSuccess && s2cSuccess);
-//   // }
-//   // if (this->s2cBuf) {
-//   //   bool s2cSuccess = s2cBuf->Flush();
-//   //   ASSERT(c2sSuccess && s2cSuccess);
-//   // }
-//   glfwPollEvents();
-// }
-
 void GLFWAnimationLoop::flush() {
-  
-  if (c2sBuf) {
-    bool c2sSuccess = c2sBuf->Flush();
-    // ASSERT(c2sSuccess);
-  }
-  if (s2cBuf) {
-    bool s2cSuccess = s2cBuf->Flush();
-    // ASSERT(s2cSuccess);
-  }
-
-  glfwPollEvents();
+  doFlush();
 }
-
-
-GLFWwindow* window{nullptr};
-lumagl::utils::TerribleCommandBuffer* c2sBuf{nullptr};
-lumagl::utils::TerribleCommandBuffer* s2cBuf{nullptr};
-
 
 uint64_t getSwapChainImplementation() { return binding->GetSwapChainImplementation(); }
 
 wgpu::TextureFormat getPreferredSwapChainTextureFormat() {
-  DoFlush();
-  return static_cast<wgpu::TextureFormat>(binding->getPreferredSwapChainTextureFormat());
+  doFlush();
+  return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
 }
 
 wgpu::SwapChain getSwapChain(const wgpu::Device& device) {
@@ -150,22 +135,9 @@ static void initializeGLFW(wgpu::BackendType backendType) {
   }
 }
 
-// TODO(ib@unfolded.ai): restore or delete
-
-static CmdBufType cmdBufType = CmdBufType::Terrible;
-static std::unique_ptr<dawn_native::Instance> instance;
-static lumagl::utils::BackendBinding* binding = nullptr;
-
-
-static dawn_wire::WireServer* wireServer = nullptr;
-static dawn_wire::WireClient* wireClient = nullptr;
-static lumagl::utils::TerribleCommandBuffer* c2sBuf = nullptr;
-static lumagl::utils::TerribleCommandBuffer* s2cBuf = nullptr;
-
 auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
-
   instance = std::make_unique<dawn_native::Instance>();
-  lumagl::utils::DiscoverAdapter(instance.get(), window, backendType);
+  DiscoverAdapter(instance.get(), window, backendType);
 
   // Get an adapter for the backend to use, and create the device.
   dawn_native::Adapter backendAdapter;
@@ -183,7 +155,7 @@ auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
   WGPUDevice backendDevice = backendAdapter.CreateDevice();
   DawnProcTable backendProcs = dawn_native::GetProcs();
 
-  binding = lumagl::utils::CreateBinding(backendType, window, backendDevice);
+  binding = CreateBinding(backendType, window, backendDevice);
   if (binding == nullptr) {
     return nullptr;
   }
@@ -199,8 +171,8 @@ auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
       break;
 
     case CmdBufType::Terrible: {
-      c2sBuf = new lumagl::utils::TerribleCommandBuffer();
-      s2cBuf = new lumagl::utils::TerribleCommandBuffer();
+      c2sBuf = new TerribleCommandBuffer();
+      s2cBuf = new TerribleCommandBuffer();
 
       dawn_wire::WireServerDescriptor serverDesc = {};
       serverDesc.device = backendDevice;
@@ -232,4 +204,17 @@ auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
       nullptr);
   wgpu::Device::Acquire(cDevice);
   return cDevice;
+}
+
+void doFlush() {
+  if (c2sBuf) {
+    bool c2sSuccess = c2sBuf->Flush();
+    ASSERT(c2sSuccess);
+  }
+  if (s2cBuf) {
+    bool s2cSuccess = s2cBuf->Flush();
+    ASSERT(s2cSuccess);
+  }
+
+  glfwPollEvents();
 }

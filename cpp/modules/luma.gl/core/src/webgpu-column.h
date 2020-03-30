@@ -23,14 +23,14 @@
 
 namespace lumagl {
 
-#include "dawn.h"
+#include <dawn.h>  // NOLINT(build/include)
 
 class WebGPUColumn {
  public:
   wgpu::BindGroup bindGroup;
   wgpu::Buffer ubo;
 
-  WebGPUColumn(void *device, ) {
+  explicit WebGPUColumn(void *device) {
     wgpu::BufferDescriptor bufferDesc;
     bufferDesc.size = kNumTriangles * sizeof(ShaderData);
     bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;

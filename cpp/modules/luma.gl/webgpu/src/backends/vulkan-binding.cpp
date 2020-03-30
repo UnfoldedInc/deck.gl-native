@@ -21,45 +21,42 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "./backend-binding.h"
-
-#include "dawn_native/VulkanBackend.h"
-
-// Include GLFW after VulkanBackend so that it declares the Vulkan-specific functions
-#include "GLFW/glfw3.h"
-
 #include <memory>
 
+#include "dawn_native/VulkanBackend.h"
+// Include GLFW after VulkanBackend so that it declares the Vulkan-specific functions
+#include "./backend-binding.h"
+#include "GLFW/glfw3.h"
+
+namespace lumagl {
 namespace utils {
 
-    class VulkanBinding : public BackendBinding {
-      public:
-        VulkanBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
-        }
+class VulkanBinding : public BackendBinding {
+ public:
+  VulkanBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
-        uint64_t GetSwapChainImplementation() override {
-            if (mSwapchainImpl.userData == nullptr) {
-                VkSurfaceKHR surface = VK_NULL_HANDLE;
-                if (glfwCreateWindowSurface(dawn_native::vulkan::GetInstance(mDevice), mWindow,
-                                            nullptr, &surface) != VK_SUCCESS) {
-                    ASSERT(false);
-                }
+  uint64_t GetSwapChainImplementation() override {
+    if (mSwapchainImpl.userData == nullptr) {
+      VkSurfaceKHR surface = VK_NULL_HANDLE;
+      if (glfwCreateWindowSurface(dawn_native::vulkan::GetInstance(mDevice), mWindow, nullptr, &surface) !=
+          VK_SUCCESS) {
+        ASSERT(false);
+      }
 
-                mSwapchainImpl = dawn_native::vulkan::CreateNativeSwapChainImpl(mDevice, surface);
-            }
-            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
-        }
-        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
-            ASSERT(mSwapchainImpl.userData != nullptr);
-            return dawn_native::vulkan::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
-        }
-
-      private:
-        DawnSwapChainImplementation mSwapchainImpl = {};
-    };
-
-    BackendBinding* CreateVulkanBinding(GLFWwindow* window, WGPUDevice device) {
-        return new VulkanBinding(window, device);
+      mSwapchainImpl = dawn_native::vulkan::CreateNativeSwapChainImpl(mDevice, surface);
     }
+    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+  }
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
+    ASSERT(mSwapchainImpl.userData != nullptr);
+    return dawn_native::vulkan::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
+  }
+
+ private:
+  DawnSwapChainImplementation mSwapchainImpl = {};
+};
+
+BackendBinding* CreateVulkanBinding(GLFWwindow* window, WGPUDevice device) { return new VulkanBinding(window, device); }
 
 }  // namespace utils
+}  // namespace lumagl

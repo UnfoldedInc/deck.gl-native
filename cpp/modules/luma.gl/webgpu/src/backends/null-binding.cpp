@@ -21,36 +21,32 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "utils/BackendBinding.h"
-
-#include "common/Assert.h"
-#include "dawn_native/NullBackend.h"
-
 #include <memory>
 
+#include "./backend-binding.h"
+#include "dawn_native/NullBackend.h"
+#include "probe.gl/core.h"
+
+namespace lumagl {
 namespace utils {
 
-    class NullBinding : public BackendBinding {
-      public:
-        NullBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
-        }
+class NullBinding : public BackendBinding {
+ public:
+  NullBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
-        uint64_t GetSwapChainImplementation() override {
-            if (mSwapchainImpl.userData == nullptr) {
-                mSwapchainImpl = dawn_native::null::CreateNativeSwapChainImpl();
-            }
-            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
-        }
-        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
-            return WGPUTextureFormat_RGBA8Unorm;
-        }
-
-      private:
-        DawnSwapChainImplementation mSwapchainImpl = {};
-    };
-
-    BackendBinding* CreateNullBinding(GLFWwindow* window, WGPUDevice device) {
-        return new NullBinding(window, device);
+  uint64_t GetSwapChainImplementation() override {
+    if (mSwapchainImpl.userData == nullptr) {
+      mSwapchainImpl = dawn_native::null::CreateNativeSwapChainImpl();
     }
+    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+  }
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override { return WGPUTextureFormat_RGBA8Unorm; }
+
+ private:
+  DawnSwapChainImplementation mSwapchainImpl = {};
+};
+
+BackendBinding* CreateNullBinding(GLFWwindow* window, WGPUDevice device) { return new NullBinding(window, device); }
 
 }  // namespace utils
+}  // namespace lumagl

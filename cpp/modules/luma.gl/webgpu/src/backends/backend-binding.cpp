@@ -21,15 +21,17 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "./backend-binding.h"
+#include "./backend-binding.h"  // NOLINT(build/include)
 
-#include "./compiler.h"
 #include "GLFW/glfw3.h"
+#include "luma.gl/core.h"
+#include "probe.gl/core.h"
 
 #if defined(LUMAGL_ENABLE_BACKEND_OPENGL)
 #include "dawn_native/OpenGLBackend.h"
 #endif  // defined(LUMAGL_ENABLE_BACKEND_OPENGL)
 
+namespace lumagl {
 namespace utils {
 
 #if defined(LUMAGL_ENABLE_BACKEND_D3D12)
@@ -51,8 +53,8 @@ BackendBinding* CreateVulkanBinding(GLFWwindow* window, WGPUDevice device);
 BackendBinding::BackendBinding(GLFWwindow* window, WGPUDevice device) : mWindow(window), mDevice(device) {}
 
 void DiscoverAdapter(dawn_native::Instance* instance, GLFWwindow* window, wgpu::BackendType type) {
-  DAWN_UNUSED(type);
-  DAWN_UNUSED(window);
+  PROBEGL_UNUSED(type);
+  PROBEGL_UNUSED(window);
 
   if (type == wgpu::BackendType::OpenGL) {
 #if defined(LUMAGL_ENABLE_BACKEND_OPENGL)
@@ -99,3 +101,4 @@ BackendBinding* CreateBinding(wgpu::BackendType type, GLFWwindow* window, WGPUDe
 }
 
 }  // namespace utils
+}  // namespace lumagl

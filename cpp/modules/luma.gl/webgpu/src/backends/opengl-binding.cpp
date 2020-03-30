@@ -21,43 +21,38 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
+#include <cstdio>
+
 #include "./backend-binding.h"
-
-#include "./swap-chain-utils.h"
-
+#include "GLFW/glfw3.h"
 #include "dawn/dawn_wsi.h"
 #include "dawn_native/OpenGLBackend.h"
+#include "luma.gl/core.h"
 
-#include <cstdio>
-#include "GLFW/glfw3.h"
-
+namespace lumagl {
 namespace utils {
 
-    class OpenGLBinding : public BackendBinding {
-      public:
-        OpenGLBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
-        }
+class OpenGLBinding : public BackendBinding {
+ public:
+  OpenGLBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
-        uint64_t GetSwapChainImplementation() override {
-            if (mSwapchainImpl.userData == nullptr) {
-                mSwapchainImpl = dawn_native::opengl::CreateNativeSwapChainImpl(
-                    mDevice,
-                    [](void* userdata) { glfwSwapBuffers(static_cast<GLFWwindow*>(userdata)); },
-                    mWindow);
-            }
-            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
-        }
-
-        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
-            return dawn_native::opengl::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
-        }
-
-      private:
-        DawnSwapChainImplementation mSwapchainImpl = {};
-    };
-
-    BackendBinding* CreateOpenGLBinding(GLFWwindow* window, WGPUDevice device) {
-        return new OpenGLBinding(window, device);
+  uint64_t GetSwapChainImplementation() override {
+    if (mSwapchainImpl.userData == nullptr) {
+      mSwapchainImpl = dawn_native::opengl::CreateNativeSwapChainImpl(
+          mDevice, [](void* userdata) { glfwSwapBuffers(static_cast<GLFWwindow*>(userdata)); }, mWindow);
     }
+    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+  }
+
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
+    return dawn_native::opengl::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
+  }
+
+ private:
+  DawnSwapChainImplementation mSwapchainImpl = {};
+};
+
+BackendBinding* CreateOpenGLBinding(GLFWwindow* window, WGPUDevice device) { return new OpenGLBinding(window, device); }
 
 }  // namespace utils
+}  // namespace lumagl

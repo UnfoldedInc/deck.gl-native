@@ -24,21 +24,20 @@
 
 #include <map>
 
-using namespace lumagl;
-using namespace lumagl::utils;
+namespace lumagl {
+namespace utils {
 
 auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
-  // TODO(ib@unfolded.ai) replace dawn macros here
-#if defined(DAWN_ENABLE_BACKEND_D3D12)
+#if defined(LUMAGL_ENABLE_BACKEND_D3D12)
   return wgpu::BackendType::D3D12;
-#elif defined(DAWN_ENABLE_BACKEND_METAL)
+#elif defined(LUMAGL_ENABLE_BACKEND_METAL)
   return wgpu::BackendType::Metal;
-#elif defined(DAWN_ENABLE_BACKEND_VULKAN)
+#elif defined(LUMAGL_ENABLE_BACKEND_VULKAN)
   return wgpu::BackendType::Vulkan;
-#elif defined(DAWN_ENABLE_BACKEND_OPENGL)
+#elif defined(LUMAGL_ENABLE_BACKEND_OPENGL)
   return wgpu::BackendType::OpenGL;
 #else
-  // #warning "No DAWN_ENABLE_BACKEND_ constant set"
+  // #warning "No LUMAGL_ENABLE_BACKEND_ constant set"
   return wgpu::BackendType::Metal;
 #endif
 }
@@ -63,3 +62,6 @@ std::map<WGPUErrorType, const char *> errorTypeToNameMap = {
 };
 
 auto getWebGPUErrorName(WGPUErrorType errorType) -> const char * { return errorTypeToNameMap[errorType]; }
+
+}  // namespace utils
+}  // namespace lumagl

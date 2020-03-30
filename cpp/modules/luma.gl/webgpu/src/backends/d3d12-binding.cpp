@@ -21,44 +21,40 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include "utils/BackendBinding.h"
-
-#include "common/Assert.h"
-#include "dawn_native/D3D12Backend.h"
-
-#include "GLFW/glfw3.h"
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include "GLFW/glfw3native.h"
-
 #include <memory>
 
+#include "GLFW/glfw3.h"
+#include "dawn_native/D3D12Backend.h"
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include "./backend-binding.h"
+#include "GLFW/glfw3native.h"
+#include "probe.gl/core.h"
+
+namespace lumagl {
 namespace utils {
 
-    class D3D12Binding : public BackendBinding {
-      public:
-        D3D12Binding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {
-        }
+class D3D12Binding : public BackendBinding {
+ public:
+  D3D12Binding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
-        uint64_t GetSwapChainImplementation() override {
-            if (mSwapchainImpl.userData == nullptr) {
-                HWND win32Window = glfwGetWin32Window(mWindow);
-                mSwapchainImpl =
-                    dawn_native::d3d12::CreateNativeSwapChainImpl(mDevice, win32Window);
-            }
-            return reinterpret_cast<uint64_t>(&mSwapchainImpl);
-        }
-
-        WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
-            ASSERT(mSwapchainImpl.userData != nullptr);
-            return dawn_native::d3d12::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
-        }
-
-      private:
-        DawnSwapChainImplementation mSwapchainImpl = {};
-    };
-
-    BackendBinding* CreateD3D12Binding(GLFWwindow* window, WGPUDevice device) {
-        return new D3D12Binding(window, device);
+  uint64_t GetSwapChainImplementation() override {
+    if (mSwapchainImpl.userData == nullptr) {
+      HWND win32Window = glfwGetWin32Window(mWindow);
+      mSwapchainImpl = dawn_native::d3d12::CreateNativeSwapChainImpl(mDevice, win32Window);
     }
+    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+  }
+
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
+    ASSERT(mSwapchainImpl.userData != nullptr);
+    return dawn_native::d3d12::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
+  }
+
+ private:
+  DawnSwapChainImplementation mSwapchainImpl = {};
+};
+
+BackendBinding* CreateD3D12Binding(GLFWwindow* window, WGPUDevice device) { return new D3D12Binding(window, device); }
 
 }  // namespace utils
+}  // namespace lumagl

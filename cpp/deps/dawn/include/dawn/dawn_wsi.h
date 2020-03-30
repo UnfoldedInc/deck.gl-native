@@ -17,6 +17,9 @@
 
 #include <dawn/webgpu.h>
 
+// TODO(ilija@unfolded.ai): Backend enabling flags aren't defined as part of our build process. Revisit
+#define DAWN_ENABLE_BACKEND_METAL ON
+
 // Error message (or nullptr if there was no error)
 typedef const char* DawnSwapChainError;
 constexpr DawnSwapChainError DAWN_SWAP_CHAIN_NO_ERROR = nullptr;

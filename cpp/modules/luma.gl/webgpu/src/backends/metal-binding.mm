@@ -23,14 +23,17 @@
 
 #include "./backend-binding.h"
 
-#include "./swap-chain-utils.h"
+#import <QuartzCore/CAMetalLayer.h>
+
+#include "dawn/dawn_wsi.h"
 #include "dawn_native/MetalBackend.h"
 
 #define GLFW_EXPOSE_NATIVE_COCOA
 #include "GLFW/glfw3.h"
 #include "GLFW/glfw3native.h"
 
-#import <QuartzCore/CAMetalLayer.h>
+#include "luma.gl/core.h"
+#include "probe.gl/core.h"
 
 namespace lumagl {
 namespace utils {

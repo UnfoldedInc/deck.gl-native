@@ -1,6 +1,9 @@
 // Ported from dawn examples
 
-#include "luma.gl/core"
+#include "luma.gl/core.h"
+
+using namespace lumagl;
+using namespace lumagl::utils;
 
 float RandomFloat(float min, float max) {
   float zeroOne = rand() / float(RAND_MAX);
@@ -73,30 +76,40 @@ void main() {
     fragColor = v_color;
 })";
 
-int main(int argc, const char* argv[]) {
+static std::vector<ShaderData> shaderData;
 
+int main(int argc, const char* argv[]) {
   // if (!InitSample(argc, argv)) {
   //     return 1;
   // }
 
-  GLFWAnimationLoop animationLoop;
+  GLFWAnimationLoop animationLoop{wgpu::BackendType::Vulkan};
+  auto device = animationLoop.createDevice(wgpu::BackendType::Vulkan);
 
-  animationLoop.initializeDevice();
+//  animationLoop.initializeDevice();
 
-  let model = new Model(animationLoop.device, vs, fs)
+  Model::Options options{vs, fs};
+  Model model{device, options};
 
-  init();
+//  init();
 
   animationLoop.onBeforeRender = [](AnimationLoop*) {
+//    static int f = 0;
+//    f++;
+//    for (auto& data : shaderData) {
+//        data.time = f / 60.0f;
+//    }
+//    ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
+  };
+
+  animationLoop.run([model](wgpu::RenderPassEncoder pass) {
     static int f = 0;
     f++;
     for (auto& data : shaderData) {
         data.time = f / 60.0f;
     }
     ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
-  }
 
-  animationLoop.run([](AnimationLoop*, wgpu::RenderPassEncoder pass) {
     pass.SetPipeline(model.pipeline);
     for (size_t i = 0; i < kNumTriangles; i++) {
       uint32_t offset = i * sizeof(ShaderData);
