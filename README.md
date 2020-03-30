@@ -145,7 +145,7 @@ export PATH=$PATH:$PWD/depot_tools # /path/to/depot_tools
 
 ## Building dawn
 
-See [building dawn[(https://dawn.googlesource.com/dawn/+/HEAD/docs/buiding.md)
+See [building dawn](https://dawn.googlesource.com/dawn/+/HEAD/docs/buiding.md)
 
 ```sh
 cd dawn
@@ -158,7 +158,8 @@ gn args out/Debug
 # Build dawn
 ninja -C out/Debug
 # Test dawn
-./out/Debug/dawn_end2end_tests to run the tests.
+./out/Debug/dawn_end2end_tests
+
 # Build examples
 cmake -DDAWN_ENABLE_METAL=1 -DDAWN_BUILD_EXAMPLES=1 -DSHADERC_ENABLE_INSTALL=1 .
 # Run Examples
