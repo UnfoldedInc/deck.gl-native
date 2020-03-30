@@ -41,10 +41,10 @@ class Model {
 
   void draw();
 
-  wgpu::RenderPipeline pipeline;                 // rendering pipeline (pass.SetPipeline(model.pipeline)
-//  wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
-//  wgpu::ShaderModule vsModule;                   // Compiled vertex shader
-//  wgpu::ShaderModule fsModule;                   // Compiled fragment shader
+  wgpu::RenderPipeline pipeline;  // rendering pipeline (pass.SetPipeline(model.pipeline)
+  //  wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
+  //  wgpu::ShaderModule vsModule;                   // Compiled vertex shader
+  //  wgpu::ShaderModule fsModule;                   // Compiled fragment shader
 };
 
 class Model::Options {
