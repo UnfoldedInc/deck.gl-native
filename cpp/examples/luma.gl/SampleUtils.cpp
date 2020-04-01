@@ -26,7 +26,7 @@
 #include <dawn_native/DawnNative.h>
 #include <dawn_wire/WireClient.h>
 #include <dawn_wire/WireServer.h>
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 #include <algorithm>
 #include <cstring>

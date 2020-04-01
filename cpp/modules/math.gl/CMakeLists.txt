@@ -1,0 +1,53 @@
+# Copyright (c) 2020 Unfolded Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+add_library(mathgl)
+
+# File lists that are maintained manually
+set(HEADER_FILE_LIST
+    core.h
+    core/src/core.h
+    core/src/rectangle.h
+    web-mercator.h
+    web-mercator/src/web-mercator-utils.h
+    )
+set(SOURCE_FILE_LIST
+    web-mercator/src/web-mercator-utils.cpp
+    )
+set(TESTS_HEADER_FILE_LIST
+    web-mercator/test/sample-viewports.h
+    )
+set(TESTS_SOURCE_FILE_LIST
+    core/test/core-test.cpp
+    web-mercator/test/web-mercator-utils-test.cpp
+    )
+
+# Some of the include paths are relative to modules directory
+target_include_directories(mathgl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
+
+# Export source list of this module
+set_property(TARGET mathgl PROPERTY DECK_ALL_SOURCES 
+    ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
+    ${TESTS_HEADER_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
+    )
+set_property(TARGET mathgl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
+
+# Specify sources that'll be compiled
+target_sources(mathgl PRIVATE ${SOURCE_FILE_LIST})

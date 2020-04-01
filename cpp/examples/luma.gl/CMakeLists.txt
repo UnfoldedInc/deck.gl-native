@@ -48,11 +48,10 @@ add_library(dawn_sample_utils STATIC)
 target_sources(dawn_sample_utils PRIVATE
     "SampleUtils.cpp"
     "SampleUtils.h"
-    "webgpu_cpp.cpp" # Could not include libdawncpp, and this seems to be the only source file
 )
 target_link_libraries(dawn_sample_utils PUBLIC
     shaderc
-    #dawncpp # Could not find this library anywhere, although it is being used by dawn internally
+    ${DAWN_DIR}/out/Debug/obj/src/dawn/dawncpp/webgpu_cpp.o
     dawn_proc
     common
     dawn_native
