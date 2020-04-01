@@ -118,3 +118,6 @@ DerivedData/
 .vscode
 
 /build*/
+
+# Cloned dependencies in CI
+/deps/
