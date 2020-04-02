@@ -30,5 +30,8 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
     # Some of the include paths are relative to modules directory
     target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
 
-    target_link_libraries(${TARGET_NAME} PRIVATE deckgl)
+    target_link_libraries(${TARGET_NAME} PRIVATE deck.gl)
 endforeach()
+
+# Add source files to parent-defined lists
+list(APPEND DECK_ALL_SOURCES ${EXAMPLE_SOURCE_FILES})

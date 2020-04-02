@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-add_library(lumagl)
+add_library(luma.gl)
 
 # File lists that are maintained manually
 set(WEBGPU_HEADER_FILE_LIST
@@ -65,23 +65,15 @@ set(TESTS_SOURCE_FILE_LIST
     )
 
 # Some of the include paths are relative to modules directory
-target_include_directories(lumagl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
-
-# Export source list of this module
-set_property(TARGET lumagl PROPERTY DECK_ALL_SOURCES 
-    ${WEBGPU_HEADER_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST}
-    ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
-    ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
-    )
-set_property(TARGET lumagl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST})
+target_include_directories(luma.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
 
 # Dependencies
 find_package(glfw3 CONFIG REQUIRED)    # Windowing integration for dawn
 
 # TODO: Revisit once we start making use of the dependency repo
 set(DAWN_DIR "${CMAKE_SOURCE_DIR}/../dawn")
-target_include_directories(lumagl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/deps/dawn/include/>)
-target_link_libraries(lumagl PUBLIC
+target_include_directories(luma.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/deps/dawn/include/>)
+target_link_libraries(luma.gl PUBLIC
     ${DAWN_DIR}/out/Debug/obj/src/dawn/dawncpp/webgpu_cpp.o
     ${DAWN_DIR}/out/Debug/obj/src/dawn/libdawn_proc.a
     ${DAWN_DIR}/out/Debug/obj/src/common/libcommon.a
@@ -93,4 +85,14 @@ target_link_libraries(lumagl PUBLIC
     )
 
 # Specify sources that'll be compiled
-target_sources(lumagl PRIVATE ${SOURCE_FILE_LIST})
+target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST})
+
+# Add source files to parent-defined lists
+list(APPEND DECK_ALL_SOURCES
+    ${WEBGPU_HEADER_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST}
+    ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
+    ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
+    )
+list(APPEND DECK_TEST_SOURCES
+    ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST}
+    )

@@ -30,27 +30,19 @@ project(
     LANGUAGES C CXX
     )
 
-# Dependencies
-include(CMakeDependentOption)
-
 # Global configuration
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-# If CMAKE_BUILD_TYPE is not specified explicitly by using -DCMAKE_BUILD_TYPE, default to Debug
-if (NOT CMAKE_BUILD_TYPE)
-    message(WARNING "CMAKE_BUILD_TYPE not set, forcing it to Debug")
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug, Release, RelWithDebInfo, MinSizeRel)" FORCE)
-endif()
+# Dependencies
+include(CMakeDependentOption)
 
-# Appends cmake folder to CMAKE_MODULE_PATH, used by Valgrind
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+###########
+# OPTIONS #
+###########
 
-# Options
-
-# Not a good idea to leave this on because it will generate errors on different compilers
-# that aren't tested in our CI. Can be useful for developers in order to keep code clean
-# of warnings.
+# Note that treating warnings as errors can generate unexpected errors on 
+# different compilers that aren't tested in our CI and is therefore by default OFF
 option(DECK_WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
 option(DECK_ENABLE_COVERAGE "Creates coverage reports if enabled" OFF)
 option(DECK_BUILD_EXAMPLES "Enables building examples" ON)
@@ -61,24 +53,18 @@ cmake_dependent_option(
     DECK_ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF)
 
+# If CMAKE_BUILD_TYPE is not specified explicitly by using -DCMAKE_BUILD_TYPE, default to Debug
+if (NOT CMAKE_BUILD_TYPE)
+    message(WARNING "CMAKE_BUILD_TYPE not set, forcing it to Debug")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type (Debug, Release, RelWithDebInfo, MinSizeRel)" FORCE)
+endif()
+
+# Appends cmake folder to CMAKE_MODULE_PATH, used by Valgrind
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Project modules
-# NOTE: Trying to emulate a map here, order and length of these matters
-set(DECK_MODULES
-    probegl
-    mathgl
-    loadersgl
-    lumagl
-    deckgl
-    )
-set(DECK_MODULE_PATHS
-    cpp/modules/probe.gl/
-    cpp/modules/math.gl/
-    cpp/modules/loaders.gl/
-    cpp/modules/luma.gl/
-    cpp/modules/deck.gl/
-    )
-list(LENGTH DECK_MODULES DECK_MODULE_COUNT)
-math(EXPR DECK_MODULE_COUNT "${DECK_MODULE_COUNT}-1")
+set(DECK_MODULES probe.gl math.gl loaders.gl luma.gl deck.gl)
+set(DECK_MODULE_PATH cpp/modules/)
 
 # Setup compile and link flags
 set(DECK_COMPILE_FLAGS "")
@@ -122,12 +108,11 @@ include_directories($<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/../vcpkg/installed/x64
 add_library(deckgl-bundle INTERFACE)
 
 # Define module libs
-foreach(i RANGE ${DECK_MODULE_COUNT})
-    list(GET DECK_MODULE_PATHS ${i} DECK_MODULE_PATH)
-    add_subdirectory(${DECK_MODULE_PATH})
+foreach(DECK_MODULE ${DECK_MODULES})
+    add_subdirectory(${DECK_MODULE_PATH}${DECK_MODULE})
 endforeach()
 
-target_link_libraries(deckgl-bundle INTERFACE probegl mathgl loadersgl lumagl deckgl)
+target_link_libraries(deckgl-bundle INTERFACE ${DECK_MODULES})
 
 if (DECK_BUILD_SHARED_LIBS)
     set_target_properties(deckgl-bundle PROPERTIES SOVERSION 1)
@@ -137,8 +122,11 @@ endif()
 # EXAMPLES #
 ############
 
+set(DECK_EXAMPLES cpp/examples/deck.gl/ cpp/examples/luma.gl/)
 if (DECK_BUILD_EXAMPLES)
-    add_subdirectory(cpp/examples)
+    foreach(DECK_EXAMPLE ${DECK_EXAMPLES})
+        add_subdirectory(${DECK_EXAMPLE})
+    endforeach()
 endif()
 
 #########
@@ -156,20 +144,15 @@ if (DECK_BUILD_TESTS)
     add_executable(deckgl-bundle-tests)
 
     # Add test source files from all the modules
-    # NOTE: Sources specified by a target contain paths relative to that specific target
-    foreach(i RANGE ${DECK_MODULE_COUNT})
-        list(GET DECK_MODULES ${i} DECK_MODULE)
-        list(GET DECK_MODULE_PATHS ${i} DECK_MODULE_PATH)
-
+    foreach(DECK_MODULE ${DECK_MODULES})
         get_target_property(DECK_MODULE_TESTS ${DECK_MODULE} DECK_TEST_SOURCES)
-        list(TRANSFORM DECK_MODULE_TESTS PREPEND ${DECK_MODULE_PATH})
+        # NOTE: Sources specified by a target contain paths relative to that specific target
+        list(TRANSFORM DECK_MODULE_TESTS PREPEND ${DECK_MODULE_PATH}${DECK_MODULE}/)
         target_sources(deckgl-bundle-tests PRIVATE ${DECK_MODULE_TESTS})
     endforeach()
 
     target_sources(deckgl-bundle-tests PRIVATE cpp/tests/main.cpp)
-
-    target_compile_options(deckgl-bundle-tests PRIVATE ${DECK_COMPILE_FLAGS})
-    target_link_libraries(deckgl-bundle-tests PRIVATE ${DECK_LINK_FLAGS} GTest::gtest deckgl-bundle)
+    target_link_libraries(deckgl-bundle-tests PRIVATE GTest::gtest deckgl-bundle)
 
     # Extract registered Google Tests from the executable and add them to ctest
     # https://cmake.org/cmake/help/latest/module/GoogleTest.html
@@ -201,14 +184,11 @@ endif()
 ##############
 
 if (DECK_ENABLE_FORMAT)
-    # Gather source file lists for all the targets
-    # NOTE: Sources specified by a target contain paths relative to that specific target
-    foreach(i RANGE ${DECK_MODULE_COUNT})
-        list(GET DECK_MODULES ${i} DECK_MODULE)
-        list(GET DECK_MODULE_PATHS ${i} DECK_MODULE_PATH)
-
+    # Gather a list of source files that will be passed onto the formatter
+    foreach(DECK_MODULE ${DECK_MODULES})
         get_target_property(DECK_MODULE_SOURCES ${DECK_MODULE} DECK_ALL_SOURCES)
-        list(TRANSFORM DECK_MODULE_SOURCES PREPEND ${DECK_MODULE_PATH})
+        # NOTE: Sources specified by a target contain paths relative to that specific target
+        list(TRANSFORM DECK_MODULE_SOURCES PREPEND ${DECK_MODULE_PATH}${DECK_MODULE}/)
         list(APPEND DECK_SOURCE_LIST ${DECK_MODULE_SOURCES})
     endforeach()
 
@@ -217,7 +197,7 @@ if (DECK_ENABLE_FORMAT)
         COMMAND ${CLANG_FORMAT_PATH}
         -style=file
         -i
-        ${SOURCE_LIST}
+        ${DECK_SOURCE_LIST}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Formatting sources"
         )

@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-add_library(probegl)
+add_library(probe.gl)
 
 # File lists that are maintained manually
 set(HEADER_FILE_LIST
@@ -41,14 +41,14 @@ set(TESTS_SOURCE_FILE_LIST
     )
 
 # Some of the include paths are relative to modules directory
-target_include_directories(probegl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
+target_include_directories(probe.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
 
-# Export source list of this module
-set_property(TARGET probegl PROPERTY DECK_ALL_SOURCES 
+# Specify sources that'll be compiled
+target_sources(probe.gl PRIVATE ${SOURCE_FILE_LIST})
+
+# Add source files to parent-defined lists
+list(APPEND DECK_ALL_SOURCES
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${TESTS_SOURCE_FILE_LIST}
     )
-set_property(TARGET probegl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
-
-# Specify sources that'll be compiled
-target_sources(probegl PRIVATE ${SOURCE_FILE_LIST})
+list(APPEND DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
