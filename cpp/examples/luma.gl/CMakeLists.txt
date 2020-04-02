@@ -39,8 +39,6 @@ add_definitions(-DDAWN_ENABLE_BACKEND_METAL)
 link_directories(${DAWN_DIR}/out ${DAWN_DIR}/out/Debug ${DAWN_DIR}/out/Debug/obj ${DAWN_DIR}/out/Debug/obj/src/common)
 link_directories(${DAWN_DIR}/src/dawn ${DAWN_DIR}/src/common)
 
-# TODO: Can't seem to find glfw3 like this, although same thing is being done in the root CMakeLists...
-# find_package(glfw3 CONFIG REQUIRED)
 include_directories(${VCPKG_ROOT}/installed/x64-osx/include)
 link_directories(${VCPKG_ROOT}/installed/x64-osx/lib)
 
@@ -73,5 +71,5 @@ target_link_libraries(dawn_sample_utils PUBLIC
 )
 set_target_properties(dawn_sample_utils PROPERTIES LINK_FLAGS "-Wl,-F/System/Library/Frameworks")
 
-add_executable(DawnAnimometer "Dawn_Animometer")
-target_link_libraries(DawnAnimometer dawn_sample_utils)
+# add_executable(DawnAnimometer "Dawn_Animometer")
+# target_link_libraries(DawnAnimometer dawn_sample_utils)

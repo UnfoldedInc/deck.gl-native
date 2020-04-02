@@ -34,19 +34,14 @@ set(TESTS_SOURCE_FILE_LIST
     json/test/json-loader-test.cpp
     )
 
-# Some of the include paths are relative to modules directory
-target_include_directories(loaders.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
-
-# Dependencies
-find_package(arrow CONFIG REQUIRED)    # Binary columnar tables
 target_link_libraries(loaders.gl PUBLIC arrow)
 
 # Specify sources that'll be compiled
 target_sources(loaders.gl PRIVATE ${SOURCE_FILE_LIST})
 
-# Add source files to parent-defined lists
-list(APPEND DECK_ALL_SOURCES
+# Export source list of this module
+set_property(TARGET loaders.gl PROPERTY DECK_ALL_SOURCES 
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${TESTS_SOURCE_FILE_LIST}
     )
-list(APPEND DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
+set_property(TARGET loaders.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})

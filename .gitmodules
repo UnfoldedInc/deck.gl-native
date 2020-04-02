@@ -1,0 +1,3 @@
+[submodule "cpp/deps"]
+	path = cpp/deps
+	url = git@github.com:UnfoldedInc/deck.gl-native-dependencies.git

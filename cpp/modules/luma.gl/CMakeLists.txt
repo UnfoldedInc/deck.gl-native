@@ -64,35 +64,25 @@ set(SOURCE_FILE_LIST
 set(TESTS_SOURCE_FILE_LIST
     )
 
-# Some of the include paths are relative to modules directory
-target_include_directories(luma.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
-
-# Dependencies
-find_package(glfw3 CONFIG REQUIRED)    # Windowing integration for dawn
-
-# TODO: Revisit once we start making use of the dependency repo
-set(DAWN_DIR "${CMAKE_SOURCE_DIR}/../dawn")
-target_include_directories(luma.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/deps/dawn/include/>)
 target_link_libraries(luma.gl PUBLIC
-    ${DAWN_DIR}/out/Debug/obj/src/dawn/dawncpp/webgpu_cpp.o
-    ${DAWN_DIR}/out/Debug/obj/src/dawn/libdawn_proc.a
-    ${DAWN_DIR}/out/Debug/obj/src/common/libcommon.a
-    ${DAWN_DIR}/out/Debug/obj/libdawn_native.a
-    ${DAWN_DIR}/out/Debug/obj/libdawn_wire.a
-    ${DAWN_DIR}/out/Debug/obj/libdawn_utils.a
-    ${DAWN_DIR}/out/Debug/obj/libdawn_bindings.a
+    ${CMAKE_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/lib/webgpu_cpp.o
+    dawn_proc
+    common
+    dawn_native
+    dawn_wire
+    dawn_utils
+    dawn_bindings
+    shaderc
     glfw
     )
 
 # Specify sources that'll be compiled
 target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST})
 
-# Add source files to parent-defined lists
-list(APPEND DECK_ALL_SOURCES
+# Export source list of this module
+set_property(TARGET luma.gl PROPERTY DECK_ALL_SOURCES 
     ${WEBGPU_HEADER_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST}
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
     )
-list(APPEND DECK_TEST_SOURCES
-    ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST}
-    )
+set_property(TARGET luma.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST})

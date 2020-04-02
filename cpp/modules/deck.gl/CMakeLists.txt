@@ -134,30 +134,16 @@ set(TESTS_SOURCE_FILE_LIST
     ${LAYERS_TEST_SOURCE_FILES}
     )
 
-# Some of the include paths are relative to modules directory
-target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
-
-# Dependencies
-find_package(arrow CONFIG REQUIRED)    # Binary columnar tables
-find_package(jsoncpp CONFIG REQUIRED)  # C++ JSON parser
-
-# TODO: range-v3::range-v3 fmt::fmt don't need to be linked against explicitly for some reason?
-# find_package(range-v3 CONFIG REQUIRED) # C++20 ranges on C++ 17
-# find_package(fmt CONFIG REQUIRED)      # C++20 fmt on C++17. Link w/ fmt::fmt or fmt::fmt-header-only
-
+target_link_libraries(deck.gl PUBLIC probe.gl math.gl luma.gl arrow jsoncpp fmt)
 # TODO: Should deck.gl module depend on dawn? Ideally everything is abstracted away by luma.gl
-# TODO: Revisit once we start making use of the dependency repo
-set(DAWN_DIR "${CMAKE_SOURCE_DIR}/../dawn")
-target_link_libraries(deck.gl PUBLIC ${DAWN_DIR}/out/Debug/obj/src/dawn/dawncpp/webgpu_cpp.o)
-
-target_link_libraries(deck.gl PUBLIC probe.gl math.gl luma.gl arrow jsoncpp_lib)
+target_link_libraries(deck.gl PUBLIC ${CMAKE_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/lib/webgpu_cpp.o)
 
 # Specify sources that'll be compiled
 target_sources(deck.gl PRIVATE ${SOURCE_FILE_LIST})
 
-# Add source files to parent-defined lists
-list(APPEND DECK_ALL_SOURCES
+# Export source list of this module
+set_property(TARGET deck.gl PROPERTY DECK_ALL_SOURCES 
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${TESTS_HEADER_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
     )
-list(APPEND DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
+set_property(TARGET deck.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})

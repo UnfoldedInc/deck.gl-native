@@ -39,15 +39,12 @@ set(TESTS_SOURCE_FILE_LIST
     web-mercator/test/web-mercator-utils-test.cpp
     )
 
-# Some of the include paths are relative to modules directory
-target_include_directories(math.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/modules/>)
-
 # Specify sources that'll be compiled
 target_sources(math.gl PRIVATE ${SOURCE_FILE_LIST})
 
-# Add source files to parent-defined lists
-list(APPEND DECK_ALL_SOURCES
+# Export source list of this module
+set_property(TARGET math.gl PROPERTY DECK_ALL_SOURCES 
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${TESTS_HEADER_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
     )
-list(APPEND DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
+set_property(TARGET math.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})

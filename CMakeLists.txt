@@ -66,6 +66,20 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(DECK_MODULES probe.gl math.gl loaders.gl luma.gl deck.gl)
 set(DECK_MODULE_PATH cpp/modules/)
 
+##################
+# PLATFORM SETUP #
+##################
+
+# TODO: This should be much more ellaborate if we want to get the actual CPU architecture
+# It's currently only used to determine appropriate include/linker paths
+if (APPLE)
+    set(DAWN_ARCH x64-osx)
+elseif (UNIX)
+    set(DAWN_ARCH x64-linux)
+else()
+    message(FATAL_ERROR "Operating system currently not supported. Please consult the development team")
+endif()
+
 # Setup compile and link flags
 set(DECK_COMPILE_FLAGS "")
 set(DECK_LINK_FLAGS "")
@@ -91,15 +105,12 @@ endif()
 add_compile_options("${DECK_COMPILE_FLAGS}")
 add_link_options(${DECK_LINK_FLAGS})
 
-# TODO: Clean up once we switch to dependency repo
-# TODO: Workaround for using Homebrew due to not being able
-# to (efficiently or otherwise) install certain modules through vcpkg
-include_directories(/usr/local/Cellar/apache-arrow/0.16.0/include)
-link_directories(/usr/local/Cellar/apache-arrow/0.16.0/lib)
+# All the 3rd party dependencies are in these folders
+include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/include/>)
+link_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/lib/>)
 
-# TODO: Defining the same path on a target doesn't work...
-include_directories($<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/deps/dawn/include/>)
-include_directories($<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/../vcpkg/installed/x64-osx/include/>)
+# Some of the include paths are relative to modules directory
+include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules/>)
 
 ##################
 # BUNDLE LIBRARY #
@@ -138,8 +149,6 @@ if (DECK_BUILD_TESTS)
     include(CTest)
     include(GoogleTest)
 
-    find_package(GTest CONFIG REQUIRED)
-
     # Add 'deckgl-bundle-tests' executable
     add_executable(deckgl-bundle-tests)
 
@@ -152,7 +161,7 @@ if (DECK_BUILD_TESTS)
     endforeach()
 
     target_sources(deckgl-bundle-tests PRIVATE cpp/tests/main.cpp)
-    target_link_libraries(deckgl-bundle-tests PRIVATE GTest::gtest deckgl-bundle)
+    target_link_libraries(deckgl-bundle-tests PRIVATE gtest deckgl-bundle)
 
     # Extract registered Google Tests from the executable and add them to ctest
     # https://cmake.org/cmake/help/latest/module/GoogleTest.html
