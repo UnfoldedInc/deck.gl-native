@@ -44,5 +44,5 @@ before_script:
   - cmake -DWARNINGS_AS_ERRORS=ON ..
 
 script:
-  - make -j 16 -n
+  - make -j 16
   - CTEST_OUTPUT_ON_FAILURE=1 make test
