@@ -109,12 +109,12 @@ endif()
 set(DECK_DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib)
 
 # All the 3rd party dependencies are in these folders
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include/>)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include)
 # Some of the include paths are relative to modules directory
 include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules/>)
 
 set(DAWN_INCLUDE_TEST $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include/>)
-message(WARNING DAWN_INCLUDE_TEST)
+message(WARNING ${DAWN_INCLUDE_TEST})
 
 ##################
 # BUNDLE LIBRARY #
