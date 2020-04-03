@@ -134,6 +134,8 @@ set(TESTS_SOURCE_FILE_LIST
     ${LAYERS_TEST_SOURCE_FILES}
     )
 
+target_include_directories(deck.gl PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include/>)
+
 find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(jsoncpp_LIB jsoncpp PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(fmt_LIB fmt PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
