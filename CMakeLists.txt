@@ -21,7 +21,9 @@
 # Inspired by https://github.com/uber/h3/blob/master/CMakeLists.txt
 # and by https://github.com/google/s2geometry/blob/master/CMakeLists.txt
 
-cmake_minimum_required(VERSION 3.12)
+# gtest_discover_tests requires v3.12
+# add_link_options requires v3.13
+cmake_minimum_required(VERSION 3.13)
 
 project(
     deck.gl
