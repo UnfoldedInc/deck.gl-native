@@ -22,8 +22,8 @@
 # and by https://github.com/google/s2geometry/blob/master/CMakeLists.txt
 
 # gtest_discover_tests requires v3.12
-# add_link_options requires v3.13
-cmake_minimum_required(VERSION 3.13)
+# Currently the cmake version supported by Travis CI is 3.12.4
+cmake_minimum_required(VERSION 3.12)
 
 project(
     deck.gl
@@ -105,15 +105,11 @@ if (NOT WIN32)
     endif()
 endif()
 
-# Set these globally, for this folder and all the subfolders
-# NOTE: Quotes add ; separators in between list elements, which is what add_compile_options needs
-add_compile_options("${DECK_COMPILE_FLAGS}")
-add_link_options(${DECK_LINK_FLAGS})
+# Path to folder with 3rd party dependencies
+set(DECK_DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib)
 
 # All the 3rd party dependencies are in these folders
 include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include/>)
-link_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib/>)
-
 # Some of the include paths are relative to modules directory
 include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules/>)
 
@@ -164,7 +160,9 @@ if (DECK_BUILD_TESTS)
     endforeach()
 
     target_sources(deckgl-bundle-tests PRIVATE cpp/tests/main.cpp)
-    target_link_libraries(deckgl-bundle-tests PRIVATE gtest deckgl-bundle)
+    
+    find_library(gtest_LIB gtest PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+    target_link_libraries(deckgl-bundle-tests PRIVATE ${gtest_LIB} deckgl-bundle)
 
     # Extract registered Google Tests from the executable and add them to ctest
     # https://cmake.org/cmake/help/latest/module/GoogleTest.html

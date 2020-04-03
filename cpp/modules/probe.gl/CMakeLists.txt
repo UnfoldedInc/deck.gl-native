@@ -40,6 +40,9 @@ set(TESTS_SOURCE_FILE_LIST
     core/test/timer-test.cpp
     )
 
+target_link_libraries(probe.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB})
+
+target_compile_options(probe.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
 # Specify sources that'll be compiled
 target_sources(probe.gl PRIVATE ${SOURCE_FILE_LIST})
 

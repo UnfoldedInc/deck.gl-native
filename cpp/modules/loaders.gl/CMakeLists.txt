@@ -34,8 +34,11 @@ set(TESTS_SOURCE_FILE_LIST
     json/test/json-loader-test.cpp
     )
 
-target_link_libraries(loaders.gl PUBLIC arrow)
+find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 
+target_link_libraries(loaders.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB} ${arrow_LIB})
+
+target_compile_options(loaders.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
 # Specify sources that'll be compiled
 target_sources(loaders.gl PRIVATE ${SOURCE_FILE_LIST})
 

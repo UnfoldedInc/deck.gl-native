@@ -134,10 +134,16 @@ set(TESTS_SOURCE_FILE_LIST
     ${LAYERS_TEST_SOURCE_FILES}
     )
 
-target_link_libraries(deck.gl PUBLIC probe.gl math.gl luma.gl arrow jsoncpp fmt)
-# TODO: Should deck.gl module depend on dawn? Ideally everything is abstracted away by luma.gl
-target_link_libraries(deck.gl PUBLIC ${CMAKE_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib/webgpu_cpp.o)
+find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(jsoncpp_LIB jsoncpp PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(fmt_LIB fmt PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 
+target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB}
+    probe.gl math.gl luma.gl ${arrow_LIB} ${jsoncpp_LIB} ${fmt_LIB})
+# TODO: Should deck.gl module depend on dawn? Ideally everything is abstracted away by luma.gl
+target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_DEPS_PATH}/webgpu_cpp.o)
+
+target_compile_options(deck.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
 # Specify sources that'll be compiled
 target_sources(deck.gl PRIVATE ${SOURCE_FILE_LIST})
 

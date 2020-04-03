@@ -64,18 +64,28 @@ set(SOURCE_FILE_LIST
 set(TESTS_SOURCE_FILE_LIST
     )
 
-target_link_libraries(luma.gl PUBLIC
-    ${CMAKE_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib/webgpu_cpp.o
-    dawn_proc
-    common
-    dawn_native
-    dawn_wire
-    dawn_utils
-    dawn_bindings
-    shaderc
-    glfw
+find_library(dawn_proc_LIB dawn_proc PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(common_LIB common PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(dawn_native_LIB dawn_native PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(dawn_wire_LIB dawn_wire PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(dawn_utils_LIB dawn_utils PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(dawn_bindings_LIB dawn_bindings PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(shaderc_LIB shaderc PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(glfw_LIB glfw PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+
+target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB}
+    ${dawn_proc_LIB}
+    ${common_LIB}
+    ${dawn_native_LIB}
+    ${dawn_wire_LIB}
+    ${dawn_utils_LIB}
+    ${dawn_bindings_LIB}
+    ${shaderc_LIB}
+    ${glfw_LIB}
+    ${DECK_DEPS_PATH}/webgpu_cpp.o
     )
 
+target_compile_options(luma.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
 # Specify sources that'll be compiled
 target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST})
 
