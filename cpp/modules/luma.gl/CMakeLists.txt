@@ -65,7 +65,7 @@ set(TESTS_SOURCE_FILE_LIST
     )
 
 target_link_libraries(luma.gl PUBLIC
-    ${CMAKE_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/lib/webgpu_cpp.o
+    ${CMAKE_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib/webgpu_cpp.o
     dawn_proc
     common
     dawn_native
@@ -80,9 +80,15 @@ target_link_libraries(luma.gl PUBLIC
 target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST})
 
 # Export source list of this module
-set_property(TARGET luma.gl PROPERTY DECK_ALL_SOURCES 
+# NOTE: We transform relative paths to absolute paths before exporting
+set(MODULE_SOURCE_FILES
     ${WEBGPU_HEADER_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST}
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
     )
-set_property(TARGET luma.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST})
+list(TRANSFORM MODULE_SOURCE_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(TARGET luma.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
+
+set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST})
+list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(TARGET luma.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})

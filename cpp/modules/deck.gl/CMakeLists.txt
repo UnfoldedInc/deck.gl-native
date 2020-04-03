@@ -136,14 +136,20 @@ set(TESTS_SOURCE_FILE_LIST
 
 target_link_libraries(deck.gl PUBLIC probe.gl math.gl luma.gl arrow jsoncpp fmt)
 # TODO: Should deck.gl module depend on dawn? Ideally everything is abstracted away by luma.gl
-target_link_libraries(deck.gl PUBLIC ${CMAKE_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/lib/webgpu_cpp.o)
+target_link_libraries(deck.gl PUBLIC ${CMAKE_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib/webgpu_cpp.o)
 
 # Specify sources that'll be compiled
 target_sources(deck.gl PRIVATE ${SOURCE_FILE_LIST})
 
 # Export source list of this module
-set_property(TARGET deck.gl PROPERTY DECK_ALL_SOURCES 
+# NOTE: We transform relative paths to absolute paths before exporting
+set(MODULE_SOURCE_FILES
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${TESTS_HEADER_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
     )
-set_property(TARGET deck.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
+list(TRANSFORM MODULE_SOURCE_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(TARGET deck.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
+
+set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST})
+list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(TARGET deck.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})

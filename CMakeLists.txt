@@ -66,6 +66,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(DECK_MODULES probe.gl math.gl loaders.gl luma.gl deck.gl)
 set(DECK_MODULE_PATH cpp/modules/)
 
+# Global property that will be "topped-off" with example files
+set_property(GLOBAL PROPERTY DECK_EXAMPLE_FILES "")
+
 ##################
 # PLATFORM SETUP #
 ##################
@@ -73,9 +76,9 @@ set(DECK_MODULE_PATH cpp/modules/)
 # TODO: This should be much more ellaborate if we want to get the actual CPU architecture
 # It's currently only used to determine appropriate include/linker paths
 if (APPLE)
-    set(DAWN_ARCH x64-osx)
+    set(DECK_ARCH x64-osx)
 elseif (UNIX)
-    set(DAWN_ARCH x64-linux)
+    set(DECK_ARCH x64-linux)
 else()
     message(FATAL_ERROR "Operating system currently not supported. Please consult the development team")
 endif()
@@ -106,8 +109,8 @@ add_compile_options("${DECK_COMPILE_FLAGS}")
 add_link_options(${DECK_LINK_FLAGS})
 
 # All the 3rd party dependencies are in these folders
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/include/>)
-link_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DAWN_ARCH}/lib/>)
+include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include/>)
+link_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib/>)
 
 # Some of the include paths are relative to modules directory
 include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules/>)
@@ -155,8 +158,6 @@ if (DECK_BUILD_TESTS)
     # Add test source files from all the modules
     foreach(DECK_MODULE ${DECK_MODULES})
         get_target_property(DECK_MODULE_TESTS ${DECK_MODULE} DECK_TEST_SOURCES)
-        # NOTE: Sources specified by a target contain paths relative to that specific target
-        list(TRANSFORM DECK_MODULE_TESTS PREPEND ${DECK_MODULE_PATH}${DECK_MODULE}/)
         target_sources(deckgl-bundle-tests PRIVATE ${DECK_MODULE_TESTS})
     endforeach()
 
@@ -196,10 +197,10 @@ if (DECK_ENABLE_FORMAT)
     # Gather a list of source files that will be passed onto the formatter
     foreach(DECK_MODULE ${DECK_MODULES})
         get_target_property(DECK_MODULE_SOURCES ${DECK_MODULE} DECK_ALL_SOURCES)
-        # NOTE: Sources specified by a target contain paths relative to that specific target
-        list(TRANSFORM DECK_MODULE_SOURCES PREPEND ${DECK_MODULE_PATH}${DECK_MODULE}/)
         list(APPEND DECK_SOURCE_LIST ${DECK_MODULE_SOURCES})
     endforeach()
+    get_property(DECK_EXAMPLE_FILES GLOBAL PROPERTY DECK_EXAMPLE_FILES)
+    list(APPEND DECK_SOURCE_LIST ${DECK_EXAMPLE_FILES})
 
     # Format
     add_custom_target(format

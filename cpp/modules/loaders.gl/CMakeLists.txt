@@ -40,8 +40,14 @@ target_link_libraries(loaders.gl PUBLIC arrow)
 target_sources(loaders.gl PRIVATE ${SOURCE_FILE_LIST})
 
 # Export source list of this module
-set_property(TARGET loaders.gl PROPERTY DECK_ALL_SOURCES 
+# NOTE: We transform relative paths to absolute paths before exporting
+set(MODULE_SOURCE_FILES
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
     ${TESTS_SOURCE_FILE_LIST}
     )
-set_property(TARGET loaders.gl PROPERTY DECK_TEST_SOURCES ${TESTS_SOURCE_FILE_LIST})
+list(TRANSFORM MODULE_SOURCE_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(TARGET loaders.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
+
+set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST})
+list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(TARGET loaders.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})

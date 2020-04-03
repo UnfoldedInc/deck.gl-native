@@ -29,3 +29,9 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
     
     target_link_libraries(${TARGET_NAME} PRIVATE deck.gl)
 endforeach()
+
+# Add example files to global DECK_EXAMPLE_FILES property
+# NOTE: We transform relative paths to absolute paths before appending
+set(FILES_TO_ADD ${EXAMPLE_SOURCE_FILES})
+list(TRANSFORM FILES_TO_ADD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+set_property(GLOBAL APPEND PROPERTY DECK_EXAMPLE_FILES ${FILES_TO_ADD})
