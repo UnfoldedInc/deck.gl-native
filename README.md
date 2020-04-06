@@ -95,12 +95,9 @@ Our hope is to see this project quickly grow into a living part of the core deck
 
 ## Setting up a Development Environment
 
-Development can be done on MacOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
+Development can be done on macOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
 
-For a quick setup:
-- Run `./scripts/bootstrap-repos.sh` **once** (before cloning the deck.gl-native repo) in the folder where you want repos installed. This will clone key repos, set up vcpkg package manager and build the dawn libraries.
-- On OSX, run `./scripts/bootstrap.sh` (inside the deck.gl-native repo!) when you need to install any new dependencies (e.g. after pulling master from the deck.gl-native repo).
-- On Linux, run `./scripts/bootstrap-linux.sh` instead of `./scripts/bootstrap.sh`.
+All the dependencies for macOS and Linux are bundled in a dependency repository that's being used as a submodule. In order to clone the appropriate submodules while cloning this repo, make sure you clone it recursively like so: `git clone --recursive [URL to Git repo]`. Alternatively, if you already cloned the repo without its submodules, you can run `git submodule update --init --recursive` in order to get them.
 
 Detailed instructions below.
 
@@ -120,110 +117,29 @@ For Mac OSX:
 brew install gcc cmake clang-format lcov
 ```
 
-### vcpkg (Microsoft C++ Package Manager)
+## Dependencies
 
-```sh
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh -disableMetrics # Compile
-./vcpkg integrate install # Make packages globally availble
-```
-
-Notes: 
-- Check that the bootstrap script compiles successfully, should generate `vcpkg` binary in root folder
-- requires GCC 6 or higher, Apple Clang won't work.
-
-## Depot Tools
-
-Only needed to build dawn: Dawn uses the Chromium build system and dependency management so you need to install [depot_tools](http://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
-)) and add it to the PATH.
-
-```sh
-git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-export PATH=$PATH:$PWD/depot_tools # /path/to/depot_tools
-```
-
-## Building dawn
-
-See [building dawn](https://dawn.googlesource.com/dawn/+/HEAD/docs/buiding.md)
-
-```sh
-cd dawn
-# Bootstrap the gclient configuration
-cp scripts/standalone.gclient .gclient
-# Fetch external dependencies and toolchains with gclient
-gclient sync
-# Then generate build files (type `is_debug=true` in text editor)
-gn args out/Debug
-# Build dawn
-ninja -C out/Debug
-# Test dawn
-./out/Debug/dawn_end2end_tests
-
-# Build examples
-cmake -DDAWN_ENABLE_METAL=1 -DDAWN_BUILD_EXAMPLES=1 -DSHADERC_ENABLE_INSTALL=1 .
-# Run Examples
-cd examples
-./Animometer
-./CppHelloTriangle
-./CubeReflection
-./ComputeBoids
-```
-
-## Installing Dependencies
-
-First, try running `./scripts/bootstrap-osx.sh` (or `./scripts/bootstrap-linux.sh`).
-
-To install dependencies individually, see below
-
-| Dependency | Install | Documentation
-| --- | --- | ---
-| [Google Test](https://github.com/google/googletest) | `../vcpkg install gtest` |  Testing framework
-| [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | `../vcpkg install jsoncpp` | JSON parser
-| [Range v3](https://github.com/ericniebler/range-v3) | `../vcpkg install range-v3` | C++20 ranges for C++17 compilers
-| [fmt](https://fmt.dev/latest/index.html) | `../vcpkg install fmt` | C++20 string formatting for C++17 compilers
-
-### Arrow
-
-> There are currently issues with installing Arrow from vcpkg, use the following instructions
-
-- [Arrow](https://arrow.apache.org/install/)
-
-You need to install `libarrow-dev` on Linux,
-and `apache-arrow` on Mac OSX:
-
-```sh
-brew install apache-arrow
-```
-
-### Dawn
-
-[dawn](https://dawn.googlesource.com/dawn) C++ WebGPU implementation with a maturing list of backends for most platforms.
-
-### shaderc
-
-[shaderc](https://github.com/google/shaderc) for GLSL compilation.
-
-### GLFW
-
-[glfw](https://github.com/glfw/glfw) portable library for creating OS windows to render graphics in, and handling events.
-
-On linux a number of dependencies need to be installed for glfw to work:
-
-```sh
-sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev
-```
+| Dependency                                                	| Description                                                                         	|
+|-----------------------------------------------------------	|-------------------------------------------------------------------------------------	|
+| [Google Test](https://github.com/google/googletest)       	| Testing framework                                                                   	|
+| [jsoncpp](https://github.com/open-source-parsers/jsoncpp) 	| JSON parser                                                                         	|
+| [Range v3](https://github.com/ericniebler/range-v3)       	| C++20 ranges for C++17 compilers                                                    	|
+| [fmt](https://fmt.dev/latest/index.html)                  	| C++20 string formatting for C++17 compilers                                         	|
+| [arrow](https://github.com/apache/arrow)                  	| Columnar in-memory storage                                                          	|
+| [dawn](https://dawn.googlesource.com/dawn)                	| C++ WebGPU implementation with a maturing list of backends for most platforms       	|
+| [shaderc](https://github.com/google/shaderc)              	| GLSL shader compilation                                                             	|
+| [glfw](https://github.com/glfw/glfw)                      	| Portable library for creating OS windows to render graphics in, and handling events 	|
 
 ## Building
 
 ```
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=<PATH_TO_VCPKG>/scripts/buildsystems/vcpkg.cmake ..
+cmake ..
 make -j 16
 ```
 
-To use different compilers, set the build options `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER` on the `cmake` command line.
+To use different compilers, set the build options `CMAKE_C_COMPILER` and `CMAKE_CXX_COMPILER` on the `cmake` command line. There is a number of build scripts for different compilers available in `scripts` directory.
 
 ## Testing
 

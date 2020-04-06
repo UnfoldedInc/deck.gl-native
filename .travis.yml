@@ -6,14 +6,6 @@ language: c
 os: linux
 dist: bionic
 
-addons:
-  homebrew:
-    packages:
-    - apache-arrow
-
-env:
-  VCPKG_ROOT: $HOME/vcpkg
-
 matrix:
   include:
     # Check that clang-format doesn't detect some files are not formatted.
@@ -31,7 +23,6 @@ matrix:
     # - name: "Mac OSX (Xcode 11.3)"
     #   os: osx
     #   osx_image: xcode11.3
-    #   before_install: []
     - name: "Linux (Clang)"
       os: linux
       compiler: clang
@@ -46,47 +37,11 @@ matrix:
         - make -j
         - valgrind --error-exitcode=99 ./tests
 
-before_install:
-  # Install arrow
-  - pushd $HOME
-  - wget https://apache.bintray.com/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
-  - sudo apt install -y -V ./apache-arrow-archive-keyring-latest-$(lsb_release --codename --short).deb
-  - sudo apt update
-  - sudo apt install libarrow-dev
-  - popd
-  # Install dependencies for glfw
-  - sudo apt install libglfw3-dev
-  - sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev
-
-install:
-  # Install vcpkg and dependencies
-  - pushd $HOME
-  - if [ -d "$HOME/vcpkg/.git" ] ; then echo vcpkg cached ; VCPKG_CACHED=1 ; else rm -rf vcpkg ; git clone https://github.com/Microsoft/vcpkg ; fi
-  - cd vcpkg
-  - git checkout .
-  - CURRENT_VCPKG_REV="$(git rev-parse HEAD)"
-  - git pull
-  - NEW_VCPKG_REV="$(git rev-parse HEAD)"
-  # Avoid rebuilding vcpkg itself unless it was not cached, or an update has been pulled.
-  - if [ "$VCPKG_CACHED" -a "$NEW_VCPKG_REV" == "$CURRENT_VCPKG_REV" ] ; then echo vcpkg bootstrap skipped ; else ./bootstrap-vcpkg.sh ; fi
-  # Try to avoid building unneeded debug versions of dependencies
-  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-osx.cmake
-  - echo "set(VCPKG_BUILD_TYPE release)" >> triplets/x64-linux.cmake
-  # Install our C++ dependencies:
-  - ./vcpkg install jsoncpp gtest range-v3 --recurse
-  - rm -rf buildtrees
-  - popd
-
-cache:
-  directories:
-    - ${VCPKG_ROOT}
-
 before_script:
   # Build out of source
-  - ./scripts/bootstrap-linux.sh
   - mkdir build
   - cd build
-  - cmake -DWARNINGS_AS_ERRORS=ON -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ..
+  - cmake -DWARNINGS_AS_ERRORS=ON ..
 
 script:
   - make -j 16
