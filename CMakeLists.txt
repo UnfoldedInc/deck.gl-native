@@ -18,8 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# Inspired by https://github.com/uber/h3/blob/master/CMakeLists.txt
-# and by https://github.com/google/s2geometry/blob/master/CMakeLists.txt
+# Inspired by:
+# https://github.com/uber/h3/blob/master/CMakeLists.txt
+# https://github.com/google/s2geometry/blob/master/CMakeLists.txt
+# https://dawn.googlesource.com/dawn/+/refs/heads/master/CMakeLists.txt
 
 # gtest_discover_tests requires v3.12
 # Currently the cmake version supported by Travis CI is 3.12.4
@@ -49,11 +51,35 @@ option(DECK_WARNINGS_AS_ERRORS "Warnings are treated as errors" OFF)
 option(DECK_ENABLE_COVERAGE "Creates coverage reports if enabled" OFF)
 option(DECK_BUILD_EXAMPLES "Enables building examples" ON)
 option(DECK_BUILD_TESTS "Enables building tests" ON)
+option(DECK_ENABLE_GRAPHICS "When set to OFF, no graphics libraries will be included. Useful for running on CI" ON)
 
 find_program(CLANG_FORMAT_PATH clang-format)
 cmake_dependent_option(
     DECK_ENABLE_FORMAT "Enable running clang-format before compiling" ON
-    "CLANG_FORMAT_PATH" OFF)
+    "CLANG_FORMAT_PATH" OFF
+    )
+
+# Default values for the backend-enabling options
+set(ENABLE_D3D12 OFF)
+set(ENABLE_METAL OFF)
+set(ENABLE_OPENGL OFF)
+set(ENABLE_VULKAN OFF)
+if (WIN32 AND DECK_ENABLE_GRAPHICS)
+    # TODO: Currently not supported
+    # set(ENABLE_D3D12 ON)
+    # set(ENABLE_VULKAN ON)
+elseif(APPLE AND DECK_ENABLE_GRAPHICS)
+    set(ENABLE_METAL ON)
+elseif(UNIX AND DECK_ENABLE_GRAPHICS)
+    set(ENABLE_OPENGL ON)
+    set(ENABLE_VULKAN ON)
+endif()
+
+option(DECK_ENABLE_D3D12 "Enable compilation of the D3D12 backend" ${ENABLE_D3D12})
+option(DECK_ENABLE_METAL "Enable compilation of the Metal backend" ${ENABLE_METAL})
+option(DECK_ENABLE_NULL "Enable compilation of the Null backend" ON)
+option(DECK_ENABLE_OPENGL "Enable compilation of the OpenGL backend" ${ENABLE_OPENGL})
+option(DECK_ENABLE_VULKAN "Enable compilation of the Vulkan backend" ${ENABLE_VULKAN})
 
 # If CMAKE_BUILD_TYPE is not specified explicitly by using -DCMAKE_BUILD_TYPE, default to Debug
 if (NOT CMAKE_BUILD_TYPE)
@@ -67,6 +93,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Project modules
 set(DECK_MODULES probe.gl math.gl loaders.gl luma.gl deck.gl)
 set(DECK_MODULE_PATH cpp/modules/)
+
+# Shared libraries
+set(DECK_CONFIG_LIBRARY deckgl-internal-config)
 
 # Global property that will be "topped-off" with example files
 set_property(GLOBAL PROPERTY DECK_EXAMPLE_FILES "")
@@ -85,6 +114,9 @@ else()
     message(FATAL_ERROR "Operating system currently not supported. Please consult the development team")
 endif()
 
+# Path to folder with 3rd party dependencies
+set(DECK_DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib)
+
 # Setup compile and link flags
 set(DECK_COMPILE_FLAGS "")
 set(DECK_LINK_FLAGS "")
@@ -94,29 +126,58 @@ if (NOT WIN32)
     # Append flags useful for debugging if configuration is set to Debug
     list(APPEND DECK_COMPILE_FLAGS $<$<CONFIG:Debug>:-gdwarf-2 -g3 -O0 -fno-inline -fno-eliminate-unused-debug-types>)
 
-    if(ENABLE_COVERAGE)
+    if (ENABLE_COVERAGE)
         list(APPEND DECK_COMPILE_FLAGS $<$<CONFIG:Debug>:--coverage>)
         # --coverage is not passed to the linker, so this option is needed to fully enable coverage.
         list(APPEND DECK_LINK_FLAGS $<$<CONFIG:Debug>:--coverage>)
     endif()
 
-    if(WARNINGS_AS_ERRORS)
+    if (WARNINGS_AS_ERRORS)
         list(APPEND DECK_COMPILE_FLAGS -Werror)
     endif()
 endif()
 
-# Path to folder with 3rd party dependencies
-set(DECK_DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib)
+####################
+# SHARED LIBRARIES #
+####################
 
-# All the 3rd party dependencies are in these folders
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include/>)
-# Some of the include paths are relative to modules directory
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules/>)
+add_library(${DECK_CONFIG_LIBRARY} INTERFACE)
+
+target_include_directories(${DECK_CONFIG_LIBRARY} INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpp/modules
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/include
+    )
+target_compile_options(${DECK_CONFIG_LIBRARY} INTERFACE ${DECK_COMPILE_FLAGS})
+
+# Add definitions based on options
+if (DECK_ENABLE_GRAPHICS)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_GRAPHICS")
+endif()
+if (DECK_ENABLE_D3D12)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_BACKEND_D3D12")
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "DAWN_ENABLE_BACKEND_D3D12")
+endif()
+if (DECK_ENABLE_METAL)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_BACKEND_METAL")
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "DAWN_ENABLE_BACKEND_METAL")
+endif()
+if (DECK_ENABLE_NULL)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_BACKEND_NULL")
+endif()
+if (DECK_ENABLE_OPENGL)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_BACKEND_OPENGL")
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "DAWN_ENABLE_BACKEND_OPENGL")
+endif()
+if (DECK_ENABLE_VULKAN)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_BACKEND_VULKAN")
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "DAWN_ENABLE_BACKEND_VULKAN")
+endif()
 
 ##################
 # BUNDLE LIBRARY #
 ##################
 
+# TODO: Should be a shared lib. Generate an empty source file?
 add_library(deckgl-bundle INTERFACE)
 
 # Define module libs

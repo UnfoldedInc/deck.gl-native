@@ -22,8 +22,12 @@
 #define LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
 
 #include <GLFW/glfw3.h>
+#include <dawn_wire/WireClient.h>
+#include <dawn_wire/WireServer.h>
 
 #include "./animation-loop.h"
+#include "luma.gl/webgpu/src/backends/backend-binding.h"
+#include "luma.gl/webgpu/src/terrible-command-buffer.h"
 
 namespace lumagl {
 
@@ -35,7 +39,23 @@ class GLFWAnimationLoop : public AnimationLoop {
   bool shouldQuit() override;
   void flush() override;
 
+  auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat;
+  auto getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain;
+
   GLFWwindow* window{nullptr};
+
+ private:
+  void _initializeGLFW(wgpu::BackendType);
+  uint64_t _getSwapChainImplementation();
+  auto _createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device;
+  auto _createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
+
+  utils::BackendBinding* _binding{nullptr};
+
+  dawn_wire::WireServer* _wireServer{nullptr};
+  dawn_wire::WireClient* _wireClient{nullptr};
+  utils::TerribleCommandBuffer* _c2sBuf{nullptr};
+  utils::TerribleCommandBuffer* _s2cBuf{nullptr};
 };
 
 }  // namespace lumagl

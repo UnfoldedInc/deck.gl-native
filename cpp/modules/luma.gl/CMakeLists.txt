@@ -39,12 +39,6 @@ set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/webgpu-utils.cpp
     webgpu/src/webgpu-helpers.cpp
     webgpu/src/backends/backend-binding.cpp
-    # TODO: These should be included on per-platform basis. See src/utils/CMakeLists.txt in dawn repo
-    webgpu/src/backends/metal-binding.mm
-    #webgpu/src/backends/vulkan-binding.cpp
-    #webgpu/src/backends/d3d12-binding.cpp
-    #webgpu/src/backends/null-binding.cpp
-    #webgpu/src/backends/opengl-binding.cpp
     )
 set(WEBGPU_TESTS_SOURCE_FILE_LIST
     webgpu/test/webgpu-test.cpp
@@ -58,36 +52,64 @@ set(HEADER_FILE_LIST
     )
 set(SOURCE_FILE_LIST
     core/src/animation-loop.cpp
-    # core/src/glfw-animation-loop.cpp
+    core/src/glfw-animation-loop.cpp
     core/src/model.cpp
     )
 set(TESTS_SOURCE_FILE_LIST
     )
 
 find_library(dawn_proc_LIB dawn_proc PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(common_LIB common PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(dawn_native_LIB dawn_native PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(dawn_wire_LIB dawn_wire PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(dawn_utils_LIB dawn_utils PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(dawn_bindings_LIB dawn_bindings PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(shaderc_LIB shaderc PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(glfw_LIB glfw PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(shaderc_LIB shaderc_combined PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 
-target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB}
+target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     ${dawn_proc_LIB}
-    ${common_LIB}
     ${dawn_native_LIB}
     ${dawn_wire_LIB}
-    ${dawn_utils_LIB}
     ${dawn_bindings_LIB}
-    ${shaderc_LIB}
     ${glfw_LIB}
+    ${shaderc_LIB}
     ${DECK_DEPS_PATH}/webgpu_cpp.o
     )
+target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY})
 
-target_compile_options(luma.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
+# Backend specific files and libraries
+if (DECK_ENABLE_D3D12)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/d3d12-binding.cpp)
+    # TODO: Currently not supported. Should link against D3D12 libs
+endif()
+if (DECK_ENABLE_METAL)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/metal-binding.mm)
+
+    # macOS frameworks related to Metal
+    find_library(Metal_LIB Metal)
+    find_library(QuartzCore_LIB QuartzCore)
+    find_library(Cocoa_LIB Cocoa)
+    find_library(IOKit_LIB IOKit)
+    find_library(IOSurface_LIB IOSurface)
+    target_link_libraries(luma.gl PUBLIC
+        ${Metal_LIB}
+        ${QuartzCore_LIB}
+        ${Cocoa_LIB}
+        ${IOKit_LIB}
+        ${IOSurface_LIB}
+        )
+endif()
+if (DECK_ENABLE_NULL)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/null-binding.cpp)
+endif()
+if (DECK_ENABLE_OPENGL)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/opengl-binding.cpp)
+endif()
+if (DECK_ENABLE_VULKAN)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/vulkan-binding.cpp)
+endif()
+
 # Specify sources that'll be compiled
-target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST})
+target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST})
 
 # Export source list of this module
 # NOTE: We transform relative paths to absolute paths before exporting

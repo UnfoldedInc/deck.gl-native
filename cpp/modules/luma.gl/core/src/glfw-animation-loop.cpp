@@ -30,39 +30,16 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-// Helpers
-
 enum class CmdBufType {
   None,
   Terrible,
   // TODO(cwallez@chromium.org) double terrible cmdbuf
 };
 
-// Helpers
-static void initializeGLFW(wgpu::BackendType);
-auto createCppDawnDevice(wgpu::BackendType) -> wgpu::Device;
-uint64_t getSwapChainImplementation();
-auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat;
-// Not used?
-auto getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain;
-auto createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
-void doFlush();
-
-static CmdBufType cmdBufType = CmdBufType::Terrible;
-static std::unique_ptr<dawn_native::Instance> instance;
-static BackendBinding* binding = nullptr;
-
-static GLFWwindow* window{nullptr};
-
-static dawn_wire::WireServer* wireServer{nullptr};
-static dawn_wire::WireClient* wireClient{nullptr};
-static TerribleCommandBuffer* c2sBuf{nullptr};
-static TerribleCommandBuffer* s2cBuf{nullptr};
-
-// GLFWAnimationLoop
+static auto cmdBufType = CmdBufType::Terrible;
 
 GLFWAnimationLoop::GLFWAnimationLoop(wgpu::BackendType backendType) : AnimationLoop{} {
-  initializeGLFW(backendType);
+  this->_initializeGLFW(backendType);
   this->window = glfwCreateWindow(640, 480, "deck.gl window", nullptr, nullptr);
   if (!this->window) {
     throw new std::runtime_error("Failed to create GLFW window");
@@ -70,45 +47,36 @@ GLFWAnimationLoop::GLFWAnimationLoop(wgpu::BackendType backendType) : AnimationL
 }
 
 auto GLFWAnimationLoop::createDevice(wgpu::BackendType backendType) -> wgpu::Device {
-  return createCppDawnDevice(backendType);
+  return this->_createCppDawnDevice(backendType);
 }
 
 bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->window); }
 
 void GLFWAnimationLoop::flush() {
-  doFlush();
+  if (this->_c2sBuf) {
+    bool c2sSuccess = this->_c2sBuf->Flush();
+    ASSERT(c2sSuccess);
+  }
+  if (this->_s2cBuf) {
+    bool s2cSuccess = this->_s2cBuf->Flush();
+    ASSERT(s2cSuccess);
+  }
+
+  glfwPollEvents();
 }
 
-uint64_t getSwapChainImplementation() { return binding->GetSwapChainImplementation(); }
-
-wgpu::TextureFormat getPreferredSwapChainTextureFormat() {
-  doFlush();
-  return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
-}
-
-wgpu::SwapChain getSwapChain(const wgpu::Device& device) {
+auto GLFWAnimationLoop::getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain {
   wgpu::SwapChainDescriptor swapChainDesc;
-  swapChainDesc.implementation = getSwapChainImplementation();
+  swapChainDesc.implementation = this->_getSwapChainImplementation();
   return device.CreateSwapChain(nullptr, &swapChainDesc);
 }
 
-wgpu::TextureView createDefaultDepthStencilView(const wgpu::Device& device) {
-  wgpu::TextureDescriptor descriptor;
-  descriptor.dimension = wgpu::TextureDimension::e2D;
-  descriptor.size.width = 640;
-  descriptor.size.height = 480;
-  descriptor.size.depth = 1;
-  descriptor.arrayLayerCount = 1;
-  descriptor.sampleCount = 1;
-  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
-  descriptor.mipLevelCount = 1;
-  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
-  auto depthStencilTexture = device.CreateTexture(&descriptor);
-  return depthStencilTexture.CreateView();
+wgpu::TextureFormat GLFWAnimationLoop::getPreferredSwapChainTextureFormat() {
+  this->flush();
+  return static_cast<wgpu::TextureFormat>(this->_binding->GetPreferredSwapChainTextureFormat());
 }
 
-/// \brief initialize glwf library
-static void initializeGLFW(wgpu::BackendType backendType) {
+void GLFWAnimationLoop::_initializeGLFW(wgpu::BackendType backendType) {
   // Set up an error logging callback
   glfwSetErrorCallback([](int code, const char* message) {
     // dawn::ErrorLog() << "GLFW error: " << code << " - " << message;
@@ -135,9 +103,11 @@ static void initializeGLFW(wgpu::BackendType backendType) {
   }
 }
 
-auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
-  instance = std::make_unique<dawn_native::Instance>();
-  DiscoverAdapter(instance.get(), window, backendType);
+uint64_t GLFWAnimationLoop::_getSwapChainImplementation() { return this->_binding->GetSwapChainImplementation(); }
+
+auto GLFWAnimationLoop::_createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
+  auto instance = std::make_unique<dawn_native::Instance>();
+  DiscoverAdapter(instance.get(), this->window, backendType);
 
   // Get an adapter for the backend to use, and create the device.
   dawn_native::Adapter backendAdapter;
@@ -155,8 +125,8 @@ auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
   WGPUDevice backendDevice = backendAdapter.CreateDevice();
   DawnProcTable backendProcs = dawn_native::GetProcs();
 
-  binding = CreateBinding(backendType, window, backendDevice);
-  if (binding == nullptr) {
+  this->_binding = CreateBinding(backendType, this->window, backendDevice);
+  if (this->_binding == nullptr) {
     return nullptr;
   }
 
@@ -171,24 +141,24 @@ auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
       break;
 
     case CmdBufType::Terrible: {
-      c2sBuf = new TerribleCommandBuffer();
-      s2cBuf = new TerribleCommandBuffer();
+      this->_c2sBuf = new TerribleCommandBuffer();
+      this->_s2cBuf = new TerribleCommandBuffer();
 
       dawn_wire::WireServerDescriptor serverDesc = {};
       serverDesc.device = backendDevice;
       serverDesc.procs = &backendProcs;
-      serverDesc.serializer = s2cBuf;
+      serverDesc.serializer = this->_s2cBuf;
 
-      wireServer = new dawn_wire::WireServer(serverDesc);
-      c2sBuf->SetHandler(wireServer);
+      this->_wireServer = new dawn_wire::WireServer(serverDesc);
+      this->_c2sBuf->SetHandler(this->_wireServer);
 
       dawn_wire::WireClientDescriptor clientDesc = {};
-      clientDesc.serializer = c2sBuf;
+      clientDesc.serializer = this->_c2sBuf;
 
-      wireClient = new dawn_wire::WireClient(clientDesc);
-      WGPUDevice clientDevice = wireClient->GetDevice();
+      this->_wireClient = new dawn_wire::WireClient(clientDesc);
+      WGPUDevice clientDevice = this->_wireClient->GetDevice();
       DawnProcTable clientProcs = dawn_wire::WireClient::GetProcs();
-      s2cBuf->SetHandler(wireClient);
+      this->_s2cBuf->SetHandler(this->_wireClient);
 
       procs = clientProcs;
       cDevice = clientDevice;
@@ -206,15 +176,17 @@ auto createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
   return cDevice;
 }
 
-void doFlush() {
-  if (c2sBuf) {
-    bool c2sSuccess = c2sBuf->Flush();
-    ASSERT(c2sSuccess);
-  }
-  if (s2cBuf) {
-    bool s2cSuccess = s2cBuf->Flush();
-    ASSERT(s2cSuccess);
-  }
-
-  glfwPollEvents();
+auto GLFWAnimationLoop::_createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView {
+  wgpu::TextureDescriptor descriptor;
+  descriptor.dimension = wgpu::TextureDimension::e2D;
+  descriptor.size.width = 640;
+  descriptor.size.height = 480;
+  descriptor.size.depth = 1;
+  descriptor.arrayLayerCount = 1;
+  descriptor.sampleCount = 1;
+  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
+  descriptor.mipLevelCount = 1;
+  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
+  auto depthStencilTexture = device.CreateTexture(&descriptor);
+  return depthStencilTexture.CreateView();
 }
