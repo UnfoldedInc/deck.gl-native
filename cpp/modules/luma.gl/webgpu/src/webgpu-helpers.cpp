@@ -69,9 +69,6 @@ auto createTextureCopyView(wgpu::Texture texture, uint32_t mipLevel, uint32_t ar
   return textureCopyView;
 }
 
-}  // namespace utils
-}  // namespace lumagl
-
 ComboRenderPassDescriptor::ComboRenderPassDescriptor(std::initializer_list<wgpu::TextureView> colorAttachmentInfo,
                                                      wgpu::TextureView depthStencil) {
   for (uint32_t i = 0; i < kMaxColorAttachments; ++i) {
@@ -133,9 +130,6 @@ BasicRenderPass::BasicRenderPass(uint32_t texWidth, uint32_t texHeight, wgpu::Te
       color{colorAttachment},
       colorFormat{textureFormat},
       renderPassInfo{{colorAttachment.CreateView()}} {}
-
-namespace lumagl {
-namespace utils {
 
 auto createBasicRenderPass(const wgpu::Device& device, uint32_t width, uint32_t height) -> BasicRenderPass {
   ASSERT(width > 0 && height > 0);
@@ -202,9 +196,6 @@ auto makeBindGroupLayout(const wgpu::Device& device,
   return device.CreateBindGroupLayout(&descriptor);
 }
 
-}  // namespace utils
-}  // namespace lumagl
-
 BindingInitializationHelper::BindingInitializationHelper(uint32_t binding, const wgpu::Sampler& sampler)
     : binding{binding}, sampler{sampler} {}
 
@@ -227,9 +218,6 @@ wgpu::BindGroupBinding BindingInitializationHelper::GetAsBinding() const {
 
   return result;
 }
-
-namespace lumagl {
-namespace utils {
 
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
                    std::initializer_list<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup {

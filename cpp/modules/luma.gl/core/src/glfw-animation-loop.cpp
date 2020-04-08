@@ -169,11 +169,10 @@ auto GLFWAnimationLoop::_createCppDawnDevice(wgpu::BackendType backendType) -> w
   procs.deviceSetUncapturedErrorCallback(
       cDevice,
       [](WGPUErrorType errorType, const char* message, void*) {
-        // dawn::ErrorLog() << getDeviceErrorTypeName(errorType) << " error: " << message;
+         probegl::ErrorLog() << getDeviceErrorTypeName(errorType) << " error: " << message;
       },
       nullptr);
-  wgpu::Device::Acquire(cDevice);
-  return cDevice;
+  return wgpu::Device::Acquire(cDevice);
 }
 
 auto GLFWAnimationLoop::_createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView {

@@ -72,14 +72,15 @@ elseif(APPLE AND DECK_ENABLE_GRAPHICS)
     set(ENABLE_METAL ON)
 elseif(UNIX AND DECK_ENABLE_GRAPHICS)
     set(ENABLE_OPENGL ON)
-    set(ENABLE_VULKAN ON)
+    # TODO: Dawn does not run Vulkan on Unix right now
+    # set(ENABLE_VULKAN ON)
 endif()
 
 option(DECK_ENABLE_D3D12 "Enable compilation of the D3D12 backend" ${ENABLE_D3D12})
 option(DECK_ENABLE_METAL "Enable compilation of the Metal backend" ${ENABLE_METAL})
-option(DECK_ENABLE_NULL "Enable compilation of the Null backend" ON)
 option(DECK_ENABLE_OPENGL "Enable compilation of the OpenGL backend" ${ENABLE_OPENGL})
 option(DECK_ENABLE_VULKAN "Enable compilation of the Vulkan backend" ${ENABLE_VULKAN})
+option(DECK_ENABLE_NULL "Enable compilation of the Null backend" ON)
 
 # If CMAKE_BUILD_TYPE is not specified explicitly by using -DCMAKE_BUILD_TYPE, default to Debug
 if (NOT CMAKE_BUILD_TYPE)
