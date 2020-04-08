@@ -50,6 +50,7 @@ class GLFWAnimationLoop : public AnimationLoop {
   auto _createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device;
   auto _createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
 
+  std::unique_ptr<dawn_native::Instance> _instance;
   utils::BackendBinding* _binding{nullptr};
 
   dawn_wire::WireServer* _wireServer{nullptr};
