@@ -27,15 +27,14 @@ using namespace lumagl;
 namespace lumagl {
 
 // TODO(ib):
-auto getBackendBinding() -> BackendBinding * { return nullptr; };
+auto getBackendBinding() -> utils::BackendBinding * { return nullptr; };
 
 auto GetPreferredSwapChainTextureFormat() -> wgpu::TextureFormat {
-  BackendBinding *binding = getBackendBinding();
+  utils::BackendBinding *binding = getBackendBinding();
   return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
 }
 
 }  // namespace lumagl
-
 
 Model::Model(wgpu::Device device) : Model(device, Options{}) {}
 

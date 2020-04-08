@@ -169,7 +169,7 @@ auto GLFWAnimationLoop::_createCppDawnDevice(wgpu::BackendType backendType) -> w
   procs.deviceSetUncapturedErrorCallback(
       cDevice,
       [](WGPUErrorType errorType, const char* message, void*) {
-         probegl::ErrorLog() << getDeviceErrorTypeName(errorType) << " error: " << message;
+        probegl::ErrorLog() << getWebGPUErrorName(errorType) << " error: " << message;
       },
       nullptr);
   return wgpu::Device::Acquire(cDevice);
