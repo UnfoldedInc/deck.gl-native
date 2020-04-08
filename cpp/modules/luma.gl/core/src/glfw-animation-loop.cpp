@@ -79,7 +79,7 @@ wgpu::TextureFormat GLFWAnimationLoop::getPreferredSwapChainTextureFormat() {
 void GLFWAnimationLoop::_initializeGLFW(wgpu::BackendType backendType) {
   // Set up an error logging callback
   glfwSetErrorCallback([](int code, const char* message) {
-    // dawn::ErrorLog() << "GLFW error: " << code << " - " << message;
+     probegl::ErrorLog() << "GLFW error: " << code << " - " << message;
   });
 
   // Init the library
@@ -106,13 +106,13 @@ void GLFWAnimationLoop::_initializeGLFW(wgpu::BackendType backendType) {
 uint64_t GLFWAnimationLoop::_getSwapChainImplementation() { return this->_binding->GetSwapChainImplementation(); }
 
 auto GLFWAnimationLoop::_createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
-  auto instance = std::make_unique<dawn_native::Instance>();
-  DiscoverAdapter(instance.get(), this->window, backendType);
+  this->_instance = std::make_unique<dawn_native::Instance>();
+  DiscoverAdapter(this->_instance.get(), this->window, backendType);
 
   // Get an adapter for the backend to use, and create the device.
   dawn_native::Adapter backendAdapter;
   {
-    std::vector<dawn_native::Adapter> adapters = instance->GetAdapters();
+    std::vector<dawn_native::Adapter> adapters = this->_instance->GetAdapters();
     auto adapterIt = std::find_if(adapters.begin(), adapters.end(), [=](const dawn_native::Adapter adapter) -> bool {
       wgpu::AdapterProperties properties;
       adapter.GetProperties(&properties);

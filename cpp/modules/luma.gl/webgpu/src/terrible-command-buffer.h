@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef UTILS_TERRIBLE_COMMAND_BUFFER_H_
-#define UTILS_TERRIBLE_COMMAND_BUFFER_H_
+#ifndef LUMAGL_WEBGPU_TERRIBLE_COMMAND_BUFFER_H
+#define LUMAGL_WEBGPU_TERRIBLE_COMMAND_BUFFER_H
 
 #include <vector>
 
@@ -45,4 +45,4 @@ class TerribleCommandBuffer : public dawn_wire::CommandSerializer {
 }  // namespace utils
 }  // namespace lumagl
 
-#endif  // UTILS_TERRIBLE_COMMAND_BUFFER_H_
+#endif  // LUMAGL_WEBGPU_TERRIBLE_COMMAND_BUFFER_H
