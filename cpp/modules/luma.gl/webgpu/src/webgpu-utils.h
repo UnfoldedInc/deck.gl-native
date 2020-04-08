@@ -37,7 +37,7 @@ auto getDefaultWebGPUBackendType() -> wgpu::BackendType;
 auto getWebGPUBackendType(const std::string &backendType) -> wgpu::BackendType;
 
 /// \brief Get a string representation of a WebGPU Error
-auto getDeviceErrorTypeName(WGPUErrorType errorType) -> const char *;
+auto getWebGPUErrorName(WGPUErrorType errorType) -> const char *;
 
 }  // namespace utils
 }  // namespace lumagl

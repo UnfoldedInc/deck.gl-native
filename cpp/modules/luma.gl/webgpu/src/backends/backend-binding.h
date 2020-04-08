@@ -42,8 +42,8 @@ class BackendBinding {
  protected:
   BackendBinding(GLFWwindow* window, WGPUDevice device);
 
-  GLFWwindow* mWindow = nullptr;
-  WGPUDevice mDevice = nullptr;
+  GLFWwindow* mWindow{nullptr};
+  WGPUDevice mDevice{nullptr};
 };
 
 void DiscoverAdapter(dawn_native::Instance* instance, GLFWwindow* window, wgpu::BackendType type);

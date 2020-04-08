@@ -33,7 +33,10 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-auto CreateBufferFromData(const wgpu::Device& device, const void* data, uint64_t size, wgpu::BufferUsage usage)
+namespace lumagl {
+namespace utils {
+
+auto createBufferFromData(const wgpu::Device& device, const void* data, uint64_t size, wgpu::BufferUsage usage)
     -> wgpu::Buffer {
   wgpu::BufferDescriptor descriptor;
   descriptor.size = size;
@@ -42,6 +45,28 @@ auto CreateBufferFromData(const wgpu::Device& device, const void* data, uint64_t
   wgpu::Buffer buffer = device.CreateBuffer(&descriptor);
   buffer.SetSubData(0, size, data);
   return buffer;
+}
+
+auto createBufferCopyView(wgpu::Buffer buffer, uint64_t offset, uint32_t rowPitch, uint32_t imageHeight)
+    -> wgpu::BufferCopyView {
+  wgpu::BufferCopyView bufferCopyView;
+  bufferCopyView.buffer = buffer;
+  bufferCopyView.offset = offset;
+  bufferCopyView.rowPitch = rowPitch;
+  bufferCopyView.imageHeight = imageHeight;
+
+  return bufferCopyView;
+}
+
+auto createTextureCopyView(wgpu::Texture texture, uint32_t mipLevel, uint32_t arrayLayer, wgpu::Origin3D origin)
+    -> wgpu::TextureCopyView {
+  wgpu::TextureCopyView textureCopyView;
+  textureCopyView.texture = texture;
+  textureCopyView.mipLevel = mipLevel;
+  textureCopyView.arrayLayer = arrayLayer;
+  textureCopyView.origin = origin;
+
+  return textureCopyView;
 }
 
 ComboRenderPassDescriptor::ComboRenderPassDescriptor(std::initializer_list<wgpu::TextureView> colorAttachmentInfo,
@@ -106,7 +131,7 @@ BasicRenderPass::BasicRenderPass(uint32_t texWidth, uint32_t texHeight, wgpu::Te
       colorFormat{textureFormat},
       renderPassInfo{{colorAttachment.CreateView()}} {}
 
-auto CreateBasicRenderPass(const wgpu::Device& device, uint32_t width, uint32_t height) -> BasicRenderPass {
+auto createBasicRenderPass(const wgpu::Device& device, uint32_t width, uint32_t height) -> BasicRenderPass {
   ASSERT(width > 0 && height > 0);
 
   wgpu::TextureDescriptor descriptor;
@@ -124,29 +149,7 @@ auto CreateBasicRenderPass(const wgpu::Device& device, uint32_t width, uint32_t 
   return BasicRenderPass(width, height, color);
 }
 
-auto CreateBufferCopyView(wgpu::Buffer buffer, uint64_t offset, uint32_t rowPitch, uint32_t imageHeight)
-    -> wgpu::BufferCopyView {
-  wgpu::BufferCopyView bufferCopyView;
-  bufferCopyView.buffer = buffer;
-  bufferCopyView.offset = offset;
-  bufferCopyView.rowPitch = rowPitch;
-  bufferCopyView.imageHeight = imageHeight;
-
-  return bufferCopyView;
-}
-
-auto CreateTextureCopyView(wgpu::Texture texture, uint32_t mipLevel, uint32_t arrayLayer, wgpu::Origin3D origin)
-    -> wgpu::TextureCopyView {
-  wgpu::TextureCopyView textureCopyView;
-  textureCopyView.texture = texture;
-  textureCopyView.mipLevel = mipLevel;
-  textureCopyView.arrayLayer = arrayLayer;
-  textureCopyView.origin = origin;
-
-  return textureCopyView;
-}
-
-auto GetDefaultSamplerDescriptor() -> wgpu::SamplerDescriptor {
+auto getDefaultSamplerDescriptor() -> wgpu::SamplerDescriptor {
   wgpu::SamplerDescriptor desc;
 
   desc.minFilter = wgpu::FilterMode::Linear;
@@ -230,3 +233,6 @@ auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layo
 
   return device.CreateBindGroup(&descriptor);
 }
+
+}  // namespace utils
+}  // namespace lumagl

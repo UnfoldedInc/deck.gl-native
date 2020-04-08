@@ -41,7 +41,7 @@ before_script:
   # Build out of source
   - mkdir build
   - cd build
-  - cmake -DWARNINGS_AS_ERRORS=ON ..
+  - cmake -DWARNINGS_AS_ERRORS=ON -DDECK_ENABLE_GRAPHICS=OFF ..
 
 script:
   - make -j 16

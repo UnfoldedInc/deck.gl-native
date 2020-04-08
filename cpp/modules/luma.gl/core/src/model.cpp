@@ -23,20 +23,22 @@
 #include "luma.gl/webgpu.h"
 
 using namespace lumagl;
-using namespace lumagl::utils;
+
+namespace lumagl {
 
 // TODO(ib):
-auto getBackendBinding() -> BackendBinding * { return nullptr; };
+auto getBackendBinding() -> utils::BackendBinding * { return nullptr; };
 
 auto GetPreferredSwapChainTextureFormat() -> wgpu::TextureFormat {
-  BackendBinding *binding = getBackendBinding();
+  utils::BackendBinding *binding = getBackendBinding();
   return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
 }
+
+}  // namespace lumagl
 
 Model::Model(wgpu::Device device) : Model(device, Options{}) {}
 
 Model::Model(wgpu::Device device, const Model::Options &options) {
-  /*
   this->vsModule = utils::createShaderModule(device, utils::SingleShaderStage::Vertex, options.vs.c_str());
   this->fsModule = utils::createShaderModule(device, utils::SingleShaderStage::Fragment, options.fs.c_str());
 
@@ -51,7 +53,6 @@ Model::Model(wgpu::Device device, const Model::Options &options) {
   descriptor.layout = utils::makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
 
   this->pipeline = device.CreateRenderPipeline(&descriptor);
-  */
 }
 
 void Model::draw() {}

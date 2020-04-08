@@ -37,8 +37,8 @@ auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
 #elif defined(LUMAGL_ENABLE_BACKEND_OPENGL)
   return wgpu::BackendType::OpenGL;
 #else
-  // #warning "No LUMAGL_ENABLE_BACKEND_ constant set"
-  return wgpu::BackendType::Metal;
+#warning "No LUMAGL_ENABLE_BACKEND_ constant set"
+  return wgpu::BackendType::Null;
 #endif
 }
 

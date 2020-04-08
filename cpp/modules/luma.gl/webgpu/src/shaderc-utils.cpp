@@ -23,30 +23,28 @@
 
 #include "./shaderc-utils.h"  // NOLINT(build/include)
 
-#include "probe.gl/core.h"
+#include <shaderc/shaderc.hpp>
 
-// #include <shaderc/shaderc.hpp>
-// enum shaderc_shader_kind { shaderc_glsl_vertex_shader, shaderc_glsl_fragment_shader, shaderc_glsl_compute_shader };
+#include "probe.gl/core.h"
 
 using namespace lumagl;
 using namespace lumagl::utils;
 
 namespace {
 
-// auto shadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
-//   switch (stage) {
-//     case SingleShaderStage::Vertex:
-//       return shaderc_glsl_vertex_shader;
-//     case SingleShaderStage::Fragment:
-//       return shaderc_glsl_fragment_shader;
-//     case SingleShaderStage::Compute:
-//       return shaderc_glsl_compute_shader;
-//     default:
-//       PROBEGL_UNREACHABLE();
-//   }
-// }
+auto shadercShaderKind(SingleShaderStage stage) -> shaderc_shader_kind {
+  switch (stage) {
+    case SingleShaderStage::Vertex:
+      return shaderc_glsl_vertex_shader;
+    case SingleShaderStage::Fragment:
+      return shaderc_glsl_fragment_shader;
+    case SingleShaderStage::Compute:
+      return shaderc_glsl_compute_shader;
+    default:
+      PROBEGL_UNREACHABLE();
+  }
+}
 
-/*
 auto createShaderModuleFromResult(const wgpu::Device& device, const shaderc::SpvCompilationResult& result)
     -> wgpu::ShaderModule {
   // result.cend and result.cbegin return pointers to uint32_t.
@@ -61,18 +59,19 @@ auto createShaderModuleFromResult(const wgpu::Device& device, const shaderc::Spv
   descriptor.code = result.cbegin();
   return device.CreateShaderModule(&descriptor);
 }
-*/
 
 }  // anonymous namespace
 
+namespace lumagl {
+namespace utils {
+
 auto createShaderModule(const wgpu::Device& device, SingleShaderStage stage, const char* source) -> wgpu::ShaderModule {
-  /*
   shaderc_shader_kind kind = shadercShaderKind(stage);
 
   shaderc::Compiler compiler;
   auto result = compiler.CompileGlslToSpv(source, strlen(source), kind, "myshader?");
   if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-    dawn::ErrorLog() << result.GetErrorMessage();
+    probegl::ErrorLog() << result.GetErrorMessage();
     return {};
   }
 #ifdef DUMP_SPIRV_ASSEMBLY
@@ -104,20 +103,18 @@ auto createShaderModule(const wgpu::Device& device, SingleShaderStage stage, con
 #endif
 
   return createShaderModuleFromResult(device, result);
-  */
-  return nullptr;
 }
 
 auto createShaderModuleFromASM(const wgpu::Device& device, const char* source) -> wgpu::ShaderModule {
-  /*
   shaderc::Compiler compiler;
   shaderc::SpvCompilationResult result = compiler.AssembleToSpv(source, strlen(source));
   if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-    dawn::ErrorLog() << result.GetErrorMessage();
+    probegl::ErrorLog() << result.GetErrorMessage();
     return {};
   }
 
-  return CreateShaderModuleFromResult(device, result);
-  */
-  return nullptr;
+  return createShaderModuleFromResult(device, result);
 }
+
+}  // namespace utils
+}  // namespace lumagl
