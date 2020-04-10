@@ -24,8 +24,8 @@
 #ifndef LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
 #define LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
 
-#include "dawn/webgpu_cpp.h"
-#include "dawn_native/DawnNative.h"
+#include <dawn/webgpu_cpp.h>
+#include <dawn_native/DawnNative.h>
 
 struct GLFWwindow;
 

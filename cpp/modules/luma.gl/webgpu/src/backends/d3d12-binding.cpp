@@ -21,13 +21,14 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
+#include <GLFW/glfw3.h>
+#include <dawn_native/D3D12Backend.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
 #include <memory>
 
-#include "GLFW/glfw3.h"
-#include "dawn_native/D3D12Backend.h"
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include "./backend-binding.h"
-#include "GLFW/glfw3native.h"
 #include "probe.gl/core.h"
 
 namespace lumagl {

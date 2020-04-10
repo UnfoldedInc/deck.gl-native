@@ -70,6 +70,20 @@ target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     )
 target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY})
 
+# GLFW dependencies
+if (APPLE)
+    find_library(Cocoa_LIB Cocoa)
+    find_library(IOKit_LIB IOKit)
+    find_library(CoreFoundation_LIB CoreFoundation)
+    find_library(CoreVideo_LIB CoreVideo)
+    target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
+        ${Cocoa_LIB}
+        ${IOKit_LIB}
+        ${CoreFoundation_LIB}
+        ${CoreVideo_LIB}
+        )
+endif()
+
 # Backend specific files and libraries
 if (DECK_ENABLE_D3D12)
     list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/d3d12-binding.cpp)
@@ -81,13 +95,11 @@ if (DECK_ENABLE_METAL)
     # macOS frameworks related to Metal
     find_library(Metal_LIB Metal)
     find_library(QuartzCore_LIB QuartzCore)
-    find_library(Cocoa_LIB Cocoa)
     find_library(IOKit_LIB IOKit)
     find_library(IOSurface_LIB IOSurface)
-    target_link_libraries(luma.gl PUBLIC
+    target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
         ${Metal_LIB}
         ${QuartzCore_LIB}
-        ${Cocoa_LIB}
         ${IOKit_LIB}
         ${IOSurface_LIB}
         )

@@ -21,12 +21,13 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
+#include <dawn_native/VulkanBackend.h>
+// Include GLFW after VulkanBackend so that it declares the Vulkan-specific functions
+#include <GLFW/glfw3.h>
+
 #include <memory>
 
-#include "dawn_native/VulkanBackend.h"
-// Include GLFW after VulkanBackend so that it declares the Vulkan-specific functions
 #include "./backend-binding.h"
-#include "GLFW/glfw3.h"
 
 namespace lumagl {
 namespace utils {

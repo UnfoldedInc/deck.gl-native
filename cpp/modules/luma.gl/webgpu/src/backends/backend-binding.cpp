@@ -23,13 +23,13 @@
 
 #include "./backend-binding.h"  // NOLINT(build/include)
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
+#if defined(LUMAGL_ENABLE_BACKEND_OPENGL)
+#include <dawn_native/OpenGLBackend.h>
+#endif  // defined(LUMAGL_ENABLE_BACKEND_OPENGL)
+
 #include "luma.gl/core.h"
 #include "probe.gl/core.h"
-
-#if defined(LUMAGL_ENABLE_BACKEND_OPENGL)
-#include "dawn_native/OpenGLBackend.h"
-#endif  // defined(LUMAGL_ENABLE_BACKEND_OPENGL)
 
 namespace lumagl {
 namespace utils {

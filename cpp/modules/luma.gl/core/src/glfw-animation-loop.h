@@ -21,13 +21,13 @@
 #ifndef LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
 #define LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
 
-#include <GLFW/glfw3.h>
-
 #include <memory>
 
 #include "./animation-loop.h"
 #include "luma.gl/webgpu/src/backends/backend-binding.h"
 #include "luma.gl/webgpu/src/webgpu-utils.h"
+
+struct GLFWwindow;
 
 namespace lumagl {
 

@@ -21,6 +21,7 @@
 #ifndef LUMAGL_CORE_H
 #define LUMAGL_CORE_H
 
+#include "./core/src/animation-loop.h"
 #include "./core/src/glfw-animation-loop.h"
 #include "./core/src/model.h"
 
