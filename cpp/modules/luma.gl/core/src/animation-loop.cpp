@@ -20,6 +20,8 @@
 
 #include "./animation-loop.h"  // NOLINT(build/include)
 
+#include <dawn/dawn_proc.h>
+
 #include <functional>
 
 #include "luma.gl/webgpu.h"
@@ -28,13 +30,9 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-AnimationLoop::AnimationLoop(wgpu::Device device_) : device{device_} {
-  // Create a device if none was provided
-  // this->swapchain =
-  this->setSize(640, 480);
+AnimationLoop::~AnimationLoop() {
+  // TODO(ilija@unfolded.ai): Cleanup?
 }
-
-auto AnimationLoop::createDevice(wgpu::BackendType) -> wgpu::Device { return wgpu::Device(); }
 
 void AnimationLoop::setSize(int width, int height) {
   bool sizeChanged = width != this->width || height != this->height;
@@ -42,46 +40,30 @@ void AnimationLoop::setSize(int width, int height) {
   this->height = height;
 
   if (sizeChanged) {
-    // auto swapchain = GetSwapChain(device);  TODO(ib@unfolded.ai): better to just query for swap chain before use?
-    // this->swapchain.Configure(GetPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment,
-    // this->width,
-    //                           this->height);
+    this->swapchain = this->_createSwapchain(this->device);
+    // TODO(ilija@unfolded.ai): Trigger redraw
   }
 }
 
 void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
-  if (!this->device) {
-    this->device = this->createDevice(getDefaultWebGPUBackendType());
-    this->queue = this->device.CreateQueue();
-  }
-
   this->running = true;
+  // TODO(ilija@unfolded.ai): Add needsRedraw and check it
   while (this->running && !this->shouldQuit()) {
     this->frame(onRender);
     // TODO(ib@unfolded.ai): We should not wait 16ms, we should wait **max** 16ms.
-    // uSleep(16000);
+    probegl::uSleep(16000);
   }
   this->running = false;
 }
 
-void AnimationLoop::stop() { this->running = false; }
-
-/*
-  if (!this->onNeedsRedraw(this)) {
-    return;
-  }
-  this->onBeforeRender(this);
-  this->onRender(this, pass);
-  this->onAfterRender(this);
-*/
-
 void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
-  wgpu::TextureView backbufferView = this->swapchain.GetCurrentTextureView();
+  // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
+  wgpu::TextureView backbufferView = this->swapchain->GetCurrentTextureView();
 
-  utils::ComboRenderPassDescriptor renderPass({backbufferView});
-  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+  utils::ComboRenderPassDescriptor passDescriptor({backbufferView});
+  wgpu::CommandEncoder encoder = device->CreateCommandEncoder();
   {
-    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPass);
+    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
 
     onRender(pass);  // TODO(ib@unfolded.ai): protect with try catch
 
@@ -90,8 +72,28 @@ void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender)
 
   wgpu::CommandBuffer commands = encoder.Finish();
 
-  this->queue.Submit(1, &commands);
-  this->swapchain.Present();
+  this->queue->Submit(1, &commands);
+  this->swapchain->Present();
 
   this->flush();
+}
+
+void AnimationLoop::stop() { this->running = false; }
+
+void AnimationLoop::_initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device) {
+  // TODO(ilija@unfolded.ai): This should likely be set up globally?
+  DawnProcTable procs = dawn_native::GetProcs();
+  dawnProcSetProcs(&procs);
+  procs.deviceSetUncapturedErrorCallback(
+      device->Get(),
+      [](WGPUErrorType errorType, const char* message, void*) {
+        probegl::ErrorLog() << getWebGPUErrorName(errorType) << " error: " << message;
+      },
+      nullptr);
+
+  this->device = device;
+  this->queue = std::make_unique<wgpu::Queue>(this->device->CreateQueue());
+  this->swapchain = this->_createSwapchain(this->device);
+
+  this->setSize(width, height);
 }

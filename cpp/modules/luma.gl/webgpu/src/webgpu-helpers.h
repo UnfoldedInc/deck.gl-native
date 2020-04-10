@@ -84,6 +84,8 @@ auto makeBindGroupLayout(const wgpu::Device& device,
                          std::initializer_list<wgpu::BindGroupLayoutBinding> bindingsInitializer)
     -> wgpu::BindGroupLayout;
 
+auto createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
+
 // Helpers to make creating bind groups look nicer:
 //
 //   utils::MakeBindGroup(device, layout, {

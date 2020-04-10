@@ -22,41 +22,41 @@
 #define LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
 
 #include <GLFW/glfw3.h>
-#include <dawn_wire/WireClient.h>
-#include <dawn_wire/WireServer.h>
+
+#include <memory>
 
 #include "./animation-loop.h"
 #include "luma.gl/webgpu/src/backends/backend-binding.h"
-#include "luma.gl/webgpu/src/terrible-command-buffer.h"
+#include "luma.gl/webgpu/src/webgpu-utils.h"
 
 namespace lumagl {
 
 class GLFWAnimationLoop : public AnimationLoop {
  public:
-  explicit GLFWAnimationLoop(wgpu::BackendType backendType);
+  GLFWAnimationLoop(const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType(),
+                    std::shared_ptr<wgpu::Device> device = nullptr);
+  ~GLFWAnimationLoop();
 
-  auto createDevice(wgpu::BackendType) -> wgpu::Device override;
+  void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
+
   bool shouldQuit() override;
   void flush() override;
+  auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat override;
 
-  auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat;
-  auto getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain;
-
-  GLFWwindow* window{nullptr};
+ protected:
+  auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> override;
+  auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> std::unique_ptr<wgpu::SwapChain> override;
 
  private:
-  void _initializeGLFW(wgpu::BackendType);
-  uint64_t _getSwapChainImplementation();
-  auto _createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device;
-  auto _createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
+  auto _initializeGLFW(const wgpu::BackendType) -> GLFWwindow*;
 
-  std::unique_ptr<dawn_native::Instance> _instance;
+  /// \brief Instance used for adapter discovery and device creation. It has to be kept around as Dawn objects'
+  /// lifecycle seems to depend on it.
+  /// \note From Dawn docs: This is an RAII class for Dawn instances and also controls the lifetime of all adapters
+  /// for this instance.
+  std::unique_ptr<dawn_native::Instance> _instance{nullptr};
   utils::BackendBinding* _binding{nullptr};
-
-  dawn_wire::WireServer* _wireServer{nullptr};
-  dawn_wire::WireClient* _wireClient{nullptr};
-  utils::TerribleCommandBuffer* _c2sBuf{nullptr};
-  utils::TerribleCommandBuffer* _s2cBuf{nullptr};
+  GLFWwindow* _window{nullptr};
 };
 
 }  // namespace lumagl

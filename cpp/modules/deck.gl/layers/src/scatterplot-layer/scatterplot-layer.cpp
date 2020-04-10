@@ -242,7 +242,8 @@ auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl:
   // a square that minimally cover the unit circle
   // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
-  return std::shared_ptr<lumagl::Model>(new lumagl::Model(device));
+  auto devicePtr = std::make_shared<wgpu::Device>(std::move(device));
+  return std::shared_ptr<lumagl::Model>(new lumagl::Model(devicePtr));
   // Object.assign(this->getShaders(), {
   //   id: this->props.id,
   //   geometry: new Geometry({

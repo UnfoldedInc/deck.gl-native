@@ -24,37 +24,40 @@
 #include <dawn/webgpu_cpp.h>
 
 #include <functional>
+#include <memory>
 
 namespace lumagl {
 
 class AnimationLoop {
  public:
-  explicit AnimationLoop(wgpu::Device device = nullptr);
+  virtual ~AnimationLoop();
 
   void setSize(int width, int height);
 
-  void run(std::function<void(wgpu::RenderPassEncoder)>);
-  void frame(std::function<void(wgpu::RenderPassEncoder)>);
-  void stop();
+  virtual void run(std::function<void(wgpu::RenderPassEncoder)> onRender);
+  virtual void frame(std::function<void(wgpu::RenderPassEncoder)> onRender);
+  virtual void stop();
 
-  std::function<bool(AnimationLoop *)> onNeedsRedraw{[](AnimationLoop *) { return true; }};
-  std::function<void(AnimationLoop *)> onBeforeRender{[](AnimationLoop *) {}};
-  std::function<void(AnimationLoop *)> onRender{[](AnimationLoop *) {}};
-  std::function<void(AnimationLoop *)> onAfterRender{[](AnimationLoop *) {}};
-
-  virtual auto createDevice(wgpu::BackendType) -> wgpu::Device;
   virtual bool shouldQuit() { return false; }
   virtual void flush() {}
+  virtual auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat { return wgpu::TextureFormat::Undefined; };
 
+  // TODO(ilija@unfolded.ai): Make these read-only?
   int width{640};
   int height{480};
 
   // Internal, but left public to facilitate integration
-  wgpu::Device device;
-  wgpu::Queue queue;
-  wgpu::SwapChain swapchain;
+  std::shared_ptr<wgpu::Device> device;
+  std::unique_ptr<wgpu::Queue> queue;
+  std::unique_ptr<wgpu::SwapChain> swapchain;
 
+  // TODO(ilija@unfolded.ai): Make this read-only?
   bool running{false};
+
+ protected:
+  void _initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device);
+  virtual auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> = 0;
+  virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> std::unique_ptr<wgpu::SwapChain> = 0;
 };
 
 }  // namespace lumagl
