@@ -20,6 +20,7 @@
 
 #include "./glfw-animation-loop.h"  // NOLINT(build/include)
 
+#include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 #include <dawn/dawn_wsi.h>
 #include <dawn/webgpu_cpp.h>
@@ -57,6 +58,7 @@ GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, std::s
 }
 
 GLFWAnimationLoop::~GLFWAnimationLoop() {
+  glfwDestroyWindow(this->_window);
   glfwTerminate();
 
   // TODO(ilija@unfolded.ai): Additional cleanup?

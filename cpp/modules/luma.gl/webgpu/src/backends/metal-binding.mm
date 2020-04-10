@@ -22,14 +22,15 @@
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
 #import <QuartzCore/CAMetalLayer.h>
+#include <dawn/dawn_wsi.h>
+#include <dawn_native/MetalBackend.h>
 
 #include "./backend-binding.h"
-#include "dawn/dawn_wsi.h"
-#include "dawn_native/MetalBackend.h"
 
 #define GLFW_EXPOSE_NATIVE_COCOA
-#include "GLFW/glfw3.h"
-#include "GLFW/glfw3native.h"
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
 #include "luma.gl/core.h"
 #include "probe.gl/core.h"
 
