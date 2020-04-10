@@ -19,23 +19,23 @@ matrix:
           packages:
             - clang-format-9
       script: make format && git diff --exit-code
-    # TODO: Doesn't install arrow correctly on OSX
-    # - name: "Mac OSX (Xcode 11.3)"
-    #   os: osx
-    #   osx_image: xcode11.3
-    - name: "Linux (Clang)"
-      os: linux
-      compiler: clang
-    - name: "Linux (GCC) with Valgrind"
-      os: linux
-      compiler: gcc
-      addons:
-        apt:
-          packages:
-            - valgrind
-      script:
-        - make -j
-        - valgrind --error-exitcode=99 ./tests
+    - name: "macOS (Xcode 11.3)"
+      os: osx
+      osx_image: xcode11.3
+    # TODO: Does not build on Linux currently due to dependency issues
+    # - name: "Linux (Clang)"
+    #   os: linux
+    #   compiler: clang
+    # - name: "Linux (GCC) with Valgrind"
+    #   os: linux
+    #   compiler: gcc
+    #   addons:
+    #     apt:
+    #       packages:
+    #         - valgrind
+    #   script:
+    #     - make -j
+    #     - valgrind --error-exitcode=99 ./tests
 
 before_script:
   # Build out of source
