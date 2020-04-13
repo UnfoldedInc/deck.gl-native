@@ -21,12 +21,13 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
+#include <GLFW/glfw3.h>
+#include <dawn/dawn_wsi.h>
+#include <dawn_native/OpenGLBackend.h>
+
 #include <cstdio>
 
 #include "./backend-binding.h"
-#include "GLFW/glfw3.h"
-#include "dawn/dawn_wsi.h"
-#include "dawn_native/OpenGLBackend.h"
 #include "luma.gl/core.h"
 
 namespace lumagl {

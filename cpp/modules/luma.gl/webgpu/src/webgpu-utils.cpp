@@ -39,7 +39,7 @@ auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
 #elif defined(LUMAGL_ENABLE_BACKEND_NULL)
   return wgpu::BackendType::Null;
 #else
-  #error No backends enabled
+#error No backends enabled
 #endif
 }
 
