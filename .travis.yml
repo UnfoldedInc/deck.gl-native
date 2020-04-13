@@ -37,6 +37,17 @@ matrix:
     #     - make -j
     #     - valgrind --error-exitcode=99 ./tests
 
+# Handle git submodules ourselves
+git:
+    submodules: false
+
+# Use sed to replace the SSH URL with the public URL, then initialize submodules
+# TODO: Temporary workaround for not having a ssh key in place for the CI user. Remove once User Key is in place
+# https://docs.travis-ci.com/user/private-dependencies/#User-Key
+before_install:
+    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - git submodule update --init --recursive
+
 before_script:
   # Build out of source
   - mkdir build
