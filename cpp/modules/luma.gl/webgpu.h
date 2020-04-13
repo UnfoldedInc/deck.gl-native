@@ -25,7 +25,6 @@
 #include "./webgpu/src/combo-render-pipeline-descriptor.h"
 #include "./webgpu/src/shaderc-utils.h"
 #include "./webgpu/src/swap-chain-utils.h"
-#include "./webgpu/src/terrible-command-buffer.h"
 #include "./webgpu/src/webgpu-constants.h"
 #include "./webgpu/src/webgpu-helpers.h"
 #include "./webgpu/src/webgpu-utils.h"

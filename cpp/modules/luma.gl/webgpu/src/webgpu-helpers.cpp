@@ -196,6 +196,21 @@ auto makeBindGroupLayout(const wgpu::Device& device,
   return device.CreateBindGroupLayout(&descriptor);
 }
 
+auto createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView {
+  wgpu::TextureDescriptor descriptor;
+  descriptor.dimension = wgpu::TextureDimension::e2D;
+  descriptor.size.width = 640;
+  descriptor.size.height = 480;
+  descriptor.size.depth = 1;
+  descriptor.arrayLayerCount = 1;
+  descriptor.sampleCount = 1;
+  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
+  descriptor.mipLevelCount = 1;
+  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
+  auto depthStencilTexture = device.CreateTexture(&descriptor);
+  return depthStencilTexture.CreateView();
+}
+
 BindingInitializationHelper::BindingInitializationHelper(uint32_t binding, const wgpu::Sampler& sampler)
     : binding{binding}, sampler{sampler} {}
 

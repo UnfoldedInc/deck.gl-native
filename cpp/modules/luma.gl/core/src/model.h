@@ -23,6 +23,7 @@
 
 #include <dawn/webgpu_cpp.h>
 
+#include <memory>
 #include <string>
 
 #include "luma.gl/webgpu.h"
@@ -35,24 +36,35 @@ class Model {
   class Options;
 
   /// \brief construct a new Model
-  explicit Model(wgpu::Device device, const Options&);
-  explicit Model(wgpu::Device device);
+  explicit Model(std::shared_ptr<wgpu::Device> device, const Options&);
+
+  // TODO(ilija@unfolded.ai): Remove once integration is complete and layers provide valid options
+  explicit Model(std::shared_ptr<wgpu::Device> device);
 
   void draw();
 
-  wgpu::RenderPipeline pipeline;                 // Rendering pipeline (pass.SetPipeline(model.pipeline))
-  wgpu::BindGroupLayout uniformBindGroupLayout;  // Uniform buffer
-  wgpu::ShaderModule vsModule;                   // Compiled vertex shader
-  wgpu::ShaderModule fsModule;                   // Compiled fragment shader
+  /// \brief Rendering pipeline.
+  std::unique_ptr<wgpu::RenderPipeline> pipeline;
+  /// \brief Layout of the bind group.
+  std::unique_ptr<wgpu::BindGroupLayout> uniformBindGroupLayout;
+  /// \brief Compiled vertex shader.
+  std::unique_ptr<wgpu::ShaderModule> vsModule;
+  /// \brief Compiled fragment shader.
+  std::unique_ptr<wgpu::ShaderModule> fsModule;
 };
 
 class Model::Options {
  public:
   Options() {}
-  Options(const std::string& vs, const std::string& fs) : vs{vs}, fs{fs} {}
+  Options(const std::string& vs, const std::string& fs, const wgpu::TextureFormat& textureFormat)
+      : vs{vs}, fs{fs}, textureFormat{textureFormat} {}
 
-  std::string vs;  // vertex shader source
-  std::string fs;  // fragment shader source
+  /// \brief Vertex shader source.
+  std::string vs;
+  /// \brief Fragment shader source.
+  std::string fs;
+  /// \brief Texture format that the pipeline will use.
+  wgpu::TextureFormat textureFormat;
 };
 
 }  // namespace lumagl

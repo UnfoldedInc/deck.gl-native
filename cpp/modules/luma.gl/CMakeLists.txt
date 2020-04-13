@@ -29,13 +29,11 @@ set(WEBGPU_HEADER_FILE_LIST
     webgpu/src/webgpu-constants.h
     webgpu/src/webgpu-utils.h
     webgpu/src/webgpu-helpers.h
-    webgpu/src/terrible-command-buffer.h
     webgpu/src/backends/backend-binding.h
     )
 set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/combo-render-pipeline-descriptor.cpp
     webgpu/src/shaderc-utils.cpp
-    webgpu/src/terrible-command-buffer.cpp
     webgpu/src/webgpu-utils.cpp
     webgpu/src/webgpu-helpers.cpp
     webgpu/src/backends/backend-binding.cpp
@@ -60,16 +58,12 @@ set(TESTS_SOURCE_FILE_LIST
 
 find_library(dawn_proc_LIB dawn_proc PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(dawn_native_LIB dawn_native PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(dawn_wire_LIB dawn_wire PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(dawn_bindings_LIB dawn_bindings PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(glfw_LIB glfw PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(shaderc_LIB shaderc_combined PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 
 target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     ${dawn_proc_LIB}
     ${dawn_native_LIB}
-    ${dawn_wire_LIB}
-    ${dawn_bindings_LIB}
     ${glfw_LIB}
     ${shaderc_LIB}
     ${DECK_DEPS_PATH}/webgpu_cpp.o

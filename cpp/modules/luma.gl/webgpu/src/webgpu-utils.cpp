@@ -36,8 +36,10 @@ auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
   return wgpu::BackendType::Vulkan;
 #elif defined(LUMAGL_ENABLE_BACKEND_OPENGL)
   return wgpu::BackendType::OpenGL;
-#else
+#elif defined(LUMAGL_ENABLE_BACKEND_NULL)
   return wgpu::BackendType::Null;
+#else
+  #error No backends enabled
 #endif
 }
 

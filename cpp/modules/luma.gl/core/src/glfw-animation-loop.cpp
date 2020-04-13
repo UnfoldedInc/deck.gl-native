@@ -1,22 +1,31 @@
-// Copyright 2017 The Dawn Authors under http://www.apache.org/licenses/LICENSE-2.0
+// Copyright (c) 2020 Unfolded Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 #include "./glfw-animation-loop.h"  // NOLINT(build/include)
 
-#include <algorithm>
-#include <cstring>
+#include <GLFW/glfw3native.h>
+#include <dawn/dawn_wsi.h>
+#include <dawn/webgpu_cpp.h>
+#include <dawn_native/DawnNative.h>
 
-#include "GLFW/glfw3.h"
-#include "GLFW/glfw3native.h"
-#include "dawn/dawn_proc.h"
-#include "dawn/dawn_wsi.h"
-#include "dawn/webgpu_cpp.h"
-#include "dawn_native/DawnNative.h"
-#include "dawn_wire/WireClient.h"
-#include "dawn_wire/WireServer.h"
-
-// #include "utils/BackendBinding.h"
-// #include "utils/GLFWUtils.h"
-// #include "utils/TerribleCommandBuffer.h"
+#include <iostream>
 
 #include "luma.gl/webgpu.h"
 #include "probe.gl/core.h"
@@ -30,57 +39,85 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-enum class CmdBufType {
-  None,
-  Terrible,
-  // TODO(cwallez@chromium.org) double terrible cmdbuf
-};
+GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device) {
+  this->_window = this->_initializeGLFW(backendType);
 
-static auto cmdBufType = CmdBufType::Terrible;
-
-GLFWAnimationLoop::GLFWAnimationLoop(wgpu::BackendType backendType) : AnimationLoop{} {
-  this->_initializeGLFW(backendType);
-  this->window = glfwCreateWindow(640, 480, "deck.gl window", nullptr, nullptr);
-  if (!this->window) {
-    throw new std::runtime_error("Failed to create GLFW window");
-  }
-}
-
-auto GLFWAnimationLoop::createDevice(wgpu::BackendType backendType) -> wgpu::Device {
-  return this->_createCppDawnDevice(backendType);
-}
-
-bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->window); }
-
-void GLFWAnimationLoop::flush() {
-  if (this->_c2sBuf) {
-    bool c2sSuccess = this->_c2sBuf->Flush();
-    ASSERT(c2sSuccess);
-  }
-  if (this->_s2cBuf) {
-    bool s2cSuccess = this->_s2cBuf->Flush();
-    ASSERT(s2cSuccess);
+  // Create a device if none was provided
+  auto _device = device;
+  if (device == nullptr) {
+    _device = this->_createDevice(backendType);
   }
 
-  glfwPollEvents();
+  this->_binding = CreateBinding(backendType, this->_window, _device->Get());
+  if (this->_binding == nullptr) {
+    throw new std::runtime_error("Failed to create binding");
+  }
+
+  this->_initialize(backendType, _device);
 }
 
-auto GLFWAnimationLoop::getSwapChain(const wgpu::Device& device) -> wgpu::SwapChain {
-  wgpu::SwapChainDescriptor swapChainDesc;
-  swapChainDesc.implementation = this->_getSwapChainImplementation();
-  return device.CreateSwapChain(nullptr, &swapChainDesc);
+GLFWAnimationLoop::~GLFWAnimationLoop() {
+  glfwTerminate();
+
+  // TODO(ilija@unfolded.ai): Additional cleanup?
 }
 
-wgpu::TextureFormat GLFWAnimationLoop::getPreferredSwapChainTextureFormat() {
+void GLFWAnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
+  // Break the run loop if esc is pressed
+  if (glfwGetKey(this->_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(this->_window, true);
+  }
+
+  AnimationLoop::frame(onRender);
+}
+
+bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->_window); }
+
+void GLFWAnimationLoop::flush() { glfwPollEvents(); }
+
+auto GLFWAnimationLoop::getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat {
+  // TODO(ilija@unfolded.ai): Why do we flush here?
   this->flush();
   return static_cast<wgpu::TextureFormat>(this->_binding->GetPreferredSwapChainTextureFormat());
 }
 
-void GLFWAnimationLoop::_initializeGLFW(wgpu::BackendType backendType) {
+auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> {
+  this->_instance = std::make_unique<dawn_native::Instance>();
+  DiscoverAdapter(this->_instance.get(), this->_window, backendType);
+
+  // Get an adapter for the backend to use, and create the device.
+  dawn_native::Adapter backendAdapter;
+  {
+    std::vector<dawn_native::Adapter> adapters = this->_instance->GetAdapters();
+    auto adapterIt = std::find_if(adapters.begin(), adapters.end(), [=](const dawn_native::Adapter adapter) -> bool {
+      wgpu::AdapterProperties properties;
+      adapter.GetProperties(&properties);
+      return properties.backendType == backendType;
+    });
+    ASSERT(adapterIt != adapters.end());
+    backendAdapter = *adapterIt;
+  }
+
+  WGPUDevice cDevice = backendAdapter.CreateDevice();
+  auto device = wgpu::Device::Acquire(cDevice);
+
+  return std::make_unique<wgpu::Device>(std::move(device));
+}
+
+auto GLFWAnimationLoop::_createSwapchain(std::shared_ptr<wgpu::Device> device) -> std::unique_ptr<wgpu::SwapChain> {
+  wgpu::SwapChainDescriptor swapChainDesc;
+  swapChainDesc.implementation = this->_binding->GetSwapChainImplementation();
+  auto swapchain = device->CreateSwapChain(nullptr, &swapChainDesc);
+  swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment, this->width,
+                      this->height);
+
+  return std::make_unique<wgpu::SwapChain>(std::move(swapchain));
+}
+
+auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType) -> GLFWwindow* {
   // Set up an error logging callback
-  glfwSetErrorCallback([](int code, const char* message) {
-     probegl::ErrorLog() << "GLFW error: " << code << " - " << message;
-  });
+  glfwSetErrorCallback(
+      [](int code, const char* message) { probegl::ErrorLog() << "GLFW error: " << code << " - " << message; });
 
   // Init the library
   if (!glfwInit()) {
@@ -101,91 +138,15 @@ void GLFWAnimationLoop::_initializeGLFW(wgpu::BackendType backendType) {
       // the window with other APIs (by crashing in weird ways).
       glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   }
-}
 
-uint64_t GLFWAnimationLoop::_getSwapChainImplementation() { return this->_binding->GetSwapChainImplementation(); }
-
-auto GLFWAnimationLoop::_createCppDawnDevice(wgpu::BackendType backendType) -> wgpu::Device {
-  this->_instance = std::make_unique<dawn_native::Instance>();
-  DiscoverAdapter(this->_instance.get(), this->window, backendType);
-
-  // Get an adapter for the backend to use, and create the device.
-  dawn_native::Adapter backendAdapter;
-  {
-    std::vector<dawn_native::Adapter> adapters = this->_instance->GetAdapters();
-    auto adapterIt = std::find_if(adapters.begin(), adapters.end(), [=](const dawn_native::Adapter adapter) -> bool {
-      wgpu::AdapterProperties properties;
-      adapter.GetProperties(&properties);
-      return properties.backendType == backendType;
-    });
-    ASSERT(adapterIt != adapters.end());
-    backendAdapter = *adapterIt;
+  auto window = glfwCreateWindow(this->width, this->height, "deck.gl window", nullptr, nullptr);
+  if (!window) {
+    throw new std::runtime_error("Failed to create GLFW window");
   }
+  // TODO(ilija@unfolded.ai): Handle window resizing
+  //  glfwSetFramebufferSizeCallback(window, [this](GLFWwindow* window, int width, int height) {
+  //    this->setSize(width, height);
+  //  });
 
-  WGPUDevice backendDevice = backendAdapter.CreateDevice();
-  DawnProcTable backendProcs = dawn_native::GetProcs();
-
-  this->_binding = CreateBinding(backendType, this->window, backendDevice);
-  if (this->_binding == nullptr) {
-    return nullptr;
-  }
-
-  // Choose whether to use the backend procs and devices directly, or set up the wire.
-  WGPUDevice cDevice = nullptr;
-  DawnProcTable procs;
-
-  switch (cmdBufType) {
-    case CmdBufType::None:
-      procs = backendProcs;
-      cDevice = backendDevice;
-      break;
-
-    case CmdBufType::Terrible: {
-      this->_c2sBuf = new TerribleCommandBuffer();
-      this->_s2cBuf = new TerribleCommandBuffer();
-
-      dawn_wire::WireServerDescriptor serverDesc = {};
-      serverDesc.device = backendDevice;
-      serverDesc.procs = &backendProcs;
-      serverDesc.serializer = this->_s2cBuf;
-
-      this->_wireServer = new dawn_wire::WireServer(serverDesc);
-      this->_c2sBuf->SetHandler(this->_wireServer);
-
-      dawn_wire::WireClientDescriptor clientDesc = {};
-      clientDesc.serializer = this->_c2sBuf;
-
-      this->_wireClient = new dawn_wire::WireClient(clientDesc);
-      WGPUDevice clientDevice = this->_wireClient->GetDevice();
-      DawnProcTable clientProcs = dawn_wire::WireClient::GetProcs();
-      this->_s2cBuf->SetHandler(this->_wireClient);
-
-      procs = clientProcs;
-      cDevice = clientDevice;
-    } break;
-  }
-
-  dawnProcSetProcs(&procs);
-  procs.deviceSetUncapturedErrorCallback(
-      cDevice,
-      [](WGPUErrorType errorType, const char* message, void*) {
-        probegl::ErrorLog() << getWebGPUErrorName(errorType) << " error: " << message;
-      },
-      nullptr);
-  return wgpu::Device::Acquire(cDevice);
-}
-
-auto GLFWAnimationLoop::_createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView {
-  wgpu::TextureDescriptor descriptor;
-  descriptor.dimension = wgpu::TextureDimension::e2D;
-  descriptor.size.width = 640;
-  descriptor.size.height = 480;
-  descriptor.size.depth = 1;
-  descriptor.arrayLayerCount = 1;
-  descriptor.sampleCount = 1;
-  descriptor.format = wgpu::TextureFormat::Depth24PlusStencil8;
-  descriptor.mipLevelCount = 1;
-  descriptor.usage = wgpu::TextureUsage::OutputAttachment;
-  auto depthStencilTexture = device.CreateTexture(&descriptor);
-  return depthStencilTexture.CreateView();
+  return window;
 }

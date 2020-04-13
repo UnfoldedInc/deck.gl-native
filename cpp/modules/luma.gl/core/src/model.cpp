@@ -23,36 +23,33 @@
 #include "luma.gl/webgpu.h"
 
 using namespace lumagl;
+using namespace lumagl::utils;
 
-namespace lumagl {
+Model::Model(std::shared_ptr<wgpu::Device> device) : Model(device, Options{}) {}
 
-// TODO(ib):
-auto getBackendBinding() -> utils::BackendBinding * { return nullptr; };
+Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options) {
+  auto deviceValue = *device.get();
 
-auto GetPreferredSwapChainTextureFormat() -> wgpu::TextureFormat {
-  utils::BackendBinding *binding = getBackendBinding();
-  return static_cast<wgpu::TextureFormat>(binding->GetPreferredSwapChainTextureFormat());
-}
+  auto vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
+  auto fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
 
-}  // namespace lumagl
+  auto uniformBindGroupLayout =
+      makeBindGroupLayout(deviceValue, {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true}});
 
-Model::Model(wgpu::Device device) : Model(device, Options{}) {}
-
-Model::Model(wgpu::Device device, const Model::Options &options) {
-  this->vsModule = utils::createShaderModule(device, utils::SingleShaderStage::Vertex, options.vs.c_str());
-  this->fsModule = utils::createShaderModule(device, utils::SingleShaderStage::Fragment, options.fs.c_str());
-
-  this->uniformBindGroupLayout =
-      utils::makeBindGroupLayout(device, {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true}});
-
-  utils::ComboRenderPipelineDescriptor descriptor{device};
+  ComboRenderPipelineDescriptor descriptor{deviceValue};
   descriptor.vertexStage.module = vsModule;
   descriptor.cFragmentStage.module = fsModule;
-  descriptor.cColorStates[0].format = GetPreferredSwapChainTextureFormat();
+  descriptor.cColorStates[0].format = options.textureFormat;
+  descriptor.layout = makeBasicPipelineLayout(deviceValue, &uniformBindGroupLayout);
 
-  descriptor.layout = utils::makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
+  auto pipeline = deviceValue.CreateRenderPipeline(&descriptor);
 
-  this->pipeline = device.CreateRenderPipeline(&descriptor);
+  this->vsModule = std::make_unique<wgpu::ShaderModule>(std::move(vsModule));
+  this->fsModule = std::make_unique<wgpu::ShaderModule>(std::move(fsModule));
+  this->uniformBindGroupLayout = std::make_unique<wgpu::BindGroupLayout>(std::move(uniformBindGroupLayout));
+  this->pipeline = std::make_unique<wgpu::RenderPipeline>(std::move(pipeline));
 }
 
-void Model::draw() {}
+void Model::draw() {
+  // TODO(ilija@unfolded.ai): Implement
+}
