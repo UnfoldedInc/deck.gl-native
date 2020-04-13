@@ -23,6 +23,7 @@
 
 #include "./shaderc-utils.h"  // NOLINT(build/include)
 
+#include <cstring>
 #include <shaderc/shaderc.hpp>
 
 #include "probe.gl/core.h"
