@@ -31,7 +31,7 @@ Many features normally considered fundamental by deck.gl applications are not ev
 
 To get oriented on the deck.gl software architecture:
 - [deck.gl Technical Deep-Dive](https://docs.google.com/presentation/d/1qtXUQzMuIa8NYIKUa1RKfSwvgpeccY-wrPrYqsb_8rE) is a good initial read. Written for the JavaScript version, however most concepts apply directly to the C++ port as well.
-- [deck.gl cross-platform architecture](https://docs.google.com/presentation/d/1K6yH6mBO9KREDhnVJDJMRvmLMGiw_ttxXLfyB-qtkdU) describes approaches to keeping multi-language implementations of deck.gl compatible (still a work-in-progress but gives a sense of the higher level direction).
+- [deck.gl cross-platform architecture](https://docs.google.com/presentation/d/1fzSHJxstSfNQe8VCtLLZvQ8D3OuJAfS7_LqPg0QPPvc) describes approaches to keeping multi-language implementations of deck.gl compatible (still a work-in-progress but gives a sense of the higher level direction).
 
 ### API Design Principles and Cross-Platform Concerns
 
