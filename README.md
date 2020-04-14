@@ -95,29 +95,42 @@ Our hope is to see this project quickly grow into a living part of the core deck
 
 ## Setting up a Development Environment
 
-Development can be done on macOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
+**NOTE:** Building using `gcc` currently doesn't work, this is to be updated
 
-All the dependencies for macOS and Linux are bundled in a dependency repository that's being used as a submodule. In order to clone the appropriate submodules while cloning this repo, make sure you clone it recursively like so: `git clone --recursive [URL to Git repo]`. Alternatively, if you already cloned the repo without its submodules, you can run `git submodule update --init --recursive` in order to get them.
+### Xcode (macOS only)
 
-Detailed instructions below.
-
-### XCode (MacOS only)
-
-If you haven't already configured XCode: 
+If you haven't already configured Xcode: 
 - Install Xcode
 - launch it
 - accept the license agreement
 - run `sudo xcode-select -s /Applications/Xcode.app` (Subsitute with path to your Xcode app if different).
 
+### clang
+
+For macOS:
+
+```sh
+brew install clang cmake clang-format lcov
+```
+
 ### gcc
 
-For Mac OSX:
+For macOS:
 
 ```sh
 brew install gcc cmake clang-format lcov
 ```
 
+## Quickstart
+
+- `scripts/bootstrap.sh` to fetch the dependencies and perform setup
+- `scripts/build-clang` or `scripts/build-gcc` to build
+
 ## Dependencies
+
+Development can be done on macOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
+
+All the dependencies for macOS and Linux are bundled in a dependency repository that's being used as a submodule. Running `scripts/bootstrap.sh` fetches all the submodules.
 
 | Dependency                                                	| Description                                                                         	|
 |-----------------------------------------------------------	|-------------------------------------------------------------------------------------	|
