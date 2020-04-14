@@ -46,12 +46,12 @@ layout(std140, set = 0, binding = 0) uniform Constants {
 
 layout(location = 0) out vec4 v_color;
 
-layout(location = 0) in vec4 positions[3];
-layout(location = 3) in vec4 colors[3];
+layout(location = 0) in vec4 positions;
+layout(location = 1) in vec4 colors;
 
 void main() {
-    vec4 position = positions[gl_VertexIndex];
-    vec4 color = colors[gl_VertexIndex];
+    vec4 position = positions;
+    vec4 color = colors;
 
     float fade = mod(c.scalarOffset + c.time * c.scalar / 10.0, 1.0);
     if (fade < 0.5) {
@@ -111,12 +111,26 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
 
 }  // anonymous namespace
 
+struct Attribute {
+  const char* name;
+  void* data;
+  size_t bytes;
+};
+
+auto makeWebGPUTable(wgpu::Device device, const std::vector<Attribute>& attributes) {
+  std::vector<wgpu::Buffer> buffers;
+  for (auto const attribute : attributes) {
+    auto buffer = utils::createBufferFromData(device, attribute.data, attribute.bytes, wgpu::BufferUsage::Vertex);
+    buffers.push_back(buffer);
+  }
+  return buffers;
+}
+
 int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  Model::Options options{vs, fs, animationLoop.getPreferredSwapChainTextureFormat()};
-  Model model{animationLoop.device, options};
+  Model model{animationLoop.device, {vs, fs, {{}, {}}}};
 
   // TODO(ilija@unfolded.ai): Switch over to WebGPUTable API
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
@@ -127,13 +141,16 @@ int main(int argc, const char* argv[]) {
   wgpu::Buffer ubo = device.CreateBuffer(&bufferDesc);
 
   Vector4<float> positions[3] = {{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
-  auto positionBuffer = utils::createBufferFromData(device, &positions, sizeof(positions), wgpu::BufferUsage::Vertex);
-
   Vector4<float> colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
-  auto colorBuffer = utils::createBufferFromData(device, &colors, sizeof(colors), wgpu::BufferUsage::Vertex);
+
+  auto buffers =
+      makeWebGPUTable(device, {{"positions", &positions, sizeof(positions)}, {"colors", &colors, sizeof(colors)}});
+
+  model.setAttributeBuffers(buffers);
+  model.vertexCount = 3;
 
   wgpu::BindGroup bindGroup =
-      utils::makeBindGroup(device, *model.uniformBindGroupLayout.get(), {{0, ubo, 0, sizeof(ShaderData)}});
+      utils::makeBindGroup(device, model.uniformBindGroupLayout, {{0, ubo, 0, sizeof(ShaderData)}});
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
@@ -143,15 +160,12 @@ int main(int argc, const char* argv[]) {
     }
     ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
 
-    pass.SetPipeline(*model.pipeline.get());
-
-    pass.SetVertexBuffer(0, positionBuffer);
-    pass.SetVertexBuffer(1, colorBuffer);
+    pass.SetPipeline(model.pipeline);
 
     for (size_t i = 0; i < kNumTriangles; i++) {
       uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
       pass.SetBindGroup(0, bindGroup, 1, &offset);
-      pass.Draw(3, 1, 0, 0);
+      model.draw(pass);
     }
   });
 

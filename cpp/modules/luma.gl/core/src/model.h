@@ -30,6 +30,8 @@
 
 namespace lumagl {
 
+struct AttributeDescriptor {};
+
 /// \brief Holds shaders compiled and linked into a pipeline
 class Model {
  public:
@@ -42,33 +44,42 @@ class Model {
   explicit Model(std::shared_ptr<wgpu::Device> device);
 
   void setAttributes(const std::shared_ptr<WebGPUTable>& table);
+  void setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers);
 
   void draw(wgpu::RenderPassEncoder pass);
 
+  int vertexCount;
+
   /// \brief Rendering pipeline.
-  std::unique_ptr<wgpu::RenderPipeline> pipeline;
+  wgpu::RenderPipeline pipeline;
   /// \brief Layout of the bind group.
-  std::unique_ptr<wgpu::BindGroupLayout> uniformBindGroupLayout;
+  wgpu::BindGroupLayout uniformBindGroupLayout;
   /// \brief Compiled vertex shader.
-  std::unique_ptr<wgpu::ShaderModule> vsModule;
+  wgpu::ShaderModule vsModule;
   /// \brief Compiled fragment shader.
-  std::unique_ptr<wgpu::ShaderModule> fsModule;
+  wgpu::ShaderModule fsModule;
 
  private:
   std::shared_ptr<wgpu::Device> _device;
   std::shared_ptr<WebGPUTable> _attributes;
+  std::vector<wgpu::Buffer> _buffers;
+
+  void _initializeVertexState(lumagl::utils::ComboVertexStateDescriptor&, const std::vector<AttributeDescriptor>&);
+  void _setVertexBuffers(wgpu::RenderPassEncoder pass);
 };
 
 class Model::Options {
  public:
-  Options() {}
-  Options(const std::string& vs, const std::string& fs, const wgpu::TextureFormat& textureFormat)
-      : vs{vs}, fs{fs}, textureFormat{textureFormat} {}
+  Options(const std::string& vs, const std::string& fs, const std::vector<AttributeDescriptor>& attributes = {},
+          const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
+      : vs{vs}, fs{fs}, attributes{attributes}, textureFormat{textureFormat} {}
 
   /// \brief Vertex shader source.
   std::string vs;
   /// \brief Fragment shader source.
   std::string fs;
+  /// \brief Attribute definitions
+  const std::vector<AttributeDescriptor> attributes;
   /// \brief Texture format that the pipeline will use.
   wgpu::TextureFormat textureFormat;
 };
