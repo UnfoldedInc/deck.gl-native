@@ -24,9 +24,11 @@
 #include <vector>
 
 #include "luma.gl/core.h"
+#include "math.gl/core.h"
 #include "probe.gl/core.h"
 
 using namespace lumagl;
+using namespace mathgl;
 
 namespace {
 
@@ -44,17 +46,8 @@ layout(std140, set = 0, binding = 0) uniform Constants {
 
 layout(location = 0) out vec4 v_color;
 
-const vec4 positions[3] = vec4[3](
-    vec4( 0.0f,  0.1f, 0.0f, 1.0f),
-    vec4(-0.1f, -0.1f, 0.0f, 1.0f),
-    vec4( 0.1f, -0.1f, 0.0f, 1.0f)
-);
-
-const vec4 colors[3] = vec4[3](
-    vec4(1.0f, 0.0f, 0.0f, 1.0f),
-    vec4(0.0f, 1.0f, 0.0f, 1.0f),
-    vec4(0.0f, 0.0f, 1.0f, 1.0f)
-);
+layout(location = 0) in vec4 positions[3];
+layout(location = 3) in vec4 colors[3];
 
 void main() {
     vec4 position = positions[gl_VertexIndex];
@@ -79,8 +72,8 @@ void main() {
 
 auto fs = R"(
 #version 450
-layout(location = 0) out vec4 fragColor;
 layout(location = 0) in vec4 v_color;
+layout(location = 0) out vec4 fragColor;
 void main() {
     fragColor = v_color;
 })";
@@ -125,12 +118,19 @@ int main(int argc, const char* argv[]) {
   Model::Options options{vs, fs, animationLoop.getPreferredSwapChainTextureFormat()};
   Model model{animationLoop.device, options};
 
+  // TODO(ilija@unfolded.ai): Switch over to WebGPUTable API
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
 
   wgpu::BufferDescriptor bufferDesc;
   bufferDesc.size = kNumTriangles * sizeof(ShaderData);
   bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
   wgpu::Buffer ubo = device.CreateBuffer(&bufferDesc);
+
+  Vector4<float> positions[3] = {{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
+  auto positionBuffer = utils::createBufferFromData(device, &positions, sizeof(positions), wgpu::BufferUsage::Vertex);
+
+  Vector4<float> colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
+  auto colorBuffer = utils::createBufferFromData(device, &colors, sizeof(colors), wgpu::BufferUsage::Vertex);
 
   wgpu::BindGroup bindGroup =
       utils::makeBindGroup(device, *model.uniformBindGroupLayout.get(), {{0, ubo, 0, sizeof(ShaderData)}});
@@ -144,6 +144,10 @@ int main(int argc, const char* argv[]) {
     ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
 
     pass.SetPipeline(*model.pipeline.get());
+
+    pass.SetVertexBuffer(0, positionBuffer);
+    pass.SetVertexBuffer(1, colorBuffer);
+
     for (size_t i = 0; i < kNumTriangles; i++) {
       uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
       pass.SetBindGroup(0, bindGroup, 1, &offset);

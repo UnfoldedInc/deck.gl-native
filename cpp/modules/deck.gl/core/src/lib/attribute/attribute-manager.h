@@ -25,11 +25,11 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "./attribute.h"
 #include "luma.gl/core.h"
+#include "luma.gl/webgpu.h"
 
 namespace deckgl {
 
@@ -67,7 +67,7 @@ class AttributeManager {
   void invalidate(const std::string& attributeName);
   void invalidateAll();
 
-  auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table>;
+  auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<lumagl::WebGPUTable>;
 
   std::string id;
   wgpu::Device device;

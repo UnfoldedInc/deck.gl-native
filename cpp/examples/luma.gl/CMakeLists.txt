@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 set(EXAMPLE_SOURCE_FILES
-    animometer.cpp
+    animometer.cc
     )
 
 # Create an executable for each example from the list
@@ -27,7 +27,7 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
     get_filename_component(TARGET_NAME ${EXAMPLE_SOURCE_FILE} NAME_WE)
     add_executable(${TARGET_NAME} ${EXAMPLE_SOURCE_FILE})
     
-    target_link_libraries(${TARGET_NAME} PUBLIC ${DECK_LINK_FLAGS} luma.gl probe.gl)
+    target_link_libraries(${TARGET_NAME} PUBLIC ${DECK_LINK_FLAGS} luma.gl probe.gl math.gl)
 endforeach()
 
 # Add example files to global DECK_EXAMPLE_FILES property

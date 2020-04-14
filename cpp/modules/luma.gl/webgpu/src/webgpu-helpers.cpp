@@ -235,7 +235,7 @@ wgpu::BindGroupBinding BindingInitializationHelper::GetAsBinding() const {
 }
 
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
-                   std::initializer_list<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup {
+                   std::vector<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup {
   std::vector<wgpu::BindGroupBinding> bindings;
   for (const BindingInitializationHelper& helper : bindingsInitializer) {
     bindings.push_back(helper.GetAsBinding());

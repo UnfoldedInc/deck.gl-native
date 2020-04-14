@@ -21,27 +21,26 @@
 #ifndef LUMAGL_CORE_WEBGPU_COLUMN_H
 #define LUMAGL_CORE_WEBGPU_COLUMN_H
 
-namespace lumagl {
+#include <arrow/array.h>
+#include <dawn/webgpu_cpp.h>
 
-#include <dawn.h>  // NOLINT(build/include)
+#include <memory>
+
+#include "luma.gl/webgpu/src/webgpu-helpers.h"
+
+namespace lumagl {
 
 class WebGPUColumn {
  public:
-  wgpu::BindGroup bindGroup;
-  wgpu::Buffer ubo;
+  WebGPUColumn(wgpu::Device device, const std::shared_ptr<arrow::Array>& column);
+  ~WebGPUColumn();
 
-  explicit WebGPUColumn(void *device) {
-    wgpu::BufferDescriptor bufferDesc;
-    bufferDesc.size = kNumTriangles * sizeof(ShaderData);
-    bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
-    this->ubo = device.CreateBuffer(&bufferDesc);
+  void setData(const std::shared_ptr<arrow::Array>& column);
 
-    this->bindGroup =
-        utils::MakeBindGroup(device, bgl, {{0, this->ubo, 0, this}});
-  }
-
-  auto length_in_bytes() => int { return this->lengthInBytes; }
-}
+  wgpu::Buffer buffer;
+  /// \brief Size of a single element, in bytes, that this buffer contains.
+  size_t elementSize{0};
+};
 
 }  // namespace lumagl
 

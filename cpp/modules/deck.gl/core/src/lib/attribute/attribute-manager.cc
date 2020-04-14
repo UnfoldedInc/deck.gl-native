@@ -23,6 +23,7 @@
 #include "probe.gl/core.h"
 
 using namespace deckgl;
+using namespace lumagl;
 
 auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
   bool redraw = this->_needsRedraw;
@@ -46,20 +47,22 @@ void AttributeManager::invalidateAll() {
   probegl::DebugLog() << "AttributeManager: invalidating all attributes";
 }
 
-auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Table> {
+auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<WebGPUTable> {
   // Create an empty output table
   std::vector<std::shared_ptr<arrow::Field>> fields{};
-  std::vector<std::shared_ptr<arrow::Array>> arrays{};
+  std::vector<std::shared_ptr<WebGPUColumn>> columns{};
 
   // Iterate over descriptors and create one column per-descriptor
   for (auto descriptor : this->_descriptors) {
     auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
     fields.push_back(field);
 
-    auto columnData = descriptor->attributeBuilder(table);
-    arrays.push_back(columnData);
+    auto arrowColumn = descriptor->attributeBuilder(table);
+    // TODO(ilija@unfolded.ai): Ideally we cache the columns and set data into an existing buffer,
+    // but they have fixed size?
+    auto webgpuColumn = std::make_shared<WebGPUColumn>(this->device, arrowColumn);
+    columns.push_back(webgpuColumn);
   }
 
-  auto schema = std::make_shared<arrow::Schema>(fields);
-  return arrow::Table::Make(schema, arrays);
+  return std::make_shared<WebGPUTable>(table->num_rows(), columns);
 }

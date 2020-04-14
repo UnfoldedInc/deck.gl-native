@@ -17,3 +17,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+#ifndef LUMAGL_CORE_WEBGPU_TABLE_H
+#define LUMAGL_CORE_WEBGPU_TABLE_H
+
+#include <memory>
+#include <vector>
+
+#include "./webgpu-column.h"
+
+namespace lumagl {
+
+class WebGPUTable {
+ public:
+  explicit WebGPUTable(int64_t numRows, const std::vector<std::shared_ptr<lumagl::WebGPUColumn>>& columns)
+      : numRows{numRows}, columns{columns} {};
+
+  int64_t numRows{0};
+  std::vector<std::shared_ptr<lumagl::WebGPUColumn>> columns;
+};
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_CORE_WEBGPU_TABLE_H

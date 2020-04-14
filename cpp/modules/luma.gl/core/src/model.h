@@ -41,7 +41,9 @@ class Model {
   // TODO(ilija@unfolded.ai): Remove once integration is complete and layers provide valid options
   explicit Model(std::shared_ptr<wgpu::Device> device);
 
-  void draw();
+  void setAttributes(const std::shared_ptr<WebGPUTable>& table);
+
+  void draw(wgpu::RenderPassEncoder pass);
 
   /// \brief Rendering pipeline.
   std::unique_ptr<wgpu::RenderPipeline> pipeline;
@@ -51,6 +53,10 @@ class Model {
   std::unique_ptr<wgpu::ShaderModule> vsModule;
   /// \brief Compiled fragment shader.
   std::unique_ptr<wgpu::ShaderModule> fsModule;
+
+ private:
+  std::shared_ptr<wgpu::Device> _device;
+  std::shared_ptr<WebGPUTable> _attributes;
 };
 
 class Model::Options {

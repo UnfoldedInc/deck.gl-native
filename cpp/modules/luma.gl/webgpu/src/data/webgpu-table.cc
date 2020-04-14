@@ -18,12 +18,4 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_WEBGPU_TABLE_H
-#define LUMAGL_CORE_WEBGPU_TABLE_H
-
-namespace lumagl {
-
-
-}  // namespace lumagl
-
-#endif  // LUMAGL_CORE_WEBGPU_TABLE_H
+#include "./webgpu-table.h"  // NOLINT(build/include)
