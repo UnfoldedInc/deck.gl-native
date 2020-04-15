@@ -95,7 +95,11 @@ Our hope is to see this project quickly grow into a living part of the core deck
 
 ## Setting up a Development Environment
 
+Development can be done on macOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
+
 **NOTE:** Building using `gcc` currently doesn't work, this is to be updated
+
+## Quickstart
 
 ### Xcode (macOS only)
 
@@ -121,16 +125,12 @@ For macOS:
 brew install gcc cmake clang-format lcov
 ```
 
-## Quickstart
-
-- `scripts/bootstrap.sh` to fetch the dependencies and perform setup
+- `scripts/bootstrap.sh` to fetch the dependencies and perform setup. `bootstrap.sh` can/should be called after pulling a branch to ensure environment is up to date
 - `scripts/build-clang` or `scripts/build-gcc` to build
 
 ## Dependencies
 
-Development can be done on macOS which is the primary environment, or Linux, which is supported mainly for CI testing. (Windows is not a supported dev env.)
-
-All the dependencies for macOS and Linux are bundled in a dependency repository that's being used as a submodule. Running `scripts/bootstrap.sh` fetches all the submodules.
+All the dependencies for macOS and Linux are bundled in a dependency repository that's being used as a submodule. Running `scripts/bootstrap.sh`, among other things, fetches all the submodules. Alternatively, you can fetch them by running `git submodule update --init --recursive`.
 
 | Dependency                                                	| Description                                                                         	|
 |-----------------------------------------------------------	|-------------------------------------------------------------------------------------	|
