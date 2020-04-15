@@ -25,12 +25,17 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "luma.gl/webgpu.h"
 
 namespace lumagl {
 
-struct AttributeDescriptor {};
+// TODO(ilija@unfolded.ai): Move out and revisit
+struct UniformDescriptor {
+  size_t elementSize;
+  bool isDynamic{false};
+};
 
 /// \brief Holds shaders compiled and linked into a pipeline
 class Model {
@@ -45,6 +50,7 @@ class Model {
 
   void setAttributes(const std::shared_ptr<WebGPUTable>& table);
   void setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers);
+  void setUniforms(const std::vector<wgpu::Buffer>& uniforms);
 
   void draw(wgpu::RenderPassEncoder pass);
 
@@ -54,6 +60,8 @@ class Model {
   wgpu::RenderPipeline pipeline;
   /// \brief Layout of the bind group.
   wgpu::BindGroupLayout uniformBindGroupLayout;
+  /// \brief Bind group containg uniform data.
+  wgpu::BindGroup bindGroup;
   /// \brief Compiled vertex shader.
   wgpu::ShaderModule vsModule;
   /// \brief Compiled fragment shader.
@@ -62,24 +70,31 @@ class Model {
  private:
   std::shared_ptr<wgpu::Device> _device;
   std::shared_ptr<WebGPUTable> _attributes;
+  std::vector<UniformDescriptor> _uniforms;
   std::vector<wgpu::Buffer> _buffers;
 
   void _initializeVertexState(lumagl::utils::ComboVertexStateDescriptor&, const std::vector<AttributeDescriptor>&);
+  auto _createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
+      -> wgpu::BindGroupLayout;
+
   void _setVertexBuffers(wgpu::RenderPassEncoder pass);
 };
 
 class Model::Options {
  public:
   Options(const std::string& vs, const std::string& fs, const std::vector<AttributeDescriptor>& attributes = {},
+          const std::vector<UniformDescriptor>& uniforms = {},
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
-      : vs{vs}, fs{fs}, attributes{attributes}, textureFormat{textureFormat} {}
+      : vs{vs}, fs{fs}, attributes{attributes}, uniforms{uniforms}, textureFormat{textureFormat} {}
 
   /// \brief Vertex shader source.
   std::string vs;
   /// \brief Fragment shader source.
   std::string fs;
-  /// \brief Attribute definitions
+  /// \brief Attribute definitions.
   const std::vector<AttributeDescriptor> attributes;
+  /// \brief Uniform definitions.
+  const std::vector<UniformDescriptor> uniforms;
   /// \brief Texture format that the pipeline will use.
   wgpu::TextureFormat textureFormat;
 };

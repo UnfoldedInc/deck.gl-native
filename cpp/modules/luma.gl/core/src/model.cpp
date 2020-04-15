@@ -30,14 +30,12 @@ using namespace lumagl::utils;
 Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options) {
   this->_device = device;
   auto deviceValue = *device.get();
+  this->_uniforms = options.uniforms;
 
   this->vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
   this->fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
 
   // TODO(ilija@unfolded.ai): Build this up based on attribute descriptors. Currently hardcoded to support animometer
-  this->uniformBindGroupLayout =
-      makeBindGroupLayout(deviceValue, {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true}});
-
   ComboRenderPipelineDescriptor descriptor{deviceValue};
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
@@ -45,6 +43,7 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
 
   this->_initializeVertexState(descriptor.cVertexState, options.attributes);
 
+  this->uniformBindGroupLayout = this->_createBindGroupLayout(deviceValue, options.uniforms);
   descriptor.layout = makeBasicPipelineLayout(deviceValue, &this->uniformBindGroupLayout);
 
   this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
@@ -52,9 +51,16 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
 
 void Model::setAttributes(const std::shared_ptr<WebGPUTable>& table) { this->_attributes = table; }
 
-void Model::setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers) {
-  probegl::DebugLog() << "setting vertex buffers " << buffers.size();
-  this->_buffers = buffers;
+void Model::setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers) { this->_buffers = buffers; }
+
+void Model::setUniforms(const std::vector<wgpu::Buffer>& uniforms) {
+  std::vector<BindingInitializationHelper> bindings;
+  for (uint32_t i = 0; i < uniforms.size(); i++) {
+    auto binding = BindingInitializationHelper{i, uniforms[i], 0, this->_uniforms[i].elementSize};
+    bindings.push_back(binding);
+  }
+
+  this->bindGroup = utils::makeBindGroup(*this->_device.get(), this->uniformBindGroupLayout, bindings);
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {
@@ -66,15 +72,10 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
 
   this->_setVertexBuffers(pass);
 
-  pass.Draw(3, 1, 0, 0);
+  pass.Draw(this->vertexCount, 1, 0, 0);
 
-  // std::vector<BindingInitializationHelper> bindings;
-  // for (auto& attribute : this->_attributes->columns) {
-  //   BindingInitializationHelper bindingHelper{0, attribute->buffer, 0, attribute->elementSize};
-  //   bindings.push_back(bindingHelper);
-  // }
+  //  pass.SetBindGroup(0, this->bindGroup, 1, 0);
 
-  // wgpu::BindGroup bindGroup = utils::makeBindGroup(*(this->_device.get()), this->uniformBindGroupLayout, bindings);
   // TODO(ilija@unfolded.ai): Revisit
   // for (size_t i = 0; i < this->_attributes->numRows; i++) {
   //    uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
@@ -85,29 +86,32 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
 
 void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
                                    const std::vector<AttributeDescriptor>& attributes) {
-  cVertexState.vertexBufferCount = attributes.size();
+  cVertexState.vertexBufferCount = static_cast<uint32_t>(attributes.size());
 
-  probegl::DebugLog() << "initializing vertex attributes " << attributes.size();
-
-  auto location = 0;
-  for (auto const attribute : attributes) {
+  for (int location = 0; location < attributes.size(); location++) {
     cVertexState.cVertexBuffers[location].arrayStride = sizeof(mathgl::Vector4<float>);
     cVertexState.cVertexBuffers[location].attributeCount = 1;
     cVertexState.cVertexBuffers[location].attributes = &cVertexState.cAttributes[location];
-    location++;
-  }
 
-  for (int i = 0; i < attributes.size(); i++) {
-    cVertexState.cAttributes[i].shaderLocation = i;
-    cVertexState.cAttributes[i].format = wgpu::VertexFormat::Float4;
+    cVertexState.cAttributes[location].shaderLocation = location;
+    cVertexState.cAttributes[location].format = wgpu::VertexFormat::Float4;
   }
 }
 
+auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
+    -> wgpu::BindGroupLayout {
+  std::vector<wgpu::BindGroupLayoutBinding> bindings;
+  for (uint32 i = 0; i < uniforms.size(); i++) {
+    auto binding = wgpu::BindGroupLayoutBinding{i, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer,
+                                                uniforms[i].isDynamic};
+    bindings.push_back(binding);
+  }
+
+  return utils::makeBindGroupLayout(device, bindings);
+}
+
 void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
-  auto location = 0;
-  for (auto const buffer : this->_buffers) {
-    probegl::DebugLog() << "installing vertex buffer " << location;
-    pass.SetVertexBuffer(location, buffer);
-    location++;
+  for (int location = 0; location < this->_buffers.size(); location++) {
+    pass.SetVertexBuffer(location, this->_buffers[location]);
   }
 }

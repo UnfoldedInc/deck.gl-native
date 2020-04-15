@@ -22,31 +22,39 @@
 
 using namespace lumagl;
 
-WebGPUColumn::WebGPUColumn(wgpu::Device device, const std::shared_ptr<arrow::Array>& column) {
-  // TODO(ilija@unfolded.ai): How do we handle null values, should we provide default values?
-
-  // TODO(ilija@unfolded.ai): Is there a way to get the type size out of column->type()?
-  this->elementSize = sizeof(float);
-
-  wgpu::BufferDescriptor bufferDesc;
-  bufferDesc.size = column->length() * this->elementSize;
-  bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
-  this->buffer = device.CreateBuffer(&bufferDesc);
-
-  this->setData(column);
-
-  //  this->bindGroup = utils::makeBindGroup(device, layout, {{0, this->buffer, 0, sizeof(void*)}});
+WebGPUColumn::WebGPUColumn(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor) {
+  this->_device = device;
+  this->_descriptor = descriptor;
 }
 
 WebGPUColumn::~WebGPUColumn() { this->buffer.Destroy(); }
 
-void WebGPUColumn::setData(const std::shared_ptr<arrow::Array>& column) {
-  // TODO(ilija@unfolded.ai): Handle null values
+void WebGPUColumn::setData(const std::shared_ptr<arrow::Array>& data) {
+  if (!this->buffer || data->length() != this->length) {
+    auto size = this->_descriptor->typeSize * data->length();
+    this->buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
+  }
 
-  // TODO(ilija@unfolded.ai): Is there a way to get the type size out of column->type()?
-  auto typeSize = sizeof(float);
+  // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
+  if (data->null_count() > 0) {
+    throw new std::runtime_error("Data with null values is currently not supported");
+  }
 
-  // TODO(ilija@unfolded.ai): Is there a way to retrieve a continous memory chunk containing all the values,
-  // or do we need to iterate over column->data()->buffers, or type cast the array?
-  this->buffer.SetSubData(0, column->length() * typeSize, column->data()->buffers[1]->data());
+  auto buffers = data->data()->buffers;
+  uint64_t offset = 0;
+  // Starting from buffer at index 1, as the first buffer is used for null bitmap
+  for (int i = 1; i < buffers.size(); i++) {
+    auto buffer = buffers[i];
+
+    this->buffer.SetSubData(offset, buffer->size(), buffer->data());
+    offset += buffer->size();
+  }
+}
+
+auto WebGPUColumn::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
+  wgpu::BufferDescriptor bufferDesc;
+  bufferDesc.size = size;
+  bufferDesc.usage = usage;
+
+  return device.CreateBuffer(&bufferDesc);
 }

@@ -33,7 +33,7 @@ auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
 
 void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
-void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) {
+void AttributeManager::add(const std::shared_ptr<lumagl::AttributeDescriptor>& descriptor) {
   this->_descriptors.push_back(descriptor);
 }
 
@@ -58,10 +58,10 @@ auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std
     fields.push_back(field);
 
     auto arrowColumn = descriptor->attributeBuilder(table);
-    // TODO(ilija@unfolded.ai): Ideally we cache the columns and set data into an existing buffer,
-    // but they have fixed size?
-    auto webgpuColumn = std::make_shared<WebGPUColumn>(this->device, arrowColumn);
-    columns.push_back(webgpuColumn);
+    auto gpuColumn = std::make_shared<WebGPUColumn>(this->device, descriptor);
+    gpuColumn->setData(arrowColumn);
+
+    columns.push_back(gpuColumn);
   }
 
   return std::make_shared<WebGPUTable>(table->num_rows(), columns);

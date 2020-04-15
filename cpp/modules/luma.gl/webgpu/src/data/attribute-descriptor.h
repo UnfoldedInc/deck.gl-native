@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
-#define DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#ifndef LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
+#define LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
 
 #include <arrow/array.h>
 #include <arrow/table.h>
@@ -28,22 +28,23 @@
 #include <string>
 #include <utility>
 
-#include "../../arrow/row.h"
-
-namespace deckgl {
+namespace lumagl {
 
 struct AttributeDescriptor {
  public:
   using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
+  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type, const size_t typeSize,
                       std::function<AttributeBuilder> attributeBuilder)
-      : name{std::move(name)}, type{type}, attributeBuilder{std::move(attributeBuilder)} {}
+      : name{std::move(name)}, type{type}, typeSize{typeSize}, attributeBuilder{std::move(attributeBuilder)} {}
 
   std::string name;
   std::shared_ptr<arrow::DataType> type;
+  /// \brief Type size in bytes.
+  // TODO(ilija@unfolded.ai): Should be deducted based on type, but it seeems somewhat complicated to do
+  size_t typeSize;
   std::function<AttributeBuilder> attributeBuilder;
 };
 
-}  // namespace deckgl
+}  // namespace lumagl
 
-#endif  // DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#endif  // LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H

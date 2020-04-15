@@ -74,8 +74,10 @@ TEST_F(AttributeManagerTest, Update) {
 
         return resultArray;
       }};
-  manager->add(std::make_shared<AttributeDescriptor>("attribute-one", arrow::float32(), attributeUpdater));
-  manager->add(std::make_shared<AttributeDescriptor>("attribute-two", arrow::float32(), attributeUpdater));
+  manager->add(std::make_shared<lumagl::AttributeDescriptor>("attribute-one", arrow::float32(), sizeof(float),
+                                                             attributeUpdater));
+  manager->add(std::make_shared<lumagl::AttributeDescriptor>("attribute-two", arrow::float32(), sizeof(float),
+                                                             attributeUpdater));
 
   // TODO(ilija@unfolded.ai): Update tests to use the new WebGPU interface
 

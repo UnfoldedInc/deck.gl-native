@@ -18,30 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_WEBGPU_COLUMN_H
-#define LUMAGL_CORE_WEBGPU_COLUMN_H
+#ifndef LUMAGL_WEBGPU_WEBGPU_COLUMN_H
+#define LUMAGL_WEBGPU_WEBGPU_COLUMN_H
 
 #include <arrow/array.h>
 #include <dawn/webgpu_cpp.h>
 
 #include <memory>
 
+#include "luma.gl/webgpu/src/data/attribute-descriptor.h"
 #include "luma.gl/webgpu/src/webgpu-helpers.h"
 
 namespace lumagl {
 
 class WebGPUColumn {
  public:
-  WebGPUColumn(wgpu::Device device, const std::shared_ptr<arrow::Array>& column);
+  WebGPUColumn(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor);
   ~WebGPUColumn();
 
-  void setData(const std::shared_ptr<arrow::Array>& column);
+  void setData(const std::shared_ptr<arrow::Array>& data);
 
   wgpu::Buffer buffer;
-  /// \brief Size of a single element, in bytes, that this buffer contains.
-  size_t elementSize{0};
+  /// \brief Size in the number of elements this column contains.
+  int64_t length{0};
+
+ private:
+  auto _createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer;
+
+  wgpu::Device _device;
+  std::shared_ptr<AttributeDescriptor> _descriptor;
 };
 
 }  // namespace lumagl
 
-#endif  // LUMAGL_CORE_WEBGPU_COLUMN_H
+#endif  // LUMAGL_WEBGPU_WEBGPU_COLUMN_H

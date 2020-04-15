@@ -32,6 +32,7 @@ set(WEBGPU_HEADER_FILE_LIST
     webgpu/src/backends/backend-binding.h
     webgpu/src/data/webgpu-table.h
     webgpu/src/data/webgpu-column.h
+    webgpu/src/data/attribute-descriptor.h
     )
 set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/combo-render-pipeline-descriptor.cpp
@@ -39,7 +40,6 @@ set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/webgpu-utils.cpp
     webgpu/src/webgpu-helpers.cpp
     webgpu/src/backends/backend-binding.cpp
-    webgpu/src/data/webgpu-table.cc
     webgpu/src/data/webgpu-column.cc
     )
 set(WEBGPU_TESTS_SOURCE_FILE_LIST
