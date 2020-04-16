@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020 Unfolded Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,32 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
-#define DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
-
-#include <arrow/array.h>
-#include <arrow/table.h>
+#ifndef LUMAGL_WEBGPU_WEBGPU_TABLE_H
+#define LUMAGL_WEBGPU_WEBGPU_TABLE_H
 
 #include <memory>
-#include <string>
-#include <utility>
+#include <vector>
 
-#include "../../arrow/row.h"
+#include "./webgpu-column.h"
 
-namespace deckgl {
+namespace lumagl {
 
-struct AttributeDescriptor {
+class WebGPUTable {
  public:
-  using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
-                      std::function<AttributeBuilder> attributeBuilder)
-      : name{std::move(name)}, type{type}, attributeBuilder{std::move(attributeBuilder)} {}
+  explicit WebGPUTable(int64_t numRows, const std::vector<std::shared_ptr<lumagl::WebGPUColumn>>& attributes)
+      : numRows{numRows}, attributes{attributes} {};
 
-  std::string name;
-  std::shared_ptr<arrow::DataType> type;
-  std::function<AttributeBuilder> attributeBuilder;
+  int64_t numRows{0};
+  std::vector<std::shared_ptr<lumagl::WebGPUColumn>> attributes;
 };
 
-}  // namespace deckgl
+}  // namespace lumagl
 
-#endif  // DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#endif  // LUMAGL_WEBGPU_WEBGPU_TABLE_H

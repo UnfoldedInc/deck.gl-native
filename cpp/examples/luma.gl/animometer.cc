@@ -24,9 +24,11 @@
 #include <vector>
 
 #include "luma.gl/core.h"
+#include "math.gl/core.h"
 #include "probe.gl/core.h"
 
 using namespace lumagl;
+using namespace mathgl;
 
 namespace {
 
@@ -44,21 +46,12 @@ layout(std140, set = 0, binding = 0) uniform Constants {
 
 layout(location = 0) out vec4 v_color;
 
-const vec4 positions[3] = vec4[3](
-    vec4( 0.0f,  0.1f, 0.0f, 1.0f),
-    vec4(-0.1f, -0.1f, 0.0f, 1.0f),
-    vec4( 0.1f, -0.1f, 0.0f, 1.0f)
-);
-
-const vec4 colors[3] = vec4[3](
-    vec4(1.0f, 0.0f, 0.0f, 1.0f),
-    vec4(0.0f, 1.0f, 0.0f, 1.0f),
-    vec4(0.0f, 0.0f, 1.0f, 1.0f)
-);
+layout(location = 0) in vec4 positions;
+layout(location = 1) in vec4 colors;
 
 void main() {
-    vec4 position = positions[gl_VertexIndex];
-    vec4 color = colors[gl_VertexIndex];
+    vec4 position = positions;
+    vec4 color = colors;
 
     float fade = mod(c.scalarOffset + c.time * c.scalar / 10.0, 1.0);
     if (fade < 0.5) {
@@ -79,8 +72,8 @@ void main() {
 
 auto fs = R"(
 #version 450
-layout(location = 0) out vec4 fragColor;
 layout(location = 0) in vec4 v_color;
+layout(location = 0) out vec4 fragColor;
 void main() {
     fragColor = v_color;
 })";
@@ -118,36 +111,58 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
 
 }  // anonymous namespace
 
+struct Attribute {
+  const char* name;
+  void* data;
+  size_t bytes;
+};
+
+auto makeWebGPUTable(wgpu::Device device, const std::vector<Attribute>& attributes) {
+  std::vector<wgpu::Buffer> buffers;
+  for (auto const attribute : attributes) {
+    auto buffer = utils::createBufferFromData(device, attribute.data, attribute.bytes, wgpu::BufferUsage::Vertex);
+    buffers.push_back(buffer);
+  }
+  return buffers;
+}
+
 int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  Model::Options options{vs, fs, animationLoop.getPreferredSwapChainTextureFormat()};
-  Model model{animationLoop.device, options};
+  Model model{animationLoop.device, {vs, fs, {{}, {}}, {{sizeof(ShaderData), false}}}};
 
+  // TODO(ilija@unfolded.ai): Switch over to WebGPUTable API
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
+  wgpu::Buffer ubo =
+      utils::createBufferFromData(device, shaderData.data(), sizeof(ShaderData), wgpu::BufferUsage::Uniform);
 
-  wgpu::BufferDescriptor bufferDesc;
-  bufferDesc.size = kNumTriangles * sizeof(ShaderData);
-  bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
-  wgpu::Buffer ubo = device.CreateBuffer(&bufferDesc);
+  Vector4<float> positions[3] = {{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
+  Vector4<float> colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
 
-  wgpu::BindGroup bindGroup =
-      utils::makeBindGroup(device, *model.uniformBindGroupLayout.get(), {{0, ubo, 0, sizeof(ShaderData)}});
+  auto buffers =
+      makeWebGPUTable(device, {{"positions", &positions, sizeof(positions)}, {"colors", &colors, sizeof(colors)}});
+
+  model.setAttributeBuffers(buffers);
+  model.setUniforms({ubo});
+  model.vertexCount = 3;
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
     f++;
+
+    // TODO(ilija@unfolded.ai): Could not get this to draw more than 1 triangle at a time,
+    // do we need to use dynamic offsets when drawing?
     for (auto& data : shaderData) {
       data.time = f / 60.0f;
-    }
-    ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
+      // This works but the performance is horrible
+      //      wgpu::Buffer ubo =
+      //      utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
+      //      model.setUniforms({ubo});
 
-    pass.SetPipeline(*model.pipeline.get());
-    for (size_t i = 0; i < kNumTriangles; i++) {
-      uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
-      pass.SetBindGroup(0, bindGroup, 1, &offset);
-      pass.Draw(3, 1, 0, 0);
+      ubo.SetSubData(0, sizeof(ShaderData), &data);
+
+      model.draw(pass);
     }
   });
 

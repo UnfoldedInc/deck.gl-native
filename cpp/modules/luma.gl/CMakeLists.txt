@@ -30,6 +30,9 @@ set(WEBGPU_HEADER_FILE_LIST
     webgpu/src/webgpu-utils.h
     webgpu/src/webgpu-helpers.h
     webgpu/src/backends/backend-binding.h
+    webgpu/src/data/webgpu-table.h
+    webgpu/src/data/webgpu-column.h
+    webgpu/src/data/attribute-descriptor.h
     )
 set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/combo-render-pipeline-descriptor.cpp
@@ -37,6 +40,7 @@ set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/webgpu-utils.cpp
     webgpu/src/webgpu-helpers.cpp
     webgpu/src/backends/backend-binding.cpp
+    webgpu/src/data/webgpu-column.cc
     )
 set(WEBGPU_TESTS_SOURCE_FILE_LIST
     webgpu/test/webgpu-test.cpp
@@ -68,7 +72,7 @@ target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     ${shaderc_LIB}
     ${DECK_DEPS_PATH}/webgpu_cpp.o
     )
-target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY})
+target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} math.gl probe.gl)
 
 # GLFW dependencies
 if (APPLE)

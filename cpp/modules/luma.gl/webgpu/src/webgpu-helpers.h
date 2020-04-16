@@ -28,6 +28,7 @@
 
 #include <array>
 #include <initializer_list>
+#include <vector>
 
 #include "./webgpu-constants.h"
 
@@ -80,8 +81,7 @@ auto createBasicRenderPass(const wgpu::Device& device, uint32_t width, uint32_t 
 auto getDefaultSamplerDescriptor() -> wgpu::SamplerDescriptor;
 auto makeBasicPipelineLayout(const wgpu::Device& device, const wgpu::BindGroupLayout* bindGroupLayout)
     -> wgpu::PipelineLayout;
-auto makeBindGroupLayout(const wgpu::Device& device,
-                         std::initializer_list<wgpu::BindGroupLayoutBinding> bindingsInitializer)
+auto makeBindGroupLayout(const wgpu::Device& device, std::vector<wgpu::BindGroupLayoutBinding> bindingsInitializer)
     -> wgpu::BindGroupLayout;
 
 auto createDefaultDepthStencilView(const wgpu::Device& device) -> wgpu::TextureView;
@@ -113,7 +113,7 @@ struct BindingInitializationHelper {
 };
 
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
-                   std::initializer_list<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup;
+                   std::vector<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup;
 
 }  // namespace utils
 }  // namespace lumagl

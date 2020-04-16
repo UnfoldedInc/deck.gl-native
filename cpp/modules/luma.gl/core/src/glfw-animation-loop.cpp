@@ -106,14 +106,14 @@ auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> st
   return std::make_unique<wgpu::Device>(std::move(device));
 }
 
-auto GLFWAnimationLoop::_createSwapchain(std::shared_ptr<wgpu::Device> device) -> std::unique_ptr<wgpu::SwapChain> {
+auto GLFWAnimationLoop::_createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain {
   wgpu::SwapChainDescriptor swapChainDesc;
   swapChainDesc.implementation = this->_binding->GetSwapChainImplementation();
   auto swapchain = device->CreateSwapChain(nullptr, &swapChainDesc);
   swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment, this->width,
                       this->height);
 
-  return std::make_unique<wgpu::SwapChain>(std::move(swapchain));
+  return swapchain;
 }
 
 auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType) -> GLFWwindow* {

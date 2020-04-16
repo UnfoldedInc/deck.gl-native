@@ -327,7 +327,8 @@ void Layer::finalizeState() {}
 // If state has a model, draw it with supplied uniforms
 void Layer::drawState() {
   for (auto model : this->getModels()) {
-    model->draw();
+    // TODO(ilija@unfolded.ai): Add render pass plumbing so that we can pass it to draw
+    //    model->draw();
   }
 }
 

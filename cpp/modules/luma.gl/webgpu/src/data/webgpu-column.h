@@ -17,3 +17,38 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+#ifndef LUMAGL_WEBGPU_WEBGPU_COLUMN_H
+#define LUMAGL_WEBGPU_WEBGPU_COLUMN_H
+
+#include <arrow/array.h>
+#include <dawn/webgpu_cpp.h>
+
+#include <memory>
+
+#include "luma.gl/webgpu/src/data/attribute-descriptor.h"
+#include "luma.gl/webgpu/src/webgpu-helpers.h"
+
+namespace lumagl {
+
+class WebGPUColumn {
+ public:
+  WebGPUColumn(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor);
+  ~WebGPUColumn();
+
+  void setData(const std::shared_ptr<arrow::Array>& data);
+
+  wgpu::Buffer buffer;
+  /// \brief Size in the number of elements this column contains.
+  int64_t length{0};
+
+ private:
+  auto _createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer;
+
+  wgpu::Device _device;
+  std::shared_ptr<AttributeDescriptor> _descriptor;
+};
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_WEBGPU_WEBGPU_COLUMN_H

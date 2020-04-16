@@ -23,6 +23,9 @@
 
 #include "./webgpu/src/backends/backend-binding.h"
 #include "./webgpu/src/combo-render-pipeline-descriptor.h"
+#include "./webgpu/src/data/attribute-descriptor.h"
+#include "./webgpu/src/data/webgpu-column.h"
+#include "./webgpu/src/data/webgpu-table.h"
 #include "./webgpu/src/shaderc-utils.h"
 #include "./webgpu/src/swap-chain-utils.h"
 #include "./webgpu/src/webgpu-constants.h"

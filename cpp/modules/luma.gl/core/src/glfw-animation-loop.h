@@ -45,7 +45,7 @@ class GLFWAnimationLoop : public AnimationLoop {
 
  protected:
   auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> override;
-  auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> std::unique_ptr<wgpu::SwapChain> override;
+  auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain override;
 
  private:
   auto _initializeGLFW(const wgpu::BackendType) -> GLFWwindow*;
