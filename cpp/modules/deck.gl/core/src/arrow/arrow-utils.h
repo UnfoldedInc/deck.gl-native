@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded Inc.
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,31 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEBGPU_UTILS_H
-#define LUMAGL_WEBGPU_UTILS_H
+#ifndef DECKGL_CORE_ARROW_ARROW_UTILS_H
+#define DECKGL_CORE_ARROW_ARROW_UTILS_H
 
+#include <arrow/api.h>
 #include <dawn/webgpu_cpp.h>
 
-#include <string>
+#include <memory>
 
-namespace lumagl {
-namespace utils {
+namespace deckgl {
 
-/// \brief Get the default WebGPU/Dawn backend type for this platform
-/// Default to D3D12, Metal, Vulkan, OpenGL in that order as D3D12 and Metal are the preferred on
-/// their respective platforms, and Vulkan is preferred to OpenGL
-auto getDefaultWebGPUBackendType() -> wgpu::BackendType;
+auto arrowTypeFromWebGPUFormat(wgpu::VertexFormat format) -> std::shared_ptr<arrow::DataType>;
 
-/// \brief Get a WebGPU/Dawn backend type from a string
-auto getWebGPUBackendType(const std::string &backendType) -> wgpu::BackendType;
+}  // namespace deckgl
 
-/// \brief Get a string representation of a WebGPU Error
-auto getWebGPUErrorName(WGPUErrorType errorType) -> const char *;
-
-/// \brief Returns size of the given format in bytes.
-auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t;
-
-}  // namespace utils
-}  // namespace lumagl
-
-#endif  // LUMAGL_WEBGPU_UTILS_H
+#endif  // DECKGL_CORE_ARROW_ARROW_UTILS_H

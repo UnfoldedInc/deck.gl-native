@@ -33,7 +33,7 @@ auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
 
 void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
-void AttributeManager::add(const std::shared_ptr<lumagl::AttributeDescriptor>& descriptor) {
+void AttributeManager::add(const std::shared_ptr<AttributeDescriptor>& descriptor) {
   this->_descriptors.push_back(descriptor);
 }
 

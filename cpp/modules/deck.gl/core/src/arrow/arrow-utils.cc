@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded Inc.
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,53 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/// \file This file contains utilities for the WebGPU C++ API
+#include "./arrow-utils.h"  // NOLINT(build/include)
 
-#include "./webgpu-utils.h"  // NOLINT(build/include)
+#include <memory>
 
-#include <map>
+using namespace deckgl;
 
-namespace lumagl {
-namespace utils {
-
-auto getDefaultWebGPUBackendType() -> wgpu::BackendType {
-#if defined(LUMAGL_ENABLE_BACKEND_D3D12)
-  return wgpu::BackendType::D3D12;
-#elif defined(LUMAGL_ENABLE_BACKEND_METAL)
-  return wgpu::BackendType::Metal;
-#elif defined(LUMAGL_ENABLE_BACKEND_VULKAN)
-  return wgpu::BackendType::Vulkan;
-#elif defined(LUMAGL_ENABLE_BACKEND_OPENGL)
-  return wgpu::BackendType::OpenGL;
-#elif defined(LUMAGL_ENABLE_BACKEND_NULL)
-  return wgpu::BackendType::Null;
-#else
-#error No backends enabled
-#endif
-}
-
-const std::map<const std::string, wgpu::BackendType> nameToBackendTypeMap = {
-    {"d3d12", wgpu::BackendType::D3D12},   {"metal", wgpu::BackendType::Metal},   {"null", wgpu::BackendType::Null},
-    {"opengl", wgpu::BackendType::OpenGL}, {"vulkan", wgpu::BackendType::Vulkan},
-};
-
-auto getWebGPUBackendType(const std::string &backendName) -> wgpu::BackendType {
-  if (nameToBackendTypeMap.count(backendName) == 0) {
-    throw std::runtime_error("invalid backend name (opengl, metal, d3d12, null, vulkan)");
-  }
-  return nameToBackendTypeMap.at(backendName);
-}
-
-std::map<WGPUErrorType, const char *> errorTypeToNameMap = {
-    {WGPUErrorType_Validation, "Validation"},
-    {WGPUErrorType_OutOfMemory, "Out of memory"},
-    {WGPUErrorType_Unknown, "Unknown"},
-    {WGPUErrorType_DeviceLost, "Device lost"},
-};
-
-auto getWebGPUErrorName(WGPUErrorType errorType) -> const char * { return errorTypeToNameMap[errorType]; }
-
-auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t {
+auto arrowTypeFromWebGPUFormat(wgpu::VertexFormat format) -> std::shared_ptr<arrow::DataType> {
   // Based on https://gpuweb.github.io/gpuweb/#vertex-formats
   // uchar = unsigned 8-bit value
   // char = signed 8-bit value
@@ -77,43 +37,54 @@ auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t {
 
   using Format = wgpu::VertexFormat;
   switch (format) {
+      // These could be int8/uin8 instead of utf8?
     case Format::UChar2:
     case Format::Char2:
     case Format::UChar2Norm:
     case Format::Char2Norm:
-      return 2;
-    case Format::UChar4:
-    case Format::Char4:
+      return arrow::fixed_size_list(arrow::utf8(), 2);
     case Format::UChar4Norm:
     case Format::Char4Norm:
+    case Format::UChar4:
+    case Format::Char4:
+      return arrow::fixed_size_list(arrow::utf8(), 4);
     case Format::UShort2:
     case Format::Short2:
     case Format::UShort2Norm:
     case Format::Short2Norm:
-    case Format::Half2:
-    case Format::Float:
-    case Format::UInt:
-    case Format::Int:
-      return 4;
+      return arrow::fixed_size_list(arrow::int16(), 2);
     case Format::UShort4:
     case Format::Short4:
     case Format::UShort4Norm:
     case Format::Short4Norm:
+      return arrow::fixed_size_list(arrow::int16(), 4);
+    case Format::Half2:
+      return arrow::fixed_size_list(arrow::float16(), 2);
     case Format::Half4:
+      return arrow::fixed_size_list(arrow::float16(), 4);
+    case Format::Float:
+      return arrow::float32();
     case Format::Float2:
-    case Format::UInt2:
-    case Format::Int2:
-      return 8;
+      return arrow::fixed_size_list(arrow::float32(), 2);
     case Format::Float3:
-    case Format::UInt3:
-    case Format::Int3:
-      return 12;
+      return arrow::fixed_size_list(arrow::float32(), 3);
     case Format::Float4:
+      return arrow::fixed_size_list(arrow::float32(), 4);
+    case Format::UInt:
+      return arrow::uint32();
+    case Format::UInt2:
+      return arrow::fixed_size_list(arrow::uint32(), 2);
+    case Format::UInt3:
+      return arrow::fixed_size_list(arrow::uint32(), 3);
     case Format::UInt4:
+      return arrow::fixed_size_list(arrow::uint32(), 4);
+    case Format::Int:
+      return arrow::int32();
+    case Format::Int2:
+      return arrow::fixed_size_list(arrow::int32(), 2);
+    case Format::Int3:
+      return arrow::fixed_size_list(arrow::int32(), 3);
     case Format::Int4:
-      return 16;
+      return arrow::fixed_size_list(arrow::int32(), 4);
   }
 }
-
-}  // namespace utils
-}  // namespace lumagl

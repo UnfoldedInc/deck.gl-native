@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include "luma.gl/core.h"
+#include "./attribute-descriptor.h"
 #include "luma.gl/webgpu.h"
 
 namespace deckgl {
@@ -61,7 +61,7 @@ class AttributeManager {
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> bool;
   void setNeedsRedraw();
 
-  void add(const std::shared_ptr<lumagl::AttributeDescriptor>& descriptor);
+  void add(const std::shared_ptr<AttributeDescriptor>& descriptor);
 
   void invalidate(const std::string& attributeName);
   void invalidateAll();
@@ -73,7 +73,7 @@ class AttributeManager {
 
  private:
   bool _needsRedraw{false};
-  std::vector<std::shared_ptr<lumagl::AttributeDescriptor>> _descriptors;
+  std::vector<std::shared_ptr<AttributeDescriptor>> _descriptors;
 };
 
 }  // namespace deckgl

@@ -31,7 +31,7 @@ WebGPUColumn::~WebGPUColumn() { this->buffer.Destroy(); }
 
 void WebGPUColumn::setData(const std::shared_ptr<arrow::Array>& data) {
   if (!this->buffer || data->length() != this->length) {
-    auto size = this->_descriptor->typeSize * data->length();
+    auto size = this->_descriptor->size() * data->length();
     this->buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
   }
 
