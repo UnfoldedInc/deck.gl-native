@@ -32,6 +32,8 @@ namespace lumagl {
 
 struct AttributeDescriptor {
  public:
+  // TODO(ilija@unfolded.ai): Remove
+  AttributeDescriptor() {}
   using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
   AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type, const size_t typeSize,
                       std::function<AttributeBuilder> attributeBuilder)

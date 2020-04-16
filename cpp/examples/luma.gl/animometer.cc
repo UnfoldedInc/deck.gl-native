@@ -130,12 +130,12 @@ int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  Model model{animationLoop.device, {vs, fs, {{}, {}}, {{sizeof(ShaderData), true}}}};
+  Model model{animationLoop.device, {vs, fs, {{}, {}}, {{sizeof(ShaderData), false}}}};
 
   // TODO(ilija@unfolded.ai): Switch over to WebGPUTable API
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
-  wgpu::Buffer ubo = utils::createBufferFromData(device, shaderData.data(), kNumTriangles * sizeof(ShaderData),
-                                                 wgpu::BufferUsage::Uniform);
+  wgpu::Buffer ubo =
+      utils::createBufferFromData(device, shaderData.data(), sizeof(ShaderData), wgpu::BufferUsage::Uniform);
 
   Vector4<float> positions[3] = {{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
   Vector4<float> colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
@@ -150,16 +150,18 @@ int main(int argc, const char* argv[]) {
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
     f++;
+
+    // TODO(ilija@unfolded.ai): Could not get this to draw more than 1 triangle at a time,
+    // do we need to use dynamic offsets when drawing?
     for (auto& data : shaderData) {
       data.time = f / 60.0f;
-    }
-    ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
+      // This works but the performance is horrible
+      //      wgpu::Buffer ubo =
+      //      utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
+      //      model.setUniforms({ubo});
 
-    pass.SetPipeline(model.pipeline);
+      ubo.SetSubData(0, sizeof(ShaderData), &data);
 
-    for (size_t i = 0; i < kNumTriangles; i++) {
-      uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
-      pass.SetBindGroup(0, model.bindGroup, 1, &offset);
       model.draw(pass);
     }
   });

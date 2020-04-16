@@ -64,24 +64,13 @@ void Model::setUniforms(const std::vector<wgpu::Buffer>& uniforms) {
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {
-  // if (!this->_attributes) {
-  //   return;
-  // }
+  pass.SetPipeline(this->pipeline);
 
-  // pass.SetPipeline(this->pipeline);
-
+  // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
+  pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
   this->_setVertexBuffers(pass);
 
   pass.Draw(this->vertexCount, 1, 0, 0);
-
-  //  pass.SetBindGroup(0, this->bindGroup, 1, 0);
-
-  // TODO(ilija@unfolded.ai): Revisit
-  // for (size_t i = 0; i < this->_attributes->numRows; i++) {
-  //    uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
-  //    pass.SetBindGroup(0, bindGroup, 1, &offset);
-  //    pass.Draw(3, 1, 0, 0);
-  // }
 }
 
 void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
