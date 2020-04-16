@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020 Unfolded Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,32 +18,4 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
-#define LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
-
-#include <dawn/webgpu_cpp.h>
-
-#include <string>
-#include <utility>
-
-#include "luma.gl/webgpu/src/webgpu-utils.h"
-
-namespace lumagl {
-
-struct AttributeDescriptor {
- public:
-  // TODO(ilija@unfolded.ai): Remove
-  AttributeDescriptor() {}
-  AttributeDescriptor(const std::string& name, const wgpu::VertexFormat format)
-      : name{std::move(name)}, format{format} {}
-
-  std::string name;
-  wgpu::VertexFormat format;
-
-  /// \brief Format size in bytes.
-  auto size() -> size_t { return lumagl::utils::getVertexFormatSize(this->format); }
-};
-
-}  // namespace lumagl
-
-#endif  // LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
+#include "./webgpu-field.h"  // NOLINT(build/include)

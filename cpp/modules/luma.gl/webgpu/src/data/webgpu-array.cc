@@ -18,21 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./webgpu-column.h"  // NOLINT(build/include)
+#include "./webgpu-array.h"  // NOLINT(build/include)
 
 using namespace lumagl;
 
-WebGPUColumn::WebGPUColumn(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor) {
-  this->_device = device;
-  this->_descriptor = descriptor;
+WebGPUArray::WebGPUArray(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor,
+                         const std::shared_ptr<arrow::Array>& data)
+    : WebGPUArray{device, descriptor} {
+  this->setData(data);
 }
 
-WebGPUColumn::~WebGPUColumn() { this->buffer.Destroy(); }
+WebGPUArray::~WebGPUArray() {
+  if (this->_buffer != nullptr) {
+    this->_buffer.Destroy();
+  }
+}
 
-void WebGPUColumn::setData(const std::shared_ptr<arrow::Array>& data) {
-  if (!this->buffer || data->length() != this->length) {
+void WebGPUArray::setData(const std::shared_ptr<arrow::Array>& data) {
+  if (!this->_buffer || data->length() != this->_length) {
     auto size = this->_descriptor->size() * data->length();
-    this->buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
+    this->_buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
   }
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
@@ -46,12 +51,13 @@ void WebGPUColumn::setData(const std::shared_ptr<arrow::Array>& data) {
   for (int i = 1; i < buffers.size(); i++) {
     auto buffer = buffers[i];
 
-    this->buffer.SetSubData(offset, buffer->size(), buffer->data());
+    this->_buffer.SetSubData(offset, buffer->size(), buffer->data());
     offset += buffer->size();
   }
+  this->_length = data->length();
 }
 
-auto WebGPUColumn::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
+auto WebGPUArray::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
   wgpu::BufferDescriptor bufferDesc;
   bufferDesc.size = size;
   bufferDesc.usage = usage;
