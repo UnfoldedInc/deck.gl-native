@@ -49,20 +49,21 @@ void AttributeManager::invalidateAll() {
 
 auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<WebGPUTable> {
   // Create an empty output table
-  std::vector<std::shared_ptr<arrow::Field>> fields{};
-  std::vector<std::shared_ptr<WebGPUColumn>> columns{};
+  std::vector<std::shared_ptr<WebGPUField>> fields{};
+  std::vector<std::shared_ptr<WebGPUArray>> arrays{};
 
   // Iterate over descriptors and create one column per-descriptor
   for (auto descriptor : this->_descriptors) {
-    auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
+    auto field = std::make_shared<WebGPUField>(descriptor->name, descriptor);
     fields.push_back(field);
 
-    auto arrowColumn = descriptor->attributeBuilder(table);
-    auto gpuColumn = std::make_shared<WebGPUColumn>(this->device, descriptor);
-    gpuColumn->setData(arrowColumn);
+    auto transformedArray = descriptor->attributeBuilder(table);
+    auto gpuArray = std::make_shared<WebGPUArray>(this->device, descriptor);
+    gpuArray->setData(transformedArray);
 
-    columns.push_back(gpuColumn);
+    arrays.push_back(gpuArray);
   }
 
-  return std::make_shared<WebGPUTable>(table->num_rows(), columns);
+  auto schema = std::make_shared<WebGPUSchema>(fields);
+  return std::make_shared<WebGPUTable>(schema, arrays);
 }

@@ -24,17 +24,44 @@
 #include <memory>
 #include <vector>
 
-#include "./webgpu-column.h"
+#include "./webgpu-array.h"
+#include "./webgpu-schema.h"
 
 namespace lumagl {
 
+/// \brief GPU memory table whos columns represent in-memory buffers.
 class WebGPUTable {
  public:
-  explicit WebGPUTable(int64_t numRows, const std::vector<std::shared_ptr<lumagl::WebGPUColumn>>& attributes)
-      : numRows{numRows}, attributes{attributes} {};
+  WebGPUTable(const std::shared_ptr<WebGPUSchema>& schema, const std::vector<std::shared_ptr<WebGPUArray>> arrays)
+      : _schema{schema}, _columns{arrays} {}
 
-  int64_t numRows{0};
-  std::vector<std::shared_ptr<lumagl::WebGPUColumn>> attributes;
+  /// \brief Returns schema that describes this table.
+  auto schema() const -> std::shared_ptr<WebGPUSchema> { return this->_schema; }
+
+  /// \brief Returns field at index i, does not bound check.
+  /// @param i Index of the field to get.
+  auto field(int i) const -> std::shared_ptr<WebGPUField> { return this->_schema->field(i); }
+
+  /// \brief Returns all the fields in this tables schema.
+  auto fields() const -> std::vector<std::shared_ptr<WebGPUField>> { return this->_schema->fields(); };
+
+  /// \brief Returns a column at index i, does not bound check.
+  /// @param i Index of the column to get.
+  auto column(int i) const -> std::shared_ptr<WebGPUArray> { return this->_columns[i]; };
+
+  /// \brief Returns the columns that this table contains.
+  auto columns() const -> std::vector<std::shared_ptr<WebGPUArray>> { return this->_columns; };
+
+  /// \brief Returns number of columns in this table.
+  // TODO(ilija@unfolded.ai): How do we enforce equal row sizes, add padding?
+  auto numColumns() const -> int { return this->_schema->numFields(); }
+
+  /// \brief Returns number of rows in this table.
+  auto numRows() const -> int64_t { return this->_columns.empty() ? 0 : this->_columns[0]->length(); }
+
+ private:
+  std::shared_ptr<WebGPUSchema> _schema;
+  std::vector<std::shared_ptr<WebGPUArray>> _columns;
 };
 
 }  // namespace lumagl

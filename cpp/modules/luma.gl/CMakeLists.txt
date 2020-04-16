@@ -30,8 +30,10 @@ set(WEBGPU_HEADER_FILE_LIST
     webgpu/src/webgpu-utils.h
     webgpu/src/webgpu-helpers.h
     webgpu/src/backends/backend-binding.h
+    webgpu/src/data/webgpu-field.h
+    webgpu/src/data/webgpu-schema.h
+    webgpu/src/data/webgpu-array.h
     webgpu/src/data/webgpu-table.h
-    webgpu/src/data/webgpu-column.h
     webgpu/src/data/attribute-descriptor.h
     )
 set(WEBGPU_SOURCE_FILE_LIST
@@ -40,7 +42,10 @@ set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/webgpu-utils.cpp
     webgpu/src/webgpu-helpers.cpp
     webgpu/src/backends/backend-binding.cpp
-    webgpu/src/data/webgpu-column.cc
+    webgpu/src/data/webgpu-field.cc
+    webgpu/src/data/webgpu-schema.cc
+    webgpu/src/data/webgpu-array.cc
+    webgpu/src/data/webgpu-table.cc
     )
 set(WEBGPU_TESTS_SOURCE_FILE_LIST
     webgpu/test/webgpu-test.cpp
