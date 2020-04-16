@@ -75,23 +75,20 @@ void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition =
-      std::make_shared<AttributeDescriptor>("instanceSourcePositions", arrow::fixed_size_list(arrow::float64(), 3),
-                                            sizeof(mathgl::Vector3<double>), getSourcePosition);
+      std::make_shared<AttributeDescriptor>("instanceSourcePositions", wgpu::VertexFormat::Float3, getSourcePosition);
   this->attributeManager->add(sourcePosition);
 
   auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
   auto targetPosition =
-      std::make_shared<AttributeDescriptor>("instanceTargetPositions", arrow::fixed_size_list(arrow::float64(), 3),
-                                            sizeof(mathgl::Vector3<double>), getTargetPosition);
+      std::make_shared<AttributeDescriptor>("instanceTargetPositions", wgpu::VertexFormat::Float3, getTargetPosition);
   this->attributeManager->add(targetPosition);
 
   auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
-  auto color = std::make_shared<AttributeDescriptor>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4),
-                                                     sizeof(mathgl::Vector4<float>), getColor);
+  auto color = std::make_shared<AttributeDescriptor>("instanceColors", wgpu::VertexFormat::Float4, getColor);
   this->attributeManager->add(color);
 
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
-  auto width = std::make_shared<AttributeDescriptor>("instanceWidths", arrow::float32(), sizeof(float), getWidth);
+  auto width = std::make_shared<AttributeDescriptor>("instanceWidths", wgpu::VertexFormat::Float, getWidth);
   this->attributeManager->add(width);
 }
 
@@ -163,7 +160,7 @@ auto LineLayer::getSourcePositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  return ArrowMapper::mapVector3DoubleColumn(table, props->getSourcePosition);
+  return ArrowMapper::mapVector3FloatColumn(table, props->getSourcePosition);
 }
 
 auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
@@ -172,7 +169,7 @@ auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  return ArrowMapper::mapVector3DoubleColumn(table, props->getTargetPosition);
+  return ArrowMapper::mapVector3FloatColumn(table, props->getTargetPosition);
 }
 
 auto LineLayer::getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {

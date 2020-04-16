@@ -23,6 +23,7 @@
 
 #include "./arrow/arrow-mapper.h"
 #include "./arrow/row.h"
+#include "./lib/attribute/attribute-descriptor.h"
 #include "./lib/attribute/attribute-manager.h"
 #include "./lib/constants.h"  // {COORDINATE_SYSTEM, PROJECTION_MODE}
 #include "./lib/deck.h"       // {Deck}

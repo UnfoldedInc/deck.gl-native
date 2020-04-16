@@ -21,12 +21,12 @@
 #ifndef LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
 #define LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
 
-#include <arrow/array.h>
-#include <arrow/table.h>
+#include <dawn/webgpu_cpp.h>
 
-#include <memory>
 #include <string>
 #include <utility>
+
+#include "luma.gl/webgpu/src/webgpu-utils.h"
 
 namespace lumagl {
 
@@ -34,17 +34,14 @@ struct AttributeDescriptor {
  public:
   // TODO(ilija@unfolded.ai): Remove
   AttributeDescriptor() {}
-  using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type, const size_t typeSize,
-                      std::function<AttributeBuilder> attributeBuilder)
-      : name{std::move(name)}, type{type}, typeSize{typeSize}, attributeBuilder{std::move(attributeBuilder)} {}
+  AttributeDescriptor(const std::string& name, const wgpu::VertexFormat format)
+      : name{std::move(name)}, format{format} {}
 
   std::string name;
-  std::shared_ptr<arrow::DataType> type;
+  wgpu::VertexFormat format;
+
   /// \brief Type size in bytes.
-  // TODO(ilija@unfolded.ai): Should be deducted based on type, but it seeems somewhat complicated to do
-  size_t typeSize;
-  std::function<AttributeBuilder> attributeBuilder;
+  auto size() -> size_t { return lumagl::utils::getVertexFormatSize(this->format); }
 };
 
 }  // namespace lumagl
