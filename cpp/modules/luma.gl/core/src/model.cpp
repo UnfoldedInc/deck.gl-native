@@ -49,27 +49,26 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
   this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
 }
 
-void Model::setAttributes(const std::shared_ptr<WebGPUTable>& table) { this->_attributes = table; }
+// void Model::setAttributes(const std::shared_ptr<WebGPUTable>& table) { this->_attributes = table; }
 
 void Model::setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers) { this->_buffers = buffers; }
 
-void Model::setUniforms(const std::vector<wgpu::Buffer>& uniforms) {
+void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   std::vector<BindingInitializationHelper> bindings;
-  for (uint32_t i = 0; i < uniforms.size(); i++) {
-    auto binding = BindingInitializationHelper{i, uniforms[i], 0, this->_uniforms[i].elementSize};
+  for (uint32_t i = 0; i < uniformBuffers.size(); i++) {
+    auto binding = BindingInitializationHelper{i, uniformBuffers[i], 0, this->_uniforms[i].elementSize};
     bindings.push_back(binding);
   }
 
+  // Update the bind group
   this->bindGroup = utils::makeBindGroup(*this->_device.get(), this->uniformBindGroupLayout, bindings);
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {
-  pass.SetPipeline(this->pipeline);
-
   // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
-  pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
+  pass.SetPipeline(this->pipeline);
   this->_setVertexBuffers(pass);
-
+  pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
   pass.Draw(this->vertexCount, 1, 0, 0);
 }
 

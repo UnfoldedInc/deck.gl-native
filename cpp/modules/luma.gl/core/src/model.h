@@ -48,9 +48,9 @@ class Model {
   // TODO(ilija@unfolded.ai): Remove once integration is complete and layers provide valid options
   explicit Model(std::shared_ptr<wgpu::Device> device);
 
-  void setAttributes(const std::shared_ptr<WebGPUTable>& table);
+  // void setAttributes(const std::shared_ptr<WebGPUTable>& table);
   void setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers);
-  void setUniforms(const std::vector<wgpu::Buffer>& uniforms);
+  void setUniformBuffers(const std::vector<wgpu::Buffer>& uniforms);
 
   void draw(wgpu::RenderPassEncoder pass);
 
