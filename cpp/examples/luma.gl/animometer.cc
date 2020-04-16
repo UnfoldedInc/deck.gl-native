@@ -83,7 +83,7 @@ auto randomFloat(float min, float max) -> float {
   return zeroOne * (max - min) + min;
 }
 
-constexpr size_t kNumTriangles = 10000;
+constexpr size_t kNumTriangles = 1000;
 
 struct alignas(utils::kMinDynamicBufferOffsetAlignment) ShaderData {
   float scale;
@@ -130,12 +130,15 @@ int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  Model model{animationLoop.device, {vs, fs, {{}, {}}, {{sizeof(ShaderData), false}}}};
+  lumagl::Model model{animationLoop.device, {vs, fs, {{}, {}}, {{sizeof(ShaderData)}}}};
 
   // TODO(ilija@unfolded.ai): Switch over to WebGPUTable API
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
-  wgpu::Buffer ubo =
-      utils::createBufferFromData(device, shaderData.data(), sizeof(ShaderData), wgpu::BufferUsage::Uniform);
+  std::vector<wgpu::Buffer> uniformBuffers;
+  for (auto const& data : shaderData) {
+    auto ubo = utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
+    uniformBuffers.push_back(ubo);
+  }
 
   Vector4<float> positions[3] = {{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
   Vector4<float> colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
@@ -144,27 +147,26 @@ int main(int argc, const char* argv[]) {
       makeWebGPUTable(device, {{"positions", &positions, sizeof(positions)}, {"colors", &colors, sizeof(colors)}});
 
   model.setAttributeBuffers(buffers);
-  model.setUniforms({ubo});
   model.vertexCount = 3;
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
+
     f++;
 
     // TODO(ilija@unfolded.ai): Could not get this to draw more than 1 triangle at a time,
     // do we need to use dynamic offsets when drawing?
-    for (auto& data : shaderData) {
-      data.time = f / 60.0f;
-      // This works but the performance is horrible
-      //      wgpu::Buffer ubo =
-      //      utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
-      //      model.setUniforms({ubo});
+    for (auto i = 0; i < uniformBuffers.size(); ++i) {
+      // Update buffer
+      shaderData[i].time = f / 60.0f;
+      uniformBuffers[i].SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
 
-      ubo.SetSubData(0, sizeof(ShaderData), &data);
-
+      model.setUniformBuffers({uniformBuffers[i]});
       model.draw(pass);
     }
   });
+
+  // probegl::uSleep(100000);
 
   return 0;
 }
