@@ -26,6 +26,7 @@
 
 #include "deck.gl/core.h"
 #include "deck.gl/layers.h"
+#include "luma.gl/garrow.h"
 
 using namespace deckgl;
 
@@ -74,25 +75,16 @@ TEST_F(AttributeManagerTest, Update) {
 
         return resultArray;
       }};
-  manager->add(std::make_shared<lumagl::AttributeDescriptor>("attribute-one", arrow::float32(), sizeof(float),
-                                                             attributeUpdater));
-  manager->add(std::make_shared<lumagl::AttributeDescriptor>("attribute-two", arrow::float32(), sizeof(float),
-                                                             attributeUpdater));
+  manager->add(lumagl::garrow::AttributeDescriptor{"attribute-one", arrow::float32(), attributeUpdater});
+  manager->add(lumagl::garrow::AttributeDescriptor{"attribute-two", arrow::float32(), attributeUpdater});
 
-  // TODO(ilija@unfolded.ai): Update tests to use the new WebGPU interface
-
-  /*
-  auto resultTable = manager->update(emptyTable);
-  EXPECT_EQ(resultTable->num_rows(), 3);
-  EXPECT_EQ(resultTable->num_columns(), 2);
-  EXPECT_EQ(resultTable->ColumnNames()[0], "attribute-one");
-  EXPECT_EQ(resultTable->ColumnNames()[1], "attribute-two");
-
-  auto testData = std::static_pointer_cast<arrow::FloatArray>(resultTable->column(0)->chunk(0));
-  EXPECT_EQ(testData->Value(0), 1.0);
-  EXPECT_EQ(testData->Value(1), -2.0);
-  EXPECT_EQ(testData->Value(2), 3.0);
-  */
+  // TODO(ilija@unfolded.ai): In order for this to run, we need to pass a valid Device instance to AttributeManager
+  // Currently the only place where we do that is in GLFWAnimationLoop, which opens up a window which we don't want
+  //  auto resultTable = manager->update(emptyTable);
+  //  EXPECT_EQ(resultTable->num_rows(), 3);
+  //  EXPECT_EQ(resultTable->num_columns(), 2);
+  //  EXPECT_EQ(resultTable->ColumnNames()[0], "attribute-one");
+  //  EXPECT_EQ(resultTable->ColumnNames()[1], "attribute-two");
 }
 
 }  // namespace

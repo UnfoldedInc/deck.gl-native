@@ -30,9 +30,6 @@ set(WEBGPU_HEADER_FILE_LIST
     webgpu/src/webgpu-utils.h
     webgpu/src/webgpu-helpers.h
     webgpu/src/backends/backend-binding.h
-    webgpu/src/data/webgpu-table.h
-    webgpu/src/data/webgpu-column.h
-    webgpu/src/data/attribute-descriptor.h
     )
 set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/combo-render-pipeline-descriptor.cpp
@@ -40,10 +37,29 @@ set(WEBGPU_SOURCE_FILE_LIST
     webgpu/src/webgpu-utils.cpp
     webgpu/src/webgpu-helpers.cpp
     webgpu/src/backends/backend-binding.cpp
-    webgpu/src/data/webgpu-column.cc
     )
 set(WEBGPU_TESTS_SOURCE_FILE_LIST
     webgpu/test/webgpu-test.cpp
+    )
+
+set(GARROW_HEADER_FILE_LIST
+    garrow.h
+    garrow/src/field.h
+    garrow/src/schema.h
+    garrow/src/array.h
+    garrow/src/table.h
+    garrow/src/util/arrow-utils.h
+    garrow/src/util/attribute-descriptor.h
+    )
+set(GARROW_SOURCE_FILE_LIST
+    garrow/src/schema.cc
+    garrow/src/array.cc
+    garrow/src/table.cc
+    garrow/src/util/arrow-utils.cc
+    garrow/src/util/attribute-descriptor.cc
+    )
+set(GARROW_TESTS_SOURCE_FILE_LIST
+    garrow/test/util/arrow-utils-test.cc
     )
 
 set(HEADER_FILE_LIST
@@ -64,12 +80,14 @@ find_library(dawn_proc_LIB dawn_proc PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(dawn_native_LIB dawn_native PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(glfw_LIB glfw PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 find_library(shaderc_LIB shaderc_combined PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 
 target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     ${dawn_proc_LIB}
     ${dawn_native_LIB}
     ${glfw_LIB}
     ${shaderc_LIB}
+    ${arrow_LIB}
     ${DECK_DEPS_PATH}/webgpu_cpp.o
     )
 target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} math.gl probe.gl)
@@ -119,18 +137,19 @@ if (DECK_ENABLE_VULKAN)
 endif()
 
 # Specify sources that'll be compiled
-target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST})
+target_sources(luma.gl PRIVATE ${SOURCE_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST} ${GARROW_SOURCE_FILE_LIST})
 
 # Export source list of this module
 # NOTE: We transform relative paths to absolute paths before exporting
 set(MODULE_SOURCE_FILES
     ${WEBGPU_HEADER_FILE_LIST} ${WEBGPU_SOURCE_FILE_LIST}
+    ${GARROW_HEADER_FILE_LIST} ${GARROW_SOURCE_FILE_LIST}
     ${HEADER_FILE_LIST} ${SOURCE_FILE_LIST}
-    ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
+    ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${GARROW_TESTS_SOURCE_FILE_LIST} ${TESTS_SOURCE_FILE_LIST}
     )
 list(TRANSFORM MODULE_SOURCE_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
 set_property(TARGET luma.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
 
-set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST})
+set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST} ${WEBGPU_TESTS_SOURCE_FILE_LIST} ${GARROW_TESTS_SOURCE_FILE_LIST})
 list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
 set_property(TARGET luma.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})

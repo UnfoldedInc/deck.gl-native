@@ -18,25 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEBGPU_WEBGPU_TABLE_H
-#define LUMAGL_WEBGPU_WEBGPU_TABLE_H
+#ifndef LUMAGL_GARROW_H
+#define LUMAGL_GARROW_H
 
-#include <memory>
-#include <vector>
+#include "./garrow/src/array.h"
+#include "./garrow/src/field.h"
+#include "./garrow/src/schema.h"
+#include "./garrow/src/table.h"
+#include "./garrow/src/util/arrow-utils.h"
+#include "./garrow/src/util/attribute-descriptor.h"
 
-#include "./webgpu-column.h"
-
-namespace lumagl {
-
-class WebGPUTable {
- public:
-  explicit WebGPUTable(int64_t numRows, const std::vector<std::shared_ptr<lumagl::WebGPUColumn>>& attributes)
-      : numRows{numRows}, attributes{attributes} {};
-
-  int64_t numRows{0};
-  std::vector<std::shared_ptr<lumagl::WebGPUColumn>> attributes;
-};
-
-}  // namespace lumagl
-
-#endif  // LUMAGL_WEBGPU_WEBGPU_TABLE_H
+#endif  // LUMAGL_GARROW_H

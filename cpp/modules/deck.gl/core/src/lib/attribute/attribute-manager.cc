@@ -33,8 +33,8 @@ auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
 
 void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
-void AttributeManager::add(const std::shared_ptr<lumagl::AttributeDescriptor>& descriptor) {
-  this->_descriptors.push_back(descriptor);
+void AttributeManager::add(const lumagl::garrow::AttributeDescriptor& descriptor) {
+  this->_descriptors.push_back(std::move(descriptor));
 }
 
 void AttributeManager::invalidate(const std::string& attributeName) {
@@ -47,22 +47,6 @@ void AttributeManager::invalidateAll() {
   probegl::DebugLog() << "AttributeManager: invalidating all attributes";
 }
 
-auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<WebGPUTable> {
-  // Create an empty output table
-  std::vector<std::shared_ptr<arrow::Field>> fields{};
-  std::vector<std::shared_ptr<WebGPUColumn>> columns{};
-
-  // Iterate over descriptors and create one column per-descriptor
-  for (auto descriptor : this->_descriptors) {
-    auto field = std::make_shared<arrow::Field>(descriptor->name, descriptor->type);
-    fields.push_back(field);
-
-    auto arrowColumn = descriptor->attributeBuilder(table);
-    auto gpuColumn = std::make_shared<WebGPUColumn>(this->device, descriptor);
-    gpuColumn->setData(arrowColumn);
-
-    columns.push_back(gpuColumn);
-  }
-
-  return std::make_shared<WebGPUTable>(table->num_rows(), columns);
+auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<garrow::Table> {
+  return garrow::transformTable(table, this->_descriptors, this->device);
 }

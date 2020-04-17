@@ -27,8 +27,7 @@
 #include <string>
 #include <vector>
 
-#include "luma.gl/core.h"
-#include "luma.gl/webgpu.h"
+#include "luma.gl/garrow.h"
 
 namespace deckgl {
 
@@ -61,19 +60,19 @@ class AttributeManager {
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> bool;
   void setNeedsRedraw();
 
-  void add(const std::shared_ptr<lumagl::AttributeDescriptor>& descriptor);
+  void add(const lumagl::garrow::AttributeDescriptor& descriptor);
 
   void invalidate(const std::string& attributeName);
   void invalidateAll();
 
-  auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<lumagl::WebGPUTable>;
+  auto update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<lumagl::garrow::Table>;
 
   std::string id;
   wgpu::Device device;
 
  private:
   bool _needsRedraw{false};
-  std::vector<std::shared_ptr<lumagl::AttributeDescriptor>> _descriptors;
+  std::vector<lumagl::garrow::AttributeDescriptor> _descriptors;
 };
 
 }  // namespace deckgl

@@ -18,4 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./webgpu-table.h"  // NOLINT(build/include)
+#include "./table.h"  // NOLINT(build/include)
+
+using namespace lumagl::garrow;
+
+auto Table::ColumnNames() const -> std::vector<std::string> {
+  std::vector<std::string> names;
+  std::transform(this->_schema->fields().begin(), this->_schema->fields().end(), std::back_inserter(names),
+                 [](std::shared_ptr<Field> field) { return field->name(); });
+  return names;
+};

@@ -42,11 +42,11 @@ class LineLayerTest : public ::testing::Test {
     arrow::MemoryPool* pool = arrow::default_memory_pool();
 
     // Positions
-    arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::DoubleBuilder>(pool), 3};
-    arrow::DoubleBuilder& valueBuilder = *(static_cast<arrow::DoubleBuilder*>(listBuilder.value_builder()));
+    arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool), 3};
+    arrow::FloatBuilder& valueBuilder = *(static_cast<arrow::FloatBuilder*>(listBuilder.value_builder()));
 
     EXPECT_TRUE(listBuilder.Append().ok());
-    std::vector<double> position{1.2, 2.3, -3.4};
+    std::vector<float> position{1.2, 2.3, -3.4};
     EXPECT_TRUE(valueBuilder.AppendValues(position.data(), position.size()).ok());
 
     std::shared_ptr<arrow::Array> positions;
@@ -71,8 +71,8 @@ class LineLayerTest : public ::testing::Test {
     EXPECT_TRUE(widthBuilder.Finish(&widths).ok());
 
     std::vector<std::shared_ptr<arrow::Field>> schemaVector = {
-        arrow::field("sourcePosition", arrow::fixed_size_list(arrow::float64(), 3)),
-        arrow::field("targetPosition", arrow::fixed_size_list(arrow::float64(), 3)),
+        arrow::field("sourcePosition", arrow::fixed_size_list(arrow::float32(), 3)),
+        arrow::field("targetPosition", arrow::fixed_size_list(arrow::float32(), 3)),
         arrow::field("color", arrow::fixed_size_list(arrow::float32(), 4)), arrow::field("width", arrow::float32())};
 
     auto schema = std::make_shared<arrow::Schema>(schemaVector);
@@ -119,15 +119,15 @@ TEST_F(LineLayerTest, GetSourcePositionData) {
   EXPECT_EQ(positionData->type_id(), arrow::Type::FIXED_SIZE_LIST);
 
   auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(positionData);
-  auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
+  auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
   EXPECT_EQ(values->length(), 3);
-  EXPECT_EQ(values->type_id(), arrow::Type::DOUBLE);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto dataPointer = values->data()->GetValues<double>(1);
-  EXPECT_DOUBLE_EQ(*dataPointer, 1.2);
-  EXPECT_DOUBLE_EQ(*(dataPointer + 1), 2.3);
-  EXPECT_DOUBLE_EQ(*(dataPointer + 2), -3.4);
+  auto dataPointer = values->data()->GetValues<float>(1);
+  EXPECT_FLOAT_EQ(*dataPointer, 1.2);
+  EXPECT_FLOAT_EQ(*(dataPointer + 1), 2.3);
+  EXPECT_FLOAT_EQ(*(dataPointer + 2), -3.4);
 }
 
 TEST_F(LineLayerTest, GetTargetPositionData) {
@@ -142,15 +142,15 @@ TEST_F(LineLayerTest, GetTargetPositionData) {
   EXPECT_EQ(positionData->type_id(), arrow::Type::FIXED_SIZE_LIST);
 
   auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(positionData);
-  auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
+  auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
   EXPECT_EQ(values->length(), 3);
-  EXPECT_EQ(values->type_id(), arrow::Type::DOUBLE);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto dataPointer = values->data()->GetValues<double>(1);
-  EXPECT_DOUBLE_EQ(*dataPointer, 1.2);
-  EXPECT_DOUBLE_EQ(*(dataPointer + 1), 2.3);
-  EXPECT_DOUBLE_EQ(*(dataPointer + 2), -3.4);
+  auto dataPointer = values->data()->GetValues<float>(1);
+  EXPECT_FLOAT_EQ(*dataPointer, 1.2);
+  EXPECT_FLOAT_EQ(*(dataPointer + 1), 2.3);
+  EXPECT_FLOAT_EQ(*(dataPointer + 2), -3.4);
 }
 
 TEST_F(LineLayerTest, GetColorData) {

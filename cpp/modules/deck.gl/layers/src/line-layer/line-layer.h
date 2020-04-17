@@ -74,10 +74,10 @@ class LineLayer::Props : public Layer::Props {
   float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
 
   /// Property accessors
-  std::function<ArrowMapper::Vector3DoubleAccessor> getSourcePosition{
-      [](const Row& row) { return row.getDoubleVector3("sourcePosition"); }};
-  std::function<ArrowMapper::Vector3DoubleAccessor> getTargetPosition{
-      [](const Row& row) { return row.getDoubleVector3("targetPosition"); }};
+  std::function<ArrowMapper::Vector3FloatAccessor> getSourcePosition{
+      [](const Row& row) { return row.getFloatVector3("sourcePosition"); }};
+  std::function<ArrowMapper::Vector3FloatAccessor> getTargetPosition{
+      [](const Row& row) { return row.getFloatVector3("targetPosition"); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};

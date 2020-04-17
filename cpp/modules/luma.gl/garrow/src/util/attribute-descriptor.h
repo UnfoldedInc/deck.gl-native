@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
-#define LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
+#ifndef LUMAGL_GARROW_UTIL_ATTRIBUTE_DESCRIPTOR_H
+#define LUMAGL_GARROW_UTIL_ATTRIBUTE_DESCRIPTOR_H
 
 #include <arrow/array.h>
 #include <arrow/table.h>
@@ -28,25 +28,33 @@
 #include <string>
 #include <utility>
 
-namespace lumagl {
+#include "./arrow-utils.h"
+#include "luma.gl/webgpu/src/webgpu-utils.h"
 
+namespace lumagl {
+namespace garrow {
+
+// TODO(ilija@unfolded.ai): This struct will likely be replaced by a single transform function and a set of
+// metadata attached to a Field
 struct AttributeDescriptor {
  public:
-  // TODO(ilija@unfolded.ai): Remove
-  AttributeDescriptor() {}
   using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type, const size_t typeSize,
+  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
                       std::function<AttributeBuilder> attributeBuilder)
-      : name{std::move(name)}, type{type}, typeSize{typeSize}, attributeBuilder{std::move(attributeBuilder)} {}
+      : name{std::move(name)}, type{type}, attributeBuilder{attributeBuilder} {}
 
   std::string name;
   std::shared_ptr<arrow::DataType> type;
-  /// \brief Type size in bytes.
-  // TODO(ilija@unfolded.ai): Should be deducted based on type, but it seeems somewhat complicated to do
-  size_t typeSize;
   std::function<AttributeBuilder> attributeBuilder;
+
+  /// \brief Vertex format.
+  auto vertexFormat() -> wgpu::VertexFormat;
+
+  /// \brief Format size in bytes.
+  auto size() -> size_t { return utils::getVertexFormatSize(this->vertexFormat()); }
 };
 
+}  // namespace garrow
 }  // namespace lumagl
 
-#endif  // LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
+#endif  // LUMAGL_GARROW_UTIL_ATTRIBUTE_DESCRIPTOR_H

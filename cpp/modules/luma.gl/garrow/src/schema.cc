@@ -18,37 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEBGPU_WEBGPU_COLUMN_H
-#define LUMAGL_WEBGPU_WEBGPU_COLUMN_H
+#include "./schema.h"  // NOLINT(build/include)
 
-#include <arrow/array.h>
-#include <dawn/webgpu_cpp.h>
+using namespace lumagl::garrow;
 
-#include <memory>
+// TODO(ilija@unfolded.ai): Use a map if we actually end up using these often
 
-#include "luma.gl/webgpu/src/data/attribute-descriptor.h"
-#include "luma.gl/webgpu/src/webgpu-helpers.h"
-
-namespace lumagl {
-
-class WebGPUColumn {
- public:
-  WebGPUColumn(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor);
-  ~WebGPUColumn();
-
-  void setData(const std::shared_ptr<arrow::Array>& data);
-
-  wgpu::Buffer buffer;
-  /// \brief Size in the number of elements this column contains.
-  int64_t length{0};
-
- private:
-  auto _createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer;
-
-  wgpu::Device _device;
-  std::shared_ptr<AttributeDescriptor> _descriptor;
+auto Schema::field_names() const -> std::vector<std::string> {
+  std::vector<std::string> names;
+  std::transform(this->_fields.begin(), this->_fields.end(), std::back_inserter(names),
+                 [](std::shared_ptr<Field> field) { return field->name(); });
+  return names;
 };
 
-}  // namespace lumagl
-
-#endif  // LUMAGL_WEBGPU_WEBGPU_COLUMN_H
+auto Schema::GetFieldByName(const std::string& name) const -> std::shared_ptr<Field> {
+  for (auto const& field : this->_fields) {
+    if (field->name() == name) {
+      return field;
+    }
+  }
+  return nullptr;
+}
