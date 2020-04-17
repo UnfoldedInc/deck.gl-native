@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded Inc.
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,4 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./webgpu-table.h"  // NOLINT(build/include)
+#include "./attribute-descriptor.h"  // NOLINT(build/include)
+
+using namespace lumagl::garrow;
+
+auto AttributeDescriptor::vertexFormat() -> wgpu::VertexFormat {
+  if (auto format = vertexFormatFromArrowType(this->type)) {
+    return format.value();
+  }
+  throw std::runtime_error("Unsupported vertex format");
+}

@@ -18,44 +18,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEBGPU_DATA_WEBGPU_SCHEMA_H
-#define LUMAGL_WEBGPU_DATA_WEBGPU_SCHEMA_H
+#ifndef LUMAGL_GARROW_SCHEMA_H
+#define LUMAGL_GARROW_SCHEMA_H
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "./webgpu-field.h"
+#include "./field.h"
 
 namespace lumagl {
+namespace garrow {
 
 /// \brief Sequence of WebGPUField objects describing the columns of a table data structure.
-class WebGPUSchema {
+class Schema {
  public:
-  explicit WebGPUSchema(const std::vector<std::shared_ptr<WebGPUField>>& fields) : _fields{fields} {}
+  explicit Schema(const std::vector<std::shared_ptr<Field>>& fields) : _fields{fields} {}
 
   /// \brief Returns number of fields that this schema contains.
-  auto numFields() const -> int { return static_cast<int>(this->_fields.size()); }
+  auto num_fields() const -> int { return static_cast<int>(this->_fields.size()); }
 
   /// Returns the ith schema element. Does not boundscheck.
-  auto field(int i) const -> std::shared_ptr<WebGPUField> { return this->_fields[i]; };
+  auto field(int i) const -> std::shared_ptr<Field> { return this->_fields[i]; };
 
   /// \brief Returns a collection of fields that are part of this schema.
-  auto fields() const -> const std::vector<std::shared_ptr<WebGPUField>>& { return this->_fields; };
-
-  // TODO(ilija@unfolded.ai): Use a map if we actually end up using these often
+  auto fields() const -> const std::vector<std::shared_ptr<Field>>& { return this->_fields; };
 
   /// \brief Returns a collection of field names that are part of this schema.
-  auto fieldNames() const -> std::vector<std::string>;
+  auto field_names() const -> std::vector<std::string>;
 
   /// \brief Attempts to get a field by its name, returns nullptr if it could not be found.
-  auto getFieldByName(const std::string& name) const -> std::shared_ptr<WebGPUField>;
+  auto GetFieldByName(const std::string& name) const -> std::shared_ptr<Field>;
 
  private:
-  std::vector<std::shared_ptr<WebGPUField>> _fields;
+  std::vector<std::shared_ptr<Field>> _fields;
 };
 
+}  // namespace garrow
 }  // namespace lumagl
 
-#endif  // LUMAGL_WEBGPU_DATA_WEBGPU_SCHEMA_H
+#endif  // LUMAGL_GARROW_SCHEMA_H

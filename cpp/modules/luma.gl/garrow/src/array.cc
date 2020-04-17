@@ -18,25 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./webgpu-array.h"  // NOLINT(build/include)
+#include "./array.h"  // NOLINT(build/include)
 
-using namespace lumagl;
+using namespace lumagl::garrow;
 
-WebGPUArray::WebGPUArray(wgpu::Device device, const std::shared_ptr<AttributeDescriptor>& descriptor,
-                         const std::shared_ptr<arrow::Array>& data)
-    : WebGPUArray{device, descriptor} {
+Array::Array(wgpu::Device device, const AttributeDescriptor& descriptor, const std::shared_ptr<arrow::Array>& data)
+    : Array{device, descriptor} {
   this->setData(data);
 }
 
-WebGPUArray::~WebGPUArray() {
+Array::~Array() {
   if (this->_buffer != nullptr) {
     this->_buffer.Destroy();
   }
 }
 
-void WebGPUArray::setData(const std::shared_ptr<arrow::Array>& data) {
+void Array::setData(const std::shared_ptr<arrow::Array>& data) {
   if (!this->_buffer || data->length() != this->_length) {
-    auto size = this->_descriptor->size() * data->length();
+    auto size = this->_descriptor.size() * data->length();
     this->_buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
   }
 
@@ -57,7 +56,7 @@ void WebGPUArray::setData(const std::shared_ptr<arrow::Array>& data) {
   this->_length = data->length();
 }
 
-auto WebGPUArray::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
+auto Array::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
   wgpu::BufferDescriptor bufferDesc;
   bufferDesc.size = size;
   bufferDesc.usage = usage;

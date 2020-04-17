@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 
+#include "luma.gl/garrow.h"
 #include "luma.gl/webgpu.h"
 
 namespace lumagl {
@@ -48,7 +49,7 @@ class Model {
   // TODO(ilija@unfolded.ai): Remove once integration is complete and layers provide valid options
   explicit Model(std::shared_ptr<wgpu::Device> device);
 
-  void setAttributes(const std::shared_ptr<WebGPUTable>& table);
+  void setAttributes(const std::shared_ptr<garrow::Table>& table);
   void setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers);
   void setUniforms(const std::vector<wgpu::Buffer>& uniforms);
 
@@ -69,11 +70,11 @@ class Model {
 
  private:
   std::shared_ptr<wgpu::Device> _device;
-  std::shared_ptr<WebGPUTable> _attributes;
+  std::shared_ptr<garrow::Table> _attributes;
   std::vector<UniformDescriptor> _uniforms;
   std::vector<wgpu::Buffer> _buffers;
 
-  void _initializeVertexState(lumagl::utils::ComboVertexStateDescriptor&, const std::vector<AttributeDescriptor>&);
+  void _initializeVertexState(utils::ComboVertexStateDescriptor&, const std::vector<garrow::AttributeDescriptor>&);
   auto _createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
       -> wgpu::BindGroupLayout;
 
@@ -82,7 +83,7 @@ class Model {
 
 class Model::Options {
  public:
-  Options(const std::string& vs, const std::string& fs, const std::vector<AttributeDescriptor>& attributes = {},
+  Options(const std::string& vs, const std::string& fs, const std::vector<garrow::AttributeDescriptor>& attributes = {},
           const std::vector<UniformDescriptor>& uniforms = {},
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
       : vs{vs}, fs{fs}, attributes{attributes}, uniforms{uniforms}, textureFormat{textureFormat} {}
@@ -92,7 +93,7 @@ class Model::Options {
   /// \brief Fragment shader source.
   std::string fs;
   /// \brief Attribute definitions.
-  const std::vector<AttributeDescriptor> attributes;
+  const std::vector<garrow::AttributeDescriptor> attributes;
   /// \brief Uniform definitions.
   const std::vector<UniformDescriptor> uniforms;
   /// \brief Texture format that the pipeline will use.

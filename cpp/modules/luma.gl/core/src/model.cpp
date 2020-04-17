@@ -49,7 +49,7 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
   this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
 }
 
-void Model::setAttributes(const std::shared_ptr<WebGPUTable>& table) { this->_attributes = table; }
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& table) { this->_attributes = table; }
 
 void Model::setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers) { this->_buffers = buffers; }
 
@@ -74,7 +74,7 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
 }
 
 void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
-                                   const std::vector<AttributeDescriptor>& attributes) {
+                                   const std::vector<garrow::AttributeDescriptor>& attributes) {
   cVertexState.vertexBufferCount = static_cast<uint32_t>(attributes.size());
 
   for (int location = 0; location < attributes.size(); location++) {

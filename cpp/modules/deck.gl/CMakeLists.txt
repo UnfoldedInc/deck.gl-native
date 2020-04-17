@@ -47,7 +47,6 @@ set(CORE_HEADER_FILES
     core.h
     core/src/core.h
     core/src/lib/attribute/attribute-manager.h
-    core/src/lib/attribute/attribute-descriptor.h
     core/src/lib/component.h
     core/src/lib/constants.h
     core/src/lib/deck.h
@@ -62,7 +61,6 @@ set(CORE_HEADER_FILES
     core/src/views/view-state.h
     core/src/arrow/row.h
     core/src/arrow/arrow-mapper.h
-    core/src/arrow/arrow-utils.h
     )
 set(CORE_SOURCE_FILES
     core/src/core.cpp
@@ -80,7 +78,6 @@ set(CORE_SOURCE_FILES
     core/src/views/view-state.cpp
     core/src/arrow/row.cc
     core/src/arrow/arrow-mapper.cc
-    core/src/arrow/arrow-utils.cc
     )
 set(CORE_TEST_HEADER_FILES
     core/test/views/map-view-json-data.h
