@@ -40,7 +40,7 @@ struct AttributeDescriptor {
  public:
   using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
   AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
-                      std::function<AttributeBuilder> attributeBuilder)
+                      std::function<AttributeBuilder> attributeBuilder = nullptr)
       : name{std::move(name)}, type{type}, attributeBuilder{attributeBuilder} {}
 
   std::string name;

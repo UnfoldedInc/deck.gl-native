@@ -35,13 +35,12 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
   this->vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
   this->fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
 
-  // TODO(ilija@unfolded.ai): Build this up based on attribute descriptors. Currently hardcoded to support animometer
   ComboRenderPipelineDescriptor descriptor{deviceValue};
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
   descriptor.cColorStates[0].format = options.textureFormat;
 
-  this->_initializeVertexState(descriptor.cVertexState, options.attributes);
+  this->_initializeVertexState(descriptor.cVertexState, options.attributeSchema);
 
   this->uniformBindGroupLayout = this->_createBindGroupLayout(deviceValue, options.uniforms);
   descriptor.layout = makeBasicPipelineLayout(deviceValue, &this->uniformBindGroupLayout);
@@ -49,9 +48,7 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
   this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
 }
 
-void Model::setAttributes(const std::shared_ptr<garrow::Table>& table) { this->_attributes = table; }
-
-void Model::setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers) { this->_buffers = buffers; }
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributes = attributes; }
 
 void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   std::vector<BindingInitializationHelper> bindings;
@@ -65,24 +62,26 @@ void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {
-  // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
   pass.SetPipeline(this->pipeline);
   this->_setVertexBuffers(pass);
+  // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
   pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
   pass.Draw(this->vertexCount, 1, 0, 0);
 }
 
 void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
-                                   const std::vector<garrow::AttributeDescriptor>& attributes) {
-  cVertexState.vertexBufferCount = static_cast<uint32_t>(attributes.size());
+                                   const std::shared_ptr<garrow::Schema>& attributeSchema) {
+  cVertexState.vertexBufferCount = attributeSchema->num_fields();
 
-  for (int location = 0; location < attributes.size(); location++) {
-    cVertexState.cVertexBuffers[location].arrayStride = sizeof(mathgl::Vector4<float>);
+  for (int location = 0; location < attributeSchema->num_fields(); location++) {
+    auto descriptor = attributeSchema->field(location)->descriptor();
+
+    cVertexState.cVertexBuffers[location].arrayStride = descriptor.size();
     cVertexState.cVertexBuffers[location].attributeCount = 1;
     cVertexState.cVertexBuffers[location].attributes = &cVertexState.cAttributes[location];
 
     cVertexState.cAttributes[location].shaderLocation = location;
-    cVertexState.cAttributes[location].format = wgpu::VertexFormat::Float4;
+    cVertexState.cAttributes[location].format = descriptor.vertexFormat();
   }
 }
 
@@ -99,7 +98,7 @@ auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<Unifor
 }
 
 void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
-  for (int location = 0; location < this->_buffers.size(); location++) {
-    pass.SetVertexBuffer(location, this->_buffers[location]);
+  for (int location = 0; location < this->_attributes->num_columns(); location++) {
+    pass.SetVertexBuffer(location, this->_attributes->column(location)->buffer());
   }
 }

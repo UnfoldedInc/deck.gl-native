@@ -49,8 +49,7 @@ class Model {
   // TODO(ilija@unfolded.ai): Remove once integration is complete and layers provide valid options
   explicit Model(std::shared_ptr<wgpu::Device> device);
 
-  void setAttributes(const std::shared_ptr<garrow::Table>& table);
-  void setAttributeBuffers(const std::vector<wgpu::Buffer>& buffers);
+  void setAttributes(const std::shared_ptr<garrow::Table>& attributes);
   void setUniformBuffers(const std::vector<wgpu::Buffer>& uniforms);
 
   void draw(wgpu::RenderPassEncoder pass);
@@ -72,9 +71,8 @@ class Model {
   std::shared_ptr<wgpu::Device> _device;
   std::shared_ptr<garrow::Table> _attributes;
   std::vector<UniformDescriptor> _uniforms;
-  std::vector<wgpu::Buffer> _buffers;
 
-  void _initializeVertexState(utils::ComboVertexStateDescriptor&, const std::vector<garrow::AttributeDescriptor>&);
+  void _initializeVertexState(utils::ComboVertexStateDescriptor&, const std::shared_ptr<garrow::Schema>&);
   auto _createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
       -> wgpu::BindGroupLayout;
 
@@ -83,17 +81,17 @@ class Model {
 
 class Model::Options {
  public:
-  Options(const std::string& vs, const std::string& fs, const std::vector<garrow::AttributeDescriptor>& attributes = {},
+  Options(const std::string& vs, const std::string& fs, const std::shared_ptr<garrow::Schema>& attributeSchema,
           const std::vector<UniformDescriptor>& uniforms = {},
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
-      : vs{vs}, fs{fs}, attributes{attributes}, uniforms{uniforms}, textureFormat{textureFormat} {}
+      : vs{vs}, fs{fs}, attributeSchema{attributeSchema}, uniforms{uniforms}, textureFormat{textureFormat} {}
 
   /// \brief Vertex shader source.
   std::string vs;
   /// \brief Fragment shader source.
   std::string fs;
   /// \brief Attribute definitions.
-  const std::vector<garrow::AttributeDescriptor> attributes;
+  const std::shared_ptr<garrow::Schema> attributeSchema;
   /// \brief Uniform definitions.
   const std::vector<UniformDescriptor> uniforms;
   /// \brief Texture format that the pipeline will use.
