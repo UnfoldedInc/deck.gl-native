@@ -18,22 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./webgpu-schema.h"  // NOLINT(build/include)
+#ifndef LUMAGL_GARROW_H
+#define LUMAGL_GARROW_H
 
-using namespace lumagl;
+#include "./garrow/src/array.h"
+#include "./garrow/src/field.h"
+#include "./garrow/src/schema.h"
+#include "./garrow/src/table.h"
+#include "./garrow/src/util/arrow-utils.h"
+#include "./garrow/src/util/attribute-descriptor.h"
 
-auto WebGPUSchema::fieldNames() const -> std::vector<std::string> {
-  std::vector<std::string> names;
-  std::transform(this->_fields.begin(), this->_fields.end(), std::back_inserter(names),
-                 [](std::shared_ptr<WebGPUField> field) { return field->name(); });
-  return names;
-};
-
-auto WebGPUSchema::getFieldByName(const std::string& name) const -> std::shared_ptr<WebGPUField> {
-  for (auto const& field : this->_fields) {
-    if (field->name() == name) {
-      return field;
-    }
-  }
-  return nullptr;
-}
+#endif  // LUMAGL_GARROW_H

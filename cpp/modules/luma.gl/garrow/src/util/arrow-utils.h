@@ -18,18 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_ARROW_ARROW_UTILS_H
-#define DECKGL_CORE_ARROW_ARROW_UTILS_H
+#ifndef LUMAGL_GARROW_UTIL_ARROW_UTILS_H
+#define LUMAGL_GARROW_UTIL_ARROW_UTILS_H
 
 #include <arrow/api.h>
 #include <dawn/webgpu_cpp.h>
 
 #include <memory>
+#include <optional>
+#include <vector>
 
-namespace deckgl {
+namespace lumagl {
+namespace garrow {
 
-auto arrowTypeFromWebGPUFormat(wgpu::VertexFormat format) -> std::shared_ptr<arrow::DataType>;
+class Table;
+struct AttributeDescriptor;
 
-}  // namespace deckgl
+auto arrowTypeFromVertexFormat(wgpu::VertexFormat format) -> std::shared_ptr<arrow::DataType>;
+auto vertexFormatFromArrowType(const std::shared_ptr<arrow::DataType>& type) -> std::optional<wgpu::VertexFormat>;
 
-#endif  // DECKGL_CORE_ARROW_ARROW_UTILS_H
+auto transformTable(const std::shared_ptr<arrow::Table>& table, const std::vector<AttributeDescriptor>& descriptors,
+                    wgpu::Device device) -> std::shared_ptr<Table>;
+
+}  // namespace garrow
+}  // namespace lumagl
+
+#endif  // LUMAGL_GARROW_UTIL_ARROW_UTILS_H

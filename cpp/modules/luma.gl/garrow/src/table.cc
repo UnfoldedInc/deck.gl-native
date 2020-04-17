@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020 Unfolded Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,4 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./attribute-descriptor.h"  // NOLINT(build/include)
+#include "./table.h"  // NOLINT(build/include)
+
+using namespace lumagl::garrow;
+
+auto Table::ColumnNames() const -> std::vector<std::string> {
+  std::vector<std::string> names;
+  std::transform(this->_schema->fields().begin(), this->_schema->fields().end(), std::back_inserter(names),
+                 [](std::shared_ptr<Field> field) { return field->name(); });
+  return names;
+};

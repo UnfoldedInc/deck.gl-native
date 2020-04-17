@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020 Unfolded Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,32 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
-#define LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
+#ifndef LUMAGL_GARROW_FIELD_H
+#define LUMAGL_GARROW_FIELD_H
 
-#include <dawn/webgpu_cpp.h>
-
+#include <memory>
 #include <string>
 #include <utility>
 
-#include "luma.gl/webgpu/src/webgpu-utils.h"
+#include "./util/attribute-descriptor.h"
 
 namespace lumagl {
+namespace garrow {
 
-struct AttributeDescriptor {
+/// \brief A combination of a field name and additional metadata specific to this field.
+class Field {
  public:
-  // TODO(ilija@unfolded.ai): Remove
-  AttributeDescriptor() {}
-  AttributeDescriptor(const std::string& name, const wgpu::VertexFormat format)
-      : name{std::move(name)}, format{format} {}
+  // TODO(ilija@unfolded.ai): In order for this to match arrow API, and decouple it from attributes,
+  // we should use general-purpoes metadata instead
+  Field(const std::string& name, const AttributeDescriptor& descriptor)
+      : _name{std::move(name)}, _descriptor{std::move(descriptor)} {}
 
-  std::string name;
-  wgpu::VertexFormat format;
+  /// \brief Returns the field name.
+  auto name() const -> const std::string& { return _name; }
+  /// \brief Returns the associated descriptor data.
+  auto descriptor() const -> AttributeDescriptor { return _descriptor; }
 
-  /// \brief Format size in bytes.
-  auto size() -> size_t { return lumagl::utils::getVertexFormatSize(this->format); }
+ private:
+  std::string _name;
+  AttributeDescriptor _descriptor;
 };
 
+}  // namespace garrow
 }  // namespace lumagl
 
-#endif  // LUMAGL_WEGPU_ATTRIBUTE_DESCRIPTOR_H
+#endif  // LUMAGL_GARROW_FIELD_H

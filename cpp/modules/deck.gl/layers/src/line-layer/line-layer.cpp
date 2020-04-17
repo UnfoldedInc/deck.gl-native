@@ -28,6 +28,7 @@
 
 using namespace deckgl;
 using namespace lumagl;
+using namespace lumagl::garrow;
 
 const std::vector<const Property*> propTypeDefs = {
     //  new PropertyT<std::string>{"widthUnits",
@@ -73,22 +74,24 @@ const defaultProps = {
 
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition =
-      std::make_shared<AttributeDescriptor>("instanceSourcePositions", wgpu::VertexFormat::Float3, getSourcePosition);
+      AttributeDescriptor{"instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3), getSourcePosition};
   this->attributeManager->add(sourcePosition);
 
+  // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
   auto targetPosition =
-      std::make_shared<AttributeDescriptor>("instanceTargetPositions", wgpu::VertexFormat::Float3, getTargetPosition);
+      AttributeDescriptor{"instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3), getTargetPosition};
   this->attributeManager->add(targetPosition);
 
   auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
-  auto color = std::make_shared<AttributeDescriptor>("instanceColors", wgpu::VertexFormat::Float4, getColor);
+  auto color = AttributeDescriptor{"instanceColors", arrow::fixed_size_list(arrow::float32(), 4), getColor};
   this->attributeManager->add(color);
 
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
-  auto width = std::make_shared<AttributeDescriptor>("instanceWidths", wgpu::VertexFormat::Float, getWidth);
+  auto width = AttributeDescriptor{"instanceWidths", arrow::float32(), getWidth};
   this->attributeManager->add(width);
 }
 

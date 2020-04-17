@@ -18,4 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./webgpu-field.h"  // NOLINT(build/include)
+#include "./schema.h"  // NOLINT(build/include)
+
+using namespace lumagl::garrow;
+
+// TODO(ilija@unfolded.ai): Use a map if we actually end up using these often
+
+auto Schema::field_names() const -> std::vector<std::string> {
+  std::vector<std::string> names;
+  std::transform(this->_fields.begin(), this->_fields.end(), std::back_inserter(names),
+                 [](std::shared_ptr<Field> field) { return field->name(); });
+  return names;
+};
+
+auto Schema::GetFieldByName(const std::string& name) const -> std::shared_ptr<Field> {
+  for (auto const& field : this->_fields) {
+    if (field->name() == name) {
+      return field;
+    }
+  }
+  return nullptr;
+}

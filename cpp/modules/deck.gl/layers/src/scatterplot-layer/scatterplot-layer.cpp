@@ -26,6 +26,7 @@
 
 using namespace deckgl;
 using namespace lumagl;
+using namespace lumagl::garrow;
 
 const std::vector<const Property*> propTypeDefs = {
     new PropertyT<bool>{
@@ -120,26 +121,25 @@ Number.MAX_SAFE_INTEGER}, // max point radius in pixels
 
 void ScatterplotLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto getPosition = std::bind(&ScatterplotLayer::getPositionData, this, std::placeholders::_1);
-  auto position = std::make_shared<AttributeDescriptor>("instancePositions", wgpu::VertexFormat::Float3, getPosition);
+  auto position = AttributeDescriptor{"instancePositions", arrow::fixed_size_list(arrow::float32(), 3), getPosition};
   this->attributeManager->add(position);
 
   auto getRadius = std::bind(&ScatterplotLayer::getRadiusData, this, std::placeholders::_1);
-  auto radius = std::make_shared<AttributeDescriptor>("instanceRadius", wgpu::VertexFormat::Float, getRadius);
+  auto radius = AttributeDescriptor{"instanceRadius", arrow::float32(), getRadius};
   this->attributeManager->add(radius);
 
   auto getFillColor = std::bind(&ScatterplotLayer::getFillColorData, this, std::placeholders::_1);
-  auto fillColor =
-      std::make_shared<AttributeDescriptor>("instanceFillColors", wgpu::VertexFormat::Float4, getFillColor);
+  auto fillColor = AttributeDescriptor{"instanceFillColors", arrow::fixed_size_list(arrow::float32(), 4), getFillColor};
   this->attributeManager->add(fillColor);
 
   auto getLineColor = std::bind(&ScatterplotLayer::getLineColorData, this, std::placeholders::_1);
-  auto lineColor =
-      std::make_shared<AttributeDescriptor>("instanceLineColors", wgpu::VertexFormat::Float4, getLineColor);
+  auto lineColor = AttributeDescriptor{"instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4), getLineColor};
   this->attributeManager->add(lineColor);
 
   auto getLineWidth = std::bind(&ScatterplotLayer::getLineWidthData, this, std::placeholders::_1);
-  auto lineWidth = std::make_shared<AttributeDescriptor>("instanceLineWidths", wgpu::VertexFormat::Float, getLineWidth);
+  auto lineWidth = AttributeDescriptor{"instanceLineWidths", arrow::float32(), getLineWidth};
   this->attributeManager->add(lineWidth);
 }
 
