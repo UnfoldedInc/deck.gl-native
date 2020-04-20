@@ -53,8 +53,8 @@ class Array {
   void setData(const std::shared_ptr<arrow::Array>& data);
   template <typename T>
   void setData(const std::vector<T>& data) {
-    auto bufferSize = this->_descriptor.size() * data->size();
-    if (!this->_buffer || data->size() != this->_length) {
+    auto bufferSize = this->_descriptor.size() * data.size();
+    if (!this->_buffer || data.size() != this->_length) {
       // TODO(ilija@unfolded.ai): Should usage be part of the descriptor?
       this->_buffer =
           this->_createBuffer(this->_device, bufferSize, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);

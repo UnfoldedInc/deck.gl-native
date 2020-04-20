@@ -109,30 +109,37 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
   return shaderData;
 }
 
-}  // anonymous namespace
+auto makeWebGPUTable(wgpu::Device device) -> std::shared_ptr<garrow::Table> {
+  auto positionsDescriptor = garrow::AttributeDescriptor{"positions", arrow::fixed_size_list(arrow::float32(), 4)};
+  auto colorsDescriptor = garrow::AttributeDescriptor{"colors", arrow::fixed_size_list(arrow::float32(), 4)};
 
-struct Attribute {
-  const char* name;
-  void* data;
-  size_t bytes;
-};
+  auto positionsField = std::make_shared<garrow::Field>("positions", positionsDescriptor);
+  auto colorsField = std::make_shared<garrow::Field>("colors", colorsDescriptor);
 
-auto makeWebGPUTable(wgpu::Device device, const std::vector<Attribute>& attributes) {
-  std::vector<wgpu::Buffer> buffers;
-  for (auto const attribute : attributes) {
-    auto buffer = utils::createBufferFromData(device, attribute.data, attribute.bytes, wgpu::BufferUsage::Vertex);
-    buffers.push_back(buffer);
-  }
-  return buffers;
+  std::vector<std::shared_ptr<garrow::Field>> fields{positionsField, colorsField};
+  auto schema = std::make_shared<garrow::Schema>(fields);
+
+  std::vector<Vector4<float>> positionData{
+      {0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
+  auto positionsArray = std::make_shared<garrow::Array>(device, positionsDescriptor, positionData);
+
+  std::vector<Vector4<float>> colorData{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
+  auto colorsArray = std::make_shared<garrow::Array>(device, colorsDescriptor, colorData);
+
+  std::vector<std::shared_ptr<garrow::Array>> arrays{positionsArray, colorsArray};
+
+  return std::make_shared<garrow::Table>(schema, arrays);
 }
+
+}  // anonymous namespace
 
 int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  lumagl::Model model{animationLoop.device, {vs, fs, {{}, {}}, {{sizeof(ShaderData)}}}};
+  auto attributes = makeWebGPUTable(device);
+  Model model{animationLoop.device, {vs, fs, attributes->schema(), {{sizeof(ShaderData)}}}};
 
-  // TODO(ilija@unfolded.ai): Switch over to WebGPUTable API
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
   std::vector<wgpu::Buffer> uniformBuffers;
   for (auto const& data : shaderData) {
@@ -140,22 +147,13 @@ int main(int argc, const char* argv[]) {
     uniformBuffers.push_back(ubo);
   }
 
-  Vector4<float> positions[3] = {{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
-  Vector4<float> colors[3] = {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
-
-  auto buffers =
-      makeWebGPUTable(device, {{"positions", &positions, sizeof(positions)}, {"colors", &colors, sizeof(colors)}});
-
-  model.setAttributeBuffers(buffers);
+  model.setAttributes(attributes);
   model.vertexCount = 3;
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
-
     f++;
 
-    // TODO(ilija@unfolded.ai): Could not get this to draw more than 1 triangle at a time,
-    // do we need to use dynamic offsets when drawing?
     for (auto i = 0; i < uniformBuffers.size(); ++i) {
       // Update buffer
       shaderData[i].time = f / 60.0f;
@@ -165,8 +163,6 @@ int main(int argc, const char* argv[]) {
       model.draw(pass);
     }
   });
-
-  // probegl::uSleep(100000);
 
   return 0;
 }
