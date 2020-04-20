@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_LAYER_H
 #define DECKGL_CORE_LAYER_H
 
+#include <dawn/webgpu_cpp.h>
+
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -164,7 +166,7 @@ class Layer : public Component {
   virtual void finalizeState();
 
   // If state has a model, draw it with supplied uniforms
-  virtual void drawState();
+  virtual void drawState(wgpu::RenderPassEncoder pass);
 
  protected:
   // INTERNAL METHODS

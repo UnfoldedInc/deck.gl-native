@@ -133,7 +133,7 @@ int main(int argc, const char* argv[]) {
   wgpu::Device device = *(animationLoop.device.get());
 
   auto attributes = createAttributeTable(device);
-  Model model{animationLoop.device, {vs, fs, attributes->schema(), {{sizeof(ShaderData)}}}};
+  Model model{device, {vs, fs, attributes->schema(), nullptr, {{sizeof(ShaderData)}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
   std::vector<wgpu::Buffer> uniformBuffers;

@@ -325,10 +325,9 @@ void Layer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Prop
 void Layer::finalizeState() {}
 
 // If state has a model, draw it with supplied uniforms
-void Layer::drawState() {
+void Layer::drawState(wgpu::RenderPassEncoder pass) {
   for (auto model : this->getModels()) {
-    // TODO(ilija@unfolded.ai): Add render pass plumbing so that we can pass it to draw
-    //    model->draw();
+    model->draw(pass);
   }
 }
 
@@ -441,7 +440,8 @@ void Layer::finalize() {
 // Calculates uniforms
 void Layer::draw() {
   // Call subclass lifecycle method
-  this->drawState();
+  // TODO(ilija@unfolded.ai): Not sure where draw is being called from, but we need render pass reference here
+  //  this->drawState();
   // End lifecycle method
 }
 

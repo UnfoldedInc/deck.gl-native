@@ -32,24 +32,30 @@
 
 namespace lumagl {
 
+/// \brief Collection of keys that provide additional attribute context when present in input scheme metadata.
+// TODO(ilija@unfolded.ai): Document metadata properties and the behavior they trigger once we finalize the list
+struct AttributePropertyKeys {
+ public:
+  /// \brief Determines whether attribute step mode will be instanced or vertex.
+  static const char* IS_INSTANCED;
+};
+
 // TODO(ilija@unfolded.ai): Move out and revisit
 struct UniformDescriptor {
   size_t elementSize;
   bool isDynamic{false};
 };
 
-/// \brief Holds shaders compiled and linked into a pipeline
+/// \brief Holds shaders compiled and linked into a pipeline.
 class Model {
  public:
   class Options;
 
-  /// \brief construct a new Model
-  explicit Model(std::shared_ptr<wgpu::Device> device, const Options&);
-
-  // TODO(ilija@unfolded.ai): Remove once integration is complete and layers provide valid options
-  explicit Model(std::shared_ptr<wgpu::Device> device);
+  /// \brief construct a new Model.
+  Model(wgpu::Device device, const Options&);
 
   void setAttributes(const std::shared_ptr<garrow::Table>& attributes);
+  void setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes);
   void setUniformBuffers(const std::vector<wgpu::Buffer>& uniforms);
 
   void draw(wgpu::RenderPassEncoder pass);
@@ -68,23 +74,34 @@ class Model {
   wgpu::ShaderModule fsModule;
 
  private:
-  std::shared_ptr<wgpu::Device> _device;
+  wgpu::Device _device;
   std::shared_ptr<garrow::Table> _attributeTable;
+  std::shared_ptr<garrow::Table> _instancedAttributeTable;
   std::vector<UniformDescriptor> _uniforms;
 
-  void _initializeVertexState(utils::ComboVertexStateDescriptor&, const std::shared_ptr<garrow::Schema>&);
+  void _initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
+                              const std::shared_ptr<garrow::Schema>& attributeSchema,
+                              const std::shared_ptr<garrow::Schema>& instancedAttributeSchema);
   auto _createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
       -> wgpu::BindGroupLayout;
 
   void _setVertexBuffers(wgpu::RenderPassEncoder pass);
+
+  auto _getInputStepMode(const std::shared_ptr<garrow::Field>& field) -> wgpu::InputStepMode;
 };
 
 class Model::Options {
  public:
   Options(const std::string& vs, const std::string& fs, const std::shared_ptr<garrow::Schema>& attributeSchema,
+          const std::shared_ptr<garrow::Schema>& instancedAttributeSchema = nullptr,
           const std::vector<UniformDescriptor>& uniforms = {},
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
-      : vs{vs}, fs{fs}, attributeSchema{attributeSchema}, uniforms{uniforms}, textureFormat{textureFormat} {}
+      : vs{vs},
+        fs{fs},
+        attributeSchema{attributeSchema},
+        instancedAttributeSchema{instancedAttributeSchema},
+        uniforms{uniforms},
+        textureFormat{textureFormat} {}
 
   /// \brief Vertex shader source.
   std::string vs;
@@ -92,6 +109,8 @@ class Model::Options {
   std::string fs;
   /// \brief Attribute definitions.
   const std::shared_ptr<garrow::Schema> attributeSchema;
+  /// \brief Instanced attribute definitions.
+  const std::shared_ptr<garrow::Schema>& instancedAttributeSchema;
   /// \brief Uniform definitions.
   const std::vector<UniformDescriptor> uniforms;
   /// \brief Texture format that the pipeline will use.

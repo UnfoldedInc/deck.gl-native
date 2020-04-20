@@ -28,28 +28,33 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options) {
+const char* AttributePropertyKeys::IS_INSTANCED = "instanced";
+
+Model::Model(wgpu::Device device, const Model::Options& options) {
   this->_device = device;
-  auto deviceValue = *device.get();
   this->_uniforms = options.uniforms;
 
-  this->vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
-  this->fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
+  this->vsModule = createShaderModule(device, SingleShaderStage::Vertex, options.vs.c_str());
+  this->fsModule = createShaderModule(device, SingleShaderStage::Fragment, options.fs.c_str());
 
-  ComboRenderPipelineDescriptor descriptor{deviceValue};
+  ComboRenderPipelineDescriptor descriptor{device};
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
   descriptor.cColorStates[0].format = options.textureFormat;
 
-  this->_initializeVertexState(descriptor.cVertexState, options.attributeSchema);
+  this->_initializeVertexState(&descriptor.cVertexState, options.attributeSchema, options.instancedAttributeSchema);
 
-  this->uniformBindGroupLayout = this->_createBindGroupLayout(deviceValue, options.uniforms);
-  descriptor.layout = makeBasicPipelineLayout(deviceValue, &this->uniformBindGroupLayout);
+  this->uniformBindGroupLayout = this->_createBindGroupLayout(device, options.uniforms);
+  descriptor.layout = makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
 
-  this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
+  this->pipeline = device.CreateRenderPipeline(&descriptor);
 }
 
 void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributeTable = attributes; }
+
+void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes) {
+  this->_instancedAttributeTable = attributes;
+}
 
 void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   std::vector<BindingInitializationHelper> bindings;
@@ -59,7 +64,7 @@ void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   }
 
   // Update the bind group
-  this->bindGroup = utils::makeBindGroup(*this->_device.get(), this->uniformBindGroupLayout, bindings);
+  this->bindGroup = utils::makeBindGroup(this->_device, this->uniformBindGroupLayout, bindings);
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {
@@ -70,19 +75,27 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
   pass.Draw(this->vertexCount, 1, 0, 0);
 }
 
-void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
-                                   const std::shared_ptr<garrow::Schema>& attributeSchema) {
-  cVertexState.vertexBufferCount = attributeSchema->num_fields();
+void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
+                                   const std::shared_ptr<garrow::Schema>& attributeSchema,
+                                   const std::shared_ptr<garrow::Schema>& instancedAttributeSchema) {
+  // TODO(ilija@unfolded.ai): Iterate over these two separately if number of fields is expected to be large
+  std::vector fields = attributeSchema->fields();
+  if (instancedAttributeSchema != nullptr) {
+    fields.insert(fields.end(), instancedAttributeSchema->fields().begin(), instancedAttributeSchema->fields().end());
+  }
 
-  for (int location = 0; location < attributeSchema->num_fields(); location++) {
-    auto format = attributeSchema->field(location)->type();
+  descriptor->vertexBufferCount = static_cast<uint32_t>(fields.size());
 
-    cVertexState.cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(format);
-    cVertexState.cVertexBuffers[location].attributeCount = 1;
-    cVertexState.cVertexBuffers[location].attributes = &cVertexState.cAttributes[location];
+  for (int location = 0; location < fields.size(); location++) {
+    auto field = fields[location];
 
-    cVertexState.cAttributes[location].shaderLocation = location;
-    cVertexState.cAttributes[location].format = format;
+    descriptor->cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(field->type());
+    descriptor->cVertexBuffers[location].stepMode = this->_getInputStepMode(field);
+    descriptor->cVertexBuffers[location].attributeCount = 1;
+    descriptor->cVertexBuffers[location].attributes = &descriptor->cAttributes[location];
+
+    descriptor->cAttributes[location].shaderLocation = location;
+    descriptor->cAttributes[location].format = field->type();
   }
 }
 
@@ -99,7 +112,31 @@ auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<Unifor
 }
 
 void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
-  for (int location = 0; location < this->_attributeTable->num_columns(); location++) {
-    pass.SetVertexBuffer(location, this->_attributeTable->column(location)->buffer());
+  int location = 0;
+  for (auto const& attribute : this->_attributeTable->columns()) {
+    pass.SetVertexBuffer(location, attribute->buffer());
+    location++;
   }
+
+  if (this->_instancedAttributeTable != nullptr) {
+    for (auto const& attribute : this->_instancedAttributeTable->columns()) {
+      pass.SetVertexBuffer(location, attribute->buffer());
+      location++;
+    }
+  }
+}
+
+auto Model::_getInputStepMode(const std::shared_ptr<garrow::Field>& field) -> wgpu::InputStepMode {
+  if (!field->HasMetadata()) {
+    return wgpu::InputStepMode::Vertex;
+  }
+
+  auto keyIndex = field->metadata()->FindKey(AttributePropertyKeys::IS_INSTANCED);
+  if (keyIndex == -1) {
+    return wgpu::InputStepMode::Vertex;
+  }
+
+  // TODO(ilija@unfolded.ai): Is this how we want to pass boolean values?
+  auto isInstanced = field->metadata()->value(keyIndex) == "1";
+  return isInstanced ? wgpu::InputStepMode::Instance : wgpu::InputStepMode::Vertex;
 }

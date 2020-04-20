@@ -40,7 +40,9 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device) {
+GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device,
+                                     int width, int height)
+    : AnimationLoop(width, height) {
   this->_window = this->_initializeGLFW(backendType);
 
   // Create a device if none was provided
@@ -110,8 +112,8 @@ auto GLFWAnimationLoop::_createSwapchain(std::shared_ptr<wgpu::Device> device) -
   wgpu::SwapChainDescriptor swapChainDesc;
   swapChainDesc.implementation = this->_binding->GetSwapChainImplementation();
   auto swapchain = device->CreateSwapChain(nullptr, &swapChainDesc);
-  swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment, this->width,
-                      this->height);
+  swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment, this->_width,
+                      this->_height);
 
   return swapchain;
 }
@@ -141,7 +143,7 @@ auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType) -> 
       glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   }
 
-  auto window = glfwCreateWindow(this->width, this->height, "deck.gl window", nullptr, nullptr);
+  auto window = glfwCreateWindow(this->_width, this->_height, "deck.gl window", nullptr, nullptr);
   if (!window) {
     throw new std::runtime_error("Failed to create GLFW window");
   }

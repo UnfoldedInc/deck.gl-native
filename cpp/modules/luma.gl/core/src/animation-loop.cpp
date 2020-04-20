@@ -35,9 +35,9 @@ AnimationLoop::~AnimationLoop() {
 }
 
 void AnimationLoop::setSize(int width, int height) {
-  bool sizeChanged = width != this->width || height != this->height;
-  this->width = width;
-  this->height = height;
+  bool sizeChanged = width != this->_width || height != this->_height;
+  this->_width = width;
+  this->_height = height;
 
   if (sizeChanged) {
     this->swapchain = this->_createSwapchain(this->device);
@@ -94,6 +94,4 @@ void AnimationLoop::_initialize(const wgpu::BackendType backendType, std::shared
   this->device = device;
   this->queue = this->device->CreateQueue();
   this->swapchain = this->_createSwapchain(this->device);
-
-  this->setSize(width, height);
 }

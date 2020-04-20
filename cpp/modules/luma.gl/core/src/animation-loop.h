@@ -30,6 +30,7 @@ namespace lumagl {
 
 class AnimationLoop {
  public:
+  AnimationLoop(int width, int height) : _width{width}, _height{height} {}
   virtual ~AnimationLoop();
 
   void setSize(int width, int height);
@@ -42,22 +43,20 @@ class AnimationLoop {
   virtual void flush() {}
   virtual auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat { return wgpu::TextureFormat::Undefined; };
 
-  // TODO(ilija@unfolded.ai): Make these read-only?
-  int width{640};
-  int height{480};
-
   // Internal, but left public to facilitate integration
   std::shared_ptr<wgpu::Device> device;
   wgpu::Queue queue;
   wgpu::SwapChain swapchain;
 
-  // TODO(ilija@unfolded.ai): Make this read-only?
   bool running{false};
 
  protected:
   void _initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device);
   virtual auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> = 0;
   virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain = 0;
+
+  int _width{640};
+  int _height{480};
 };
 
 }  // namespace lumagl

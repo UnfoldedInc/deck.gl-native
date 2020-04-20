@@ -29,6 +29,7 @@
 #include "./layer-manager.h"
 #include "./view-manager.h"
 #include "deck.gl/json.h"
+#include "luma.gl/core.h"
 
 /*
 import LayerManager from './layer-manager';
@@ -92,13 +93,15 @@ class Deck : public Component {
   auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
   void redraw(bool force = false);
 
-  auto getViews() -> std::list<View>;  // { return this->viewManager->views; }
+  auto getViews() -> std::list<std::shared_ptr<View>> { return this->viewManager->getViews(); }
 
   // Get a set of viewports for a given width and height
   // `getViewports`(rect);
   // `pickObject`({x, y, radius = 0, layerIds = nullptr, unproject3D})
   // `pickMultipleObjects`({x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10})
   // `pickObjects`({x, y, width = 1, height = 1, layerIds = nullptr})
+
+  std::shared_ptr<lumagl::AnimationLoop> animationLoop;
 
  private:
   // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
@@ -110,7 +113,8 @@ class Deck : public Component {
   void _onRendererInitialized(void *gl);
   void _onRenderFrame();      // animationProps);
   void _onViewStateChange();  // params);
-};                            // namespace deckgl
+  auto _createAnimationLoop(const std::shared_ptr<Deck::Props> &props) -> std::shared_ptr<lumagl::AnimationLoop>;
+};
 
 class Deck::Props : public Component::Props {
  public:
