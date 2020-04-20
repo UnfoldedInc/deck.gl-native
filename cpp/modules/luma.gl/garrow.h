@@ -26,6 +26,6 @@
 #include "./garrow/src/schema.h"
 #include "./garrow/src/table.h"
 #include "./garrow/src/util/arrow-utils.h"
-#include "./garrow/src/util/attribute-descriptor.h"
+#include "./garrow/src/util/webgpu-utils.h"
 
 #endif  // LUMAGL_GARROW_H

@@ -69,7 +69,7 @@ class Model {
 
  private:
   std::shared_ptr<wgpu::Device> _device;
-  std::shared_ptr<garrow::Table> _attributes;
+  std::shared_ptr<garrow::Table> _attributeTable;
   std::vector<UniformDescriptor> _uniforms;
 
   void _initializeVertexState(utils::ComboVertexStateDescriptor&, const std::shared_ptr<garrow::Schema>&);

@@ -28,32 +28,32 @@
 #include <utility>
 #include <vector>
 
-#include "./util/attribute-descriptor.h"
-#include "luma.gl/webgpu/src/webgpu-helpers.h"
-
 namespace lumagl {
 namespace garrow {
 
 /// \brief Array data structure that manages the backing GPU buffer.
 class Array {
  public:
-  // TODO(ilija@unfolded.ai): In arrow, Array is an abstract class with typed implementaions that get created using
-  // builder API
-  Array(wgpu::Device device, const AttributeDescriptor& descriptor)
-      : _device{device}, _descriptor{std::move(descriptor)} {}
-  Array(wgpu::Device device, const AttributeDescriptor& descriptor, const std::shared_ptr<arrow::Array>& data);
+  // TODO(ilija@unfolded.ai): In arrow, Array is an abstract class with typed implementaions that gets created using
+  // the builder API
+  explicit Array(wgpu::Device device) : _device{device} {}
+  Array(wgpu::Device device, const std::shared_ptr<arrow::Array>& data);
   template <typename T>
-  Array(wgpu::Device device, const AttributeDescriptor& descriptor, const std::vector<T>& data)
-      : Array{device, descriptor} {
+  Array(wgpu::Device device, const std::vector<T>& data) : Array{device} {
     this->setData(data);
   }
   ~Array();
+
+  /// \brief Size in the number of elements this array contains.
+  auto length() const -> int64_t { return this->_length; };
+
+  /* Arrow non-compliant API */
 
   // TODO(ilija@unfolded.ai): Is array/buffer mutability something we'll be making use of?
   void setData(const std::shared_ptr<arrow::Array>& data);
   template <typename T>
   void setData(const std::vector<T>& data) {
-    auto bufferSize = this->_descriptor.size() * data.size();
+    auto bufferSize = sizeof(T) * data.size();
     if (!this->_buffer || data.size() != this->_length) {
       // TODO(ilija@unfolded.ai): Should usage be part of the descriptor?
       this->_buffer =
@@ -67,15 +67,10 @@ class Array {
   /// \brief Returns the backing buffer that this array manages.
   auto buffer() const -> wgpu::Buffer { return this->_buffer; };
 
-  /// \brief Size in the number of elements this array contains.
-  auto length() const -> int64_t { return this->_length; };
-
  private:
   auto _createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer;
 
   wgpu::Device _device;
-  AttributeDescriptor _descriptor;
-
   wgpu::Buffer _buffer{nullptr};
   int64_t _length{0};
 };

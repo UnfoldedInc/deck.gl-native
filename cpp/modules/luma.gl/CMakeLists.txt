@@ -44,19 +44,21 @@ set(WEBGPU_TESTS_SOURCE_FILE_LIST
 
 set(GARROW_HEADER_FILE_LIST
     garrow.h
+    garrow/src/key-value-metadata.h
     garrow/src/field.h
     garrow/src/schema.h
     garrow/src/array.h
     garrow/src/table.h
     garrow/src/util/arrow-utils.h
-    garrow/src/util/attribute-descriptor.h
+    garrow/src/util/webgpu-utils.h
     )
 set(GARROW_SOURCE_FILE_LIST
+    garrow/src/key-value-metadata.cc
     garrow/src/schema.cc
     garrow/src/array.cc
     garrow/src/table.cc
     garrow/src/util/arrow-utils.cc
-    garrow/src/util/attribute-descriptor.cc
+    garrow/src/util/webgpu-utils.cc
     )
 set(GARROW_TESTS_SOURCE_FILE_LIST
     garrow/test/util/arrow-utils-test.cc
