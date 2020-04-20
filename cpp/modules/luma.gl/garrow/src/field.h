@@ -18,31 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEBGPU_UTILS_H
-#define LUMAGL_WEBGPU_UTILS_H
+#ifndef LUMAGL_GARROW_FIELD_H
+#define LUMAGL_GARROW_FIELD_H
 
-#include <dawn/webgpu_cpp.h>
-
+#include <memory>
 #include <string>
+#include <utility>
+
+#include "./util/attribute-descriptor.h"
 
 namespace lumagl {
-namespace utils {
+namespace garrow {
 
-/// \brief Get the default WebGPU/Dawn backend type for this platform
-/// Default to D3D12, Metal, Vulkan, OpenGL in that order as D3D12 and Metal are the preferred on
-/// their respective platforms, and Vulkan is preferred to OpenGL
-auto getDefaultWebGPUBackendType() -> wgpu::BackendType;
+/// \brief A combination of a field name and additional metadata specific to this field.
+class Field {
+ public:
+  // TODO(ilija@unfolded.ai): In order for this to match arrow API, and decouple it from attributes,
+  // we should use general-purpoes metadata instead
+  Field(const std::string& name, const AttributeDescriptor& descriptor)
+      : _name{std::move(name)}, _descriptor{std::move(descriptor)} {}
 
-/// \brief Get a WebGPU/Dawn backend type from a string
-auto getWebGPUBackendType(const std::string &backendType) -> wgpu::BackendType;
+  /// \brief Returns the field name.
+  auto name() const -> const std::string& { return _name; }
+  /// \brief Returns the associated descriptor data.
+  auto descriptor() const -> AttributeDescriptor { return _descriptor; }
 
-/// \brief Get a string representation of a WebGPU Error
-auto getWebGPUErrorName(WGPUErrorType errorType) -> const char *;
+ private:
+  std::string _name;
+  AttributeDescriptor _descriptor;
+};
 
-/// \brief Returns size of the given format in bytes.
-auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t;
-
-}  // namespace utils
+}  // namespace garrow
 }  // namespace lumagl
 
-#endif  // LUMAGL_WEBGPU_UTILS_H
+#endif  // LUMAGL_GARROW_FIELD_H

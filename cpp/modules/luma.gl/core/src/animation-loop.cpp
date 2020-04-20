@@ -58,7 +58,7 @@ void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
 
 void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
-  wgpu::TextureView backbufferView = this->swapchain->GetCurrentTextureView();
+  wgpu::TextureView backbufferView = this->swapchain.GetCurrentTextureView();
 
   utils::ComboRenderPassDescriptor passDescriptor({backbufferView});
   wgpu::CommandEncoder encoder = device->CreateCommandEncoder();
@@ -92,7 +92,7 @@ void AnimationLoop::_initialize(const wgpu::BackendType backendType, std::shared
       nullptr);
 
   this->device = device;
-  this->queue = std::make_unique<wgpu::Queue>(this->device->CreateQueue());
+  this->queue = this->device->CreateQueue();
   this->swapchain = this->_createSwapchain(this->device);
 
   this->setSize(width, height);

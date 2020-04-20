@@ -21,35 +21,84 @@
 #include "./model.h"  // NOLINT(build/include)
 
 #include "luma.gl/webgpu.h"
+#include "math.gl/core.h"
+#include "probe.gl/core.h"
 
 using namespace lumagl;
 using namespace lumagl::utils;
 
-Model::Model(std::shared_ptr<wgpu::Device> device) : Model(device, Options{}) {}
-
 Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options) {
+  this->_device = device;
   auto deviceValue = *device.get();
+  this->_uniforms = options.uniforms;
 
-  auto vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
-  auto fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
-
-  auto uniformBindGroupLayout =
-      makeBindGroupLayout(deviceValue, {{0, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer, true}});
+  this->vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
+  this->fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
 
   ComboRenderPipelineDescriptor descriptor{deviceValue};
-  descriptor.vertexStage.module = vsModule;
-  descriptor.cFragmentStage.module = fsModule;
+  descriptor.vertexStage.module = this->vsModule;
+  descriptor.cFragmentStage.module = this->fsModule;
   descriptor.cColorStates[0].format = options.textureFormat;
-  descriptor.layout = makeBasicPipelineLayout(deviceValue, &uniformBindGroupLayout);
 
-  auto pipeline = deviceValue.CreateRenderPipeline(&descriptor);
+  this->_initializeVertexState(descriptor.cVertexState, options.attributeSchema);
 
-  this->vsModule = std::make_unique<wgpu::ShaderModule>(std::move(vsModule));
-  this->fsModule = std::make_unique<wgpu::ShaderModule>(std::move(fsModule));
-  this->uniformBindGroupLayout = std::make_unique<wgpu::BindGroupLayout>(std::move(uniformBindGroupLayout));
-  this->pipeline = std::make_unique<wgpu::RenderPipeline>(std::move(pipeline));
+  this->uniformBindGroupLayout = this->_createBindGroupLayout(deviceValue, options.uniforms);
+  descriptor.layout = makeBasicPipelineLayout(deviceValue, &this->uniformBindGroupLayout);
+
+  this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
 }
 
-void Model::draw() {
-  // TODO(ilija@unfolded.ai): Implement
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributes = attributes; }
+
+void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
+  std::vector<BindingInitializationHelper> bindings;
+  for (uint32_t i = 0; i < uniformBuffers.size(); i++) {
+    auto binding = BindingInitializationHelper{i, uniformBuffers[i], 0, this->_uniforms[i].elementSize};
+    bindings.push_back(binding);
+  }
+
+  // Update the bind group
+  this->bindGroup = utils::makeBindGroup(*this->_device.get(), this->uniformBindGroupLayout, bindings);
+}
+
+void Model::draw(wgpu::RenderPassEncoder pass) {
+  pass.SetPipeline(this->pipeline);
+  this->_setVertexBuffers(pass);
+  // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
+  pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
+  pass.Draw(this->vertexCount, 1, 0, 0);
+}
+
+void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
+                                   const std::shared_ptr<garrow::Schema>& attributeSchema) {
+  cVertexState.vertexBufferCount = attributeSchema->num_fields();
+
+  for (int location = 0; location < attributeSchema->num_fields(); location++) {
+    auto descriptor = attributeSchema->field(location)->descriptor();
+
+    cVertexState.cVertexBuffers[location].arrayStride = descriptor.size();
+    cVertexState.cVertexBuffers[location].attributeCount = 1;
+    cVertexState.cVertexBuffers[location].attributes = &cVertexState.cAttributes[location];
+
+    cVertexState.cAttributes[location].shaderLocation = location;
+    cVertexState.cAttributes[location].format = descriptor.vertexFormat();
+  }
+}
+
+auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
+    -> wgpu::BindGroupLayout {
+  std::vector<wgpu::BindGroupLayoutBinding> bindings;
+  for (uint32 i = 0; i < uniforms.size(); i++) {
+    auto binding = wgpu::BindGroupLayoutBinding{i, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer,
+                                                uniforms[i].isDynamic};
+    bindings.push_back(binding);
+  }
+
+  return utils::makeBindGroupLayout(device, bindings);
+}
+
+void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
+  for (int location = 0; location < this->_attributes->num_columns(); location++) {
+    pass.SetVertexBuffer(location, this->_attributes->column(location)->buffer());
+  }
 }

@@ -48,8 +48,8 @@ class AnimationLoop {
 
   // Internal, but left public to facilitate integration
   std::shared_ptr<wgpu::Device> device;
-  std::unique_ptr<wgpu::Queue> queue;
-  std::unique_ptr<wgpu::SwapChain> swapchain;
+  wgpu::Queue queue;
+  wgpu::SwapChain swapchain;
 
   // TODO(ilija@unfolded.ai): Make this read-only?
   bool running{false};
@@ -57,7 +57,7 @@ class AnimationLoop {
  protected:
   void _initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device);
   virtual auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> = 0;
-  virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> std::unique_ptr<wgpu::SwapChain> = 0;
+  virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain = 0;
 };
 
 }  // namespace lumagl

@@ -27,6 +27,8 @@
 #include "deck.gl/core.h"
 
 using namespace deckgl;
+using namespace lumagl;
+using namespace lumagl::garrow;
 
 const std::vector<const Property*> propTypeDefs = {
     //  new PropertyT<std::string>{"widthUnits",
@@ -72,23 +74,24 @@ const defaultProps = {
 
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
+  // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
-  auto sourcePosition = std::make_shared<AttributeDescriptor>(
-      "instanceSourcePositions", arrow::fixed_size_list(arrow::float64(), 3), getSourcePosition);
+  auto sourcePosition =
+      AttributeDescriptor{"instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3), getSourcePosition};
   this->attributeManager->add(sourcePosition);
 
+  // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
-  auto targetPosition = std::make_shared<AttributeDescriptor>(
-      "instanceTargetPositions", arrow::fixed_size_list(arrow::float64(), 3), getTargetPosition);
+  auto targetPosition =
+      AttributeDescriptor{"instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3), getTargetPosition};
   this->attributeManager->add(targetPosition);
 
   auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
-  auto color =
-      std::make_shared<AttributeDescriptor>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4), getColor);
+  auto color = AttributeDescriptor{"instanceColors", arrow::fixed_size_list(arrow::float32(), 4), getColor};
   this->attributeManager->add(color);
 
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
-  auto width = std::make_shared<AttributeDescriptor>("instanceWidths", arrow::float32(), getWidth);
+  auto width = AttributeDescriptor{"instanceWidths", arrow::float32(), getWidth};
   this->attributeManager->add(width);
 }
 
@@ -160,7 +163,7 @@ auto LineLayer::getSourcePositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  return ArrowMapper::mapVector3DoubleColumn(table, props->getSourcePosition);
+  return ArrowMapper::mapVector3FloatColumn(table, props->getSourcePosition);
 }
 
 auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
@@ -169,7 +172,7 @@ auto LineLayer::getTargetPositionData(const std::shared_ptr<arrow::Table>& table
     throw std::logic_error("Invalid layer properties");
   }
 
-  return ArrowMapper::mapVector3DoubleColumn(table, props->getTargetPosition);
+  return ArrowMapper::mapVector3FloatColumn(table, props->getTargetPosition);
 }
 
 auto LineLayer::getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {

@@ -18,31 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_WEBGPU_COLUMN_H
-#define LUMAGL_CORE_WEBGPU_COLUMN_H
+#include "./table.h"  // NOLINT(build/include)
 
-namespace lumagl {
+using namespace lumagl::garrow;
 
-#include <dawn.h>  // NOLINT(build/include)
-
-class WebGPUColumn {
- public:
-  wgpu::BindGroup bindGroup;
-  wgpu::Buffer ubo;
-
-  explicit WebGPUColumn(void *device) {
-    wgpu::BufferDescriptor bufferDesc;
-    bufferDesc.size = kNumTriangles * sizeof(ShaderData);
-    bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
-    this->ubo = device.CreateBuffer(&bufferDesc);
-
-    this->bindGroup =
-        utils::MakeBindGroup(device, bgl, {{0, this->ubo, 0, this}});
-  }
-
-  auto length_in_bytes() => int { return this->lengthInBytes; }
-}
-
-}  // namespace lumagl
-
-#endif  // LUMAGL_CORE_WEBGPU_COLUMN_H
+auto Table::ColumnNames() const -> std::vector<std::string> {
+  std::vector<std::string> names;
+  std::transform(this->_schema->fields().begin(), this->_schema->fields().end(), std::back_inserter(names),
+                 [](std::shared_ptr<Field> field) { return field->name(); });
+  return names;
+};

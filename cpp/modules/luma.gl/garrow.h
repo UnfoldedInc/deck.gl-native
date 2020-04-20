@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Unfolded, Inc.
+// Copyright (c) 2020 Unfolded Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,32 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
-#define DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#ifndef LUMAGL_GARROW_H
+#define LUMAGL_GARROW_H
 
-#include <arrow/array.h>
-#include <arrow/table.h>
+#include "./garrow/src/array.h"
+#include "./garrow/src/field.h"
+#include "./garrow/src/schema.h"
+#include "./garrow/src/table.h"
+#include "./garrow/src/util/arrow-utils.h"
+#include "./garrow/src/util/attribute-descriptor.h"
 
-#include <memory>
-#include <string>
-#include <utility>
-
-#include "../../arrow/row.h"
-
-namespace deckgl {
-
-struct AttributeDescriptor {
- public:
-  using AttributeBuilder = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
-  AttributeDescriptor(const std::string& name, const std::shared_ptr<arrow::DataType>& type,
-                      std::function<AttributeBuilder> attributeBuilder)
-      : name{std::move(name)}, type{type}, attributeBuilder{std::move(attributeBuilder)} {}
-
-  std::string name;
-  std::shared_ptr<arrow::DataType> type;
-  std::function<AttributeBuilder> attributeBuilder;
-};
-
-}  // namespace deckgl
-
-#endif  // DECKGL_CORE_LIB_ATTRIBUTE_ATTRIBUTE_H
+#endif  // LUMAGL_GARROW_H

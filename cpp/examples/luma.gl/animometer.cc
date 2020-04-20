@@ -24,9 +24,11 @@
 #include <vector>
 
 #include "luma.gl/core.h"
+#include "math.gl/core.h"
 #include "probe.gl/core.h"
 
 using namespace lumagl;
+using namespace mathgl;
 
 namespace {
 
@@ -44,21 +46,12 @@ layout(std140, set = 0, binding = 0) uniform Constants {
 
 layout(location = 0) out vec4 v_color;
 
-const vec4 positions[3] = vec4[3](
-    vec4( 0.0f,  0.1f, 0.0f, 1.0f),
-    vec4(-0.1f, -0.1f, 0.0f, 1.0f),
-    vec4( 0.1f, -0.1f, 0.0f, 1.0f)
-);
-
-const vec4 colors[3] = vec4[3](
-    vec4(1.0f, 0.0f, 0.0f, 1.0f),
-    vec4(0.0f, 1.0f, 0.0f, 1.0f),
-    vec4(0.0f, 0.0f, 1.0f, 1.0f)
-);
+layout(location = 0) in vec4 positions;
+layout(location = 1) in vec4 colors;
 
 void main() {
-    vec4 position = positions[gl_VertexIndex];
-    vec4 color = colors[gl_VertexIndex];
+    vec4 position = positions;
+    vec4 color = colors;
 
     float fade = mod(c.scalarOffset + c.time * c.scalar / 10.0, 1.0);
     if (fade < 0.5) {
@@ -79,8 +72,8 @@ void main() {
 
 auto fs = R"(
 #version 450
-layout(location = 0) out vec4 fragColor;
 layout(location = 0) in vec4 v_color;
+layout(location = 0) out vec4 fragColor;
 void main() {
     fragColor = v_color;
 })";
@@ -90,7 +83,7 @@ auto randomFloat(float min, float max) -> float {
   return zeroOne * (max - min) + min;
 }
 
-constexpr size_t kNumTriangles = 10000;
+constexpr size_t kNumTriangles = 1000;
 
 struct alignas(utils::kMinDynamicBufferOffsetAlignment) ShaderData {
   float scale;
@@ -116,38 +109,58 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
   return shaderData;
 }
 
+auto makeWebGPUTable(wgpu::Device device) -> std::shared_ptr<garrow::Table> {
+  auto positionsDescriptor = garrow::AttributeDescriptor{"positions", arrow::fixed_size_list(arrow::float32(), 4)};
+  auto colorsDescriptor = garrow::AttributeDescriptor{"colors", arrow::fixed_size_list(arrow::float32(), 4)};
+
+  auto positionsField = std::make_shared<garrow::Field>("positions", positionsDescriptor);
+  auto colorsField = std::make_shared<garrow::Field>("colors", colorsDescriptor);
+
+  std::vector<std::shared_ptr<garrow::Field>> fields{positionsField, colorsField};
+  auto schema = std::make_shared<garrow::Schema>(fields);
+
+  std::vector<Vector4<float>> positionData{
+      {0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
+  auto positionsArray = std::make_shared<garrow::Array>(device, positionsDescriptor, positionData);
+
+  std::vector<Vector4<float>> colorData{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
+  auto colorsArray = std::make_shared<garrow::Array>(device, colorsDescriptor, colorData);
+
+  std::vector<std::shared_ptr<garrow::Array>> arrays{positionsArray, colorsArray};
+
+  return std::make_shared<garrow::Table>(schema, arrays);
+}
+
 }  // anonymous namespace
 
 int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  Model::Options options{vs, fs, animationLoop.getPreferredSwapChainTextureFormat()};
-  Model model{animationLoop.device, options};
+  auto attributes = makeWebGPUTable(device);
+  Model model{animationLoop.device, {vs, fs, attributes->schema(), {{sizeof(ShaderData)}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
+  std::vector<wgpu::Buffer> uniformBuffers;
+  for (auto const& data : shaderData) {
+    auto ubo = utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
+    uniformBuffers.push_back(ubo);
+  }
 
-  wgpu::BufferDescriptor bufferDesc;
-  bufferDesc.size = kNumTriangles * sizeof(ShaderData);
-  bufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
-  wgpu::Buffer ubo = device.CreateBuffer(&bufferDesc);
-
-  wgpu::BindGroup bindGroup =
-      utils::makeBindGroup(device, *model.uniformBindGroupLayout.get(), {{0, ubo, 0, sizeof(ShaderData)}});
+  model.setAttributes(attributes);
+  model.vertexCount = 3;
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
     f++;
-    for (auto& data : shaderData) {
-      data.time = f / 60.0f;
-    }
-    ubo.SetSubData(0, kNumTriangles * sizeof(ShaderData), shaderData.data());
 
-    pass.SetPipeline(*model.pipeline.get());
-    for (size_t i = 0; i < kNumTriangles; i++) {
-      uint32_t offset = static_cast<uint32_t>(i * sizeof(ShaderData));
-      pass.SetBindGroup(0, bindGroup, 1, &offset);
-      pass.Draw(3, 1, 0, 0);
+    for (auto i = 0; i < uniformBuffers.size(); ++i) {
+      // Update buffer
+      shaderData[i].time = f / 60.0f;
+      uniformBuffers[i].SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
+
+      model.setUniformBuffers({uniformBuffers[i]});
+      model.draw(pass);
     }
   });
 

@@ -46,7 +46,6 @@ set(JSON_TEST_SOURCE_FILES
 set(CORE_HEADER_FILES
     core.h
     core/src/core.h
-    core/src/lib/attribute/attribute.h
     core/src/lib/attribute/attribute-manager.h
     core/src/lib/component.h
     core/src/lib/constants.h

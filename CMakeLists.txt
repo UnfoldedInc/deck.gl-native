@@ -53,7 +53,8 @@ option(DECK_BUILD_EXAMPLES "Enables building examples" ON)
 option(DECK_BUILD_TESTS "Enables building tests" ON)
 option(DECK_ENABLE_GRAPHICS "When set to OFF, no graphics libraries will be included. Useful for running on CI" ON)
 
-find_program(CLANG_FORMAT_PATH clang-format)
+# We're using clang-format-9 Linux package, which should have priority over any other version
+find_program(CLANG_FORMAT_PATH NAMES clang-format-9 clang-format)
 cmake_dependent_option(
     DECK_ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF

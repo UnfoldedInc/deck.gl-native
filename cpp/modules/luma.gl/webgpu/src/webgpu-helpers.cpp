@@ -178,8 +178,7 @@ auto makeBasicPipelineLayout(const wgpu::Device& device, const wgpu::BindGroupLa
   return device.CreatePipelineLayout(&descriptor);
 }
 
-auto makeBindGroupLayout(const wgpu::Device& device,
-                         std::initializer_list<wgpu::BindGroupLayoutBinding> bindingsInitializer)
+auto makeBindGroupLayout(const wgpu::Device& device, std::vector<wgpu::BindGroupLayoutBinding> bindingsInitializer)
     -> wgpu::BindGroupLayout {
   constexpr wgpu::ShaderStage kNoStages{};
 
@@ -235,7 +234,7 @@ wgpu::BindGroupBinding BindingInitializationHelper::GetAsBinding() const {
 }
 
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
-                   std::initializer_list<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup {
+                   std::vector<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup {
   std::vector<wgpu::BindGroupBinding> bindings;
   for (const BindingInitializationHelper& helper : bindingsInitializer) {
     bindings.push_back(helper.GetAsBinding());

@@ -42,18 +42,18 @@ class ScatterplotLayerTest : public ::testing::Test {
     arrow::MemoryPool* pool = arrow::default_memory_pool();
 
     // Positions
-    arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::DoubleBuilder>(pool), 3};
-    arrow::DoubleBuilder& valueBuilder = *(static_cast<arrow::DoubleBuilder*>(listBuilder.value_builder()));
+    arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool), 3};
+    arrow::FloatBuilder& valueBuilder = *(static_cast<arrow::FloatBuilder*>(listBuilder.value_builder()));
 
     EXPECT_TRUE(listBuilder.Append().ok());
-    std::vector<double> position{1.2, 2.3, -3.4};
+    std::vector<float> position{1.2, 2.3, -3.4};
     EXPECT_TRUE(valueBuilder.AppendValues(position.data(), position.size()).ok());
 
     std::shared_ptr<arrow::Array> positions;
     EXPECT_TRUE(listBuilder.Finish(&positions).ok());
 
     std::vector<std::shared_ptr<arrow::Field>> fields = {
-        arrow::field("position", arrow::fixed_size_list(arrow::float64(), 3))};
+        arrow::field("position", arrow::fixed_size_list(arrow::float32(), 3))};
 
     auto schema = std::make_shared<arrow::Schema>(fields);
     return arrow::Table::Make(schema, {positions});
@@ -81,15 +81,15 @@ TEST_F(ScatterplotLayerTest, GetPositionData) {
   EXPECT_EQ(positionData->type_id(), arrow::Type::FIXED_SIZE_LIST);
 
   auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(positionData);
-  auto values = std::static_pointer_cast<arrow::DoubleArray>(listArray->values());
+  auto values = std::static_pointer_cast<arrow::FloatArray>(listArray->values());
   EXPECT_EQ(values->length(), 3);
-  EXPECT_EQ(values->type_id(), arrow::Type::DOUBLE);
+  EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
   // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
-  auto listPointer = values->data()->GetValues<double>(1);
-  EXPECT_DOUBLE_EQ(*listPointer, 1.2);
-  EXPECT_DOUBLE_EQ(*(listPointer + 1), 2.3);
-  EXPECT_DOUBLE_EQ(*(listPointer + 2), -3.4);
+  auto listPointer = values->data()->GetValues<float>(1);
+  EXPECT_FLOAT_EQ(*listPointer, 1.2);
+  EXPECT_FLOAT_EQ(*(listPointer + 1), 2.3);
+  EXPECT_FLOAT_EQ(*(listPointer + 2), -3.4);
 }
 
 TEST_F(ScatterplotLayerTest, GetRadiusData) {
