@@ -67,7 +67,7 @@ Deck::Deck(std::shared_ptr<Deck::Props> props)
 }
 
 Deck::~Deck() {
-  this->animationLoop->running = false;
+  this->animationLoop->stop();
   // this->tooltip.remove();
 }
 

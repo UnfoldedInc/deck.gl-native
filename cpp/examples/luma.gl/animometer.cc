@@ -133,7 +133,8 @@ int main(int argc, const char* argv[]) {
   wgpu::Device device = *(animationLoop.device.get());
 
   auto attributes = createAttributeTable(device);
-  Model model{device, {vs, fs, attributes->schema(), nullptr, {{sizeof(ShaderData)}}}};
+  auto instancedSchema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
+  Model model{device, {vs, fs, attributes->schema(), instancedSchema, {{sizeof(ShaderData)}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
   std::vector<wgpu::Buffer> uniformBuffers;

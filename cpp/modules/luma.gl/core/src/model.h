@@ -34,11 +34,7 @@ namespace lumagl {
 
 /// \brief Collection of keys that provide additional attribute context when present in input scheme metadata.
 // TODO(ilija@unfolded.ai): Document metadata properties and the behavior they trigger once we finalize the list
-struct AttributePropertyKeys {
- public:
-  /// \brief Determines whether attribute step mode will be instanced or vertex.
-  static const char* IS_INSTANCED;
-};
+struct AttributePropertyKeys {};
 
 // TODO(ilija@unfolded.ai): Move out and revisit
 struct UniformDescriptor {
@@ -59,6 +55,8 @@ class Model {
   void setUniformBuffers(const std::vector<wgpu::Buffer>& uniforms);
 
   void draw(wgpu::RenderPassEncoder pass);
+
+  auto device() -> wgpu::Device { return this->_device; }
 
   int vertexCount;
 
@@ -86,14 +84,13 @@ class Model {
       -> wgpu::BindGroupLayout;
 
   void _setVertexBuffers(wgpu::RenderPassEncoder pass);
-
-  auto _getInputStepMode(const std::shared_ptr<garrow::Field>& field) -> wgpu::InputStepMode;
 };
 
 class Model::Options {
  public:
   Options(const std::string& vs, const std::string& fs, const std::shared_ptr<garrow::Schema>& attributeSchema,
-          const std::shared_ptr<garrow::Schema>& instancedAttributeSchema = nullptr,
+          const std::shared_ptr<garrow::Schema>& instancedAttributeSchema =
+              std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{}),
           const std::vector<UniformDescriptor>& uniforms = {},
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
       : vs{vs},
@@ -110,7 +107,7 @@ class Model::Options {
   /// \brief Attribute definitions.
   const std::shared_ptr<garrow::Schema> attributeSchema;
   /// \brief Instanced attribute definitions.
-  const std::shared_ptr<garrow::Schema>& instancedAttributeSchema;
+  const std::shared_ptr<garrow::Schema> instancedAttributeSchema;
   /// \brief Uniform definitions.
   const std::vector<UniformDescriptor> uniforms;
   /// \brief Texture format that the pipeline will use.

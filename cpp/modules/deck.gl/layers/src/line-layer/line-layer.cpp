@@ -129,17 +129,16 @@ void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
 }
 
 auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model> {
-  auto positions = std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3);
-  std::vector<std::shared_ptr<garrow::Field>> attributeFields{positions};
+  std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+      std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3)};
   auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
 
   // TODO(ilija@unfolded.ai): **arrow**::Fields are already being specified in initializeState, consolidate?
-  auto sourcePosition = std::make_shared<garrow::Field>("instanceSourcePositions", wgpu::VertexFormat::Float3);
-  auto targetPosition = std::make_shared<garrow::Field>("instanceTargetPositions", wgpu::VertexFormat::Float3);
-  auto color = std::make_shared<garrow::Field>("instanceColors", wgpu::VertexFormat::Float4);
-  auto width = std::make_shared<garrow::Field>("instanceWidths", wgpu::VertexFormat::Float);
-
-  std::vector<std::shared_ptr<garrow::Field>> instancedFields{sourcePosition, targetPosition, color, width};
+  std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+      std::make_shared<garrow::Field>("instanceSourcePositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceTargetPositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceColors", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("instanceWidths", wgpu::VertexFormat::Float)};
   auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
   auto modelOptions = Model::Options{vs, fs, attributeSchema, instancedAttributeSchema};

@@ -28,12 +28,21 @@
 
 namespace lumagl {
 
+struct Size {
+ public:
+  Size(int width, int height) : width{width}, height{height} {}
+
+  int width;
+  int height;
+};
+
 class AnimationLoop {
  public:
-  AnimationLoop(int width, int height) : _width{width}, _height{height} {}
+  explicit AnimationLoop(const Size& size = Size{640, 480}) : _size{size} {}
   virtual ~AnimationLoop();
 
-  void setSize(int width, int height);
+  auto size() -> Size { return this->_size; };
+  void setSize(const Size& size);
 
   virtual void run(std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void frame(std::function<void(wgpu::RenderPassEncoder)> onRender);
@@ -55,8 +64,7 @@ class AnimationLoop {
   virtual auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> = 0;
   virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain = 0;
 
-  int _width{640};
-  int _height{480};
+  Size _size;
 };
 
 }  // namespace lumagl

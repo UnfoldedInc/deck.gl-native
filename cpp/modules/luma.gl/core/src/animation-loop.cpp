@@ -34,12 +34,10 @@ AnimationLoop::~AnimationLoop() {
   // TODO(ilija@unfolded.ai): Cleanup?
 }
 
-void AnimationLoop::setSize(int width, int height) {
-  bool sizeChanged = width != this->_width || height != this->_height;
-  this->_width = width;
-  this->_height = height;
-
+void AnimationLoop::setSize(const Size& size) {
+  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
   if (sizeChanged) {
+    this->_size = size;
     this->swapchain = this->_createSwapchain(this->device);
     // TODO(ilija@unfolded.ai): Trigger redraw
   }

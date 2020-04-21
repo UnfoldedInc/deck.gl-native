@@ -28,8 +28,6 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-const char* AttributePropertyKeys::IS_INSTANCED = "instanced";
-
 Model::Model(wgpu::Device device, const Model::Options& options) {
   this->_device = device;
   this->_uniforms = options.uniforms;
@@ -48,11 +46,22 @@ Model::Model(wgpu::Device device, const Model::Options& options) {
   descriptor.layout = makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
 
   this->pipeline = device.CreateRenderPipeline(&descriptor);
+
+  // TODO(ilija@unfolded.ai): Is there a more elegant way of doing this, other than divering from arrow API and
+  // providing a simple way to initialize an empty table?
+  auto schema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
+  this->_attributeTable = std::make_shared<garrow::Table>(schema, std::vector<std::shared_ptr<garrow::Array>>{});
+  this->_instancedAttributeTable =
+      std::make_shared<garrow::Table>(schema, std::vector<std::shared_ptr<garrow::Array>>{});
 }
 
-void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributeTable = attributes; }
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) {
+  // TODO(ilija@unfolded.ai): Compare to schema provided in the constructor?
+  this->_attributeTable = attributes;
+}
 
 void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes) {
+  // TODO(ilija@unfolded.ai): Compare to schema provided in the constructor?
   this->_instancedAttributeTable = attributes;
 }
 
@@ -78,24 +87,32 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
 void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
                                    const std::shared_ptr<garrow::Schema>& attributeSchema,
                                    const std::shared_ptr<garrow::Schema>& instancedAttributeSchema) {
-  // TODO(ilija@unfolded.ai): Iterate over these two separately if number of fields is expected to be large
-  std::vector fields = attributeSchema->fields();
-  if (instancedAttributeSchema != nullptr) {
-    fields.insert(fields.end(), instancedAttributeSchema->fields().begin(), instancedAttributeSchema->fields().end());
-  }
+  descriptor->vertexBufferCount =
+      static_cast<uint32_t>(attributeSchema->num_fields() + instancedAttributeSchema->num_fields());
 
-  descriptor->vertexBufferCount = static_cast<uint32_t>(fields.size());
-
-  for (int location = 0; location < fields.size(); location++) {
-    auto field = fields[location];
-
+  int location = 0;
+  for (auto const& field : attributeSchema->fields()) {
     descriptor->cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(field->type());
-    descriptor->cVertexBuffers[location].stepMode = this->_getInputStepMode(field);
+    descriptor->cVertexBuffers[location].stepMode = wgpu::InputStepMode::Vertex;
     descriptor->cVertexBuffers[location].attributeCount = 1;
     descriptor->cVertexBuffers[location].attributes = &descriptor->cAttributes[location];
 
     descriptor->cAttributes[location].shaderLocation = location;
     descriptor->cAttributes[location].format = field->type();
+
+    location++;
+  }
+
+  for (auto const& field : instancedAttributeSchema->fields()) {
+    descriptor->cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(field->type());
+    descriptor->cVertexBuffers[location].stepMode = wgpu::InputStepMode::Instance;
+    descriptor->cVertexBuffers[location].attributeCount = 1;
+    descriptor->cVertexBuffers[location].attributes = &descriptor->cAttributes[location];
+
+    descriptor->cAttributes[location].shaderLocation = location;
+    descriptor->cAttributes[location].format = field->type();
+
+    location++;
   }
 }
 
@@ -118,25 +135,8 @@ void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
     location++;
   }
 
-  if (this->_instancedAttributeTable != nullptr) {
-    for (auto const& attribute : this->_instancedAttributeTable->columns()) {
-      pass.SetVertexBuffer(location, attribute->buffer());
-      location++;
-    }
+  for (auto const& attribute : this->_instancedAttributeTable->columns()) {
+    pass.SetVertexBuffer(location, attribute->buffer());
+    location++;
   }
-}
-
-auto Model::_getInputStepMode(const std::shared_ptr<garrow::Field>& field) -> wgpu::InputStepMode {
-  if (!field->HasMetadata()) {
-    return wgpu::InputStepMode::Vertex;
-  }
-
-  auto keyIndex = field->metadata()->FindKey(AttributePropertyKeys::IS_INSTANCED);
-  if (keyIndex == -1) {
-    return wgpu::InputStepMode::Vertex;
-  }
-
-  // TODO(ilija@unfolded.ai): Is this how we want to pass boolean values?
-  auto isInstanced = field->metadata()->value(keyIndex) == "1";
-  return isInstanced ? wgpu::InputStepMode::Instance : wgpu::InputStepMode::Vertex;
 }

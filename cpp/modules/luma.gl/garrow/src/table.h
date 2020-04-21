@@ -34,7 +34,8 @@ namespace garrow {
 /// \brief GPU memory table whos columns represent in-memory buffers.
 class Table {
  public:
-  Table(const std::shared_ptr<Schema>& schema, const std::vector<std::shared_ptr<Array>> arrays)
+  // TODO(ilija@unfolded.ai): Arrow uses static Make functions to instantiate the Table, revisit?
+  Table(const std::shared_ptr<Schema>& schema, const std::vector<std::shared_ptr<Array>>& arrays)
       : _schema{schema}, _columns{arrays} {}
 
   /// \brief Returns schema that describes this table.
