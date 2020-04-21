@@ -64,56 +64,5 @@ std::map<WGPUErrorType, const char *> errorTypeToNameMap = {
 
 auto getWebGPUErrorName(WGPUErrorType errorType) -> const char * { return errorTypeToNameMap[errorType]; }
 
-auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t {
-  // Based on https://gpuweb.github.io/gpuweb/#vertex-formats
-  // uchar = unsigned 8-bit value
-  // char = signed 8-bit value
-  // ushort = unsigned 16-bit value
-  // short = signed 16-bit value
-  // half = half-precision 16-bit floating point value
-  // float = 32-bit floating point value
-  // uint = unsigned 32-bit integer value
-  // int = signed 32-bit integer value
-
-  using Format = wgpu::VertexFormat;
-  switch (format) {
-    case Format::UChar2:
-    case Format::Char2:
-    case Format::UChar2Norm:
-    case Format::Char2Norm:
-      return 2;
-    case Format::UChar4:
-    case Format::Char4:
-    case Format::UChar4Norm:
-    case Format::Char4Norm:
-    case Format::UShort2:
-    case Format::Short2:
-    case Format::UShort2Norm:
-    case Format::Short2Norm:
-    case Format::Half2:
-    case Format::Float:
-    case Format::UInt:
-    case Format::Int:
-      return 4;
-    case Format::UShort4:
-    case Format::Short4:
-    case Format::UShort4Norm:
-    case Format::Short4Norm:
-    case Format::Half4:
-    case Format::Float2:
-    case Format::UInt2:
-    case Format::Int2:
-      return 8;
-    case Format::Float3:
-    case Format::UInt3:
-    case Format::Int3:
-      return 12;
-    case Format::Float4:
-    case Format::UInt4:
-    case Format::Int4:
-      return 16;
-  }
-}
-
 }  // namespace utils
 }  // namespace lumagl

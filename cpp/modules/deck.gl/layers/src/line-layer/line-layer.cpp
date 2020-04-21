@@ -75,24 +75,24 @@ const defaultProps = {
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
-  auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition =
-      AttributeDescriptor{"instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3), getSourcePosition};
-  this->attributeManager->add(sourcePosition);
+      std::make_shared<arrow::Field>("instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3));
+  auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
+  this->attributeManager->add(garrow::ColumnBuilder{sourcePosition, getSourcePosition});
 
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
-  auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
   auto targetPosition =
-      AttributeDescriptor{"instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3), getTargetPosition};
-  this->attributeManager->add(targetPosition);
+      std::make_shared<arrow::Field>("instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3));
+  auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
+  this->attributeManager->add(garrow::ColumnBuilder{targetPosition, getTargetPosition});
 
+  auto color = std::make_shared<arrow::Field>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
-  auto color = AttributeDescriptor{"instanceColors", arrow::fixed_size_list(arrow::float32(), 4), getColor};
-  this->attributeManager->add(color);
+  this->attributeManager->add(garrow::ColumnBuilder{color, getColor});
 
+  auto width = std::make_shared<arrow::Field>("instanceWidths", arrow::float32());
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
-  auto width = AttributeDescriptor{"instanceWidths", arrow::float32(), getWidth};
-  this->attributeManager->add(width);
+  this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {

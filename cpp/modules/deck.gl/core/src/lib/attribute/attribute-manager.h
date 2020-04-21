@@ -60,7 +60,7 @@ class AttributeManager {
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> bool;
   void setNeedsRedraw();
 
-  void add(const lumagl::garrow::AttributeDescriptor& descriptor);
+  void add(const lumagl::garrow::ColumnBuilder& builder);
 
   void invalidate(const std::string& attributeName);
   void invalidateAll();
@@ -72,7 +72,7 @@ class AttributeManager {
 
  private:
   bool _needsRedraw{false};
-  std::vector<lumagl::garrow::AttributeDescriptor> _descriptors;
+  std::vector<lumagl::garrow::ColumnBuilder> _builders;
 };
 
 }  // namespace deckgl

@@ -34,10 +34,20 @@ namespace garrow {
 class Table;
 struct AttributeDescriptor;
 
+struct ColumnBuilder {
+  using ColumnMapping = auto(const std::shared_ptr<arrow::Table>&) -> std::shared_ptr<arrow::Array>;
+
+  ColumnBuilder(const std::shared_ptr<arrow::Field>& field, const std::function<ColumnMapping>& mapColumn)
+      : field{field}, mapColumn{mapColumn} {}
+
+  std::shared_ptr<arrow::Field> field;
+  std::function<ColumnMapping> mapColumn;
+};
+
 auto arrowTypeFromVertexFormat(wgpu::VertexFormat format) -> std::shared_ptr<arrow::DataType>;
 auto vertexFormatFromArrowType(const std::shared_ptr<arrow::DataType>& type) -> std::optional<wgpu::VertexFormat>;
 
-auto transformTable(const std::shared_ptr<arrow::Table>& table, const std::vector<AttributeDescriptor>& descriptors,
+auto transformTable(const std::shared_ptr<arrow::Table>& table, const std::vector<ColumnBuilder>& builders,
                     wgpu::Device device) -> std::shared_ptr<Table>;
 
 }  // namespace garrow

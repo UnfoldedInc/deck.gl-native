@@ -33,9 +33,7 @@ auto AttributeManager::getNeedsRedraw(bool clearRedrawFlags) -> bool {
 
 void AttributeManager::setNeedsRedraw() { this->_needsRedraw = true; }
 
-void AttributeManager::add(const lumagl::garrow::AttributeDescriptor& descriptor) {
-  this->_descriptors.push_back(std::move(descriptor));
-}
+void AttributeManager::add(const lumagl::garrow::ColumnBuilder& builder) { this->_builders.push_back(builder); }
 
 void AttributeManager::invalidate(const std::string& attributeName) {
   // TODO(ilija@unfolded.ai): Implement
@@ -48,5 +46,5 @@ void AttributeManager::invalidateAll() {
 }
 
 auto AttributeManager::update(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<garrow::Table> {
-  return garrow::transformTable(table, this->_descriptors, this->device);
+  return garrow::transformTable(table, this->_builders, this->device);
 }

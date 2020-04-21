@@ -20,6 +20,7 @@
 
 #include "./model.h"  // NOLINT(build/include)
 
+#include "luma.gl/garrow/src/util/webgpu-utils.h"
 #include "luma.gl/webgpu.h"
 #include "math.gl/core.h"
 #include "probe.gl/core.h"
@@ -48,7 +49,7 @@ Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options
   this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
 }
 
-void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributes = attributes; }
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributeTable = attributes; }
 
 void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   std::vector<BindingInitializationHelper> bindings;
@@ -74,14 +75,14 @@ void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
   cVertexState.vertexBufferCount = attributeSchema->num_fields();
 
   for (int location = 0; location < attributeSchema->num_fields(); location++) {
-    auto descriptor = attributeSchema->field(location)->descriptor();
+    auto format = attributeSchema->field(location)->type();
 
-    cVertexState.cVertexBuffers[location].arrayStride = descriptor.size();
+    cVertexState.cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(format);
     cVertexState.cVertexBuffers[location].attributeCount = 1;
     cVertexState.cVertexBuffers[location].attributes = &cVertexState.cAttributes[location];
 
     cVertexState.cAttributes[location].shaderLocation = location;
-    cVertexState.cAttributes[location].format = descriptor.vertexFormat();
+    cVertexState.cAttributes[location].format = format;
   }
 }
 
@@ -98,7 +99,7 @@ auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<Unifor
 }
 
 void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
-  for (int location = 0; location < this->_attributes->num_columns(); location++) {
-    pass.SetVertexBuffer(location, this->_attributes->column(location)->buffer());
+  for (int location = 0; location < this->_attributeTable->num_columns(); location++) {
+    pass.SetVertexBuffer(location, this->_attributeTable->column(location)->buffer());
   }
 }

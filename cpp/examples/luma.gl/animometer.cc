@@ -109,23 +109,18 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
   return shaderData;
 }
 
-auto makeWebGPUTable(wgpu::Device device) -> std::shared_ptr<garrow::Table> {
-  auto positionsDescriptor = garrow::AttributeDescriptor{"positions", arrow::fixed_size_list(arrow::float32(), 4)};
-  auto colorsDescriptor = garrow::AttributeDescriptor{"colors", arrow::fixed_size_list(arrow::float32(), 4)};
+auto createAttributeTable(wgpu::Device device) -> std::shared_ptr<garrow::Table> {
+  auto schema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{
+      std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("colors", wgpu::VertexFormat::Float4)});
 
-  auto positionsField = std::make_shared<garrow::Field>("positions", positionsDescriptor);
-  auto colorsField = std::make_shared<garrow::Field>("colors", colorsDescriptor);
+  auto positionsArray = std::make_shared<garrow::Array>(
+      device,
+      std::vector<Vector4<float>>{{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}});
 
-  std::vector<std::shared_ptr<garrow::Field>> fields{positionsField, colorsField};
-  auto schema = std::make_shared<garrow::Schema>(fields);
-
-  std::vector<Vector4<float>> positionData{
-      {0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
-  auto positionsArray = std::make_shared<garrow::Array>(device, positionsDescriptor, positionData);
-
-  std::vector<Vector4<float>> colorData{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
-  auto colorsArray = std::make_shared<garrow::Array>(device, colorsDescriptor, colorData);
-
+  auto colorsArray = std::make_shared<garrow::Array>(
+      device,
+      std::vector<Vector4<float>>{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}});
   std::vector<std::shared_ptr<garrow::Array>> arrays{positionsArray, colorsArray};
 
   return std::make_shared<garrow::Table>(schema, arrays);
@@ -137,7 +132,7 @@ int main(int argc, const char* argv[]) {
   GLFWAnimationLoop animationLoop{};
   wgpu::Device device = *(animationLoop.device.get());
 
-  auto attributes = makeWebGPUTable(device);
+  auto attributes = createAttributeTable(device);
   Model model{animationLoop.device, {vs, fs, attributes->schema(), {{sizeof(ShaderData)}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
