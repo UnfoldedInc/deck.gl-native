@@ -106,7 +106,7 @@ class WebMercatorViewport : public Viewport {
    * @returns {WebMercatorViewport}
    */
   auto fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding = 0,
-                 mathgl::Vector2<int> offset = mathgl::Vector2<int>());
+                 mathgl::Vector2<int> offset = mathgl::Vector2<int>()) -> WebMercatorViewport;
 };
 
 }  // namespace deckgl

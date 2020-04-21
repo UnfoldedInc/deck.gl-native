@@ -126,3 +126,18 @@ TEST(WebMercatorViewport, getScales) {
     }
   }
 }
+
+TEST(WebMercatorViewport, fitBounds) {
+  // Will create additional test vectors
+  auto topLeft = Vector2<double>(-7.135318, 23.241346);
+  auto bottomRight = Vector2<double>(1.659613, 18.312811);
+
+  for (auto viewport : TEST_VIEWPORTS) {
+    for (auto tc : TEST_VIEWPORTS) {
+      WebMercatorViewport retViewport = viewport.fitBounds(topLeft, bottomRight);
+      std::cout << "retViewport lng: " << retViewport.longitude << "\n";
+      std::cout << "retViewport lat: " << retViewport.latitude << "\n";
+      std::cout << "retViewport zoom: " << retViewport.zoom << "\n";
+    }
+  }
+}
