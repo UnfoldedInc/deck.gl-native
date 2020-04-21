@@ -71,7 +71,8 @@ class Deck : public Component {
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  std::shared_ptr<LayerContext> context{new LayerContext{this}};
+  std::shared_ptr<lumagl::AnimationLoop> animationLoop{std::make_shared<lumagl::GLFWAnimationLoop>()};
+  std::shared_ptr<LayerContext> context{new LayerContext{this, *this->animationLoop->device.get()}};
   std::shared_ptr<ViewManager> viewManager{new ViewManager()};
   std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
   std::shared_ptr<ViewState> initialViewState;
@@ -87,6 +88,8 @@ class Deck : public Component {
 
   // Public API
 
+  void run();
+
   // Check if a redraw is needed
   // Returns an optional string summarizing the redraw reason
   // - clearRedrawFlags (Boolean) - clear the redraw flag.
@@ -100,8 +103,6 @@ class Deck : public Component {
   // `pickObject`({x, y, radius = 0, layerIds = nullptr, unproject3D})
   // `pickMultipleObjects`({x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10})
   // `pickObjects`({x, y, width = 1, height = 1, layerIds = nullptr})
-
-  std::shared_ptr<lumagl::AnimationLoop> animationLoop;
 
  private:
   // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState

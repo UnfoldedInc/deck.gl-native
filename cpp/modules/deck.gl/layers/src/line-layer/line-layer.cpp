@@ -92,6 +92,9 @@ void LineLayer::initializeState() {
   auto width = std::make_shared<arrow::Field>("instanceWidths", arrow::float32());
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
   this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
+
+  // TODO(ilija@unfolded.ai): Remove
+  //  this->_model = this->_getModel(this->context->device);
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -110,6 +113,7 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
+  //  this->_model->draw(pass);
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;
@@ -142,7 +146,21 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
   auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
   auto modelOptions = Model::Options{vs, fs, attributeSchema, instancedAttributeSchema};
-  return std::make_shared<lumagl::Model>(device, modelOptions);
+  auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+
+  model->vertexCount = 4;  // Is this correct?
+
+  std::vector<mathgl::Vector3<float>> positionData = {{0, -1, 0}, {0, 1, 0}, {1, -1, 0}, {1, 1, 0}};
+  std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+      std::make_shared<garrow::Array>(this->context->device, positionData)};
+  model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+  auto instancedAttributes = this->attributeManager->update(this->props()->data);
+  model->setInstancedAttributes(instancedAttributes);
+
+  return model;
+
+  // TODO(ilija@unfolded.ai): Set uniforms
 
   //
   //  (0, -1)-------------_(1, -1)

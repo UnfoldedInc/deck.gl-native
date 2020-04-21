@@ -60,10 +60,6 @@ auto Deck::Props::getProperties() const -> const Properties* {
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
   this->setProps(props.get());
-  this->animationLoop = this->_createAnimationLoop(props);
-  animationLoop->run([&](wgpu::RenderPassEncoder pass) {
-    // TODO(ilija@unfolded.ai): Do we tell LayerManager to redraw the layers here?
-  });
 }
 
 Deck::~Deck() {
@@ -111,6 +107,15 @@ void Deck::setProps(Deck::Props* props) {
   // this->deckPicker.setProps(resolvedProps);
 
   // super::setProps();
+}
+
+void Deck::run() {
+  // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
+  this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
+    for (auto const& layer : this->layerManager->layers) {
+      layer->drawState(pass);
+    }
+  });
 }
 
 // Public API
@@ -164,8 +169,7 @@ void Deck::redraw(bool force) {
 }
 
 auto Deck::_createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop> {
-  return std::make_shared<lumagl::GLFWAnimationLoop>();
-
+  return nullptr;
   /*
   const {width, height, gl, glOptions, debug, useDevicePixels, autoResizeDrawingBuffer} = props;
 

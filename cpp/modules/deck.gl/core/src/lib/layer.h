@@ -75,7 +75,7 @@ class Layer : public Component {
   const auto props() const { return std::dynamic_pointer_cast<const Layer::Props>(this->_props); }
 
   const Layer::Props* oldProps;
-  const LayerContext* context;
+  std::shared_ptr<LayerContext> context;
 
   std::string needsRedraw;
   std::string needsUpdate;
@@ -237,7 +237,7 @@ class Layer : public Component {
   friend class LayerManager;
 
   // Called by layer manager when a new layer is found
-  void initialize(const LayerContext*);
+  void initialize(const std::shared_ptr<LayerContext>& context);
 
   // if this layer is new (not matched with an existing layer) oldProps will be empty object
   void update();

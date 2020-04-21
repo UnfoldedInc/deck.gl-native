@@ -55,6 +55,9 @@ class LineLayer : public Layer {
 
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;
+
+  // TODO(ilija@unfolded.ai): Remove, not sure where this should be stored when created in _getModel
+  std::shared_ptr<lumagl::Model> _model;
 };
 
 class LineLayer::Props : public Layer::Props {

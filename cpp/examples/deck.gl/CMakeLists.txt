@@ -20,6 +20,7 @@
 
 set(EXAMPLE_SOURCE_FILES
     stdinout.cpp
+    flight-paths.cc
     )
 
 # Create an executable for each example from the list
@@ -27,7 +28,7 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
     get_filename_component(TARGET_NAME ${EXAMPLE_SOURCE_FILE} NAME_WE)
     add_executable(${TARGET_NAME} ${EXAMPLE_SOURCE_FILE})
     
-    target_link_libraries(${TARGET_NAME} PRIVATE ${DECK_LINK_FLAGS} deck.gl)
+    target_link_libraries(${TARGET_NAME} PRIVATE ${DECK_LINK_FLAGS} deck.gl loaders.gl)
 endforeach()
 
 # Add example files to global DECK_EXAMPLE_FILES property
