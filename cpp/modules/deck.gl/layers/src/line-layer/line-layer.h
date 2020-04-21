@@ -51,7 +51,7 @@ class LineLayer : public Layer {
   void initializeState() override;
   void updateState(const Layer::ChangeFlags&, const Layer::Props* oldProps) override;
   void finalizeState() override;
-  void drawState() override;
+  void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;

@@ -34,12 +34,10 @@ AnimationLoop::~AnimationLoop() {
   // TODO(ilija@unfolded.ai): Cleanup?
 }
 
-void AnimationLoop::setSize(int width, int height) {
-  bool sizeChanged = width != this->width || height != this->height;
-  this->width = width;
-  this->height = height;
-
+void AnimationLoop::setSize(const Size& size) {
+  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
   if (sizeChanged) {
+    this->_size = size;
     this->swapchain = this->_createSwapchain(this->device);
     // TODO(ilija@unfolded.ai): Trigger redraw
   }
@@ -94,6 +92,4 @@ void AnimationLoop::_initialize(const wgpu::BackendType backendType, std::shared
   this->device = device;
   this->queue = this->device->CreateQueue();
   this->swapchain = this->_createSwapchain(this->device);
-
-  this->setSize(width, height);
 }

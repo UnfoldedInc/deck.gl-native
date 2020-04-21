@@ -34,7 +34,7 @@ namespace lumagl {
 class GLFWAnimationLoop : public AnimationLoop {
  public:
   GLFWAnimationLoop(const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType(),
-                    std::shared_ptr<wgpu::Device> device = nullptr);
+                    std::shared_ptr<wgpu::Device> device = nullptr, const Size& size = Size{640, 480});
   ~GLFWAnimationLoop();
 
   void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) override;

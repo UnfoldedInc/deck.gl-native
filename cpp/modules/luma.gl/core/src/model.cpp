@@ -28,28 +28,42 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-Model::Model(std::shared_ptr<wgpu::Device> device, const Model::Options& options) {
+Model::Model(wgpu::Device device, const Model::Options& options) {
   this->_device = device;
-  auto deviceValue = *device.get();
   this->_uniforms = options.uniforms;
 
-  this->vsModule = createShaderModule(deviceValue, SingleShaderStage::Vertex, options.vs.c_str());
-  this->fsModule = createShaderModule(deviceValue, SingleShaderStage::Fragment, options.fs.c_str());
+  this->vsModule = createShaderModule(device, SingleShaderStage::Vertex, options.vs.c_str());
+  this->fsModule = createShaderModule(device, SingleShaderStage::Fragment, options.fs.c_str());
 
-  ComboRenderPipelineDescriptor descriptor{deviceValue};
+  ComboRenderPipelineDescriptor descriptor{device};
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
   descriptor.cColorStates[0].format = options.textureFormat;
 
-  this->_initializeVertexState(descriptor.cVertexState, options.attributeSchema);
+  this->_initializeVertexState(&descriptor.cVertexState, options.attributeSchema, options.instancedAttributeSchema);
 
-  this->uniformBindGroupLayout = this->_createBindGroupLayout(deviceValue, options.uniforms);
-  descriptor.layout = makeBasicPipelineLayout(deviceValue, &this->uniformBindGroupLayout);
+  this->uniformBindGroupLayout = this->_createBindGroupLayout(device, options.uniforms);
+  descriptor.layout = makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
 
-  this->pipeline = deviceValue.CreateRenderPipeline(&descriptor);
+  this->pipeline = device.CreateRenderPipeline(&descriptor);
+
+  // TODO(ilija@unfolded.ai): Is there a more elegant way of doing this, other than divering from arrow API and
+  // providing a simple way to initialize an empty table?
+  auto schema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
+  this->_attributeTable = std::make_shared<garrow::Table>(schema, std::vector<std::shared_ptr<garrow::Array>>{});
+  this->_instancedAttributeTable =
+      std::make_shared<garrow::Table>(schema, std::vector<std::shared_ptr<garrow::Array>>{});
 }
 
-void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributeTable = attributes; }
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) {
+  // TODO(ilija@unfolded.ai): Compare to schema provided in the constructor?
+  this->_attributeTable = attributes;
+}
+
+void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes) {
+  // TODO(ilija@unfolded.ai): Compare to schema provided in the constructor?
+  this->_instancedAttributeTable = attributes;
+}
 
 void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   std::vector<BindingInitializationHelper> bindings;
@@ -59,7 +73,7 @@ void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
   }
 
   // Update the bind group
-  this->bindGroup = utils::makeBindGroup(*this->_device.get(), this->uniformBindGroupLayout, bindings);
+  this->bindGroup = utils::makeBindGroup(this->_device, this->uniformBindGroupLayout, bindings);
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {
@@ -70,19 +84,35 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
   pass.Draw(this->vertexCount, 1, 0, 0);
 }
 
-void Model::_initializeVertexState(ComboVertexStateDescriptor& cVertexState,
-                                   const std::shared_ptr<garrow::Schema>& attributeSchema) {
-  cVertexState.vertexBufferCount = attributeSchema->num_fields();
+void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
+                                   const std::shared_ptr<garrow::Schema>& attributeSchema,
+                                   const std::shared_ptr<garrow::Schema>& instancedAttributeSchema) {
+  descriptor->vertexBufferCount =
+      static_cast<uint32_t>(attributeSchema->num_fields() + instancedAttributeSchema->num_fields());
 
-  for (int location = 0; location < attributeSchema->num_fields(); location++) {
-    auto format = attributeSchema->field(location)->type();
+  int location = 0;
+  for (auto const& field : attributeSchema->fields()) {
+    descriptor->cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(field->type());
+    descriptor->cVertexBuffers[location].stepMode = wgpu::InputStepMode::Vertex;
+    descriptor->cVertexBuffers[location].attributeCount = 1;
+    descriptor->cVertexBuffers[location].attributes = &descriptor->cAttributes[location];
 
-    cVertexState.cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(format);
-    cVertexState.cVertexBuffers[location].attributeCount = 1;
-    cVertexState.cVertexBuffers[location].attributes = &cVertexState.cAttributes[location];
+    descriptor->cAttributes[location].shaderLocation = location;
+    descriptor->cAttributes[location].format = field->type();
 
-    cVertexState.cAttributes[location].shaderLocation = location;
-    cVertexState.cAttributes[location].format = format;
+    location++;
+  }
+
+  for (auto const& field : instancedAttributeSchema->fields()) {
+    descriptor->cVertexBuffers[location].arrayStride = lumagl::garrow::getVertexFormatSize(field->type());
+    descriptor->cVertexBuffers[location].stepMode = wgpu::InputStepMode::Instance;
+    descriptor->cVertexBuffers[location].attributeCount = 1;
+    descriptor->cVertexBuffers[location].attributes = &descriptor->cAttributes[location];
+
+    descriptor->cAttributes[location].shaderLocation = location;
+    descriptor->cAttributes[location].format = field->type();
+
+    location++;
   }
 }
 
@@ -99,7 +129,14 @@ auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<Unifor
 }
 
 void Model::_setVertexBuffers(wgpu::RenderPassEncoder pass) {
-  for (int location = 0; location < this->_attributeTable->num_columns(); location++) {
-    pass.SetVertexBuffer(location, this->_attributeTable->column(location)->buffer());
+  int location = 0;
+  for (auto const& attribute : this->_attributeTable->columns()) {
+    pass.SetVertexBuffer(location, attribute->buffer());
+    location++;
+  }
+
+  for (auto const& attribute : this->_instancedAttributeTable->columns()) {
+    pass.SetVertexBuffer(location, attribute->buffer());
+    location++;
   }
 }

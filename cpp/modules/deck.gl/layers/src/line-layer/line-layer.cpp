@@ -22,13 +22,12 @@
 
 #include <arrow/builder.h>
 
-// #include "./line-layer-fragment.glsl.h"
-// #include "./line-layer-vertex.glsl.h"
+#include "./line-layer-fragment.glsl.h"
+#include "./line-layer-vertex.glsl.h"
 #include "deck.gl/core.h"
 
 using namespace deckgl;
 using namespace lumagl;
-using namespace lumagl::garrow;
 
 const std::vector<const Property*> propTypeDefs = {
     //  new PropertyT<std::string>{"widthUnits",
@@ -110,7 +109,7 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 
 void LineLayer::finalizeState() {}
 
-void LineLayer::drawState() {  // {uniforms}
+void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;
@@ -130,7 +129,21 @@ void LineLayer::drawState() {  // {uniforms}
 }
 
 auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model> {
-  return std::shared_ptr<lumagl::Model>{nullptr};
+  std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+      std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3)};
+  auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
+
+  // TODO(ilija@unfolded.ai): **arrow**::Fields are already being specified in initializeState, consolidate?
+  std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+      std::make_shared<garrow::Field>("instanceSourcePositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceTargetPositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceColors", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("instanceWidths", wgpu::VertexFormat::Float)};
+  auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
+
+  auto modelOptions = Model::Options{vs, fs, attributeSchema, instancedAttributeSchema};
+  return std::make_shared<lumagl::Model>(device, modelOptions);
+
   //
   //  (0, -1)-------------_(1, -1)
   //       |          _,-"  |

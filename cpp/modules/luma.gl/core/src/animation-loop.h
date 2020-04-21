@@ -28,11 +28,21 @@
 
 namespace lumagl {
 
+struct Size {
+ public:
+  Size(int width, int height) : width{width}, height{height} {}
+
+  int width;
+  int height;
+};
+
 class AnimationLoop {
  public:
+  explicit AnimationLoop(const Size& size = Size{640, 480}) : _size{size} {}
   virtual ~AnimationLoop();
 
-  void setSize(int width, int height);
+  auto size() -> Size { return this->_size; };
+  void setSize(const Size& size);
 
   virtual void run(std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void frame(std::function<void(wgpu::RenderPassEncoder)> onRender);
@@ -42,22 +52,19 @@ class AnimationLoop {
   virtual void flush() {}
   virtual auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat { return wgpu::TextureFormat::Undefined; };
 
-  // TODO(ilija@unfolded.ai): Make these read-only?
-  int width{640};
-  int height{480};
-
   // Internal, but left public to facilitate integration
   std::shared_ptr<wgpu::Device> device;
   wgpu::Queue queue;
   wgpu::SwapChain swapchain;
 
-  // TODO(ilija@unfolded.ai): Make this read-only?
   bool running{false};
 
  protected:
   void _initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device);
   virtual auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> = 0;
   virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain = 0;
+
+  Size _size;
 };
 
 }  // namespace lumagl

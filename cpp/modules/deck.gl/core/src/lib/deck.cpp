@@ -58,19 +58,16 @@ auto Deck::Props::getProperties() const -> const Properties* {
 // Deck class
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
-    : Component(props),
-      width{100},
-      height{100},
-      viewManager{std::make_shared<ViewManager>()},
-      // layerManager{std::make_shared<LayerManager>()},
-      _needsRedraw{"Initial render"} {
-  // this->animationLoop = this->_createAnimationLoop(props);
+    : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
   this->setProps(props.get());
-  // this->animationLoop.start();
+  this->animationLoop = this->_createAnimationLoop(props);
+  animationLoop->run([&](wgpu::RenderPassEncoder pass) {
+    // TODO(ilija@unfolded.ai): Do we tell LayerManager to redraw the layers here?
+  });
 }
 
 Deck::~Deck() {
-  // this->animationLoop.stop();
+  this->animationLoop->stop();
   // this->tooltip.remove();
 }
 
@@ -163,6 +160,27 @@ void Deck::redraw(bool force) {
   // } else {
   this->_drawLayers(redrawReason);
   // }
+  */
+}
+
+auto Deck::_createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop> {
+  return std::make_shared<lumagl::GLFWAnimationLoop>();
+
+  /*
+  const {width, height, gl, glOptions, debug, useDevicePixels, autoResizeDrawingBuffer} = props;
+
+  return new AnimationLoop({
+    width,
+    height,
+    useDevicePixels,
+    autoResizeDrawingBuffer,
+    autoResizeViewport: false,
+    gl,
+    onCreateContext: opts =>
+      createGLContext(Object.assign({}, glOptions, opts, {canvas: this->canvas, debug})), onInitialize:
+this->_onRendererInitialized, onRender: this->_onRenderFrame, onBeforeRender: props->onBeforeRender, onAfterRender:
+props->onAfterRender
+  });
   */
 }
 
@@ -303,23 +321,6 @@ this->width || newHeight !== this->height) { this->width = newWidth;
     return true;
   }
   return false;
-}
-
-void Deck::_createAnimationLoop(props) {
-  const {width, height, gl, glOptions, debug, useDevicePixels, autoResizeDrawingBuffer} = props;
-
-  return new AnimationLoop({
-    width,
-    height,
-    useDevicePixels,
-    autoResizeDrawingBuffer,
-    autoResizeViewport: false,
-    gl,
-    onCreateContext: opts =>
-      createGLContext(Object.assign({}, glOptions, opts, {canvas: this->canvas, debug})), onInitialize:
-this->_onRendererInitialized, onRender: this->_onRenderFrame, onBeforeRender: props->onBeforeRender, onAfterRender:
-props->onAfterRender
-  });
 }
 
 // The `pointermove` event may fire multiple times in between two animation frames,
