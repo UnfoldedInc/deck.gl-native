@@ -18,31 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_LAYERS_LINE_LAYER_VERTEX_H
+#define DECKGL_LAYERS_LINE_LAYER_VERTEX_H
+
+#include "./project-vertex.glsl.h"
+
 static const char* vs = R"GLSL(
-#define SHADER_NAME line-layer-vertex-shader
+layout(std140, set = 0, binding = 0) uniform LineLayerOptions {
+  float opacity;
+  float widthScale;
+  float widthMinPixels;
+  float widthMaxPixels;
+} layerOptions;
 
-attribute vec3 positions;
-attribute vec3 instanceSourcePositions;
-attribute vec3 instanceTargetPositions;
-attribute vec3 instanceSourcePositions64Low;
-attribute vec3 instanceTargetPositions64Low;
-attribute vec4 instanceColors;
-attribute vec3 instancePickingColors;
-attribute float instanceWidths;
+layout(location = 0) in vec3 positions;
+layout(location = 1) in vec3 instanceSourcePositions;
+layout(location = 2) in vec3 instanceTargetPositions;
+layout(location = 3) in vec4 instanceColors;
+layout(location = 4) in float instanceWidths;
 
-uniform float opacity;
-uniform float widthScale;
-uniform float widthMinPixels;
-uniform float widthMaxPixels;
+// TODO(ilija@unfolded.ai): Revisit once double splitting is in place
+vec3 instanceSourcePositions64Low = vec3(0.0, 0.0, 0.0);
+vec3 instanceTargetPositions64Low = vec3(0.0, 0.0, 0.0);
 
-varying vec4 vColor;
-varying vec2 uv;
+layout(location = 0) out vec4 vColor;
+layout(location = 1) out vec2 uv;
 
 // offset vector by strokeWidth pixels
 // offset_direction is -1 (left) or 1 (right)
 vec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width) {
   // normalized direction of the line
-  vec2 dir_screenspace = normalize(line_clipspace * project_uViewportSize);
+  vec2 dir_screenspace = normalize(line_clipspace * project.uViewportSize);
   // rotate by 90 degrees
   dir_screenspace = vec2(-dir_screenspace.y, dir_screenspace.x);
 
@@ -50,9 +56,6 @@ vec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width
 }
 
 void main(void) {
-  geometry.worldPosition = instanceSourcePositions;
-  geometry.worldPositionAlt = instanceTargetPositions;
-
   // Position
   vec4 source_commonspace;
   vec4 target_commonspace;
@@ -61,28 +64,24 @@ void main(void) {
 
   // Multiply out width and clamp to limits
   float widthPixels = clamp(
-    project_size_to_pixel(instanceWidths * widthScale),
-    widthMinPixels, widthMaxPixels
+    project_size_to_pixel(instanceWidths * layerOptions.widthScale),
+    layerOptions.widthMinPixels, layerOptions.widthMaxPixels
   );
 
   // linear interpolation of source & target to pick right coord
   float segmentIndex = positions.x;
   vec4 p = mix(source, target, segmentIndex);
-  geometry.position = mix(source_commonspace, target_commonspace, segmentIndex);
   uv = positions.xy;
-  geometry.uv = uv;
-  geometry.pickingColor = instancePickingColors;
 
   // extrude
   vec3 offset = vec3(
     getExtrusionOffset(target.xy - source.xy, positions.y, widthPixels),
     0.0);
-  DECKGL_FILTER_SIZE(offset, geometry);
   gl_Position = p + vec4(project_pixel_size_to_clipspace(offset.xy), 0.0, 0.0);
-  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);
 
   // Color
-  vColor = vec4(instanceColors.rgb, instanceColors.a * opacity);
-  DECKGL_FILTER_COLOR(vColor, geometry);
+  vColor = vec4(instanceColors.rgb, instanceColors.a * layerOptions.opacity);
 }
 )GLSL";
+
+#endif  // DECKGL_LAYERS_LINE_LAYER_VERTEX_H

@@ -30,8 +30,6 @@
 using namespace lumagl;
 using namespace mathgl;
 
-namespace {
-
 auto vs = R"(
 #version 450
 
@@ -116,31 +114,29 @@ auto createAttributeTable(wgpu::Device device) -> std::shared_ptr<garrow::Table>
 
   auto positionsArray = std::make_shared<garrow::Array>(
       device,
-      std::vector<Vector4<float>>{{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}});
+      std::vector<Vector4<float>>{{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}},
+      wgpu::BufferUsage::Vertex);
 
   auto colorsArray = std::make_shared<garrow::Array>(
-      device,
-      std::vector<Vector4<float>>{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}});
+      device, std::vector<Vector4<float>>{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+      wgpu::BufferUsage::Vertex);
   std::vector<std::shared_ptr<garrow::Array>> arrays{positionsArray, colorsArray};
 
   return std::make_shared<garrow::Table>(schema, arrays);
 }
 
-}  // anonymous namespace
-
 int main(int argc, const char* argv[]) {
-  GLFWAnimationLoop animationLoop{};
-  wgpu::Device device = *(animationLoop.device.get());
+  GLFWAnimationLoop animationLoop;
+  auto device = animationLoop.device();
 
   auto attributes = createAttributeTable(device);
   auto instancedSchema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
   Model model{device, {vs, fs, attributes->schema(), instancedSchema, {{sizeof(ShaderData)}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
-  std::vector<wgpu::Buffer> uniformBuffers;
+  std::vector<std::shared_ptr<garrow::Array>> uniforms;
   for (auto const& data : shaderData) {
-    auto ubo = utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
-    uniformBuffers.push_back(ubo);
+    uniforms.push_back(std::make_shared<garrow::Array>(device, &data, 1, wgpu::BufferUsage::Uniform));
   }
 
   model.setAttributes(attributes);
@@ -150,12 +146,12 @@ int main(int argc, const char* argv[]) {
     static int f = 0;
     f++;
 
-    for (auto i = 0; i < uniformBuffers.size(); ++i) {
+    for (auto i = 0; i < uniforms.size(); ++i) {
       // Update buffer
       shaderData[i].time = f / 60.0f;
-      uniformBuffers[i].SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
+      uniforms[i]->buffer().SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
 
-      model.setUniformBuffers({uniformBuffers[i]});
+      model.setUniforms({uniforms[i]});
       model.draw(pass);
     }
   });

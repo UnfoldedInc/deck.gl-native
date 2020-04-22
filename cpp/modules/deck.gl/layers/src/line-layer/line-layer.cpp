@@ -92,6 +92,9 @@ void LineLayer::initializeState() {
   auto width = std::make_shared<arrow::Field>("instanceWidths", arrow::float32());
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
   this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
+
+  // TODO(ilija@unfolded.ai): Where should we initialize models?
+  this->models = {this->_getModel(this->context->device)};
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -110,6 +113,14 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
+  auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
+  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMaxPixels, props->widthMaxPixels};
+  for (auto const& model : this->getModels()) {
+    model->setUniforms(
+        {std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform)});
+    model->draw(pass);
+  }
+
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;
@@ -141,8 +152,26 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
       std::make_shared<garrow::Field>("instanceWidths", wgpu::VertexFormat::Float)};
   auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
-  auto modelOptions = Model::Options{vs, fs, attributeSchema, instancedAttributeSchema};
-  return std::make_shared<lumagl::Model>(device, modelOptions);
+  // TODO(ilija@unfolded.ai): Get rid of this once shader modules are in place
+  std::string combinedVS = std::string{projectVS} + std::string{vs};
+  auto modelOptions = Model::Options{combinedVS,
+                                     fs,
+                                     attributeSchema,
+                                     instancedAttributeSchema,
+                                     {{sizeof(LineLayerUniforms)}, {sizeof(ViewportUniforms)}}};
+  auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+
+  model->vertexCount = 4;  // Is this correct?
+
+  std::vector<mathgl::Vector3<float>> positionData = {{0, -1, 0}, {0, 1, 0}, {1, -1, 0}, {1, 1, 0}};
+  std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+      std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
+  model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+  auto instancedAttributes = this->attributeManager->update(this->props()->data);
+  model->setInstancedAttributes(instancedAttributes);
+
+  return model;
 
   //
   //  (0, -1)-------------_(1, -1)

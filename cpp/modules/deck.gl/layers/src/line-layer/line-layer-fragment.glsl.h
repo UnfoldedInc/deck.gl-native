@@ -18,6 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#ifndef DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H
+#define DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H
+
+static const char* fs = R"GLSL(
+#version 450
+
+layout(location = 0) in vec4 vColor;
+layout(location = 1) in vec2 uv;
+
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+    fragColor = vColor;
+}
+)GLSL";
+
+/*
 static const char* fs = R"GLSL(
 #define SHADER_NAME line-layer-fragment-shader
 
@@ -34,3 +51,6 @@ void main(void) {
   DECKGL_FILTER_COLOR(gl_FragColor, geometry);
 }
 )GLSL";
+*/
+
+#endif  // DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H

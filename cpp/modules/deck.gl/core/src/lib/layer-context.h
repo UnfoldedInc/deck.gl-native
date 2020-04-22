@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_LAYER_CONTEXT_H
 #define DECKGL_CORE_LAYER_CONTEXT_H
 
+#include "luma.gl/webgpu.h"
+
 namespace deckgl {
 
 class Deck;
@@ -29,8 +31,10 @@ class LayerManager;
 // LayerContext is data shared between all layers
 class LayerContext {
  public:
-  Deck *deck;
-  LayerManager *layerManager;
+  Deck* deck;
+  LayerManager* layerManager;
+
+  wgpu::Device device;
 
   // // General resources
   // stats: null, // for tracking lifecycle performance
@@ -40,7 +44,7 @@ class LayerContext {
   // mousePosition: null,
   // userData: {} // Place for any custom app `context`
 
-  explicit LayerContext(Deck * deck_) : deck{deck_} {}
+  LayerContext(Deck* deck, wgpu::Device device) : deck{deck}, device{device} {}
 };
 
 }  // namespace deckgl

@@ -52,7 +52,7 @@ class Model {
 
   void setAttributes(const std::shared_ptr<garrow::Table>& attributes);
   void setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes);
-  void setUniformBuffers(const std::vector<wgpu::Buffer>& uniforms);
+  void setUniforms(const std::vector<std::shared_ptr<garrow::Array>>& uniforms);
 
   void draw(wgpu::RenderPassEncoder pass);
 

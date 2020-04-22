@@ -20,8 +20,6 @@
 
 #include "./animation-loop.h"  // NOLINT(build/include)
 
-#include <dawn/dawn_proc.h>
-
 #include <functional>
 
 #include "luma.gl/webgpu.h"
@@ -29,6 +27,19 @@
 
 using namespace lumagl;
 using namespace lumagl::utils;
+
+AnimationLoop::AnimationLoop(const Size& size) : _size{size} {
+  // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
+  // TODO(ilija@unfolded.ai): Set this globally elsewhere
+  static bool procTableInitialized = false;
+  DawnProcTable procs = dawn_native::GetProcs();
+  if (!procTableInitialized) {
+    dawnProcSetProcs(&procs);
+    procTableInitialized = true;
+  }
+
+  this->_procs = procs;
+}
 
 AnimationLoop::~AnimationLoop() {
   // TODO(ilija@unfolded.ai): Cleanup?
@@ -38,7 +49,7 @@ void AnimationLoop::setSize(const Size& size) {
   bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
   if (sizeChanged) {
     this->_size = size;
-    this->swapchain = this->_createSwapchain(this->device);
+    this->_swapchain = this->_createSwapchain(this->_device);
     // TODO(ilija@unfolded.ai): Trigger redraw
   }
 }
@@ -56,10 +67,10 @@ void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
 
 void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
-  wgpu::TextureView backbufferView = this->swapchain.GetCurrentTextureView();
+  wgpu::TextureView backbufferView = this->_swapchain.GetCurrentTextureView();
 
   utils::ComboRenderPassDescriptor passDescriptor({backbufferView});
-  wgpu::CommandEncoder encoder = device->CreateCommandEncoder();
+  wgpu::CommandEncoder encoder = this->_device.CreateCommandEncoder();
   {
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
 
@@ -70,26 +81,23 @@ void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender)
 
   wgpu::CommandBuffer commands = encoder.Finish();
 
-  this->queue.Submit(1, &commands);
-  this->swapchain.Present();
+  this->_queue.Submit(1, &commands);
+  this->_swapchain.Present();
 
   this->flush();
 }
 
 void AnimationLoop::stop() { this->running = false; }
 
-void AnimationLoop::_initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device) {
-  // TODO(ilija@unfolded.ai): This should likely be set up globally?
-  DawnProcTable procs = dawn_native::GetProcs();
-  dawnProcSetProcs(&procs);
-  procs.deviceSetUncapturedErrorCallback(
-      device->Get(),
+void AnimationLoop::_initialize(const wgpu::BackendType backendType, wgpu::Device device) {
+  this->_procs.deviceSetUncapturedErrorCallback(
+      device.Get(),
       [](WGPUErrorType errorType, const char* message, void*) {
         probegl::ErrorLog() << getWebGPUErrorName(errorType) << " error: " << message;
       },
       nullptr);
 
-  this->device = device;
-  this->queue = this->device->CreateQueue();
-  this->swapchain = this->_createSwapchain(this->device);
+  this->_device = device;
+  this->_queue = this->_device.CreateQueue();
+  this->_swapchain = this->_createSwapchain(this->_device);
 }

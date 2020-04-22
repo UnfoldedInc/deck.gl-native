@@ -130,6 +130,9 @@ void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
   if (idExists) {
     throw std::runtime_error("Layer with id already exists");
   }
+
+  layer->initialize(this->context);
+
   this->layers.push_back(layer);
 }
 
