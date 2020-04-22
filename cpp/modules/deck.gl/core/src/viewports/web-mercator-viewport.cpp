@@ -101,7 +101,10 @@ auto WebMercatorViewport::getMapCenterByLngLatPosition(mathgl::Vector2<double> l
 auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding,
                                     mathgl::Vector2<int> offset) -> WebMercatorViewport {
   // TODO(randy@unfolded.ai)
-  // https://github.com/uber-web/math.gl/blob/master/modules/web-mercator/src/fit-bounds.js
+
+  if (padding) {
+    throw new std::logic_error("Padding not yet implemented");
+  }
 
   WebMercatorViewport::Options options;
   options.width = this->width;
@@ -110,40 +113,27 @@ auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vec
   options.latitude = 0;
   options.zoom = 0;
 
-  // Assume constant padding for now
-  // Call WebMercatorViewport constructor, passing in opts
   WebMercatorViewport viewport = WebMercatorViewport(options);
 
   auto nw = viewport.projectFlat(topLeft);
   auto se = viewport.projectFlat(bottomRight);
 
-  // get abs of x/y difference
-  // max(abs, minExtent)?
-  const double size[] = {abs(se.x - nw.x), abs(se.y - nw.y)};
+  mathgl::Vector2<double> size(abs(se.x - nw.x), abs(se.y - nw.y));
 
-  const double targetSize[] = {this->width - 2 * padding - abs(offset.x) * 2,
-                               this->height - 2 * padding - abs(offset.y) * 2};
+  mathgl::Vector2<double> targetSize(this->width - 2 * padding - abs(offset.x) * 2,
+                                     this->height - 2 * padding - abs(offset.y) * 2);
 
-  // mimicing assert(); in JS
-  if (targetSize[0] <= 0 || targetSize[1] <= 0) {
+  if (targetSize.x <= 0 || targetSize.y <= 0) {
     throw new std::logic_error("Invalid targetSize");
   }
 
-  const double scaleX = targetSize[0] / size[0];
-  const double scaleY = targetSize[1] / size[1];
+  const double scaleX = targetSize.x / size.x;
+  const double scaleY = targetSize.y / size.y;
 
-  // From JS:
-  //    Find how much we need to shift the center
-  //    const offsetX = (padding.right - padding.left) / 2 / scaleX;
-  //    const offsetY = (padding.bottom - padding.top) / 2 / scaleY;
-  // offsetX and offsetY should return 0 because paddings are equal, remove from center calcualtion
-  //    const center = [(se[0] + nw[0]) / 2 + offsetX, (se[1] + nw[1]) / 2 + offsetY];
-
-  const mathgl::Vector2<double> center((se.x + nw.x) / 2, (se.y + nw.y) / 2);
+  const mathgl::Vector2<double> center((se.x + nw.x) / 2.0, (se.y + nw.y) / 2.0);
 
   const mathgl::Vector2<double> centerLngLat = viewport.unproject(center);
 
-  // maxZoom not present, no use for min(maxZoom, etc..)
   const auto zoom = this->zoom + log2(abs(min(scaleX, scaleY)));
 
   viewport.longitude = centerLngLat.x;
@@ -151,6 +141,4 @@ auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vec
   viewport.zoom = zoom;
 
   return viewport;
-
-  // throw new std::logic_error("fitBounds not supported");
 }
