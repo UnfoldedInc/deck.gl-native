@@ -144,7 +144,8 @@ auto transformTable(const std::shared_ptr<arrow::Table>& table, const std::vecto
     fields.push_back(gpuField);
 
     auto mappedArray = builder.mapColumn(table);
-    auto gpuArray = std::make_shared<Array>(device, mappedArray);
+    // TODO(ilija@unfolded.ai): Usage could be specified through metadata?
+    auto gpuArray = std::make_shared<Array>(device, mappedArray, wgpu::BufferUsage::Vertex);
     arrays.push_back(gpuArray);
   }
 

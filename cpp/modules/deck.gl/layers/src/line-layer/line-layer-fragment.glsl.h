@@ -19,6 +19,20 @@
 // THE SOFTWARE.
 
 static const char* fs = R"GLSL(
+#version 450
+
+layout(location = 0) in vec4 vColor;
+layout(location = 1) in vec2 uv;
+
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+    fragColor = vColor;
+}
+)GLSL";
+
+/*
+static const char* fs = R"GLSL(
 #define SHADER_NAME line-layer-fragment-shader
 
 precision highp float;
@@ -34,3 +48,4 @@ void main(void) {
   DECKGL_FILTER_COLOR(gl_FragColor, geometry);
 }
 )GLSL";
+*/

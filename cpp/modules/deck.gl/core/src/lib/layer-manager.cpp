@@ -131,7 +131,6 @@ void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
     throw std::runtime_error("Layer with id already exists");
   }
 
-  // TODO(ilija@unfolded.ai): Not sure where this is supposed to be called?
   layer->initialize(this->context);
 
   this->layers.push_back(layer);

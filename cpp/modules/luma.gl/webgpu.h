@@ -21,6 +21,8 @@
 #ifndef LUMAGL_WEBGPU_H
 #define LUMAGL_WEBGPU_H
 
+#include <dawn/webgpu_cpp.h>
+
 #include "./webgpu/src/backends/backend-binding.h"
 #include "./webgpu/src/combo-render-pipeline-descriptor.h"
 #include "./webgpu/src/shaderc-utils.h"

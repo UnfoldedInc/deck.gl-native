@@ -24,11 +24,12 @@
 #include <optional>
 
 #include "deck.gl/core.h"
+#include "luma.gl/webgpu.h"
 #include "math.gl/core.h"
 
 namespace deckgl {
 
-struct ViewportUniforms {
+struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) ViewportUniforms {
   COORDINATE_SYSTEM project_uCoordinateSystem;
   PROJECTION_MODE project_uProjectionMode;
   mathgl::Vector3<double> project_uCoordinateOrigin;
@@ -54,7 +55,7 @@ struct ViewportUniforms {
  *
  * TODO - Ensure this works with any viewport, not just WebMercatorViewports
  *
- * @param {WebMercatorViewport} viewport -
+ * @param viewport -
  * @return {Float32Array} - 4x4 projection matrix that can be used in shaders
  */
 auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio = 1,

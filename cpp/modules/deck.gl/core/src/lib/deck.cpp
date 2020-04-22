@@ -113,7 +113,7 @@ void Deck::run() {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
   this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
     for (auto const& layer : this->layerManager->layers) {
-      layer->drawState(pass);
+      layer->draw(pass);
     }
   });
 }
@@ -165,26 +165,6 @@ void Deck::redraw(bool force) {
   // } else {
   this->_drawLayers(redrawReason);
   // }
-  */
-}
-
-auto Deck::_createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop> {
-  return nullptr;
-  /*
-  const {width, height, gl, glOptions, debug, useDevicePixels, autoResizeDrawingBuffer} = props;
-
-  return new AnimationLoop({
-    width,
-    height,
-    useDevicePixels,
-    autoResizeDrawingBuffer,
-    autoResizeViewport: false,
-    gl,
-    onCreateContext: opts =>
-      createGLContext(Object.assign({}, glOptions, opts, {canvas: this->canvas, debug})), onInitialize:
-this->_onRendererInitialized, onRender: this->_onRenderFrame, onBeforeRender: props->onBeforeRender, onAfterRender:
-props->onAfterRender
-  });
   */
 }
 

@@ -324,13 +324,6 @@ void Layer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Prop
 // App can destroy WebGL resources here
 void Layer::finalizeState() {}
 
-// If state has a model, draw it with supplied uniforms
-void Layer::drawState(wgpu::RenderPassEncoder pass) {
-  for (auto model : this->getModels()) {
-    model->draw(pass);
-  }
-}
-
 // called to populate the info object that is passed to the event handler
 // @return null to cancel event
 // getPickingInfo({info, mode}) {
@@ -365,6 +358,12 @@ void Layer::invalidateAttribute(const std::string& name, const std::string& diff
 //     model.setAttributes(shaderAttributes);
 //   }
 // }
+
+void Layer::_drawState(wgpu::RenderPassEncoder pass) {
+  for (auto model : this->getModels()) {
+    model->draw(pass);
+  }
+}
 
 // LAYER MANAGER API
 // Should only be called by the deck.gl LayerManager class
@@ -440,10 +439,9 @@ void Layer::finalize() {
 }
 
 // Calculates uniforms
-void Layer::draw() {
+void Layer::draw(wgpu::RenderPassEncoder pass) {
   // Call subclass lifecycle method
-  // TODO(ilija@unfolded.ai): Not sure where draw is being called from, but we need render pass reference here
-  //  this->drawState();
+  this->_drawState(pass);
   // End lifecycle method
 }
 

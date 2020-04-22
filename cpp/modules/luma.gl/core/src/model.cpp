@@ -65,10 +65,10 @@ void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attribu
   this->_instancedAttributeTable = attributes;
 }
 
-void Model::setUniformBuffers(const std::vector<wgpu::Buffer>& uniformBuffers) {
+void Model::setUniforms(const std::vector<std::shared_ptr<garrow::Array>>& uniforms) {
   std::vector<BindingInitializationHelper> bindings;
-  for (uint32_t i = 0; i < uniformBuffers.size(); i++) {
-    auto binding = BindingInitializationHelper{i, uniformBuffers[i], 0, this->_uniforms[i].elementSize};
+  for (uint32_t i = 0; i < uniforms.size(); i++) {
+    auto binding = BindingInitializationHelper{i, uniforms[i]->buffer(), 0, this->_uniforms[i].elementSize};
     bindings.push_back(binding);
   }
 

@@ -20,42 +20,18 @@
 
 // Port of https://github.com/visgl/deck.gl/tree/master/examples/website/line
 
-#include <arrow/io/memory.h>
+#include <arrow/filesystem/localfs.h>
+
+#include <filesystem>
 
 #include "deck.gl/core.h"
 #include "deck.gl/layers.h"
 #include "loaders.gl/json.h"
 
-// TODO(ilija@unfolded.ai): These should be loaded in a more efficient way if we figure out the best way to bundle them
-#include "./data/heathrow-flights.h"
-//#include "./data/airports.h"
-
 using namespace deckgl;
 
-namespace {
-
 loadersgl::JSONLoader jsonLoader;
-
-auto createLineLayer() -> std::shared_ptr<LineLayer::Props> {
-  auto lineLayerProps = std::make_shared<LineLayer::Props>();
-  lineLayerProps->id = "flight-paths";
-  lineLayerProps->opacity = 0.8;
-  lineLayerProps->getSourcePosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getFloatVector3("start");
-  };
-  lineLayerProps->getTargetPosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getFloatVector3("end");
-  };
-  lineLayerProps->getColor = [](const Row &row) -> mathgl::Vector4<float> {
-    float z = row.getFloatVector3("start").y;
-    float r = z / 10000;
-    return mathgl::Vector4{255 * (1 - r * 2), 128 * r, 255 * r, 255 * (1 - r)};
-  };
-  lineLayerProps->getWidth = [](const Row &row) -> float { return 3.0; };
-  lineLayerProps->data = jsonLoader.loadTable(std::make_shared<arrow::io::BufferReader>(heathrowFlights));
-
-  return lineLayerProps;
-}
+auto fileSystem = std::make_shared<arrow::fs::LocalFileSystem>();
 
 auto createInitialViewState() -> std::shared_ptr<ViewState> {
   auto initialViewState = std::make_shared<ViewState>();
@@ -68,11 +44,34 @@ auto createInitialViewState() -> std::shared_ptr<ViewState> {
   return initialViewState;
 }
 
-}  // anonymous namespace
+auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::Props> {
+  auto lineLayerProps = std::make_shared<LineLayer::Props>();
+  lineLayerProps->id = "flight-paths";
+  lineLayerProps->opacity = 0.8f;
+  lineLayerProps->getSourcePosition = [](const Row &row) -> mathgl::Vector3<float> {
+    return row.getFloatVector3("start");
+  };
+  lineLayerProps->getTargetPosition = [](const Row &row) -> mathgl::Vector3<float> {
+    return row.getFloatVector3("end");
+  };
+  lineLayerProps->getColor = [](const Row &row) -> mathgl::Vector4<float> {
+    float z = row.getFloatVector3("start").y;
+    float r = z / 10000.0f;
+    return {255.0f * (1.0f - r * 2.0f), 128.0f * r, 255.0f * r, 255.0f * (1.0f - r)};
+  };
+  lineLayerProps->getWidth = [](const Row &row) -> float { return 3.0f; };
+  lineLayerProps->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
 
-int main() {
+  return lineLayerProps;
+}
+
+int main(int argc, const char *argv[]) {
+  // Get data file paths relative to working directory
+  auto programDirectory = std::filesystem::path{argv[0]}.parent_path().string();
+  auto flightDataPath = programDirectory.append("/data/heathrow-flights.ndjson");
+
   auto deckProps = std::make_shared<Deck::Props>();
-  deckProps->layers = {createLineLayer()};
+  deckProps->layers = {createLineLayer(flightDataPath)};
   deckProps->initialViewState = createInitialViewState();
   deckProps->views = {std::make_shared<MapView>()};
 

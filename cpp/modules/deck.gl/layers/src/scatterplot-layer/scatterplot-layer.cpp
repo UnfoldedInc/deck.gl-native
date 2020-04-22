@@ -158,7 +158,7 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
 
 void ScatterplotLayer::finalizeState() {}
 
-void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {  // uniforms
+void ScatterplotLayer::_drawState(wgpu::RenderPassEncoder pass) {  // uniforms
   /*
     const {viewport} = this->context;
     const {

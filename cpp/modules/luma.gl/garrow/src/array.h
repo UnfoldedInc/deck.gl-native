@@ -37,10 +37,16 @@ class Array {
   // TODO(ilija@unfolded.ai): In arrow, Array is an abstract class with typed implementaions that gets created using
   // the builder API
   explicit Array(wgpu::Device device) : _device{device} {}
-  Array(wgpu::Device device, const std::shared_ptr<arrow::Array>& data);
+  Array(wgpu::Device device, const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage);
   template <typename T>
-  Array(wgpu::Device device, const std::vector<T>& data) : Array{device} {
-    this->setData(data);
+  Array(wgpu::Device device, const std::vector<T>& data, wgpu::BufferUsage usage) : Array{device} {
+    this->setData(data.data(), data.size(), usage);
+    this->_length = data.size();
+  }
+  template <typename T>
+  Array(wgpu::Device device, const T* data, size_t length, wgpu::BufferUsage usage) : Array{device} {
+    this->setData(data, length, usage);
+    this->_length = length;
   }
   ~Array();
 
@@ -50,18 +56,15 @@ class Array {
   /* Arrow non-compliant API */
 
   // TODO(ilija@unfolded.ai): Is array/buffer mutability something we'll be making use of?
-  void setData(const std::shared_ptr<arrow::Array>& data);
+  void setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage);
   template <typename T>
-  void setData(const std::vector<T>& data) {
-    auto bufferSize = sizeof(T) * data.size();
-    if (!this->_buffer || data.size() != this->_length) {
-      // TODO(ilija@unfolded.ai): Should usage be part of the descriptor?
-      this->_buffer =
-          this->_createBuffer(this->_device, bufferSize, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
+  void setData(const T* data, size_t length, wgpu::BufferUsage usage) {
+    auto bufferSize = sizeof(T) * length;
+    if (!this->_buffer || length != this->_length) {
+      this->_buffer = this->_createBuffer(this->_device, bufferSize, usage);
     }
 
-    this->_buffer.SetSubData(0, bufferSize, data.data());
-    this->_length = data.size();
+    this->_buffer.SetSubData(0, bufferSize, data);
   }
 
   /// \brief Returns the backing buffer that this array manages.

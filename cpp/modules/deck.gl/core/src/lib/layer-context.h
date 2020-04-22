@@ -21,7 +21,7 @@
 #ifndef DECKGL_CORE_LAYER_CONTEXT_H
 #define DECKGL_CORE_LAYER_CONTEXT_H
 
-#include <dawn/webgpu_cpp.h>
+#include "luma.gl/webgpu.h"
 
 namespace deckgl {
 

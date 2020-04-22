@@ -21,6 +21,7 @@
 #ifndef LUMAGL_CORE_ANIMATION_LOOP_H
 #define LUMAGL_CORE_ANIMATION_LOOP_H
 
+#include <dawn/dawn_proc.h>
 #include <dawn/webgpu_cpp.h>
 
 #include <functional>
@@ -38,7 +39,7 @@ struct Size {
 
 class AnimationLoop {
  public:
-  explicit AnimationLoop(const Size& size = Size{640, 480}) : _size{size} {}
+  explicit AnimationLoop(const Size& size = Size{640, 480});
   virtual ~AnimationLoop();
 
   auto size() -> Size { return this->_size; };
@@ -52,19 +53,21 @@ class AnimationLoop {
   virtual void flush() {}
   virtual auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat { return wgpu::TextureFormat::Undefined; };
 
-  // Internal, but left public to facilitate integration
-  std::shared_ptr<wgpu::Device> device;
-  wgpu::Queue queue;
-  wgpu::SwapChain swapchain;
-
   bool running{false};
+  auto device() -> wgpu::Device { return this->_device; }
 
  protected:
-  void _initialize(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device);
-  virtual auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> = 0;
-  virtual auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain = 0;
+  void _initialize(const wgpu::BackendType backendType, wgpu::Device device);
+  virtual auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device = 0;
+  virtual auto _createSwapchain(wgpu::Device device) -> wgpu::SwapChain = 0;
 
   Size _size;
+
+ private:
+  DawnProcTable _procs;
+  wgpu::Device _device;
+  wgpu::Queue _queue;
+  wgpu::SwapChain _swapchain;
 };
 
 }  // namespace lumagl

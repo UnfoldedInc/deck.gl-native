@@ -71,8 +71,7 @@ auto createShaderModule(const wgpu::Device& device, SingleShaderStage stage, con
   shaderc::Compiler compiler;
   auto result = compiler.CompileGlslToSpv(source, strlen(source), kind, "myshader?");
   if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-    probegl::ErrorLog() << result.GetErrorMessage();
-    return {};
+    throw std::runtime_error("Shader compilation failed with error: " + result.GetErrorMessage());
   }
 #ifdef DUMP_SPIRV_ASSEMBLY
   {

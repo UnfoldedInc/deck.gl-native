@@ -25,7 +25,9 @@
 
 using namespace lumagl::garrow;
 
-Array::Array(wgpu::Device device, const std::shared_ptr<arrow::Array>& data) : Array{device} { this->setData(data); }
+Array::Array(wgpu::Device device, const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage) : Array{device} {
+  this->setData(data, usage);
+}
 
 Array::~Array() {
   if (this->_buffer != nullptr) {
@@ -33,7 +35,7 @@ Array::~Array() {
   }
 }
 
-void Array::setData(const std::shared_ptr<arrow::Array>& data) {
+void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage) {
   auto vertexFormatOptional = vertexFormatFromArrowType(data->type());
   if (!vertexFormatOptional.has_value()) {
     throw std::runtime_error("Unsupported data format");
@@ -43,7 +45,7 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data) {
 
   if (!this->_buffer || data->length() != this->_length) {
     auto size = vertexSize * data->length();
-    this->_buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
+    this->_buffer = this->_createBuffer(this->_device, size, usage);
   }
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
@@ -66,7 +68,7 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data) {
 auto Array::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
   wgpu::BufferDescriptor bufferDesc;
   bufferDesc.size = size;
-  bufferDesc.usage = usage;
+  bufferDesc.usage = wgpu::BufferUsage::CopyDst | usage;
 
   return device.CreateBuffer(&bufferDesc);
 }

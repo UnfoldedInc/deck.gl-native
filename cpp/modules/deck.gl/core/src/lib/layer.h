@@ -21,8 +21,6 @@
 #ifndef DECKGL_CORE_LAYER_H
 #define DECKGL_CORE_LAYER_H
 
-#include <dawn/webgpu_cpp.h>
-
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -38,6 +36,7 @@
 #include "attribute/attribute-manager.h"
 #include "deck.gl/json.h"  // {Component, PropTypes}
 #include "luma.gl/core.h"
+#include "luma.gl/webgpu.h"
 #include "math.gl/core.h"
 
 /* eslint-disable react/no-direct-mutation-state */
@@ -165,14 +164,16 @@ class Layer : public Component {
   // Called once when layer is no longer matched and state will be discarded: App can destroy WebGL resources here
   virtual void finalizeState();
 
-  // If state has a model, draw it with supplied uniforms
-  virtual void drawState(wgpu::RenderPassEncoder pass);
+  void draw(wgpu::RenderPassEncoder pass);
 
  protected:
   // INTERNAL METHODS
 
   // Default implementation of attribute invalidation, can be redefined
   void invalidateAttribute(const std::string& name = "all", const std::string& diffReason = "");
+
+  // If state has a model, draw it with supplied uniforms
+  virtual void _drawState(wgpu::RenderPassEncoder pass);
 
   // void updateAttributes(changedAttributes) {
 
@@ -245,8 +246,6 @@ class Layer : public Component {
   // Called by manager when layer is about to be disposed
   // Note: not guaranteed to be called on application shutdown
   void finalize();
-
-  void draw();  // {moduleParameters = null, uniforms = {}, parameters = {}});
 
   // Helpers
   void _initState();
