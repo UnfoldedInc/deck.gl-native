@@ -100,12 +100,6 @@ auto WebMercatorViewport::getMapCenterByLngLatPosition(mathgl::Vector2<double> l
 
 auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding,
                                     mathgl::Vector2<int> offset) -> WebMercatorViewport {
-  // TODO(randy@unfolded.ai)
-
-  if (padding) {
-    throw new std::logic_error("Padding not yet implemented");
-  }
-
   WebMercatorViewport::Options options;
   options.width = this->width;
   options.height = this->height;
@@ -134,7 +128,7 @@ auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vec
 
   const mathgl::Vector2<double> centerLngLat = viewport.unproject(center);
 
-  const auto zoom = this->zoom + log2(abs(min(scaleX, scaleY)));
+  const auto zoom = viewport.zoom + log2(abs(min(scaleX, scaleY)));
 
   viewport.longitude = centerLngLat.x;
   viewport.latitude = centerLngLat.y;

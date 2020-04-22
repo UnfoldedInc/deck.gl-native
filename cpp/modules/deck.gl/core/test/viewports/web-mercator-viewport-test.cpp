@@ -128,16 +128,28 @@ TEST(WebMercatorViewport, getScales) {
 }
 
 TEST(WebMercatorViewport, fitBounds) {
-  // Will create additional test vectors
-  auto topLeft = Vector2<double>(-7.135318, 23.241346);
-  auto bottomRight = Vector2<double>(1.659613, 18.312811);
+  WebMercatorViewport TEST_VIEWPORT[] = {makeTestViewport(100, 100, -122.0, 37.7, 11.0, 0, 0),
+                                         makeTestViewport(100, 100, -122.0, 37.7, 11.0, 0, 0),
+                                         makeTestViewport(600, 400, -122.0, 37.7, 11.0, 0, 0)};
+  const WebMercatorViewport EXPECTED[] = {
+      makeTestViewport(100, 100, -73.48759999999997, 41.26801443944763, 5.723804361273887, 0, 0),
+      makeTestViewport(100, 100, -73.48759999999997, 41.26801443944763, 5.723804361273887, 0, 0),
+      makeTestViewport(600, 400, -23.406499999999973, 64.86850056273362, 12.89199533073045, 0, 0)};
 
-  for (auto viewport : TEST_VIEWPORTS) {
-    for (auto tc : TEST_VIEWPORTS) {
-      WebMercatorViewport retViewport = viewport.fitBounds(topLeft, bottomRight);
-      std::cout << "retViewport lng: " << retViewport.longitude << "\n";
-      std::cout << "retViewport lat: " << retViewport.latitude << "\n";
-      std::cout << "retViewport zoom: " << retViewport.zoom << "\n";
-    }
+  Vector2<double> topLeft[] = {Vector2<double>(-73.9876, 40.7661), Vector2<double>(-72.9876, 41.7661),
+                               Vector2<double>(-23.407, 64.863)};
+  Vector2<double> bottomRight[] = {Vector2<double>(-72.9876, 41.7661), Vector2<double>(-73.9876, 40.7661),
+                                   Vector2<double>(-23.406, 64.874)};
+  int padding[] = {0, 0, 20};
+  Vector2<int> offset[] = {Vector2<int>(0, 0), Vector2<int>(0, 0), Vector2<int>(0, -40)};
+
+  int i = 0;
+  for (auto viewport : TEST_VIEWPORT) {
+    WebMercatorViewport result = viewport.fitBounds(topLeft[i], bottomRight[i], padding[i], offset[i]);
+    EXPECT_NEAR(result.longitude, EXPECTED[i].longitude, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(result.latitude, EXPECTED[i].latitude, LNGLAT_TOLERANCE);
+    // arbitary zoom tolerance chosen for now - will revise
+    EXPECT_NEAR(result.zoom, EXPECTED[i].zoom, 1e-7);
+    i++;
   }
 }
