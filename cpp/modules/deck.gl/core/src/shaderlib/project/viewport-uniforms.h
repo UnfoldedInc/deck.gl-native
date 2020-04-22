@@ -21,6 +21,7 @@
 #ifndef DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 #define DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 
+#include <memory>
 #include <optional>
 
 #include "deck.gl/core.h"
@@ -58,14 +59,15 @@ struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) ViewportUniforms
  * @param viewport -
  * @return {Float32Array} - 4x4 projection matrix that can be used in shaders
  */
-auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio = 1,
+auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio = 1,
                              mathgl::Matrix4<double> modelMatrix = mathgl::Matrix4<double>(),
                              COORDINATE_SYSTEM coordinateSystem = COORDINATE_SYSTEM::DEFAULT,
                              mathgl::Vector3<double> coordinateOrigin = mathgl::Vector3<double>(),
                              bool wrapLongitude = false) -> ViewportUniforms;
 
-auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORDINATE_SYSTEM coordinateSystem,
-                               mathgl::Vector3<double> coordinateOrigin) -> ViewportUniforms;
+auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio,
+                               COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
+    -> ViewportUniforms;
 
 }  // namespace deckgl
 

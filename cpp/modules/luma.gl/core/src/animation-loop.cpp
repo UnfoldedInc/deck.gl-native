@@ -30,9 +30,13 @@ using namespace lumagl::utils;
 
 AnimationLoop::AnimationLoop(const Size& size) : _size{size} {
   // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
-  // TODO(ilija@unfolded.ai): This should likely be set up globally?
+  // TODO(ilija@unfolded.ai): Set this globally elsewhere
+  static bool procTableInitialized = false;
   DawnProcTable procs = dawn_native::GetProcs();
-  dawnProcSetProcs(&procs);
+  if (!procTableInitialized) {
+    dawnProcSetProcs(&procs);
+    procTableInitialized = true;
+  }
 
   this->_procs = procs;
 }

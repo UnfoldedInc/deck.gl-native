@@ -50,7 +50,7 @@ class ScatterplotLayer : public Layer {
   void initializeState() override;
   void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
   void finalizeState() override;
-  void _drawState(wgpu::RenderPassEncoder pass) override;
+  void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
   // TODO(ilija@unfolded.ai): Is there a way to avoid passing device here?

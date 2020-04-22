@@ -47,19 +47,19 @@ struct MatrixAndOffset {
   std::optional<mathgl::Vector3<double>> geospatialOrigin;
 };
 
-auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
-    -> OffsetOrigin {
+auto getOffsetOrigin(const std::shared_ptr<Viewport>& viewport, COORDINATE_SYSTEM coordinateSystem,
+                     mathgl::Vector3<double> coordinateOrigin) -> OffsetOrigin {
   auto shaderCoordinateOrigin = coordinateOrigin;
   auto geospatialOrigin = std::optional<Vector3<double>>();
   auto offsetMode = true;
 
   if (coordinateSystem == COORDINATE_SYSTEM::LNGLAT_OFFSETS || coordinateSystem == COORDINATE_SYSTEM::METER_OFFSETS) {
     geospatialOrigin = coordinateOrigin;
-  } else if (viewport.isGeospatial) {
-    geospatialOrigin = Vector3(round(viewport.longitude), round(viewport.latitude), 0.0);
+  } else if (viewport->isGeospatial) {
+    geospatialOrigin = Vector3(round(viewport->longitude), round(viewport->latitude), 0.0);
   }
 
-  switch (viewport.projectionMode()) {
+  switch (viewport->projectionMode()) {
     case PROJECTION_MODE::WEB_MERCATOR:
       if (coordinateSystem == COORDINATE_SYSTEM::LNGLAT || coordinateSystem == COORDINATE_SYSTEM::CARTESIAN) {
         offsetMode = false;
@@ -73,15 +73,15 @@ auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, math
         shaderCoordinateOrigin = geospatialOrigin.value();
       } else if (coordinateSystem == COORDINATE_SYSTEM::CARTESIAN) {
         // viewport center in common space
-        shaderCoordinateOrigin = Vector3<double>(round(viewport.center.x), round(viewport.center.y), 0.0);
+        shaderCoordinateOrigin = Vector3<double>(round(viewport->center.x), round(viewport->center.y), 0.0);
         // Geospatial origin (wgs84) must match shaderCoordinateOrigin (common)
-        geospatialOrigin = viewport.unprojectPosition(shaderCoordinateOrigin);
+        geospatialOrigin = viewport->unprojectPosition(shaderCoordinateOrigin);
       }
       break;
 
     case PROJECTION_MODE::IDENTITY:
       shaderCoordinateOrigin =
-          Vector3<double>(round(viewport.position.x), round(viewport.position.y), round(viewport.position.z));
+          Vector3<double>(round(viewport->position.x), round(viewport->position.y), round(viewport->position.z));
       break;
 
     default:
@@ -95,14 +95,14 @@ auto getOffsetOrigin(Viewport viewport, COORDINATE_SYSTEM coordinateSystem, math
 
 // The code that utilizes Matrix4 does the same calculation as their mathgl::Matrix4<double> counterparts,
 // has lower performance but provides error checking.
-auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSystem,
+auto calculateMatrixAndOffset(const std::shared_ptr<Viewport>& viewport, COORDINATE_SYSTEM coordinateSystem,
                               mathgl::Vector3<double> coordinateOrigin) -> MatrixAndOffset {
-  auto viewMatrixUncentered = viewport.viewMatrixUncentered;
-  auto viewMatrix = viewport.viewMatrix;
-  auto viewProjectionMatrix = viewport.viewProjectionMatrix;
-  auto projectionMatrix = viewport.projectionMatrix;
+  auto viewMatrixUncentered = viewport->viewMatrixUncentered;
+  auto viewMatrix = viewport->viewMatrix;
+  auto viewProjectionMatrix = viewport->viewProjectionMatrix;
+  auto projectionMatrix = viewport->projectionMatrix;
   auto projectionCenter = Vector4<double>();
-  auto cameraPosCommon = viewport.cameraPosition;
+  auto cameraPosCommon = viewport->cameraPosition;
 
   auto offsetOrigin = getOffsetOrigin(viewport, coordinateSystem, coordinateOrigin);
 
@@ -111,7 +111,7 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
     // This is the key to offset mode precision
     // (avoids doing this addition in 32 bit precision in GLSL)
     auto positionCommonSpace3 =
-        viewport.projectPosition(offsetOrigin.geospatialOrigin.value_or(offsetOrigin.shaderCoordinateOrigin));
+        viewport->projectPosition(offsetOrigin.geospatialOrigin.value_or(offsetOrigin.shaderCoordinateOrigin));
 
     cameraPosCommon = cameraPosCommon - positionCommonSpace3;
 
@@ -136,11 +136,11 @@ auto calculateMatrixAndOffset(Viewport viewport, COORDINATE_SYSTEM coordinateSys
           .geospatialOrigin = offsetOrigin.geospatialOrigin};
 }
 
-auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio, mathgl::Matrix4<double> modelMatrix,
-                             COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin,
-                             bool wrapLongitude) -> ViewportUniforms {
+auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio,
+                             mathgl::Matrix4<double> modelMatrix, COORDINATE_SYSTEM coordinateSystem,
+                             mathgl::Vector3<double> coordinateOrigin, bool wrapLongitude) -> ViewportUniforms {
   if (coordinateSystem == COORDINATE_SYSTEM::DEFAULT) {
-    coordinateSystem = viewport.isGeospatial ? COORDINATE_SYSTEM::LNGLAT : COORDINATE_SYSTEM::CARTESIAN;
+    coordinateSystem = viewport->isGeospatial ? COORDINATE_SYSTEM::LNGLAT : COORDINATE_SYSTEM::CARTESIAN;
   }
 
   // Memoized in the JS
@@ -148,26 +148,27 @@ auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio, mathgl:
 
   uniforms.project_uWrapLongitude = wrapLongitude;
   // elided IDENTITY_MATRIX default
-  uniforms.project_uModelMatrix = viewport.modelMatrix;
+  uniforms.project_uModelMatrix = viewport->modelMatrix;
 
   return uniforms;
 }
 
-auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORDINATE_SYSTEM coordinateSystem,
-                               mathgl::Vector3<double> coordinateOrigin) -> ViewportUniforms {
+auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio,
+                               COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
+    -> ViewportUniforms {
   auto matrixAndOffset = calculateMatrixAndOffset(viewport, coordinateSystem, coordinateOrigin);
 
   // Calculate projection pixels per unit
-  auto distanceScales = viewport.getDistanceScales();
+  auto distanceScales = viewport->getDistanceScales();
 
-  auto viewportSize = Vector2<double>(viewport.width, viewport.height) * devicePixelRatio;
+  auto viewportSize = Vector2<double>(viewport->width, viewport->height) * devicePixelRatio;
 
   ViewportUniforms uniforms = {// Projection mode values
                                .project_uCoordinateSystem = coordinateSystem,
-                               .project_uProjectionMode = viewport.projectionMode(),
+                               .project_uProjectionMode = viewport->projectionMode(),
                                .project_uCoordinateOrigin = matrixAndOffset.shaderCoordinateOrigin,
                                .project_uCenter = matrixAndOffset.projectionCenter,
-                               .project_uAntimeridian = (viewport.isGeospatial ? viewport.longitude : 0) - 180,
+                               .project_uAntimeridian = (viewport->isGeospatial ? viewport->longitude : 0) - 180,
 
                                // Screen size
                                .project_uViewportSize = viewportSize,
@@ -175,11 +176,11 @@ auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORD
 
                                // Distance at which screen pixels are projected
                                // TODO(isaac@unfolded.ai): optional focalDistance
-                               .project_uFocalDistance = viewport.focalDistance,
+                               .project_uFocalDistance = viewport->focalDistance,
                                .project_uCommonUnitsPerMeter = distanceScales.unitsPerMeter,
                                .project_uCommonUnitsPerWorldUnit = distanceScales.unitsPerMeter,
                                .project_uCommonUnitsPerWorldUnit2 = DEFAULT_PIXELS_PER_UNIT2,
-                               .project_uScale = viewport.scale,  // This is the mercator scale (2 ** zoom)
+                               .project_uScale = viewport->scale,  // This is the mercator scale (2 ** zoom)
 
                                .project_uViewProjectionMatrix = matrixAndOffset.viewProjectionMatrix,
 
@@ -187,7 +188,7 @@ auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORD
                                .project_uCameraPosition = matrixAndOffset.cameraPosCommon};
 
   if (matrixAndOffset.geospatialOrigin.has_value()) {
-    auto distanceScalesAtOrigin = viewport.getDistanceScales(matrixAndOffset.geospatialOrigin.value().toVector2());
+    auto distanceScalesAtOrigin = viewport->getDistanceScales(matrixAndOffset.geospatialOrigin.value().toVector2());
     switch (coordinateSystem) {
       case COORDINATE_SYSTEM::METER_OFFSETS:
         uniforms.project_uCommonUnitsPerWorldUnit = distanceScalesAtOrigin.unitsPerMeter;

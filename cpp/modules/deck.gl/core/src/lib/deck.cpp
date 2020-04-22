@@ -22,6 +22,9 @@
 
 #include <memory>
 
+#include "../shaderlib/project/viewport-uniforms.h"
+#include "luma.gl/garrow.h"
+
 using namespace deckgl;
 
 // Setters and getters for properties
@@ -112,8 +115,17 @@ void Deck::setProps(Deck::Props* props) {
 void Deck::run() {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
   this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
-    for (auto const& layer : this->layerManager->layers) {
-      layer->draw(pass);
+    for (auto const& viewport : this->viewManager->getViewports()) {
+      for (auto const& layer : this->layerManager->layers) {
+        auto viewportUniforms = getUniformsFromViewport(viewport);
+        auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
+                                                                    wgpu::BufferUsage::Uniform);
+        for (auto const& model : layer->getModels()) {
+          model->setUniforms({uniformArray});
+        }
+
+        layer->draw(pass);
+      }
     }
   });
 }

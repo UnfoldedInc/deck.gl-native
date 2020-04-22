@@ -93,8 +93,8 @@ void LineLayer::initializeState() {
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
   this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
 
-  // TODO(ilija@unfolded.ai): Remove
-  this->_model = this->_getModel(this->context->device);
+  // TODO(ilija@unfolded.ai): Where should we initialize models?
+  this->models = {this->_getModel(this->context->device)};
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -112,14 +112,15 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 
 void LineLayer::finalizeState() {}
 
-void LineLayer::_drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
+void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
   auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
   LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMaxPixels, props->widthMaxPixels};
-  // TODO(ilija@unfolded.ai): Calculate uniforms using getUniformsFromViewport or calculateViewportUniforms and set them
-  this->_model->setUniforms(
-      {std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform)});
+  for (auto const& model : this->getModels()) {
+    model->setUniforms(
+        {std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform)});
+    model->draw(pass);
+  }
 
-  this->_model->draw(pass);
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;

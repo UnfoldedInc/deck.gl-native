@@ -50,13 +50,10 @@ class LineLayer : public Layer {
   void initializeState() override;
   void updateState(const Layer::ChangeFlags&, const Layer::Props* oldProps) override;
   void finalizeState() override;
-  void _drawState(wgpu::RenderPassEncoder pass) override;
+  void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;
-
-  // TODO(ilija@unfolded.ai): Remove, not sure where this should be stored when created in _getModel
-  std::shared_ptr<lumagl::Model> _model;
 };
 
 class LineLayer::Props : public Layer::Props {

@@ -102,8 +102,7 @@ auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> wg
   }
 
   WGPUDevice cDevice = backendAdapter.CreateDevice();
-  return wgpu::Device{cDevice};
-  //  return wgpu::Device::Acquire(cDevice);
+  return wgpu::Device::Acquire(cDevice);
 }
 
 auto GLFWAnimationLoop::_createSwapchain(wgpu::Device device) -> wgpu::SwapChain {

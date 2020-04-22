@@ -164,6 +164,9 @@ class Layer : public Component {
   // Called once when layer is no longer matched and state will be discarded: App can destroy WebGL resources here
   virtual void finalizeState();
 
+  // If state has a model, draw it with supplied uniforms
+  virtual void drawState(wgpu::RenderPassEncoder pass);
+
   void draw(wgpu::RenderPassEncoder pass);
 
  protected:
@@ -171,9 +174,6 @@ class Layer : public Component {
 
   // Default implementation of attribute invalidation, can be redefined
   void invalidateAttribute(const std::string& name = "all", const std::string& diffReason = "");
-
-  // If state has a model, draw it with supplied uniforms
-  virtual void _drawState(wgpu::RenderPassEncoder pass);
 
   // void updateAttributes(changedAttributes) {
 
