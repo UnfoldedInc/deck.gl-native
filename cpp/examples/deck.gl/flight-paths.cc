@@ -22,8 +22,6 @@
 
 #include <arrow/filesystem/localfs.h>
 
-#include <filesystem>
-
 #include "deck.gl/core.h"
 #include "deck.gl/layers.h"
 #include "loaders.gl/json.h"
@@ -67,7 +65,8 @@ auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::
 
 int main(int argc, const char *argv[]) {
   // Get data file paths relative to working directory
-  auto programDirectory = std::filesystem::path{argv[0]}.parent_path().string();
+  auto programPath = std::string{argv[0]};
+  auto programDirectory = programPath.erase(programPath.find_last_of("/"));
   auto flightDataPath = programDirectory.append("/data/heathrow-flights.ndjson");
 
   auto deckProps = std::make_shared<Deck::Props>();
