@@ -98,8 +98,9 @@ auto WebMercatorViewport::getMapCenterByLngLatPosition(mathgl::Vector2<double> l
   return this->unprojectFlat(newCenter);
 }
 
-auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding,
-                                    mathgl::Vector2<int> offset) -> WebMercatorViewport {
+auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight,
+                                    double minExtent, double maxZoom, int padding, mathgl::Vector2<int> offset)
+    -> WebMercatorViewport {
   WebMercatorViewport::Options options;
   options.width = this->width;
   options.height = this->height;
@@ -112,7 +113,7 @@ auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vec
   auto nw = viewport.projectFlat(topLeft);
   auto se = viewport.projectFlat(bottomRight);
 
-  mathgl::Vector2<double> size(abs(se.x - nw.x), abs(se.y - nw.y));
+  mathgl::Vector2<double> size(max(abs(se.x - nw.x), minExtent), max(abs(se.y - nw.y), minExtent));
 
   mathgl::Vector2<double> targetSize(this->width - 2 * padding - abs(offset.x) * 2,
                                      this->height - 2 * padding - abs(offset.y) * 2);
@@ -128,7 +129,7 @@ auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vec
 
   const mathgl::Vector2<double> centerLngLat = viewport.unproject(center);
 
-  const auto zoom = viewport.zoom + log2(abs(min(scaleX, scaleY)));
+  const auto zoom = min(maxZoom, viewport.zoom + log2(abs(min(scaleX, scaleY))));
 
   viewport.longitude = centerLngLat.x;
   viewport.latitude = centerLngLat.y;
