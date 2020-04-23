@@ -75,8 +75,12 @@ TEST_F(AttributeManagerTest, Update) {
 
         return resultArray;
       }};
-  manager->add(lumagl::garrow::AttributeDescriptor{"attribute-one", arrow::float32(), attributeUpdater});
-  manager->add(lumagl::garrow::AttributeDescriptor{"attribute-two", arrow::float32(), attributeUpdater});
+
+  auto fieldOne = std::make_shared<arrow::Field>("attribute-one", arrow::float32());
+  manager->add(lumagl::garrow::ColumnBuilder{fieldOne, attributeUpdater});
+
+  auto fieldTwo = std::make_shared<arrow::Field>("attribute-one", arrow::float32());
+  manager->add(lumagl::garrow::ColumnBuilder{fieldTwo, attributeUpdater});
 
   // TODO(ilija@unfolded.ai): In order for this to run, we need to pass a valid Device instance to AttributeManager
   // Currently the only place where we do that is in GLFWAnimationLoop, which opens up a window which we don't want

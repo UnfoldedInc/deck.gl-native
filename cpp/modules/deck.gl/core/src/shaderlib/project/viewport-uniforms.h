@@ -21,14 +21,16 @@
 #ifndef DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 #define DECKGL_CORE_SHADERLIB_PROJECT_VIEWPORTUNIFORMS_H
 
+#include <memory>
 #include <optional>
 
 #include "deck.gl/core.h"
+#include "luma.gl/webgpu.h"
 #include "math.gl/core.h"
 
 namespace deckgl {
 
-struct ViewportUniforms {
+struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) ViewportUniforms {
   COORDINATE_SYSTEM project_uCoordinateSystem;
   PROJECTION_MODE project_uProjectionMode;
   mathgl::Vector3<double> project_uCoordinateOrigin;
@@ -54,17 +56,18 @@ struct ViewportUniforms {
  *
  * TODO - Ensure this works with any viewport, not just WebMercatorViewports
  *
- * @param {WebMercatorViewport} viewport -
+ * @param viewport -
  * @return {Float32Array} - 4x4 projection matrix that can be used in shaders
  */
-auto getUniformsFromViewport(Viewport viewport, double devicePixelRatio = 1,
+auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio = 1,
                              mathgl::Matrix4<double> modelMatrix = mathgl::Matrix4<double>(),
                              COORDINATE_SYSTEM coordinateSystem = COORDINATE_SYSTEM::DEFAULT,
                              mathgl::Vector3<double> coordinateOrigin = mathgl::Vector3<double>(),
                              bool wrapLongitude = false) -> ViewportUniforms;
 
-auto calculateViewportUniforms(Viewport viewport, double devicePixelRatio, COORDINATE_SYSTEM coordinateSystem,
-                               mathgl::Vector3<double> coordinateOrigin) -> ViewportUniforms;
+auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio,
+                               COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
+    -> ViewportUniforms;
 
 }  // namespace deckgl
 

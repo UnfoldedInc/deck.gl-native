@@ -139,8 +139,6 @@ find_library(fmt_LIB fmt PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
 
 target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB}
     probe.gl math.gl luma.gl ${arrow_LIB} ${jsoncpp_LIB} ${fmt_LIB})
-# TODO: Should deck.gl module depend on dawn? Ideally everything is abstracted away by luma.gl
-target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_DEPS_PATH}/webgpu_cpp.o)
 
 target_compile_options(deck.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
 # Specify sources that'll be compiled

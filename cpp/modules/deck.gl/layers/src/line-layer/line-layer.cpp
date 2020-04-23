@@ -22,13 +22,12 @@
 
 #include <arrow/builder.h>
 
-// #include "./line-layer-fragment.glsl.h"
-// #include "./line-layer-vertex.glsl.h"
+#include "./line-layer-fragment.glsl.h"
+#include "./line-layer-vertex.glsl.h"
 #include "deck.gl/core.h"
 
 using namespace deckgl;
 using namespace lumagl;
-using namespace lumagl::garrow;
 
 const std::vector<const Property*> propTypeDefs = {
     //  new PropertyT<std::string>{"widthUnits",
@@ -75,24 +74,27 @@ const defaultProps = {
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
-  auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
   auto sourcePosition =
-      AttributeDescriptor{"instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3), getSourcePosition};
-  this->attributeManager->add(sourcePosition);
+      std::make_shared<arrow::Field>("instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3));
+  auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
+  this->attributeManager->add(garrow::ColumnBuilder{sourcePosition, getSourcePosition});
 
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
-  auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
   auto targetPosition =
-      AttributeDescriptor{"instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3), getTargetPosition};
-  this->attributeManager->add(targetPosition);
+      std::make_shared<arrow::Field>("instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3));
+  auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
+  this->attributeManager->add(garrow::ColumnBuilder{targetPosition, getTargetPosition});
 
+  auto color = std::make_shared<arrow::Field>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
-  auto color = AttributeDescriptor{"instanceColors", arrow::fixed_size_list(arrow::float32(), 4), getColor};
-  this->attributeManager->add(color);
+  this->attributeManager->add(garrow::ColumnBuilder{color, getColor});
 
+  auto width = std::make_shared<arrow::Field>("instanceWidths", arrow::float32());
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
-  auto width = AttributeDescriptor{"instanceWidths", arrow::float32(), getWidth};
-  this->attributeManager->add(width);
+  this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
+
+  // TODO(ilija@unfolded.ai): Where should we initialize models?
+  this->models = {this->_getModel(this->context->device)};
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -110,7 +112,15 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 
 void LineLayer::finalizeState() {}
 
-void LineLayer::drawState() {  // {uniforms}
+void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
+  auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
+  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMaxPixels, props->widthMaxPixels};
+  for (auto const& model : this->getModels()) {
+    model->setUniforms(
+        {std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform)});
+    model->draw(pass);
+  }
+
   /*
   const {viewport} = this->context;
   const {widthUnits, widthScale, widthMinPixels, widthMaxPixels} = ;
@@ -130,7 +140,39 @@ void LineLayer::drawState() {  // {uniforms}
 }
 
 auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model> {
-  return std::shared_ptr<lumagl::Model>{nullptr};
+  std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+      std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3)};
+  auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
+
+  // TODO(ilija@unfolded.ai): **arrow**::Fields are already being specified in initializeState, consolidate?
+  std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+      std::make_shared<garrow::Field>("instanceSourcePositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceTargetPositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceColors", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("instanceWidths", wgpu::VertexFormat::Float)};
+  auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
+
+  // TODO(ilija@unfolded.ai): Get rid of this once shader modules are in place
+  std::string combinedVS = std::string{projectVS} + std::string{vs};
+  auto modelOptions = Model::Options{combinedVS,
+                                     fs,
+                                     attributeSchema,
+                                     instancedAttributeSchema,
+                                     {{sizeof(LineLayerUniforms)}, {sizeof(ViewportUniforms)}}};
+  auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+
+  model->vertexCount = 4;  // Is this correct?
+
+  std::vector<mathgl::Vector3<float>> positionData = {{0, -1, 0}, {0, 1, 0}, {1, -1, 0}, {1, 1, 0}};
+  std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+      std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
+  model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+  auto instancedAttributes = this->attributeManager->update(this->props()->data);
+  model->setInstancedAttributes(instancedAttributes);
+
+  return model;
+
   //
   //  (0, -1)-------------_(1, -1)
   //       |          _,-"  |

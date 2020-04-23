@@ -21,11 +21,13 @@
 #ifndef LUMAGL_GARROW_FIELD_H
 #define LUMAGL_GARROW_FIELD_H
 
+#include <dawn/webgpu_cpp.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "./util/attribute-descriptor.h"
+#include "./key-value-metadata.h"
 
 namespace lumagl {
 namespace garrow {
@@ -33,19 +35,36 @@ namespace garrow {
 /// \brief A combination of a field name and additional metadata specific to this field.
 class Field {
  public:
-  // TODO(ilija@unfolded.ai): In order for this to match arrow API, and decouple it from attributes,
-  // we should use general-purpoes metadata instead
-  Field(const std::string& name, const AttributeDescriptor& descriptor)
-      : _name{std::move(name)}, _descriptor{std::move(descriptor)} {}
+  // NOTE: type is currently a simple wgpu::VertexFormat value. Arrow has a complex DataType implementation that
+  // deals with buffer type complexity, which is something that should be put in place once we implement reading
+  Field(const std::string& name, wgpu::VertexFormat type, bool nullable = false,
+        const std::shared_ptr<const KeyValueMetadata>& metadata = nullptr)
+      : _name{name}, _type{type}, _nullable{nullable}, _metadata{metadata} {
+    if (nullable) {
+      throw std::runtime_error("Nullable fields currently not supported");
+    }
+  }
 
   /// \brief Returns the field name.
   auto name() const -> const std::string& { return _name; }
-  /// \brief Returns the associated descriptor data.
-  auto descriptor() const -> AttributeDescriptor { return _descriptor; }
+
+  /// \brief Return the field data type.
+  auto type() const -> wgpu::VertexFormat { return _type; }
+
+  /// \brief Return whether the field is nullable.
+  auto nullable() const -> bool { return _nullable; }
+
+  /// \brief Return the field's attached metadata.
+  auto metadata() const -> std::shared_ptr<const KeyValueMetadata> { return this->_metadata; }
+
+  /// \brief Return whether the field has non-empty metadata.
+  auto HasMetadata() const -> bool { return this->_metadata != nullptr && this->_metadata->size() > 0; };
 
  private:
   std::string _name;
-  AttributeDescriptor _descriptor;
+  wgpu::VertexFormat _type;
+  bool _nullable;
+  std::shared_ptr<const KeyValueMetadata> _metadata;
 };
 
 }  // namespace garrow

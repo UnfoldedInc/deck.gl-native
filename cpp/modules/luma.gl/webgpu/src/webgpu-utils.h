@@ -39,9 +39,6 @@ auto getWebGPUBackendType(const std::string &backendType) -> wgpu::BackendType;
 /// \brief Get a string representation of a WebGPU Error
 auto getWebGPUErrorName(WGPUErrorType errorType) -> const char *;
 
-/// \brief Returns size of the given format in bytes.
-auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t;
-
 }  // namespace utils
 }  // namespace lumagl
 

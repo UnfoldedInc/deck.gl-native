@@ -20,11 +20,13 @@
 
 #include "./array.h"  // NOLINT(build/include)
 
+#include "./util/arrow-utils.h"
+#include "./util/webgpu-utils.h"
+
 using namespace lumagl::garrow;
 
-Array::Array(wgpu::Device device, const AttributeDescriptor& descriptor, const std::shared_ptr<arrow::Array>& data)
-    : Array{device, descriptor} {
-  this->setData(data);
+Array::Array(wgpu::Device device, const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage) : Array{device} {
+  this->setData(data, usage);
 }
 
 Array::~Array() {
@@ -33,10 +35,17 @@ Array::~Array() {
   }
 }
 
-void Array::setData(const std::shared_ptr<arrow::Array>& data) {
+void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage) {
+  auto vertexFormatOptional = vertexFormatFromArrowType(data->type());
+  if (!vertexFormatOptional.has_value()) {
+    throw std::runtime_error("Unsupported data format");
+  }
+  auto vertexFormat = vertexFormatOptional.value();
+  auto vertexSize = getVertexFormatSize(vertexFormat);
+
   if (!this->_buffer || data->length() != this->_length) {
-    auto size = this->_descriptor.size() * data->length();
-    this->_buffer = this->_createBuffer(this->_device, size, wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex);
+    auto size = vertexSize * data->length();
+    this->_buffer = this->_createBuffer(this->_device, size, usage);
   }
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
@@ -59,7 +68,7 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data) {
 auto Array::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
   wgpu::BufferDescriptor bufferDesc;
   bufferDesc.size = size;
-  bufferDesc.usage = usage;
+  bufferDesc.usage = wgpu::BufferUsage::CopyDst | usage;
 
   return device.CreateBuffer(&bufferDesc);
 }

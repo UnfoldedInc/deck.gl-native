@@ -22,6 +22,9 @@
 
 #include <memory>
 
+#include "../shaderlib/project/viewport-uniforms.h"
+#include "luma.gl/garrow.h"
+
 using namespace deckgl;
 
 // Setters and getters for properties
@@ -58,19 +61,12 @@ auto Deck::Props::getProperties() const -> const Properties* {
 // Deck class
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
-    : Component(props),
-      width{100},
-      height{100},
-      viewManager{std::make_shared<ViewManager>()},
-      // layerManager{std::make_shared<LayerManager>()},
-      _needsRedraw{"Initial render"} {
-  // this->animationLoop = this->_createAnimationLoop(props);
+    : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
   this->setProps(props.get());
-  // this->animationLoop.start();
 }
 
 Deck::~Deck() {
-  // this->animationLoop.stop();
+  this->animationLoop->stop();
   // this->tooltip.remove();
 }
 
@@ -114,6 +110,24 @@ void Deck::setProps(Deck::Props* props) {
   // this->deckPicker.setProps(resolvedProps);
 
   // super::setProps();
+}
+
+void Deck::run() {
+  // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
+  this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
+    for (auto const& viewport : this->viewManager->getViewports()) {
+      for (auto const& layer : this->layerManager->layers) {
+        auto viewportUniforms = getUniformsFromViewport(viewport);
+        auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
+                                                                    wgpu::BufferUsage::Uniform);
+        for (auto const& model : layer->getModels()) {
+          model->setUniforms({uniformArray});
+        }
+
+        layer->draw(pass);
+      }
+    }
+  });
 }
 
 // Public API
@@ -303,23 +317,6 @@ this->width || newHeight !== this->height) { this->width = newWidth;
     return true;
   }
   return false;
-}
-
-void Deck::_createAnimationLoop(props) {
-  const {width, height, gl, glOptions, debug, useDevicePixels, autoResizeDrawingBuffer} = props;
-
-  return new AnimationLoop({
-    width,
-    height,
-    useDevicePixels,
-    autoResizeDrawingBuffer,
-    autoResizeViewport: false,
-    gl,
-    onCreateContext: opts =>
-      createGLContext(Object.assign({}, glOptions, opts, {canvas: this->canvas, debug})), onInitialize:
-this->_onRendererInitialized, onRender: this->_onRenderFrame, onBeforeRender: props->onBeforeRender, onAfterRender:
-props->onAfterRender
-  });
 }
 
 // The `pointermove` event may fire multiple times in between two animation frames,

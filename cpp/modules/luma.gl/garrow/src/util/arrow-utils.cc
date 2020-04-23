@@ -21,7 +21,6 @@
 #include "./arrow-utils.h"  // NOLINT(build/include)
 
 #include "../table.h"
-#include "./attribute-descriptor.h"
 
 namespace lumagl {
 namespace garrow {
@@ -123,22 +122,30 @@ auto vertexFormatFromArrowType(const std::shared_ptr<arrow::DataType>& type) -> 
   return std::nullopt;
 }
 
-auto transformTable(const std::shared_ptr<arrow::Table>& table, const std::vector<AttributeDescriptor>& descriptors,
+auto transformTable(const std::shared_ptr<arrow::Table>& table, const std::vector<ColumnBuilder>& builders,
                     wgpu::Device device) -> std::shared_ptr<Table> {
-  // Create an empty output table
-  std::vector<std::shared_ptr<Field>> fields{};
-  std::vector<std::shared_ptr<Array>> arrays{};
+  std::vector<std::shared_ptr<Field>> fields;
+  std::vector<std::shared_ptr<Array>> arrays;
 
-  // Iterate over descriptors and create one column per-descriptor
-  for (auto const& descriptor : descriptors) {
-    // TODO(ilija@unfolded.ai): Once metadata API is in place, we can attach this to the table instead
-    auto field = std::make_shared<Field>(descriptor.name, descriptor);
-    fields.push_back(field);
+  for (auto const& builder : builders) {
+    auto field = builder.field;
+    auto wgpuType = vertexFormatFromArrowType(field->type());
+    if (!wgpuType.has_value()) {
+      throw std::runtime_error("Unsupported data type");
+    }
 
-    auto transformedArray = descriptor.attributeBuilder(table);
-    auto gpuArray = std::make_shared<Array>(device, descriptor);
-    gpuArray->setData(transformedArray);
+    std::shared_ptr<KeyValueMetadata> metadata = nullptr;
+    if (field->HasMetadata()) {
+      std::unordered_map<std::string, std::string> metadataMap;
+      field->metadata()->ToUnorderedMap(&metadataMap);
+      metadata = std::make_shared<KeyValueMetadata>(metadataMap);
+    }
+    auto gpuField = std::make_shared<Field>(builder.field->name(), wgpuType.value(), false, metadata);
+    fields.push_back(gpuField);
 
+    auto mappedArray = builder.mapColumn(table);
+    // TODO(ilija@unfolded.ai): Usage could be specified through metadata?
+    auto gpuArray = std::make_shared<Array>(device, mappedArray, wgpu::BufferUsage::Vertex);
     arrays.push_back(gpuArray);
   }
 

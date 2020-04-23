@@ -40,7 +40,8 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, std::shared_ptr<wgpu::Device> device) {
+GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, wgpu::Device device, const Size& size)
+    : AnimationLoop{size} {
   this->_window = this->_initializeGLFW(backendType);
 
   // Create a device if none was provided
@@ -49,7 +50,7 @@ GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, std::s
     _device = this->_createDevice(backendType);
   }
 
-  this->_binding = CreateBinding(backendType, this->_window, _device->Get());
+  this->_binding = CreateBinding(backendType, this->_window, _device.Get());
   if (this->_binding == nullptr) {
     throw new std::runtime_error("Failed to create binding");
   }
@@ -83,7 +84,7 @@ auto GLFWAnimationLoop::getPreferredSwapChainTextureFormat() -> wgpu::TextureFor
   return static_cast<wgpu::TextureFormat>(this->_binding->GetPreferredSwapChainTextureFormat());
 }
 
-auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> {
+auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> wgpu::Device {
   this->_instance = std::make_unique<dawn_native::Instance>();
   DiscoverAdapter(this->_instance.get(), this->_window, backendType);
 
@@ -101,17 +102,15 @@ auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> st
   }
 
   WGPUDevice cDevice = backendAdapter.CreateDevice();
-  auto device = wgpu::Device::Acquire(cDevice);
-
-  return std::make_unique<wgpu::Device>(std::move(device));
+  return wgpu::Device::Acquire(cDevice);
 }
 
-auto GLFWAnimationLoop::_createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain {
+auto GLFWAnimationLoop::_createSwapchain(wgpu::Device device) -> wgpu::SwapChain {
   wgpu::SwapChainDescriptor swapChainDesc;
   swapChainDesc.implementation = this->_binding->GetSwapChainImplementation();
-  auto swapchain = device->CreateSwapChain(nullptr, &swapChainDesc);
-  swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment, this->width,
-                      this->height);
+  auto swapchain = device.CreateSwapChain(nullptr, &swapChainDesc);
+  swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment,
+                      this->_size.width, this->_size.height);
 
   return swapchain;
 }
@@ -141,7 +140,7 @@ auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType) -> 
       glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   }
 
-  auto window = glfwCreateWindow(this->width, this->height, "deck.gl window", nullptr, nullptr);
+  auto window = glfwCreateWindow(this->_size.width, this->_size.height, "deck.gl window", nullptr, nullptr);
   if (!window) {
     throw new std::runtime_error("Failed to create GLFW window");
   }

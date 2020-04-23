@@ -34,7 +34,7 @@ namespace lumagl {
 class GLFWAnimationLoop : public AnimationLoop {
  public:
   GLFWAnimationLoop(const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType(),
-                    std::shared_ptr<wgpu::Device> device = nullptr);
+                    wgpu::Device device = nullptr, const Size& size = Size{640, 480});
   ~GLFWAnimationLoop();
 
   void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
@@ -44,8 +44,8 @@ class GLFWAnimationLoop : public AnimationLoop {
   auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat override;
 
  protected:
-  auto _createDevice(const wgpu::BackendType backendType) -> std::unique_ptr<wgpu::Device> override;
-  auto _createSwapchain(std::shared_ptr<wgpu::Device> device) -> wgpu::SwapChain override;
+  auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device override;
+  auto _createSwapchain(wgpu::Device device) -> wgpu::SwapChain override;
 
  private:
   auto _initializeGLFW(const wgpu::BackendType) -> GLFWwindow*;

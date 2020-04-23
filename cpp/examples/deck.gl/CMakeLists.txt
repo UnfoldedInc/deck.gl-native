@@ -20,6 +20,10 @@
 
 set(EXAMPLE_SOURCE_FILES
     stdinout.cpp
+    flight-paths.cc
+    )
+set(EXAMPLE_DATA_FILES
+    data/heathrow-flights.ndjson
     )
 
 # Create an executable for each example from the list
@@ -27,7 +31,12 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
     get_filename_component(TARGET_NAME ${EXAMPLE_SOURCE_FILE} NAME_WE)
     add_executable(${TARGET_NAME} ${EXAMPLE_SOURCE_FILE})
     
-    target_link_libraries(${TARGET_NAME} PRIVATE ${DECK_LINK_FLAGS} deck.gl)
+    target_link_libraries(${TARGET_NAME} PRIVATE ${DECK_LINK_FLAGS} deck.gl loaders.gl)
+endforeach()
+
+# Copy supporting data files
+foreach(EXAMPLE_DATA_FILE ${EXAMPLE_DATA_FILES})
+    configure_file(${EXAMPLE_DATA_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_DATA_FILE} COPYONLY)
 endforeach()
 
 # Add example files to global DECK_EXAMPLE_FILES property

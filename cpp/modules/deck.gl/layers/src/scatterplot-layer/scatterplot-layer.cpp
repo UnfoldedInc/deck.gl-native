@@ -26,7 +26,6 @@
 
 using namespace deckgl;
 using namespace lumagl;
-using namespace lumagl::garrow;
 
 const std::vector<const Property*> propTypeDefs = {
     new PropertyT<bool>{
@@ -122,25 +121,25 @@ Number.MAX_SAFE_INTEGER}, // max point radius in pixels
 void ScatterplotLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
+  auto position = std::make_shared<arrow::Field>("instancePositions", arrow::fixed_size_list(arrow::float32(), 3));
   auto getPosition = std::bind(&ScatterplotLayer::getPositionData, this, std::placeholders::_1);
-  auto position = AttributeDescriptor{"instancePositions", arrow::fixed_size_list(arrow::float32(), 3), getPosition};
-  this->attributeManager->add(position);
+  this->attributeManager->add(garrow::ColumnBuilder{position, getPosition});
 
+  auto radius = std::make_shared<arrow::Field>("instanceRadius", arrow::float32());
   auto getRadius = std::bind(&ScatterplotLayer::getRadiusData, this, std::placeholders::_1);
-  auto radius = AttributeDescriptor{"instanceRadius", arrow::float32(), getRadius};
-  this->attributeManager->add(radius);
+  this->attributeManager->add(garrow::ColumnBuilder{radius, getRadius});
 
+  auto fillColor = std::make_shared<arrow::Field>("instanceFillColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getFillColor = std::bind(&ScatterplotLayer::getFillColorData, this, std::placeholders::_1);
-  auto fillColor = AttributeDescriptor{"instanceFillColors", arrow::fixed_size_list(arrow::float32(), 4), getFillColor};
-  this->attributeManager->add(fillColor);
+  this->attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
 
+  auto lineColor = std::make_shared<arrow::Field>("instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getLineColor = std::bind(&ScatterplotLayer::getLineColorData, this, std::placeholders::_1);
-  auto lineColor = AttributeDescriptor{"instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4), getLineColor};
-  this->attributeManager->add(lineColor);
+  this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 
+  auto lineWidth = std::make_shared<arrow::Field>("instanceLineWidths", arrow::float32());
   auto getLineWidth = std::bind(&ScatterplotLayer::getLineWidthData, this, std::placeholders::_1);
-  auto lineWidth = AttributeDescriptor{"instanceLineWidths", arrow::float32(), getLineWidth};
-  this->attributeManager->add(lineWidth);
+  this->attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
 }
 
 void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -159,7 +158,7 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
 
 void ScatterplotLayer::finalizeState() {}
 
-void ScatterplotLayer::drawState() {  // uniforms
+void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {  // uniforms
   /*
     const {viewport} = this->context;
     const {

@@ -30,8 +30,6 @@
 using namespace lumagl;
 using namespace mathgl;
 
-namespace {
-
 auto vs = R"(
 #version 450
 
@@ -109,42 +107,36 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
   return shaderData;
 }
 
-auto makeWebGPUTable(wgpu::Device device) -> std::shared_ptr<garrow::Table> {
-  auto positionsDescriptor = garrow::AttributeDescriptor{"positions", arrow::fixed_size_list(arrow::float32(), 4)};
-  auto colorsDescriptor = garrow::AttributeDescriptor{"colors", arrow::fixed_size_list(arrow::float32(), 4)};
+auto createAttributeTable(wgpu::Device device) -> std::shared_ptr<garrow::Table> {
+  auto schema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{
+      std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("colors", wgpu::VertexFormat::Float4)});
 
-  auto positionsField = std::make_shared<garrow::Field>("positions", positionsDescriptor);
-  auto colorsField = std::make_shared<garrow::Field>("colors", colorsDescriptor);
+  auto positionsArray = std::make_shared<garrow::Array>(
+      device,
+      std::vector<Vector4<float>>{{0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}},
+      wgpu::BufferUsage::Vertex);
 
-  std::vector<std::shared_ptr<garrow::Field>> fields{positionsField, colorsField};
-  auto schema = std::make_shared<garrow::Schema>(fields);
-
-  std::vector<Vector4<float>> positionData{
-      {0.0f, 0.1f, 0.0f, 1.0f}, {-0.1f, -0.1f, 0.0f, 1.0f}, {0.1f, -0.1f, 0.0f, 1.0f}};
-  auto positionsArray = std::make_shared<garrow::Array>(device, positionsDescriptor, positionData);
-
-  std::vector<Vector4<float>> colorData{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}};
-  auto colorsArray = std::make_shared<garrow::Array>(device, colorsDescriptor, colorData);
-
+  auto colorsArray = std::make_shared<garrow::Array>(
+      device, std::vector<Vector4<float>>{{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+      wgpu::BufferUsage::Vertex);
   std::vector<std::shared_ptr<garrow::Array>> arrays{positionsArray, colorsArray};
 
   return std::make_shared<garrow::Table>(schema, arrays);
 }
 
-}  // anonymous namespace
-
 int main(int argc, const char* argv[]) {
-  GLFWAnimationLoop animationLoop{};
-  wgpu::Device device = *(animationLoop.device.get());
+  GLFWAnimationLoop animationLoop;
+  auto device = animationLoop.device();
 
-  auto attributes = makeWebGPUTable(device);
-  Model model{animationLoop.device, {vs, fs, attributes->schema(), {{sizeof(ShaderData)}}}};
+  auto attributes = createAttributeTable(device);
+  auto instancedSchema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
+  Model model{device, {vs, fs, attributes->schema(), instancedSchema, {{sizeof(ShaderData)}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
-  std::vector<wgpu::Buffer> uniformBuffers;
+  std::vector<std::shared_ptr<garrow::Array>> uniforms;
   for (auto const& data : shaderData) {
-    auto ubo = utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform);
-    uniformBuffers.push_back(ubo);
+    uniforms.push_back(std::make_shared<garrow::Array>(device, &data, 1, wgpu::BufferUsage::Uniform));
   }
 
   model.setAttributes(attributes);
@@ -154,12 +146,12 @@ int main(int argc, const char* argv[]) {
     static int f = 0;
     f++;
 
-    for (auto i = 0; i < uniformBuffers.size(); ++i) {
+    for (auto i = 0; i < uniforms.size(); ++i) {
       // Update buffer
       shaderData[i].time = f / 60.0f;
-      uniformBuffers[i].SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
+      uniforms[i]->buffer().SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
 
-      model.setUniformBuffers({uniformBuffers[i]});
+      model.setUniforms({uniforms[i]});
       model.draw(pass);
     }
   });

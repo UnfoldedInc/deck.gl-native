@@ -28,9 +28,8 @@
 #include <memory>
 #include <string>
 
-#include "deck.gl/core.h"  // {Layer, project32, picking}
-// import GL from '@luma.gl/constants';
-// import {Model, Geometry} from '@luma.gl/core';
+#include "deck.gl/core.h"
+#include "luma.gl/webgpu.h"
 
 namespace deckgl {
 
@@ -51,7 +50,7 @@ class LineLayer : public Layer {
   void initializeState() override;
   void updateState(const Layer::ChangeFlags&, const Layer::Props* oldProps) override;
   void finalizeState() override;
-  void drawState() override;
+  void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;
@@ -81,6 +80,13 @@ class LineLayer::Props : public Layer::Props {
   std::function<ArrowMapper::Vector4FloatAccessor> getColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};
+};
+
+struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) LineLayerUniforms {
+  float opacity;
+  float widthScale;
+  float widthMinPixels;
+  float widthMaxPixels;
 };
 
 }  // namespace deckgl

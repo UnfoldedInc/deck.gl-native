@@ -324,11 +324,9 @@ void Layer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Prop
 // App can destroy WebGL resources here
 void Layer::finalizeState() {}
 
-// If state has a model, draw it with supplied uniforms
-void Layer::drawState() {
+void Layer::drawState(wgpu::RenderPassEncoder pass) {
   for (auto model : this->getModels()) {
-    // TODO(ilija@unfolded.ai): Add render pass plumbing so that we can pass it to draw
-    //    model->draw();
+    model->draw(pass);
   }
 }
 
@@ -371,10 +369,12 @@ void Layer::invalidateAttribute(const std::string& name, const std::string& diff
 // Should only be called by the deck.gl LayerManager class
 
 // Called by layer manager when a new layer is found
-void Layer::initialize(const LayerContext* context) {
+void Layer::initialize(const std::shared_ptr<LayerContext>& context) {
   // debug(TRACE_INITIALIZE, this);
 
   this->context = context;
+  // TODO(ilija@unfolded): Is AttributeManager supposed to be created here?
+  this->attributeManager = std::make_shared<AttributeManager>(this->props()->id, context->device);
 
   // Call subclass lifecycle method
   this->initializeState();
@@ -439,9 +439,9 @@ void Layer::finalize() {
 }
 
 // Calculates uniforms
-void Layer::draw() {
+void Layer::draw(wgpu::RenderPassEncoder pass) {
   // Call subclass lifecycle method
-  this->drawState();
+  this->drawState(pass);
   // End lifecycle method
 }
 
