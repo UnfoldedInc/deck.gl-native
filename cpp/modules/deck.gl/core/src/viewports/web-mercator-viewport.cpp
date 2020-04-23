@@ -98,7 +98,42 @@ auto WebMercatorViewport::getMapCenterByLngLatPosition(mathgl::Vector2<double> l
   return this->unprojectFlat(newCenter);
 }
 
-auto fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, int padding = 0,
-               mathgl::Vector2<int> offset = mathgl::Vector2<int>()) {
-  throw new std::logic_error("fitBounds not supported");
+auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight,
+                                    double minExtent, double maxZoom, int padding, mathgl::Vector2<int> offset)
+    -> WebMercatorViewport {
+  WebMercatorViewport::Options options;
+  options.width = this->width;
+  options.height = this->height;
+  options.longitude = 0;
+  options.latitude = 0;
+  options.zoom = 0;
+
+  WebMercatorViewport viewport = WebMercatorViewport(options);
+
+  auto nw = viewport.projectFlat(topLeft);
+  auto se = viewport.projectFlat(bottomRight);
+
+  mathgl::Vector2<double> size(max(abs(se.x - nw.x), minExtent), max(abs(se.y - nw.y), minExtent));
+
+  mathgl::Vector2<double> targetSize(this->width - 2 * padding - abs(offset.x) * 2,
+                                     this->height - 2 * padding - abs(offset.y) * 2);
+
+  if (targetSize.x <= 0 || targetSize.y <= 0) {
+    throw new std::logic_error("Invalid targetSize");
+  }
+
+  const double scaleX = targetSize.x / size.x;
+  const double scaleY = targetSize.y / size.y;
+
+  const mathgl::Vector2<double> center((se.x + nw.x) / 2.0, (se.y + nw.y) / 2.0);
+
+  const mathgl::Vector2<double> centerLngLat = viewport.unproject(center);
+
+  const auto zoom = min(maxZoom, viewport.zoom + log2(abs(min(scaleX, scaleY))));
+
+  viewport.longitude = centerLngLat.x;
+  viewport.latitude = centerLngLat.y;
+  viewport.zoom = zoom;
+
+  return viewport;
 }

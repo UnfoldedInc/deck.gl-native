@@ -30,6 +30,7 @@ using namespace deckgl;
 auto const LNGLAT_TOLERANCE = 1e-6;
 // auto const ALT_TOLERANCE = 1e-5;
 auto const OFFSET_TOLERANCE = 1e-5;
+auto const ZOOM_TOLERANCE = 1e-6;
 
 WebMercatorViewport makeTestViewport(int width, int height, double longitude, double latitude, double zoom,
                                      double pitch, double bearing) {
@@ -124,5 +125,48 @@ TEST(WebMercatorViewport, getScales) {
       EXPECT_NEAR(xyz0.x, xyz1.x, OFFSET_TOLERANCE);
       EXPECT_NEAR(xyz0.y, xyz1.y, OFFSET_TOLERANCE);
     }
+  }
+}
+
+TEST(WebMercatorViewport, fitBounds) {
+  struct fitBoundsArgs {
+    Vector2<double> topLeft;
+    Vector2<double> bottomRight;
+    Vector2<int> offset;
+    int padding;
+    double minExtent;
+    double maxZoom;
+  };
+
+  WebMercatorViewport TEST_VIEWPORT[] = {
+      makeTestViewport(100, 100, -122.0, 37.7, 11.0, 0, 0), makeTestViewport(100, 100, -122.0, 37.7, 11.0, 0, 0),
+      makeTestViewport(100, 100, -122.0, 37.7, 11.0, 0, 0), makeTestViewport(100, 100, -122.0, 37.7, 11.0, 0, 0),
+      makeTestViewport(600, 400, -122.0, 37.7, 11.0, 0, 0) /*, makeTestViewport(600, 400, -122.0, 37.7, 11.0, 0, 0)*/};
+  const WebMercatorViewport EXPECTED[] = {
+      makeTestViewport(100, 100, -73.48759999999997, 41.26801443944763, 5.723804361273887, 0, 0),
+      makeTestViewport(100, 100, -73.48759999999997, 41.26801443944763, 5.723804361273887, 0, 0),
+      makeTestViewport(100, 100, -73.0, 10.0, 22.0, 0, 0), makeTestViewport(100, 100, -73.0, 10.0, 13.28771238, 0, 0),
+      makeTestViewport(600, 400, -23.406499999999973, 64.86850056273362, 12.89199533073045, 0, 0)
+      /*, makeTestViewport(600, 400, -23.406499999999973, 64.870857602, 12.476957831, 0, 0)*/};
+
+  fitBoundsArgs TEST_ARGS[] = {
+      {Vector2<double>(-73.9876, 40.7661), Vector2<double>(-72.9876, 41.7661), Vector2<int>(0, 0), 0, 0.0, 24.0},
+      {Vector2<double>(-72.9876, 41.7661), Vector2<double>(-73.9876, 40.7661), Vector2<int>(0, 0), 0, 0.0, 24.0},
+      {Vector2<double>(-73.0, 10.0), Vector2<double>(-73.0, 10.0), Vector2<int>(0, 0), 0, 0.0, 22.0},
+      {Vector2<double>(-73.0, 10.0), Vector2<double>(-73.0, 10.0), Vector2<int>(0, 0), 0, 0.01, 24.0},
+      {Vector2<double>(-23.407, 64.863), Vector2<double>(-23.406, 64.874), Vector2<int>(0, -40), 20, 0.0, 24.0}
+      // , {Vector2<double>(-23.407, 64.863), Vector2<double>(-23.406, 64.874), Vector2<int>(0, -40), [100, 10, 30, 30],
+      // 0.0, 24.0}
+  };
+
+  int i = 0;
+  for (auto viewport : TEST_VIEWPORT) {
+    fitBoundsArgs a = TEST_ARGS[i];
+    WebMercatorViewport result =
+        viewport.fitBounds(a.topLeft, a.bottomRight, a.minExtent, a.maxZoom, a.padding, a.offset);
+    EXPECT_NEAR(result.longitude, EXPECTED[i].longitude, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(result.latitude, EXPECTED[i].latitude, LNGLAT_TOLERANCE);
+    EXPECT_NEAR(result.zoom, EXPECTED[i].zoom, ZOOM_TOLERANCE);
+    i++;
   }
 }
