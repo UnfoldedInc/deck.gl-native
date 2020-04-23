@@ -76,8 +76,8 @@ class WebMercatorViewport : public Viewport {
    * Note: Uses simple linear approximation around the viewport center
    * Error increases with size of offset (roughly 1% per 100km)
    *
-   * @param {[Number,Number]|[Number,Number,Number]) lngLatZ - base coordinate
-   * @param {[Number,Number]|[Number,Number,Number]) xyz - array of meter deltas
+   * @param lngLatZ - base coordinate
+   * @param xyz - array of meter deltas
    * @return {[Number,Number]|[Number,Number,Number]) array of [lng,lat,z] deltas
    */
   auto addMetersToLngLat(mathgl::Vector3<double> lngLatZ, mathgl::Vector3<double> xyz) -> mathgl::Vector3<double>;
@@ -87,9 +87,9 @@ class WebMercatorViewport : public Viewport {
    * Get the map center that place a given [lng, lat] coordinate at screen
    * point [x, y]
    *
-   * @param {Array} lngLat - [lng,lat] coordinates
+   * @param lngLat - [lng,lat] coordinates
    *   Specifies a point on the sphere.
-   * @param {Array} pos - [x,y] coordinates
+   * @param pos - [x,y] coordinates
    *   Specifies a point on the screen.
    * @return {Array} [lng,lat] new map center.
    */
@@ -99,9 +99,8 @@ class WebMercatorViewport : public Viewport {
   /**
    * Returns a new viewport that fit around the given rectangle.
    * Only supports non-perspective mode.
-   * @param {Array} bounds - [[lon, lat], [lon, lat]]
-   * @param {Number} [options.padding] - The amount of padding in pixels to add to the given bounds.
-   * @param {Array} [options.offset] - The center of the given bounds relative to the map's center,
+   * @param padding - The amount of padding in pixels to add to the given bounds.
+   * @param offset - The center of the given bounds relative to the map's center,
    *    [x, y] measured in pixels.
    * @returns {WebMercatorViewport}
    */

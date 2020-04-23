@@ -52,7 +52,9 @@ class Model {
 
   void setAttributes(const std::shared_ptr<garrow::Table>& attributes);
   void setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes);
+
   void setUniforms(const std::vector<std::shared_ptr<garrow::Array>>& uniforms);
+  void setUniforms(const std::shared_ptr<garrow::Array>& uniforms, uint32_t index);
 
   void draw(wgpu::RenderPassEncoder pass);
 
@@ -72,11 +74,6 @@ class Model {
   wgpu::ShaderModule fsModule;
 
  private:
-  wgpu::Device _device;
-  std::shared_ptr<garrow::Table> _attributeTable;
-  std::shared_ptr<garrow::Table> _instancedAttributeTable;
-  std::vector<UniformDescriptor> _uniforms;
-
   void _initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
                               const std::shared_ptr<garrow::Schema>& attributeSchema,
                               const std::shared_ptr<garrow::Schema>& instancedAttributeSchema);
@@ -84,6 +81,14 @@ class Model {
       -> wgpu::BindGroupLayout;
 
   void _setVertexBuffers(wgpu::RenderPassEncoder pass);
+
+  wgpu::Device _device;
+  std::shared_ptr<garrow::Table> _attributeTable;
+  std::shared_ptr<garrow::Table> _instancedAttributeTable;
+  std::vector<UniformDescriptor> _uniformDescriptors;
+  // Retaining a reference to uniform buffers so they don't go out of scope before drawing
+  std::vector<std::shared_ptr<garrow::Array>> _uniforms;
+  std::vector<std::shared_ptr<utils::BindingInitializationHelper>> _bindings;
 };
 
 class Model::Options {

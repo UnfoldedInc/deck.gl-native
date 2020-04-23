@@ -24,7 +24,7 @@
 #include "./project-vertex.glsl.h"
 
 static const char* vs = R"GLSL(
-layout(std140, set = 0, binding = 0) uniform LineLayerOptions {
+layout(std140, set = 0, binding = 1) uniform LineLayerOptions {
   float opacity;
   float widthScale;
   float widthMinPixels;
@@ -38,8 +38,8 @@ layout(location = 3) in vec4 instanceColors;
 layout(location = 4) in float instanceWidths;
 
 // TODO(ilija@unfolded.ai): Revisit once double splitting is in place
-vec3 instanceSourcePositions64Low = vec3(0.0, 0.0, 0.0);
-vec3 instanceTargetPositions64Low = vec3(0.0, 0.0, 0.0);
+vec3 instanceSourcePositions64Low = vec3(0.0);
+vec3 instanceTargetPositions64Low = vec3(0.0);
 
 layout(location = 0) out vec4 vColor;
 layout(location = 1) out vec2 uv;

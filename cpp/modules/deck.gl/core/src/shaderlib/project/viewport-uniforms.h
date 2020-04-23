@@ -30,24 +30,23 @@
 
 namespace deckgl {
 
-struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) ViewportUniforms {
-  COORDINATE_SYSTEM project_uCoordinateSystem;
-  PROJECTION_MODE project_uProjectionMode;
-  mathgl::Vector3<double> project_uCoordinateOrigin;
-  mathgl::Vector4<double> project_uCenter;
-  double project_uAntimeridian;
-  mathgl::Vector2<double> project_uViewportSize;
-  double project_uDevicePixelRatio;
-  double project_uFocalDistance;
-  mathgl::Vector3<double> project_uCommonUnitsPerMeter;
-  mathgl::Vector3<double> project_uCommonUnitsPerWorldUnit;
-  mathgl::Vector3<double> project_uCommonUnitsPerWorldUnit2;
-  double project_uScale;
-  mathgl::Matrix4<double> project_uViewProjectionMatrix;
-  mathgl::Vector3<double> project_uCameraPosition;
-
-  bool project_uWrapLongitude;
-  mathgl::Matrix4<double> project_uModelMatrix;
+struct ViewportUniforms {
+  int uCoordinateSystem;
+  int uProjectionMode;
+  float uScale;
+  bool uWrapLongitude;
+  float uAntimeridian;
+  mathgl::Vector3<float> uCommonUnitsPerMeter;
+  mathgl::Vector3<float> uCommonUnitsPerWorldUnit;
+  mathgl::Vector3<float> uCommonUnitsPerWorldUnit2;
+  mathgl::Vector4<float> uCenter;
+  mathgl::Matrix4<float> uModelMatrix;
+  mathgl::Matrix4<float> uViewProjectionMatrix;
+  mathgl::Vector2<float> uViewportSize;
+  float uDevicePixelRatio;
+  float uFocalDistance;
+  mathgl::Vector3<float> uCameraPosition;
+  mathgl::Vector3<float> uCoordinateOrigin;
 };
 
 /**
@@ -65,6 +64,7 @@ auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double d
                              mathgl::Vector3<double> coordinateOrigin = mathgl::Vector3<double>(),
                              bool wrapLongitude = false) -> ViewportUniforms;
 
+// TODO(ilija@unfolded.ai): Should this function be public? It provides incomplete uniforms
 auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio,
                                COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
     -> ViewportUniforms;

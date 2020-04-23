@@ -67,6 +67,8 @@ class Vector2 {
  public:
   Vector2() : x(static_cast<coord>(0)), y(static_cast<coord>(0)) {}
   Vector2(coord x, coord y) : x(x), y(y) {}
+  template <typename othercoord>
+  Vector2(const Vector2<othercoord> &other);
 
   auto operator-() const -> Vector2<coord> { return Vector2<coord>(-x, -y); }
   auto operator+=(const Vector2<coord> &v) -> Vector2<coord> {
@@ -123,12 +125,16 @@ auto operator!=(const Vector2<coord> &v1, const Vector2<coord> &v2) -> bool {
 ///////////////////////////////////////////////////////////
 //  Vector3
 
+// TODO(ilija@unfolded.ai): When using std140 memory layout in GLSL vec3 takes in 16bytes
+// We should either use vec3 in our shaders instead, or create a GPUVector3 class that we'd use instead
 template <typename coord>
-class Vector3 {
+class alignas(16) Vector3 {
  public:
   Vector3() : x(0), y(0), z(0) {}
   Vector3(coord x1, coord y1, coord z1) : x(x1), y(y1), z(z1) {}
   Vector3(Vector2<coord> xy, coord z1) : x(xy.x), y(xy.y), z(z1) {}
+  template <typename othercoord>
+  Vector3(const Vector3<othercoord> &other);
 
   auto operator-() const -> Vector3<coord> { return Vector3<coord>(-x, -y, -z); }
   auto operator+=(const Vector3<coord> &v) -> Vector3<coord> {
@@ -192,6 +198,8 @@ class Vector4 {
   Vector4() : x(0), y(0), z(0), w(0) {}
   Vector4(coord x1, coord y1, coord z1, coord w1) : x(x1), y(y1), z(z1), w(w1) {}
   Vector4(Vector3<coord> xyz, coord w1) : x(xyz.x), y(xyz.y), z(xyz.z), w(w1) {}
+  template <typename othercoord>
+  Vector4(const Vector4<othercoord> &other);
 
   auto operator-() const -> Vector4<coord> { return Vector4<coord>(-x, -y, -z, -w); }
 
@@ -222,6 +230,7 @@ class Vector4 {
 
   auto operator==(const Vector4<coord> &v) const -> bool { return x == v.x && y == v.y && z == v.z && w == v.w; }
 
+  // TODO(ilija@unfolded.ai): These are not implemented?
   coord Length() const;
   coord Length2() const;
   auto toVector3() const -> Vector3<coord>;
@@ -230,6 +239,14 @@ class Vector4 {
 
   coord x, y, z, w;
 };
+
+template <typename coord>
+template <typename othercoord>
+Vector4<coord>::Vector4(const Vector4<othercoord> &other)
+    : x{static_cast<coord>(other.x)},
+      y{static_cast<coord>(other.y)},
+      z{static_cast<coord>(other.z)},
+      w{static_cast<coord>(other.w)} {}
 
 template <typename coord>
 Vector4<coord> VectorProduct(const Vector4<coord> &, const Vector4<coord> &);
@@ -347,6 +364,8 @@ class Matrix4 {
           coord m33, coord m34, coord m41, coord m42, coord m43, coord m44);
   Matrix4(const Matrix4<coord> &) = default;
   Matrix4(Matrix4<coord> &&) = default;
+  template <typename othercoord>
+  Matrix4(const Matrix4<othercoord> &other);
 
   auto operator=(const Matrix4<coord> &) -> Matrix4<coord> & = default;
   auto operator=(Matrix4<coord> &&) -> Matrix4<coord> & = default;
@@ -412,6 +431,11 @@ auto operator!=(const Matrix4<coord> &v1, const Matrix4<coord> &v2) -> bool {
 
 ///////////////////////////////////////////////////////////
 // Vector2 implementation
+
+template <typename coord>
+template <typename othercoord>
+Vector2<coord>::Vector2(const Vector2<othercoord> &other)
+    : x{static_cast<coord>(other.x)}, y{static_cast<coord>(other.y)} {}
 
 template <typename coord>
 auto Vector2<coord>::Length() const -> coord {
@@ -480,6 +504,11 @@ auto operator<<(std::ostream &os, const Vector2<coord> &v) -> std::ostream & {
 
 ///////////////////////////////////////////////////////////
 // Vector3 implementation
+
+template <typename coord>
+template <typename othercoord>
+Vector3<coord>::Vector3(const Vector3<othercoord> &other)
+    : x{static_cast<coord>(other.x)}, y{static_cast<coord>(other.y)}, z{static_cast<coord>(other.z)} {}
 
 template <typename coord>
 auto Vector3<coord>::Length() const -> coord {
@@ -749,6 +778,27 @@ Matrix4<coord>::Matrix4(coord m11, coord m12, coord m13, coord m14, coord m21, c
   m[3][1] = m42;
   m[3][2] = m43;
   m[3][3] = m44;
+}
+
+template <typename coord>
+template <typename othercoord>
+Matrix4<coord>::Matrix4(const Matrix4<othercoord> &other) {
+  m[0][0] = static_cast<coord>(other.m[0][0]);
+  m[0][1] = static_cast<coord>(other.m[0][1]);
+  m[0][2] = static_cast<coord>(other.m[0][2]);
+  m[0][3] = static_cast<coord>(other.m[0][3]);
+  m[1][0] = static_cast<coord>(other.m[1][0]);
+  m[1][1] = static_cast<coord>(other.m[1][1]);
+  m[1][2] = static_cast<coord>(other.m[1][2]);
+  m[1][3] = static_cast<coord>(other.m[1][3]);
+  m[2][0] = static_cast<coord>(other.m[2][0]);
+  m[2][1] = static_cast<coord>(other.m[2][1]);
+  m[2][2] = static_cast<coord>(other.m[2][2]);
+  m[2][3] = static_cast<coord>(other.m[2][3]);
+  m[3][0] = static_cast<coord>(other.m[3][0]);
+  m[3][1] = static_cast<coord>(other.m[3][1]);
+  m[3][2] = static_cast<coord>(other.m[3][2]);
+  m[3][3] = static_cast<coord>(other.m[3][3]);
 }
 
 template <typename coord>
