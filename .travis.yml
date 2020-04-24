@@ -26,18 +26,21 @@ matrix:
     # - name: "Linux (Clang)"
     #   os: linux
     #   compiler: clang
-    - name: "Linux (GCC) with Valgrind"
+    - name: "Linux (GCC 9) with Valgrind"
       os: linux
       compiler: gcc
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r-test
           packages:
             - valgrind
             - libglu1-mesa-dev
+            - g++-9
       before_script:
         - mkdir build
         - cd build
-        - cmake -DWARNINGS_AS_ERRORS=OFF -DDECK_ENABLE_GRAPHICS=OFF -DDECK_ENABLE_FORMAT=OFF ..
+        - cmake -DWARNINGS_AS_ERRORS=OFF -DDECK_ENABLE_GRAPHICS=OFF -DDECK_ENABLE_FORMAT=OFF -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 ..
       script:
         - make -j
         - valgrind --error-exitcode=99 ./tests
