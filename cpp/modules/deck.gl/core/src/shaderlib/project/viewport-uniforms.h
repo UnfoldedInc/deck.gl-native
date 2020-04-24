@@ -30,23 +30,24 @@
 
 namespace deckgl {
 
+// NOTE: When using std140 memory layout in GLSL, vec3 is 16byte aligned, so we have to use UniformVector3 explicitly
 struct ViewportUniforms {
-  int uCoordinateSystem;
-  int uProjectionMode;
-  float uScale;
-  bool uWrapLongitude;
-  float uAntimeridian;
-  mathgl::Vector3<float> uCommonUnitsPerMeter;
-  mathgl::Vector3<float> uCommonUnitsPerWorldUnit;
-  mathgl::Vector3<float> uCommonUnitsPerWorldUnit2;
-  mathgl::Vector4<float> uCenter;
-  mathgl::Matrix4<float> uModelMatrix;
-  mathgl::Matrix4<float> uViewProjectionMatrix;
-  mathgl::Vector2<float> uViewportSize;
-  float uDevicePixelRatio;
-  float uFocalDistance;
-  mathgl::Vector3<float> uCameraPosition;
-  mathgl::Vector3<float> uCoordinateOrigin;
+  int32_t coordinateSystem;
+  int32_t projectionMode;
+  float scale;
+  bool wrapLongitude;
+  float antimeridian;
+  mathgl::UniformVector3<float> commonUnitsPerMeter;
+  mathgl::UniformVector3<float> commonUnitsPerWorldUnit;
+  mathgl::UniformVector3<float> commonUnitsPerWorldUnit2;
+  mathgl::Vector4<float> center;
+  mathgl::Matrix4<float> modelMatrix;
+  mathgl::Matrix4<float> viewProjectionMatrix;
+  mathgl::Vector2<float> viewportSize;
+  float devicePixelRatio;
+  float focalDistance;
+  mathgl::UniformVector3<float> cameraPosition;
+  mathgl::UniformVector3<float> coordinateOrigin;
 };
 
 /**

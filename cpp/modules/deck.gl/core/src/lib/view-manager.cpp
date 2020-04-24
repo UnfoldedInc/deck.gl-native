@@ -69,7 +69,7 @@ auto ViewManager::getViewports() -> std::list<std::shared_ptr<Viewport>> {  // {
 
   // TODO(ilija@unfolded.ai): _update isn't being called anywhere, comment for setViews says this:
   // Does not actually rebuild the `Viewport`s until `getViewports` is called
-  if (this->_needsUpdate.has_value()) {
+  if (this->_needsUpdate) {
     this->_update();
   }
 

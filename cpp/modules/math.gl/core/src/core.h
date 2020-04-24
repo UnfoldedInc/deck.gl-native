@@ -68,7 +68,7 @@ class Vector2 {
   Vector2() : x(static_cast<coord>(0)), y(static_cast<coord>(0)) {}
   Vector2(coord x, coord y) : x(x), y(y) {}
   template <typename othercoord>
-  Vector2(const Vector2<othercoord> &other);
+  explicit Vector2(const Vector2<othercoord> &other);
 
   auto operator-() const -> Vector2<coord> { return Vector2<coord>(-x, -y); }
   auto operator+=(const Vector2<coord> &v) -> Vector2<coord> {
@@ -125,16 +125,14 @@ auto operator!=(const Vector2<coord> &v1, const Vector2<coord> &v2) -> bool {
 ///////////////////////////////////////////////////////////
 //  Vector3
 
-// TODO(ilija@unfolded.ai): When using std140 memory layout in GLSL vec3 takes in 16bytes
-// We should either use vec3 in our shaders instead, or create a GPUVector3 class that we'd use instead
 template <typename coord>
-class alignas(16) Vector3 {
+class Vector3 {
  public:
   Vector3() : x(0), y(0), z(0) {}
   Vector3(coord x1, coord y1, coord z1) : x(x1), y(y1), z(z1) {}
   Vector3(Vector2<coord> xy, coord z1) : x(xy.x), y(xy.y), z(z1) {}
   template <typename othercoord>
-  Vector3(const Vector3<othercoord> &other);
+  explicit Vector3(const Vector3<othercoord> &other);
 
   auto operator-() const -> Vector3<coord> { return Vector3<coord>(-x, -y, -z); }
   auto operator+=(const Vector3<coord> &v) -> Vector3<coord> {
@@ -189,6 +187,15 @@ auto operator!=(const Vector3<coord> &v1, const Vector3<coord> &v2) -> bool {
   return !(v1 == v2);
 }
 
+// TODO(ilija@unfolded.ai): A 16byte-aligned wrapper for Vector3 that matches vec3 in GLSL. Likely temporary
+template <typename coord>
+class alignas(16) UniformVector3 : public Vector3<coord> {
+ public:
+  UniformVector3(coord x, coord y, coord z) : Vector3<coord>{x, y, z} {}
+  template <typename othercoord>
+  explicit UniformVector3(const mathgl::Vector3<othercoord> &other) : Vector3<coord>{other} {}
+};
+
 ///////////////////////////////////////////////////////////
 //  Vector4
 
@@ -199,7 +206,7 @@ class Vector4 {
   Vector4(coord x1, coord y1, coord z1, coord w1) : x(x1), y(y1), z(z1), w(w1) {}
   Vector4(Vector3<coord> xyz, coord w1) : x(xyz.x), y(xyz.y), z(xyz.z), w(w1) {}
   template <typename othercoord>
-  Vector4(const Vector4<othercoord> &other);
+  explicit Vector4(const Vector4<othercoord> &other);
 
   auto operator-() const -> Vector4<coord> { return Vector4<coord>(-x, -y, -z, -w); }
 
@@ -365,7 +372,7 @@ class Matrix4 {
   Matrix4(const Matrix4<coord> &) = default;
   Matrix4(Matrix4<coord> &&) = default;
   template <typename othercoord>
-  Matrix4(const Matrix4<othercoord> &other);
+  explicit Matrix4(const Matrix4<othercoord> &other);
 
   auto operator=(const Matrix4<coord> &) -> Matrix4<coord> & = default;
   auto operator=(Matrix4<coord> &&) -> Matrix4<coord> & = default;
