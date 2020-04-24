@@ -40,7 +40,7 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, wgpu::Device device, const Size& size)
+GLFWAnimationLoop::GLFWAnimationLoop(const Size& size, const wgpu::BackendType backendType, wgpu::Device device)
     : AnimationLoop{size} {
   this->_window = this->_initializeGLFW(backendType);
 

@@ -34,23 +34,4 @@ void main() {
 }
 )GLSL";
 
-/*
-static const char* fs = R"GLSL(
-#define SHADER_NAME line-layer-fragment-shader
-
-precision highp float;
-
-varying vec4 vColor;
-varying vec2 uv;
-
-void main(void) {
-  geometry.uv = uv;
-
-  gl_FragColor = vColor;
-
-  DECKGL_FILTER_COLOR(gl_FragColor, geometry);
-}
-)GLSL";
-*/
-
 #endif  // DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H

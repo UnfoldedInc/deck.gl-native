@@ -89,8 +89,6 @@ void Deck::setProps(Deck::Props* props) {
     }
   }
 
-  // Update CSS size of canvas
-
   // Update the animation loop
 
   // Update layerManager
@@ -103,6 +101,7 @@ void Deck::setProps(Deck::Props* props) {
   this->viewManager->setHeight(props->height);
   this->viewManager->setViews(props->views);
   this->viewManager->setViewState(this->viewState);
+  this->animationLoop->setSize({props->width, props->height});
 
   // Update manager props
   // this->effectManager.setProps(resolvedProps);

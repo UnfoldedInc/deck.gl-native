@@ -177,9 +177,9 @@ auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double
                                .projectionMode = static_cast<int32_t>(viewport->projectionMode()),
                                .scale = static_cast<float>(viewport->scale),  // This is the mercator scale (2 ** zoom)
                                .antimeridian = static_cast<float>(antimeridian),
-                               .commonUnitsPerMeter = UniformVector3<float>{distanceScales.unitsPerMeter},
-                               .commonUnitsPerWorldUnit = UniformVector3<float>{distanceScales.unitsPerMeter},
-                               .commonUnitsPerWorldUnit2 = UniformVector3<float>{DEFAULT_PIXELS_PER_UNIT2},
+                               .commonUnitsPerMeter = Vector3<float>{distanceScales.unitsPerMeter},
+                               .commonUnitsPerWorldUnit = Vector3<float>{distanceScales.unitsPerMeter},
+                               .commonUnitsPerWorldUnit2 = Vector3<float>{DEFAULT_PIXELS_PER_UNIT2},
                                .center = Vector4<float>{matrixAndOffset.projectionCenter},
                                .viewProjectionMatrix = Matrix4<float>{matrixAndOffset.viewProjectionMatrix},
                                // Screen size
@@ -189,29 +189,29 @@ auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double
                                // TODO(isaac@unfolded.ai): optional focalDistance
                                .focalDistance = static_cast<float>(viewport->focalDistance),
                                // This is for lighting calculations
-                               .cameraPosition = UniformVector3<float>(matrixAndOffset.cameraPosCommon),
-                               .coordinateOrigin = UniformVector3<float>{matrixAndOffset.shaderCoordinateOrigin}};
+                               .cameraPosition = Vector3<float>(matrixAndOffset.cameraPosCommon),
+                               .coordinateOrigin = Vector3<float>{matrixAndOffset.shaderCoordinateOrigin}};
 
   if (matrixAndOffset.geospatialOrigin.has_value()) {
     auto distanceScalesAtOrigin = viewport->getDistanceScales(matrixAndOffset.geospatialOrigin.value().toVector2());
     switch (coordinateSystem) {
       case COORDINATE_SYSTEM::METER_OFFSETS:
-        uniforms.commonUnitsPerWorldUnit = UniformVector3<float>{distanceScalesAtOrigin.unitsPerMeter};
-        uniforms.commonUnitsPerWorldUnit2 = UniformVector3<float>{distanceScalesAtOrigin.unitsPerMeter2};
+        uniforms.commonUnitsPerWorldUnit = Vector3<float>{distanceScalesAtOrigin.unitsPerMeter};
+        uniforms.commonUnitsPerWorldUnit2 = Vector3<float>{distanceScalesAtOrigin.unitsPerMeter2};
         break;
 
       case COORDINATE_SYSTEM::LNGLAT:
       case COORDINATE_SYSTEM::LNGLAT_OFFSETS:
-        uniforms.commonUnitsPerWorldUnit = UniformVector3<float>{distanceScalesAtOrigin.unitsPerDegree};
-        uniforms.commonUnitsPerWorldUnit2 = UniformVector3<float>{distanceScalesAtOrigin.unitsPerDegree2};
+        uniforms.commonUnitsPerWorldUnit = Vector3<float>{distanceScalesAtOrigin.unitsPerDegree};
+        uniforms.commonUnitsPerWorldUnit2 = Vector3<float>{distanceScalesAtOrigin.unitsPerDegree2};
         break;
 
       // a.k.a "preprojected" positions
       case COORDINATE_SYSTEM::CARTESIAN:
         uniforms.commonUnitsPerWorldUnit =
-            UniformVector3<float>{1.0f, 1.0f, static_cast<float>(distanceScalesAtOrigin.unitsPerMeter.z)};
+            Vector3<float>{1.0f, 1.0f, static_cast<float>(distanceScalesAtOrigin.unitsPerMeter.z)};
         uniforms.commonUnitsPerWorldUnit2 =
-            UniformVector3<float>{0.0f, 0.0f, static_cast<float>(distanceScalesAtOrigin.unitsPerMeter2.z)};
+            Vector3<float>{0.0f, 0.0f, static_cast<float>(distanceScalesAtOrigin.unitsPerMeter2.z)};
         break;
 
       default:

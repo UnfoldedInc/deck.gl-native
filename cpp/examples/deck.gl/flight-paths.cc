@@ -47,13 +47,18 @@ auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::
   lineLayerProps->id = "flight-paths";
   lineLayerProps->opacity = 0.8f;
   lineLayerProps->getSourcePosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getFloatVector3("start");
+    // NOTE: Decimal array data is being loaded as double
+    auto startPositions = row.getDoubleVector3("start");
+    return mathgl::Vector3<float>{startPositions};
   };
   lineLayerProps->getTargetPosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getFloatVector3("end");
+    // NOTE: Decimal array data is being loaded as double
+    auto endPositions = row.getDoubleVector3("end");
+    return mathgl::Vector3<float>{endPositions};
   };
   lineLayerProps->getColor = [](const Row &row) -> mathgl::Vector4<float> {
-    float z = row.getFloatVector3("start").y;
+    // NOTE: Decimal array data is being loaded as double
+    float z = static_cast<float>(row.getDoubleVector3("start").y);
     float r = z / 10000.0f;
     return {255.0f * (1.0f - r * 2.0f), 128.0f * r, 255.0f * r, 255.0f * (1.0f - r)};
   };
@@ -73,6 +78,8 @@ int main(int argc, const char *argv[]) {
   deckProps->layers = {createLineLayer(flightDataPath)};
   deckProps->initialViewState = createInitialViewState();
   deckProps->views = {std::make_shared<MapView>()};
+  deckProps->width = 640;
+  deckProps->height = 480;
 
   auto deck = std::make_shared<Deck>(deckProps);
   deck->run();

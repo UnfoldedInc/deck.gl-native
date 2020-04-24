@@ -57,10 +57,10 @@ vec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width
 
 void main(void) {
   // Position
-  vec4 source_commonspace;
-  vec4 target_commonspace;
-  vec4 source = project_position_to_clipspace(instanceSourcePositions, instanceSourcePositions64Low, vec3(0.), source_commonspace);
-  vec4 target = project_position_to_clipspace(instanceTargetPositions, instanceTargetPositions64Low, vec3(0.), target_commonspace);
+  vec4 sourceCommonspace;
+  vec4 targetCommonspace;
+  vec4 source = project_position_to_clipspace(instanceSourcePositions, instanceSourcePositions64Low, vec3(0.), sourceCommonspace);
+  vec4 target = project_position_to_clipspace(instanceTargetPositions, instanceTargetPositions64Low, vec3(0.), targetCommonspace);
 
   // Multiply out width and clamp to limits
   float widthPixels = clamp(
@@ -68,15 +68,13 @@ void main(void) {
     layerOptions.widthMinPixels, layerOptions.widthMaxPixels
   );
 
-  // linear interpolation of source & target to pick right coord
+  // Linear interpolation of source & target to pick right coord
   float segmentIndex = positions.x;
   vec4 p = mix(source, target, segmentIndex);
   uv = positions.xy;
 
-  // extrude
-  vec3 offset = vec3(
-    getExtrusionOffset(target.xy - source.xy, positions.y, widthPixels),
-    0.0);
+  // Extrude
+  vec3 offset = vec3(getExtrusionOffset(target.xy - source.xy, positions.y, widthPixels), 0.0);
   gl_Position = p + vec4(project_pixel_size_to_clipspace(offset.xy), 0.0, 0.0);
 
   // Color
