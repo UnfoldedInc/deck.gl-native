@@ -151,7 +151,7 @@ void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor
 auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
     -> wgpu::BindGroupLayout {
   std::vector<wgpu::BindGroupLayoutBinding> bindings;
-  for (uint32 i = 0; i < uniforms.size(); i++) {
+  for (uint32_t i = 0; i < uniforms.size(); i++) {
     auto binding = wgpu::BindGroupLayoutBinding{i, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer,
                                                 uniforms[i].isDynamic};
     bindings.push_back(binding);

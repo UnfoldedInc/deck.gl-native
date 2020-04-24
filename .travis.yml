@@ -26,16 +26,16 @@ matrix:
     # - name: "Linux (Clang)"
     #   os: linux
     #   compiler: clang
-    # - name: "Linux (GCC) with Valgrind"
-    #   os: linux
-    #   compiler: gcc
-    #   addons:
-    #     apt:
-    #       packages:
-    #         - valgrind
-    #   script:
-    #     - make -j
-    #     - valgrind --error-exitcode=99 ./tests
+    - name: "Linux (GCC) with Valgrind"
+      os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - valgrind
+      script:
+        - make -j
+        - valgrind --error-exitcode=99 ./tests
 
 before_script:
   # Build out of source
