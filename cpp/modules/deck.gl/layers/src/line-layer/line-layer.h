@@ -82,7 +82,7 @@ class LineLayer::Props : public Layer::Props {
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};
 };
 
-struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) LineLayerUniforms {
+struct LineLayerUniforms {
   float opacity;
   float widthScale;
   float widthMinPixels;

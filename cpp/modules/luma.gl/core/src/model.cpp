@@ -30,7 +30,7 @@ using namespace lumagl::utils;
 
 Model::Model(wgpu::Device device, const Model::Options& options) {
   this->_device = device;
-  this->_uniforms = options.uniforms;
+  this->_uniformDescriptors = options.uniforms;
 
   this->vsModule = createShaderModule(device, SingleShaderStage::Vertex, options.vs.c_str());
   this->fsModule = createShaderModule(device, SingleShaderStage::Fragment, options.fs.c_str());
@@ -41,6 +41,10 @@ Model::Model(wgpu::Device device, const Model::Options& options) {
   descriptor.cColorStates[0].format = options.textureFormat;
 
   this->_initializeVertexState(&descriptor.cVertexState, options.attributeSchema, options.instancedAttributeSchema);
+
+  // Initialize uniform cache
+  this->_bindings = std::vector<std::shared_ptr<BindingInitializationHelper>>{options.uniforms.size()};
+  this->_uniforms = std::vector<std::shared_ptr<garrow::Array>>{options.uniforms.size()};
 
   this->uniformBindGroupLayout = this->_createBindGroupLayout(device, options.uniforms);
   descriptor.layout = makeBasicPipelineLayout(device, &this->uniformBindGroupLayout);
@@ -66,14 +70,35 @@ void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attribu
 }
 
 void Model::setUniforms(const std::vector<std::shared_ptr<garrow::Array>>& uniforms) {
-  std::vector<BindingInitializationHelper> bindings;
+  std::vector<std::shared_ptr<BindingInitializationHelper>> bindings;
   for (uint32_t i = 0; i < uniforms.size(); i++) {
-    auto binding = BindingInitializationHelper{i, uniforms[i]->buffer(), 0, this->_uniforms[i].elementSize};
-    bindings.push_back(binding);
+    bindings.push_back(std::make_shared<BindingInitializationHelper>(i, uniforms[i]->buffer(), 0,
+                                                                     this->_uniformDescriptors[i].elementSize));
   }
+
+  // Cache the bindings so they can be updated individually
+  this->_bindings = bindings;
+  this->_uniforms = uniforms;
 
   // Update the bind group
   this->bindGroup = utils::makeBindGroup(this->_device, this->uniformBindGroupLayout, bindings);
+}
+
+void Model::setUniforms(const std::shared_ptr<garrow::Array>& uniforms, uint32_t index) {
+  auto binding = std::make_shared<BindingInitializationHelper>(index, uniforms->buffer(), 0,
+                                                               this->_uniformDescriptors[index].elementSize);
+  this->_bindings[index] = binding;
+  this->_uniforms[index] = uniforms;
+
+  // Make sure all uniforms are set before trying to create a bind group
+  for (auto const& binding : this->_bindings) {
+    if (binding == nullptr) {
+      return;
+    }
+  }
+
+  // Update the bind group
+  this->bindGroup = utils::makeBindGroup(this->_device, this->uniformBindGroupLayout, this->_bindings);
 }
 
 void Model::draw(wgpu::RenderPassEncoder pass) {

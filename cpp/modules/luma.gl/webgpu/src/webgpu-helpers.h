@@ -28,6 +28,7 @@
 
 #include <array>
 #include <initializer_list>
+#include <memory>
 #include <vector>
 
 #include "./webgpu-constants.h"
@@ -114,6 +115,8 @@ struct BindingInitializationHelper {
 
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
                    std::vector<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup;
+auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
+                   std::vector<std::shared_ptr<BindingInitializationHelper>> bindingsInitializer) -> wgpu::BindGroup;
 
 }  // namespace utils
 }  // namespace lumagl

@@ -25,7 +25,7 @@ static const char* projectVS = R"GLSL(
 #version 450
 
 // TODO(ilija@unfolded.ai): Port from luna.gl math32 module
-float tan_32(float radians) {
+float tan_fp32(float radians) {
   return tan(radians);
 }
 
@@ -39,7 +39,7 @@ const int PROJECTION_MODE_WEB_MERCATOR = 1;
 const int PROJECTION_MODE_WEB_MERCATOR_AUTO_OFFSET = 4;
 const int PROJECTION_MODE_IDENTITY = 0;
 
-layout(std140, set = 0, binding = 1) uniform ProjectOptions {
+layout(std140, set = 0, binding = 0) uniform ProjectOptions {
   int uCoordinateSystem;
   int uProjectionMode;
   float uScale;
@@ -112,9 +112,7 @@ vec2 project_mercator_(vec2 lnglat) {
   }
   return vec2(
     radians(x) + PI,
-    PI + log(1.0 * 0.5)
-    // error: 'tan_fp32' : no matching overloaded function found
-    //PI + log(tan_fp32(PI * 0.25 + radians(lnglat.y) * 0.5))
+    PI + log(tan_fp32(PI * 0.25 + radians(lnglat.y) * 0.5))
   );
 }
 

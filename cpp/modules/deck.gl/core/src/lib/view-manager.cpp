@@ -61,16 +61,18 @@ void ViewManager::setNeedsUpdate(const std::string &reason) {
 /** Get a set of viewports for a given width and height
  * TODO - Intention is for deck.gl to autodeduce width and height and drop
  * the need for props
- * @param rect (object, optional) - filter the viewports
- *   + not provided - return all viewports
- *   + {x, y} - only return viewports that contain this pixel
- *   + {x, y, width, height} - only return viewports that overlap with this
- * rectangle
  */
 auto ViewManager::getViewports() -> std::list<std::shared_ptr<Viewport>> {  // {rect) {
   // if (rect) {
   //   return this->_viewports.filter(viewport = > viewport.containsPixel(rect));
   // }
+
+  // TODO(ilija@unfolded.ai): _update isn't being called anywhere, comment for setViews says this:
+  // Does not actually rebuild the `Viewport`s until `getViewports` is called
+  if (this->_needsUpdate) {
+    this->_update();
+  }
+
   return this->_viewports;
 }
 
@@ -97,12 +99,14 @@ auto ViewManager::getView(const std::string &viewId) -> std::shared_ptr<View> {
 // 2. view.id
 // 3. root viewState
 // then applies the view's filter if any
-// ViewManager::getViewState(viewId) {
-//   const view = this->getView(viewId);
-//   // Backward compatibility: view state for single view
-//   const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
-//   return view ? view.filterViewState(viewState) : viewState;
-// }
+auto ViewManager::getViewState(const std::string &viewId) -> std::shared_ptr<ViewState> {
+  return this->viewState;
+
+  //  const view = this->getView(viewId);
+  //  // Backward compatibility: view state for single view
+  //  const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
+  //  return view ? view.filterViewState(viewState) : viewState;
+}
 
 auto ViewManager::getViewport(const std::string &viewId) -> std::shared_ptr<Viewport> {
   return nullptr;  // return this->_viewportMap[viewId];
@@ -113,9 +117,8 @@ auto ViewManager::getViewport(const std::string &viewId) -> std::shared_ptr<View
  * (possibly [lon, lat]) on map.
  * - [x, y] => [lng, lat]
  * - [x, y, z] => [lng, lat, Z]
- * @param {Array} xyz -
- * @param {Object} opts - options
- * @param {Object} opts.topLeft=true - Whether origin is top left
+ * @param xyz -
+ * @param topLeft - Whether origin is top left
  * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
  */
 auto ViewManager::unproject(const mathgl::Vector3<double> xyz, bool topLeft) -> std::optional<mathgl::Vector3<double>> {
@@ -244,21 +247,19 @@ void ViewManager::_update() {
 
 // Rebuilds viewports from descriptors towards a certain window size
 void ViewManager::_rebuildViewports() {
-  throw std::logic_error("rebuild viewports not implemented");
-  // const {width, height, views} = this;
+  std::list<std::shared_ptr<Viewport>> viewports;
+  auto rectangle = mathgl::Rectangle<int>{0, 0, this->width, this->height};
 
-  // this->_viewports = [];
-  // this->controllers = {};
+  for (auto const &view : this->getViews()) {
+    auto viewState = this->getViewState(view->id);
+    auto viewport = view->makeViewport(rectangle, viewState);
 
-  // for (let i = views.length; i--;) {
-  //   const view = views[i];
-  //   const viewState = this->getViewState(view);
-  //   const viewport = view.makeViewport({width, height, viewState});
+    viewports.push_back(viewport);
+  }
 
-  //   this->_viewports.unshift(viewport);
-  // }
+  this->_viewports = viewports;
 
-  // this->_buildViewportMap();
+  //   this->_buildViewportMap();
 }
 
 // ViewManager::_buildViewportMap() {

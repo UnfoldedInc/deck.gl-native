@@ -235,9 +235,19 @@ wgpu::BindGroupBinding BindingInitializationHelper::GetAsBinding() const {
 
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
                    std::vector<BindingInitializationHelper> bindingsInitializer) -> wgpu::BindGroup {
+  std::vector<std::shared_ptr<BindingInitializationHelper>> pointers;
+  std::transform(
+      bindingsInitializer.begin(), bindingsInitializer.end(), std::back_inserter(pointers),
+      [](BindingInitializationHelper binding) { return std::make_shared<BindingInitializationHelper>(binding); });
+
+  return makeBindGroup(device, layout, pointers);
+}
+
+auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
+                   std::vector<std::shared_ptr<BindingInitializationHelper>> bindingsInitializer) -> wgpu::BindGroup {
   std::vector<wgpu::BindGroupBinding> bindings;
-  for (const BindingInitializationHelper& helper : bindingsInitializer) {
-    bindings.push_back(helper.GetAsBinding());
+  for (auto const& helper : bindingsInitializer) {
+    bindings.push_back(helper->GetAsBinding());
   }
 
   wgpu::BindGroupDescriptor descriptor;
