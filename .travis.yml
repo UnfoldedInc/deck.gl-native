@@ -33,6 +33,10 @@ matrix:
         apt:
           packages:
             - valgrind
+      before_script:
+        - mkdir build
+        - cd build
+        - cmake -DWARNINGS_AS_ERRORS=OFF -DDECK_ENABLE_GRAPHICS=OFF -DDECK_ENABLE_FORMAT=OFF ..
       script:
         - make -j
         - valgrind --error-exitcode=99 ./tests
