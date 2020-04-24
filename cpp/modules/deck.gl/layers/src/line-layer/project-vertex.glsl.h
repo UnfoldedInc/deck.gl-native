@@ -24,7 +24,7 @@
 static const char* projectVS = R"GLSL(
 #version 450
 
-// TODO(ilija@unfolded.ai): Port from luna.gl math32 module
+// TODO(ilija@unfolded.ai): Port from luma.gl math32 module
 float tan_fp32(float radians) {
   return tan(radians);
 }

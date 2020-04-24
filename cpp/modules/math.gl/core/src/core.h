@@ -187,15 +187,6 @@ auto operator!=(const Vector3<coord> &v1, const Vector3<coord> &v2) -> bool {
   return !(v1 == v2);
 }
 
-// TODO(ilija@unfolded.ai): A 16byte-aligned wrapper for Vector3 that matches vec3 in GLSL. Likely temporary
-template <typename coord>
-class alignas(16) UniformVector3 : public Vector3<coord> {
- public:
-  UniformVector3(coord x, coord y, coord z) : Vector3<coord>{x, y, z} {}
-  template <typename othercoord>
-  explicit UniformVector3(const mathgl::Vector3<othercoord> &other) : Vector3<coord>{other} {}
-};
-
 ///////////////////////////////////////////////////////////
 //  Vector4
 

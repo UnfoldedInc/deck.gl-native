@@ -53,8 +53,10 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
     throw new std::runtime_error("Data with null values is currently not supported");
   }
 
-  auto buffers = data->data()->buffers;
+  // TODO(ilija@unfolded.ai): Not sure if this is the best way to extract the data out of any data type
+
   uint64_t offset = 0;
+  auto buffers = data->data()->buffers;
   // Starting from buffer at index 1, as the first buffer is used for null bitmap
   for (int i = 1; i < buffers.size(); i++) {
     auto buffer = buffers[i];
@@ -62,6 +64,18 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
     this->_buffer.SetSubData(offset, buffer->size(), buffer->data());
     offset += buffer->size();
   }
+
+  // Go through child data for list data types and use child buffers
+  for (auto const& childData : data->data()->child_data) {
+    auto buffers = childData->buffers;
+    for (int i = 1; i < buffers.size(); i++) {
+      auto buffer = buffers[i];
+
+      this->_buffer.SetSubData(offset, buffer->size(), buffer->data());
+      offset += buffer->size();
+    }
+  }
+
   this->_length = data->length();
 }
 

@@ -374,7 +374,7 @@ auto Row::_vector2FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
     return defaultValue;
   }
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<float>(1);
   const float first = *(listPointer + offset);
   const float second = listSize >= 2 ? *(listPointer + offset + 1) : 0.0;
@@ -391,7 +391,7 @@ auto Row::_vector2FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
     return defaultValue;
   }
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<double>(1);
   const double first = *(listPointer + offset);
   const double second = listSize >= 2 ? *(listPointer + offset + 1) : 0.0;
@@ -408,7 +408,7 @@ auto Row::_vector3FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
     return defaultValue;
   }
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<float>(1);
   const float first = *(listPointer + offset);
   const float second = *(listPointer + offset + 1);
@@ -426,7 +426,7 @@ auto Row::_vector3FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
     return defaultValue;
   }
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<double>(1);
   const double first = *(listPointer + offset);
   const double second = *(listPointer + offset + 1);
@@ -444,7 +444,7 @@ auto Row::_vector4FromFloatArray(const std::shared_ptr<arrow::FloatArray>& value
     return defaultValue;
   }
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<float>(1);
   const float first = *(listPointer + offset);
   const float second = *(listPointer + offset + 1);
@@ -463,7 +463,7 @@ auto Row::_vector4FromDoubleArray(const std::shared_ptr<arrow::DoubleArray>& val
     return defaultValue;
   }
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<double>(1);
   const double first = *(listPointer + offset);
   const double second = *(listPointer + offset + 1);

@@ -114,7 +114,7 @@ void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
   auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
-  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMaxPixels, props->widthMaxPixels};
+  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMinPixels, props->widthMaxPixels};
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
     model->setUniforms(

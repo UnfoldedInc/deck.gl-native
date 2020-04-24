@@ -85,7 +85,7 @@ TEST_F(ScatterplotLayerTest, GetPositionData) {
   EXPECT_EQ(values->length(), 3);
   EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<float>(1);
   EXPECT_FLOAT_EQ(*listPointer, 1.2);
   EXPECT_FLOAT_EQ(*(listPointer + 1), 2.3);
@@ -123,7 +123,7 @@ TEST_F(ScatterplotLayerTest, GetFillColorData) {
   EXPECT_EQ(values->length(), 4);
   EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<float>(1);
   EXPECT_FLOAT_EQ(*listPointer, 0.0);
   EXPECT_FLOAT_EQ(*(listPointer + 1), 0.0);
@@ -147,7 +147,7 @@ TEST_F(ScatterplotLayerTest, GetLineColorData) {
   EXPECT_EQ(values->length(), 4);
   EXPECT_EQ(values->type_id(), arrow::Type::FLOAT);
 
-  // Needed for some reason as seen in https://arrow.apache.org/docs/cpp/examples/row_columnar_conversion.html
+  // Buffer at index 0 contains null bitmap, the actual data is in the buffer at index 1 for majority of the data types
   auto listPointer = values->data()->GetValues<float>(1);
   EXPECT_FLOAT_EQ(*listPointer, 0.0);
   EXPECT_FLOAT_EQ(*(listPointer + 1), 0.0);
