@@ -114,10 +114,11 @@ void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
   auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
-  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMaxPixels, props->widthMaxPixels};
+  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMinPixels, props->widthMaxPixels};
   for (auto const& model : this->getModels()) {
+    // Layer uniforms are currently bound to index 1
     model->setUniforms(
-        {std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform)});
+        std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform), 1);
     model->draw(pass);
   }
 
@@ -158,7 +159,7 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
                                      fs,
                                      attributeSchema,
                                      instancedAttributeSchema,
-                                     {{sizeof(LineLayerUniforms)}, {sizeof(ViewportUniforms)}}};
+                                     {{sizeof(ViewportUniforms)}, {sizeof(LineLayerUniforms)}}};
   auto model = std::make_shared<lumagl::Model>(device, modelOptions);
 
   model->vertexCount = 4;  // Is this correct?

@@ -33,18 +33,7 @@
 namespace deckgl {
 
 class ViewManager {
- private:
-  std::optional<std::string> _needsRedraw{"Initial render"};
-  std::optional<std::string> _needsUpdate{"Initial render"};
-  std::list<std::shared_ptr<Viewport>> _viewports;  // Generated viewports
-  bool _isUpdating{false};
-
  public:
-  std::list<std::shared_ptr<View>> views;
-  int width{100};
-  int height{100};
-  std::shared_ptr<ViewState> viewState{new ViewState()};
-
   ViewManager();
   virtual ~ViewManager();
 
@@ -60,11 +49,6 @@ class ViewManager {
   /** Get a set of viewports for a given width and height
    * TODO - Intention is for deck.gl to autodeduce width and height and drop
    * the need for props
-   * @param rect (object, optional) - filter the viewports
-   *   + not provided - return all viewports
-   *   + {x, y} - only return viewports that contain this pixel
-   *   + {x, y, width, height} - only return viewports that overlap with this
-   * rectangle
    */
   auto getViewports() -> std::list<std::shared_ptr<Viewport>>;  // (rect)
 
@@ -78,7 +62,7 @@ class ViewManager {
   // 2. view.id
   // 3. root viewState
   // then applies the view's filter if any
-  auto getViewState(const std::string &viewId) -> void;
+  auto getViewState(const std::string &viewId) -> std::shared_ptr<ViewState>;
   auto getViewport(const std::string &viewId) -> std::shared_ptr<Viewport>;
 
   /**
@@ -86,9 +70,8 @@ class ViewManager {
    * (possibly [lon, lat]) on map.
    * - [x, y] => [lng, lat]
    * - [x, y, z] => [lng, lat, Z]
-   * @param {Array} xyz -
-   * @param {Object} opts - options
-   * @param {Object} opts.topLeft=true - Whether origin is top left
+   * @param xyz -
+   * @param topLeft - Whether origin is top left
    * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
    */
   auto unproject(const mathgl::Vector3<double> xyz, bool topLeft = true) -> std::optional<mathgl::Vector3<double>>;
@@ -110,10 +93,12 @@ class ViewManager {
   void setViewState(std::shared_ptr<ViewState> viewStates);
   void setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates);
 
-  //
-  // PRIVATE METHODS
-  //
+  std::list<std::shared_ptr<View>> views;
+  int width{100};
+  int height{100};
+  std::shared_ptr<ViewState> viewState{new ViewState()};
 
+ private:
   void _update();
 
   // Rebuilds viewports from descriptors towards a certain window size
@@ -127,12 +112,17 @@ class ViewManager {
   void _updateController(view, viewState, viewport, controller);
 
   void _buildViewportMap();
-*/
+  */
 
   // Check if viewport array has changed, returns true if any change
   // Note that descriptors can be the same
   auto _diffViews(const std::list<std::shared_ptr<View>> &newViews,
                   const std::list<std::shared_ptr<View>> &oldViews) const -> bool;
+
+  std::optional<std::string> _needsRedraw{"Initial render"};
+  std::optional<std::string> _needsUpdate{"Initial render"};
+  std::list<std::shared_ptr<Viewport>> _viewports;  // Generated viewports
+  bool _isUpdating{false};
 };
 
 }  // namespace deckgl

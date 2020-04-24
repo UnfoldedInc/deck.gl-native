@@ -30,24 +30,24 @@
 
 namespace deckgl {
 
-struct alignas(lumagl::utils::kMinDynamicBufferOffsetAlignment) ViewportUniforms {
-  COORDINATE_SYSTEM project_uCoordinateSystem;
-  PROJECTION_MODE project_uProjectionMode;
-  mathgl::Vector3<double> project_uCoordinateOrigin;
-  mathgl::Vector4<double> project_uCenter;
-  double project_uAntimeridian;
-  mathgl::Vector2<double> project_uViewportSize;
-  double project_uDevicePixelRatio;
-  double project_uFocalDistance;
-  mathgl::Vector3<double> project_uCommonUnitsPerMeter;
-  mathgl::Vector3<double> project_uCommonUnitsPerWorldUnit;
-  mathgl::Vector3<double> project_uCommonUnitsPerWorldUnit2;
-  double project_uScale;
-  mathgl::Matrix4<double> project_uViewProjectionMatrix;
-  mathgl::Vector3<double> project_uCameraPosition;
-
-  bool project_uWrapLongitude;
-  mathgl::Matrix4<double> project_uModelMatrix;
+// NOTE: When using std140 memory layout in GLSL, vec3 is 16byte aligned, hence the alignas
+struct ViewportUniforms {
+  int32_t coordinateSystem;
+  int32_t projectionMode;
+  float scale;
+  bool wrapLongitude;
+  float antimeridian;
+  alignas(16) mathgl::Vector3<float> commonUnitsPerMeter;
+  alignas(16) mathgl::Vector3<float> commonUnitsPerWorldUnit;
+  alignas(16) mathgl::Vector3<float> commonUnitsPerWorldUnit2;
+  mathgl::Vector4<float> center;
+  mathgl::Matrix4<float> modelMatrix;
+  mathgl::Matrix4<float> viewProjectionMatrix;
+  mathgl::Vector2<float> viewportSize;
+  float devicePixelRatio;
+  float focalDistance;
+  alignas(16) mathgl::Vector3<float> cameraPosition;
+  alignas(16) mathgl::Vector3<float> coordinateOrigin;
 };
 
 /**
@@ -65,6 +65,7 @@ auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double d
                              mathgl::Vector3<double> coordinateOrigin = mathgl::Vector3<double>(),
                              bool wrapLongitude = false) -> ViewportUniforms;
 
+// TODO(ilija@unfolded.ai): Should this function be public? It provides incomplete uniforms
 auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio,
                                COORDINATE_SYSTEM coordinateSystem, mathgl::Vector3<double> coordinateOrigin)
     -> ViewportUniforms;

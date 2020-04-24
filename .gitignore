@@ -112,8 +112,8 @@ DerivedData/
 # End of https://www.gitignore.io/api/c++,xcode,macos,visualstudiocode
 
 ## Ignore Xcode project settings completely
-*.xcodeproj
-*.xcworkspace
+#*.xcodeproj
+#*.xcworkspace
 
 .vscode
 

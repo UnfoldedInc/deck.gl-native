@@ -100,7 +100,7 @@ auto scaleToZoom(double scale) -> double;
  * Remaining projection is done with 4x4 matrices which also handles
  * perspective.
  *
- * @param {Array} lngLat - [lng, lat] coordinates
+ * @param lngLat - [lng, lat] coordinates
  *   Specifies a point on the sphere to project onto the map.
  * @return {Array} [x,y] coordinates.
  */
@@ -109,7 +109,7 @@ auto lngLatToWorld(Vector2<double> lngLat) -> Vector2<double>;
 /**
  * Unproject world point [x,y] on map onto {lat, lon} on sphere
  *
- * @param {number[]} xy - array with [x,y] members
+ * @param xy - array with [x,y] members
  *  representing point on projected map plane
  * @return {number[]} - array with [x,y] of point on sphere.
  *   Has toArray method if you need a GeoJSON Array.
@@ -161,20 +161,19 @@ auto transformVector(Matrix4<double>, Vector4<double>) -> Vector4<double>;
 /**
  * Project flat coordinates to pixels on screen.
  *
- * @param {Array} xyz - flat coordinate on 512*512 Mercator Zoom 0 tile
- * @param {Matrix4} pixelProjectionMatrix - projection matrix
+ * @param xyz - flat coordinate on 512*512 Mercator Zoom 0 tile
+ * @param pixelProjectionMatrix - projection matrix
  * @return {Array} [x, y, depth] pixel coordinate on screen.
  */
-
 auto worldToPixels(Vector3<double> xyz, Matrix4<double> pixelProjectionMatrix) -> Vector3<double>;
 auto worldToPixels(Vector2<double> xy, Matrix4<double> pixelProjectionMatrix) -> Vector2<double>;
 
 /**
  * Unproject pixels on screen to flat coordinates.
  *
- * @param {Array} xyz - pixel coordinate on screen.
- * @param {Matrix4} pixelUnprojectionMatrix - unprojection matrix
- * @param {Number} targetZ - if pixel coordinate does not have a 3rd component (depth),
+ * @param xyz - pixel coordinate on screen.
+ * @param pixelUnprojectionMatrix - unprojection matrix
+ * @param targetZ - if pixel coordinate does not have a 3rd component (depth),
  *    targetZ is used as the elevation plane to unproject onto
  * @return {Array} [x, y, Z] flat coordinates on 512*512 Mercator Zoom 0 tile.
  */

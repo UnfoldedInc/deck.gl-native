@@ -89,8 +89,6 @@ void Deck::setProps(Deck::Props* props) {
     }
   }
 
-  // Update CSS size of canvas
-
   // Update the animation loop
 
   // Update layerManager
@@ -103,6 +101,7 @@ void Deck::setProps(Deck::Props* props) {
   this->viewManager->setHeight(props->height);
   this->viewManager->setViews(props->views);
   this->viewManager->setViewState(this->viewState);
+  this->animationLoop->setSize({props->width, props->height});
 
   // Update manager props
   // this->effectManager.setProps(resolvedProps);
@@ -117,11 +116,13 @@ void Deck::run() {
   this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
     for (auto const& viewport : this->viewManager->getViewports()) {
       for (auto const& layer : this->layerManager->layers) {
+        // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
         auto viewportUniforms = getUniformsFromViewport(viewport);
         auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
                                                                     wgpu::BufferUsage::Uniform);
         for (auto const& model : layer->getModels()) {
-          model->setUniforms({uniformArray});
+          // Viewport uniforms are currently bound to index 0
+          model->setUniforms(uniformArray, 0);
         }
 
         layer->draw(pass);

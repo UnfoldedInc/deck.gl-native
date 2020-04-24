@@ -63,6 +63,7 @@ auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& tab
       throw std::runtime_error("Unable to append vector data");
     }
 
+    // TODO(ilija@unfolded.ai): Just use the vector pointer
     std::vector<float> rawVector{vector.x, vector.y, vector.z};
     if (!valueBuilder.AppendValues(rawVector.data(), rawVector.size()).ok()) {
       throw std::runtime_error("Unable to append vector data");
