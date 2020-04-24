@@ -94,44 +94,41 @@ struct ProjectionMatrixOptions {
 auto zoomToScale(double zoom) -> double;
 auto scaleToZoom(double scale) -> double;
 
-/**
- * Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
- * Performs the nonlinear part of the web mercator projection.
- * Remaining projection is done with 4x4 matrices which also handles
- * perspective.
- *
- * @param lngLat - [lng, lat] coordinates
- *   Specifies a point on the sphere to project onto the map.
- * @return {Array} [x,y] coordinates.
- */
+/// \brief Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
+/// Performs the nonlinear part of the web mercator projection.
+/// Remaining projection is done with 4x4 matrices which also handles perspective.
+/// \param lngLat - [lng, lat] coordinates
+///  Specifies a point on the sphere to project onto the map.
+/// \return {Array} [x,y] coordinates.
 auto lngLatToWorld(Vector2<double> lngLat) -> Vector2<double>;
 
-/**
- * Unproject world point [x,y] on map onto {lat, lon} on sphere
- *
- * @param xy - array with [x,y] members
- *  representing point on projected map plane
- * @return {number[]} - array with [x,y] of point on sphere.
- *   Has toArray method if you need a GeoJSON Array.
- *   Per cartographic tradition, lat and lon are specified as degrees.
- */
+/// \brief Unproject world point [x,y] on map onto {lat, lon} on sphere
+/// \note Has toArray method if you need a GeoJSON Array.
+/// \note Per cartographic tradition, lat and lon are specified as degrees.
+/// \param xy - array with [x,y] members
+///  representing point on projected map plane
+/// \return {number[]} - array with [x,y] of point on sphere.
 auto worldToLngLat(Vector2<double> xy) -> Vector2<double>;
 
-// Returns the zoom level that gives a 1 meter pixel at a certain latitude
+/// \brief Returns the zoom level that gives a 1 meter pixel at a certain latitude
+/// \param latitude - double containing the latitude
+/// \return {double} meter zoom
 // 1 = C*cos(y)/2^z/TILE_SIZE = C*cos(y)/2^(z+9)
 auto getMeterZoom(double latitude) -> double;
 
-/**
- * Calculate distance scales in meters around current lat/lon, both for
- * degrees and pixels.
- * In mercator projection mode, the distance scales vary significantly
- * with latitude.
- */
+/// \brief Calculate distance scales in meters around current lat/lon,
+/// both for degrees and pixels
+/// \note In mercator projection mode, the distance scales vary significantly
+/// with latitude
+/// \param lngLat Vector2 containing longitude and latitude
+/// \param highPrecision Enable/disable highPrecision
+/// \return DistanceScales
 auto getDistanceScales(Vector2<double> lngLat, bool highPrecision = false) -> DistanceScales;
 
-/**
- * Offset a lng/lat position by meterOffset (northing, easting)
- */
+/// \brief Offset a lng/lat position by meterOffset (northing, easting)
+/// \param lngLat Vector containing longitude/latitude
+/// \param xyz Meter offset
+/// \return Offset position
 auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double>;
 auto addMetersToLngLat(Vector2<double> lngLat, Vector2<double> xy) -> Vector2<double>;
 
@@ -158,25 +155,19 @@ auto getProjectionMatrix(double width, double height, double pitch, double altit
 
 auto transformVector(Matrix4<double>, Vector4<double>) -> Vector4<double>;
 
-/**
- * Project flat coordinates to pixels on screen.
- *
- * @param xyz - flat coordinate on 512*512 Mercator Zoom 0 tile
- * @param pixelProjectionMatrix - projection matrix
- * @return {Array} [x, y, depth] pixel coordinate on screen.
- */
+/// \brief Project flat coordinates to pixels on screen
+/// \param xyz Flat coordinate on 512*512 Mercator Zoom 0 tile
+/// \param pixelProjectionMatrix Matrix containing pixel projection information
+/// \return {Array} [x, y, depth] pixel coordinate on screen.
 auto worldToPixels(Vector3<double> xyz, Matrix4<double> pixelProjectionMatrix) -> Vector3<double>;
 auto worldToPixels(Vector2<double> xy, Matrix4<double> pixelProjectionMatrix) -> Vector2<double>;
 
-/**
- * Unproject pixels on screen to flat coordinates.
- *
- * @param xyz - pixel coordinate on screen.
- * @param pixelUnprojectionMatrix - unprojection matrix
- * @param targetZ - if pixel coordinate does not have a 3rd component (depth),
- *    targetZ is used as the elevation plane to unproject onto
- * @return {Array} [x, y, Z] flat coordinates on 512*512 Mercator Zoom 0 tile.
- */
+/// \brief Unproject pixels on screen to flat coordinates
+/// \param xyz Pixel coordinate on screen.
+/// \param pixelUnprojectionMatrix Unprojection matrix
+/// \param targetZ If pixel coordinate does not have a 3rd component (depth),
+///   targetZ is used as the elevation plane to unproject onto
+/// \return {Array} [x, y, Z] flat coordinates on 512*512 Mercator Zoom 0 tile.
 auto pixelsToWorld(Vector3<double> xyz, Matrix4<double> pixelUnprojectionMatrix, double targetZ = 0) -> Vector3<double>;
 auto pixelsToWorld(Vector2<double> xy, Matrix4<double> pixelUnprojectionMatrix, double targetZ = 0) -> Vector2<double>;
 
