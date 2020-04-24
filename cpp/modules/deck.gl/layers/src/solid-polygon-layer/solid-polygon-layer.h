@@ -18,18 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "./layers.h"  // NOLINT(build/include)
+#ifndef DECKGL_LAYERS_SOLIDPOLYGON_LAYER_H
+#define DECKGL_LAYERS_SOLIDPOLYGON_LAYER_H
 
-using namespace deckgl;
+#include <memory>
+#include <string>
 
-void deckgl::registerJSONConvertersForDeckLayers(JSONConverter *jsonConverter) {
-  jsonConverter->classes["LineLayer"] = [](const Json::Value &) { return std::make_shared<LineLayer::Props>(); };
+#include "deck.gl/core.h"
 
-  jsonConverter->classes["ScatterplotLayer"] = [](const Json::Value &) {
-    return std::make_shared<ScatterplotLayer::Props>();
-  };
+namespace deckgl {
 
-  jsonConverter->classes["SolidPolygonLayer"] = [](const Json::Value &) {
-    return std::make_shared<SolidPolygonLayer::Props>();
-  };
-}
+class SolidPolygonLayer : public Layer{
+ public:
+    class Props;
+    explicit SolidPolygonLayer(std::shared_ptr<SolidPolygonLayer::Props> props)
+      : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
+    auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
+ protected:
+ private:
+};
+
+class SolidPolygonLayer::Props : public Layer::Props {
+ public:
+ protected:
+ private:
+};
+
+}  // namespace deckgl
+#endif  // DECKGL_LAYERS_SOLIDPOLYGON_LAYER_H

@@ -22,9 +22,9 @@
 #define DECKGL_LAYERS_LAYERS_H
 
 // To be included in prototype
-#include "./line-layer/line-layer.h"                // {LineLayer}
-#include "./scatterplot-layer/scatterplot-layer.h"  // {ScatterplotLayer}
-// #include "./solid-polygon-layer/solid-polygon-layer.h" // SolidPolygonLayer
+#include "./line-layer/line-layer.h"                    // {LineLayer}
+#include "./scatterplot-layer/scatterplot-layer.h"      // {ScatterplotLayer}
+#include "./solid-polygon-layer/solid-polygon-layer.h"  // {SolidPolygonLayer}
 
 // Not to be included prototype
 /*
