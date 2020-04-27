@@ -40,8 +40,8 @@ Model::Model(wgpu::Device device, const Model::Options& options) {
   ComboRenderPipelineDescriptor descriptor{device};
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
+  descriptor.primitiveTopology = options.topology;
   descriptor.cColorStates[0].format = options.textureFormat;
-  descriptor.primitiveTopology = wgpu::PrimitiveTopology::TriangleStrip;
 
   this->_initializeVertexState(&descriptor.cVertexState, options.attributeSchema, options.instancedAttributeSchema);
 
