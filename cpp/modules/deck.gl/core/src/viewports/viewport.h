@@ -95,10 +95,9 @@ class Viewport {
   /// - [longitude, latitude] to [x, y]
   /// - [longitude, latitude, Z] => [x, y, z]
   /// \note By default, returns top-left coordinates for canvas/SVG type render
-  ///
   /// \param lngLat [lng, lat] or [lng, lat, Z]
   /// \param topLeft Whether projected coords are top left
-  /// \return {Array} - [x, y] or [x, y, z] in top left coords
+  /// \return [x, y] or [x, y, z] in top left coords
   auto project(const mathgl::Vector2<double>& lngLat, bool topLeft = true) -> mathgl::Vector2<double>;
   auto project(const mathgl::Vector3<double>& lngLatZ, bool topLeft = true) -> mathgl::Vector3<double>;
 
@@ -108,7 +107,7 @@ class Viewport {
   /// - [x, y, z] => [lng, lat, Z]
   /// \param xy
   /// \param topLeft Whether origin is top left
-  /// \return {Array|null} [lng, lat, Z] or [X, Y, Z]
+  /// \return [lng, lat, Z] or [X, Y, Z]
   auto unproject(const mathgl::Vector2<double>& xy, bool topLeft = true, double targetZ = 0.0)
       -> mathgl::Vector2<double>;
   auto unproject(const mathgl::Vector3<double>& xyz, bool topLeft = true, double targetZ = 0.0)
@@ -127,9 +126,7 @@ class Viewport {
   /// Performs the nonlinear part of the web mercator projection.
   /// Remaining projection is done with 4x4 matrices which also handles
   /// perspective.
-  /// \param xy - [lng, lat] coordinates
-  ///   Specifies a point on the sphere to project onto the map.
-  /// \return {Array} [x,y] coordinates.
+  /// \param xy Specifies a point on the sphere to project onto the map.
   auto projectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
 
   auto unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
