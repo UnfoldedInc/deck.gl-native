@@ -20,7 +20,6 @@
 		CD33DF37242E20F1003F3B96 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF36242E20F1003F3B96 /* MetalKit.framework */; };
 		CD33DF3D242E2207003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
 		CD33DF3E242E220D003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
-		CD3F185F24533413008D9936 /* flight-paths.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE74992244EF71A00FB84CC /* flight-paths.cc */; };
 		CD452A452448421B00DD44A5 /* arrow-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A432448421B00DD44A5 /* arrow-utils.cc */; };
 		CD452A462448421B00DD44A5 /* arrow-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A432448421B00DD44A5 /* arrow-utils.cc */; };
 		CD452A472448421B00DD44A5 /* arrow-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A442448421B00DD44A5 /* arrow-utils.h */; };
@@ -105,6 +104,7 @@
 		CD9DAD4B243F0AB700F69BFC /* webgpu_cpp.o in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786B243C70F6000D8EC6 /* webgpu_cpp.o */; };
 		CD9DAD4C243F0AE300F69BFC /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD9DAD4E243F0AE400F69BFC /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CDC438A624567FE900ACD4AC /* flight-paths.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE74992244EF71A00FB84CC /* flight-paths.cc */; };
 		CDC8E16D244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16E244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16F244D5B5B002A7E60 /* webgpu-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */; };
@@ -2260,7 +2260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD3F185F24533413008D9936 /* flight-paths.cc in Sources */,
+				CDC438A624567FE900ACD4AC /* flight-paths.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
