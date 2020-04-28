@@ -42,14 +42,14 @@ class Table {
   auto schema() const -> std::shared_ptr<Schema> { return this->_schema; }
 
   /// \brief Returns field at index i, does not bound check.
-  /// @param i Index of the field to get.
+  /// \param i Index of the field to get.
   auto field(int i) const -> std::shared_ptr<Field> { return this->_schema->field(i); }
 
   /// \brief Returns all the fields in this tables schema.
   auto fields() const -> std::vector<std::shared_ptr<Field>> { return this->_schema->fields(); };
 
   /// \brief Returns a column at index i, does not bound check.
-  /// @param i Index of the column to get.
+  /// \param i Index of the column to get.
   auto column(int i) const -> std::shared_ptr<Array> { return this->_columns[i]; };
 
   /// \brief Returns the columns that this table contains.

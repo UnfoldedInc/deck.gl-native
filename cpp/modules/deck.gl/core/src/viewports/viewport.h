@@ -90,31 +90,28 @@ class Viewport {
   auto metersPerPixel() -> double;
   auto projectionMode() -> PROJECTION_MODE;
 
-  /**
-   * Projects xyz (possibly latitude and longitude) to pixel coordinates in
-   * window using viewport projection parameters
-   * - [longitude, latitude] to [x, y]
-   * - [longitude, latitude, Z] => [x, y, z]
-   * Note: By default, returns top-left coordinates for canvas/SVG type render
-   *
-   * @param lngLat - [lng, lat] or [lng, lat, Z]
-   * @param topLeft - Whether projected coords are top left
-   * @return {Array} - [x, y] or [x, y, z] in top left coords
-   */
+  /// \brief Projects xyz (possibly latitude and longitude) to pixel coordinates in
+  /// \brief window using viewport projection parameters
+  /// - [longitude, latitude] to [x, y]
+  /// - [longitude, latitude, Z] => [x, y, z]
+  /// \note By default, returns top-left coordinates for canvas/SVG type render
+  /// \param lngLat [lng, lat] or [lng, lat, Z]
+  /// \param topLeft Whether projected coords are top left
+  /// \return [x, y] or [x, y, z] in top left coords
   auto project(const mathgl::Vector2<double>& lngLat, bool topLeft = true) -> mathgl::Vector2<double>;
+  /// \overload
   auto project(const mathgl::Vector3<double>& lngLatZ, bool topLeft = true) -> mathgl::Vector3<double>;
 
-  /**
-   * Unproject pixel coordinates on screen onto world coordinates,
-   * (possibly [lon, lat]) on map.
-   * - [x, y] => [lng, lat]
-   * - [x, y, z] => [lng, lat, Z]
-   * @param xy -
-   * @param topLeft - Whether origin is top left
-   * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
-   */
+  /// \brief Unproject pixel coordinates on screen onto world coordinates,
+  /// \brief (possibly [lon, lat]) on map.
+  /// - [x, y] => [lng, lat]
+  /// - [x, y, z] => [lng, lat, Z]
+  /// \param xy
+  /// \param topLeft Whether origin is top left
+  /// \return [lng, lat, Z] or [X, Y, Z]
   auto unproject(const mathgl::Vector2<double>& xy, bool topLeft = true, double targetZ = 0.0)
       -> mathgl::Vector2<double>;
+  /// \overload
   auto unproject(const mathgl::Vector3<double>& xyz, bool topLeft = true, double targetZ = 0.0)
       -> mathgl::Vector3<double>;
 
@@ -127,25 +124,13 @@ class Viewport {
   auto unprojectPosition(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
   auto unprojectPosition(const mathgl::Vector3<double>& xyz) -> mathgl::Vector3<double>;
 
-  /**
-   * Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
-   * Performs the nonlinear part of the web mercator projection.
-   * Remaining projection is done with 4x4 matrices which also handles
-   * perspective.
-   * @param xy - [lng, lat] coordinates
-   *   Specifies a point on the sphere to project onto the map.
-   * @return {Array} [x,y] coordinates.
-   */
+  /// \brief Project [lng,lat] on sphere onto [x,y] on 512*512 Mercator Zoom 0 tile.
+  /// Performs the nonlinear part of the web mercator projection.
+  /// Remaining projection is done with 4x4 matrices which also handles
+  /// perspective.
+  /// \param xy Specifies a point on the sphere to project onto the map.
   auto projectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
 
-  /**
-   * Unproject world point [x,y] on map onto {lat, lon} on sphere
-   * @param xy - object with {x,y} members
-   *  representing point on projected map plane
-   * @return {GeoCoordinates} - object with {lat,lon} of point on sphere.
-   *   Has toArray method if you need a GeoJSON Array.
-   *   Per cartographic tradition, lat and lon are specified as degrees.
-   */
   auto unprojectFlat(const mathgl::Vector2<double>& xy) -> mathgl::Vector2<double>;
 
   auto getDistanceScales(const std::optional<mathgl::Vector2<double>>& coordinateOrigin =
