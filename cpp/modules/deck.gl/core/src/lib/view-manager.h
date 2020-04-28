@@ -47,7 +47,6 @@ class ViewManager {
   void updateViewStates();
 
   /// \brief Get a set of viewports for a given width and height
-  // TODO - Intention is for deck.gl to autodeduce width and height and drop
   auto getViewports() -> std::list<std::shared_ptr<Viewport>>;  // (rect)
 
   auto getViews() -> std::list<std::shared_ptr<View>>;

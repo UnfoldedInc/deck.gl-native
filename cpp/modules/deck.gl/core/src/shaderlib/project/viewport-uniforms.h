@@ -54,7 +54,7 @@ struct ViewportUniforms {
 /// \note Includes projection matrix suitable for shaders
 /// \param viewport
 /// \return 4x4 projection matrix that can be used in shaders
-// TODO - Ensure this works with any viewport, not just WebMercatorViewports
+// TODO(issac@unfolded.ai): Ensure this works with any viewport, not just WebMercatorViewports
 auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio = 1,
                              mathgl::Matrix4<double> modelMatrix = mathgl::Matrix4<double>(),
                              COORDINATE_SYSTEM coordinateSystem = COORDINATE_SYSTEM::DEFAULT,
