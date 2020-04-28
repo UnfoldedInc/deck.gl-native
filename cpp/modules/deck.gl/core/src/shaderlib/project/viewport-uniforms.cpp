@@ -118,8 +118,7 @@ auto calculateMatrixAndOffset(const std::shared_ptr<Viewport>& viewport, COORDIN
     cameraPosCommon = cameraPosCommon - positionCommonSpace3;
 
     auto positionCommonSpace = Vector4<double>(positionCommonSpace3, 1);
-
-    projectionCenter = viewProjectionMatrix.transform(positionCommonSpace);
+    projectionCenter = positionCommonSpace.transform(viewProjectionMatrix);
 
     // Always apply uncentered projection matrix if available (shader adds center)
     // TODO(isaac@unfolded.ai): elided default of viewport.viewMatrix

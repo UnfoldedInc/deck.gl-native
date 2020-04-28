@@ -44,6 +44,23 @@ vec3 instanceTargetPositions64Low = vec3(0.0);
 layout(location = 0) out vec4 vColor;
 layout(location = 1) out vec2 uv;
 
+// TODO(ilija@unfolded.ai): Debug code, remove
+layout(location = 2) out mat4 uModelMatrix;
+layout(location = 6) out mat4 uViewProjectionMatrix;
+layout(location = 10) out vec4 uCenter;
+layout(location = 11) out vec3 uCommonUnitsPerMeter;
+layout(location = 12) out vec3 uCommonUnitsPerWorldUnit;
+layout(location = 13) out vec3 uCommonUnitsPerWorldUnit2;
+layout(location = 14) out vec3 uCameraPosition;
+layout(location = 15) out vec3 uCoordinateOrigin;
+layout(location = 16) out vec2 uViewportSize;
+layout(location = 17) out int uCoordinateSystem;
+layout(location = 18) out int uProjectionMode;
+layout(location = 19) out float uScale;
+layout(location = 20) out float uAntimeridian;
+layout(location = 21) out float uDevicePixelRatio;
+layout(location = 22) out float uFocalDistance;
+
 // offset vector by strokeWidth pixels
 // offset_direction is -1 (left) or 1 (right)
 vec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width) {
@@ -56,6 +73,22 @@ vec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width
 }
 
 void main(void) {
+  uCoordinateSystem = project.uCoordinateSystem;
+  uProjectionMode = project.uProjectionMode;
+  uScale = project.uScale;
+  uAntimeridian = project.uAntimeridian;
+  uCommonUnitsPerMeter = project.uCommonUnitsPerMeter;
+  uCommonUnitsPerWorldUnit = project.uCommonUnitsPerWorldUnit;
+  uCommonUnitsPerWorldUnit2 = project.uCommonUnitsPerWorldUnit2;
+  uCenter = project.uCenter;
+  uModelMatrix = project.uModelMatrix;
+  uViewProjectionMatrix = project.uViewProjectionMatrix;
+  uViewportSize = project.uViewportSize;
+  uDevicePixelRatio = project.uDevicePixelRatio;
+  uFocalDistance = project.uFocalDistance;
+  uCameraPosition = project.uCameraPosition;
+  uCoordinateOrigin = project.uCoordinateOrigin;
+
   // Position
   vec4 sourceCommonspace;
   vec4 targetCommonspace;

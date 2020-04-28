@@ -78,14 +78,15 @@ struct ProjectionMatrixOptions {
 
   // Projection matrix parameters, used if projectionMatrix not supplied
   bool orthographic{false};
-  double fovyRadians{0};
-  double fovy{75};
+  double fovy{0};
   double aspect{0};
   // Distance of near clipping plane
   double near{0.1};
   // Distance of far clipping plane
   double far{1000};
   double focalDistance{1};
+
+  auto fovyDegrees() -> double { return this->fovy * RADIANS_TO_DEGREES; }
 
   ProjectionMatrixOptions();
   ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near, double far);
