@@ -50,15 +50,11 @@ struct ViewportUniforms {
   mathgl::UniformVector3<float> coordinateOrigin;
 };
 
-/**
- * Returns uniforms for shaders based on current projection
- * includes: projection matrix suitable for shaders
- *
- * TODO - Ensure this works with any viewport, not just WebMercatorViewports
- *
- * @param viewport -
- * @return {Float32Array} - 4x4 projection matrix that can be used in shaders
- */
+/// \brief Returns uniforms for shaders based on current projection
+/// \note Includes projection matrix suitable for shaders
+/// \param viewport
+/// \return 4x4 projection matrix that can be used in shaders
+// TODO - Ensure this works with any viewport, not just WebMercatorViewports
 auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio = 1,
                              mathgl::Matrix4<double> modelMatrix = mathgl::Matrix4<double>(),
                              COORDINATE_SYSTEM coordinateSystem = COORDINATE_SYSTEM::DEFAULT,
