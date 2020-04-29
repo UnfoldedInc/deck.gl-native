@@ -32,7 +32,6 @@ ProjectionMatrixOptions::ProjectionMatrixOptions() {}
 
 ProjectionMatrixOptions::ProjectionMatrixOptions(double fov, double aspect, double focalDistance, double near,
                                                  double far)
-    // TODO(isaac@unfolded.ai): suspicious reuse of the fovy/fov field here
     : orthographic{false}, fovy(fov), aspect(aspect), near(near), far(far), focalDistance(focalDistance) {}
 
 auto zoomToScale(double zoom) -> double { return pow(2, zoom); }
@@ -151,23 +150,21 @@ auto getViewMatrix(double height, double pitch, double bearing, double altitude,
   //
   // Note: As usual, matrix operation orders should be read in reverse
   // since vectors will be multiplied from the right during transformation
-  auto vm = Matrix4<double>();
+  auto vm = Matrix4<double>::MakeUnit();
 
   // Move camera to altitude (along the pitch & bearing direction)
   auto translation = Vector3<double>(0.0, 0.0, -altitude);
-  vm = vm *
-       Matrix4<double>::MakeTranslation(translation)
-       // Rotate by bearing, and then by pitch (which tilts the view)
-       * Matrix4<double>::MakeRotationX(-pitch * DEGREES_TO_RADIANS) *
-       Matrix4<double>::MakeRotationY(bearing * DEGREES_TO_RADIANS);
+  vm = vm.translate(translation);
+  // Rotate by bearing, and then by pitch (which tilts the view)
+  vm = vm.rotateX(-pitch * DEGREES_TO_RADIANS);
+  vm = vm.rotateY(bearing * DEGREES_TO_RADIANS);
 
   scale /= height;
 
   Vector3<double> scaleVector = Vector3<double>(scale, scale, scale);
   vm = vm.scale(scaleVector);
 
-  auto centerTranslation = -center;
-  vm = vm * Matrix4<double>::MakeTranslation(centerTranslation);
+  vm = vm.translate(-center);
 
   return vm;
 }
@@ -203,7 +200,7 @@ auto getProjectionMatrix(double width, double height, double pitch, double altit
 
 // Transforms a vec4 with a projection matrix
 auto transformVector(Matrix4<double> matrix, Vector4<double> vec) -> Vector4<double> {
-  auto result = matrix.transform(vec);
+  auto result = vec.transform(matrix);
   result *= 1.0 / result.w;
   return result;
 }
