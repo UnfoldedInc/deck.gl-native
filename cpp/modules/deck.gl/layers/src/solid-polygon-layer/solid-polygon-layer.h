@@ -28,17 +28,18 @@
 
 namespace deckgl {
 
-class SolidPolygonLayer : public Layer{
+class SolidPolygonLayer : public Layer {
  public:
   class Props;
   explicit SolidPolygonLayer(std::shared_ptr<SolidPolygonLayer::Props> props)
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
-  auto getPolygon(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getPolygonData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getElevationData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getFillColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getLineColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+
  protected:
   void initializeState() override;
   // auto getPickingInfo() override;
@@ -46,6 +47,7 @@ class SolidPolygonLayer : public Layer{
   // void updateGeometry(const ChangeFlag &, const Layer::Props* oldProps) override;
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
+
  private:
   auto _getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>;
 };
@@ -72,14 +74,14 @@ class SolidPolygonLayer::Props : public Layer::Props {
   float elevationScale{1.0};
 
   std::function<ArrowMapper::Vector4FloatAccessor> getPolygon{
-    [](const Row& row) { return row.getFloatVector4("polygon"); }};
-  std::function<ArrowMapper::FloatAccessor> getElevation{
-    [](const Row& row) { return 1000.0; }};
+      [](const Row& row) { return row.getFloatVector4("polygon"); }};
+  std::function<ArrowMapper::FloatAccessor> getElevation{[](const Row& row) { return 1000.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
-    [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+      [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
-    [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+      [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
 };
 
 }  // namespace deckgl
+
 #endif  // DECKGL_LAYERS_SOLIDPOLYGON_LAYER_H

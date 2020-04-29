@@ -103,11 +103,13 @@ set(LAYERS_HEADER_FILES
     layers/src/layers.h
     layers/src/line-layer/line-layer.h
     layers/src/scatterplot-layer/scatterplot-layer.h
+    layers/src/solid-polygon-layer/solid-polygon-layer.h
     )
 set(LAYERS_SOURCE_FILES
     layers/src/layers.cpp
     layers/src/line-layer/line-layer.cpp
     layers/src/scatterplot-layer/scatterplot-layer.cpp
+    layers/src/solid-polygon-layer/solid-polygon-layer.cpp
     )
 set(LAYERS_TEST_SOURCE_FILES
     layers/test/line-layer-test.cpp
