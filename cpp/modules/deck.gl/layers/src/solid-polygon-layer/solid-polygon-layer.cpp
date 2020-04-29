@@ -81,7 +81,81 @@ void SolidPolygonLayer::initializeState() {
   this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 }
 
-void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {}
+/*
+auto SolidPolygonLayer::getPickingInfo(params) {
+
+    const info = super.getPickingInfo(params);
+    const {object, index} = info;
+
+    if (object && object.__source) {
+      // data is wrapped
+      info.object = this.props.data.find(d => d.__source.index === index);
+    }
+    return info;
+
+}
+*/
+
+void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  /*
+    super.updateState(updateParams);
+
+    this.updateGeometry(updateParams);
+
+    const {props, oldProps, changeFlags} = updateParams;
+    const attributeManager = this.getAttributeManager();
+
+    const regenerateModels =
+      changeFlags.extensionsChanged ||
+      props.filled !== oldProps.filled ||
+      props.extruded !== oldProps.extruded;
+
+    if (regenerateModels) {
+      if (this.state.models) {
+        this.state.models.forEach(model => model.delete());
+      }
+
+      this.setState(this._getModels(this.context.gl));
+      attributeManager.invalidateAll();
+    }
+  */
+}
+
+/*
+void SolidPolygonLayer::updateGeometry(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+    const geometryConfigChanged =
+      changeFlags.dataChanged ||
+      (changeFlags.updateTriggersChanged &&
+        (changeFlags.updateTriggersChanged.all || changeFlags.updateTriggersChanged.getPolygon));
+
+    // When the geometry config  or the data is changed,
+    // tessellator needs to be invoked
+    if (geometryConfigChanged) {
+      const {polygonTesselator} = this.state;
+      const buffers = props.data.attributes || {};
+      polygonTesselator.updateGeometry({
+        data: props.data,
+        normalize: props._normalize,
+        geometryBuffer: buffers.getPolygon,
+        buffers,
+        getGeometry: props.getPolygon,
+        positionFormat: props.positionFormat,
+        fp64: this.use64bitPositions(),
+        dataChanged: changeFlags.dataChanged
+      });
+
+      this.setState({
+        numInstances: polygonTesselator.instanceCount,
+        startIndices: polygonTesselator.vertexStarts
+      });
+
+      if (!changeFlags.dataChanged) {
+        // Base `layer.updateState` only invalidates all attributes on data change
+        // Cover the rest of the scenarios here
+        this.getAttributeManager().invalidateAll();
+      }
+    }
+*/
 
 void SolidPolygonLayer::finalizeState() {}
 
