@@ -159,10 +159,9 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
                                      fs,
                                      attributeSchema,
                                      instancedAttributeSchema,
-                                     {{sizeof(ViewportUniforms)}, {sizeof(LineLayerUniforms)}}};
+                                     {{sizeof(ViewportUniforms)}, {sizeof(LineLayerUniforms)}},
+                                     wgpu::PrimitiveTopology::TriangleStrip};
   auto model = std::make_shared<lumagl::Model>(device, modelOptions);
-
-  model->vertexCount = 4;  // Is this correct?
 
   std::vector<mathgl::Vector3<float>> positionData = {{0, -1, 0}, {0, 1, 0}, {1, -1, 0}, {1, 1, 0}};
   std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
@@ -171,6 +170,8 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
 
   auto instancedAttributes = this->attributeManager->update(this->props()->data);
   model->setInstancedAttributes(instancedAttributes);
+
+  model->vertexCount = static_cast<int>(positionData.size());
 
   return model;
 

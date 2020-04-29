@@ -44,8 +44,8 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
   auto vertexSize = getVertexFormatSize(vertexFormat);
 
   if (!this->_buffer || data->length() != this->_length) {
-    auto size = vertexSize * data->length();
-    this->_buffer = this->_createBuffer(this->_device, size, usage);
+    auto bufferSize = vertexSize * data->length();
+    this->_buffer = this->_createBuffer(this->_device, bufferSize, usage);
   }
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
@@ -53,27 +53,23 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
     throw new std::runtime_error("Data with null values is currently not supported");
   }
 
-  // TODO(ilija@unfolded.ai): Not sure if this is the best way to extract the data out of any data type
+  // If child_data isn't empty, data is a list array
+  if (!data->data()->child_data.empty()) {
+    uint64_t offset = 0;
 
-  uint64_t offset = 0;
-  auto buffers = data->data()->buffers;
-  // Starting from buffer at index 1, as the first buffer is used for null bitmap
-  for (int i = 1; i < buffers.size(); i++) {
-    auto buffer = buffers[i];
+    // Go through child data for list data types and use child buffers
+    for (auto const& childData : data->data()->child_data) {
+      // We assume this is a NumericArray, no easy way to check if that's the case because it's templated
+      auto dataBuffer = childData->buffers[1];
 
-    this->_buffer.SetSubData(offset, buffer->size(), buffer->data());
-    offset += buffer->size();
-  }
-
-  // Go through child data for list data types and use child buffers
-  for (auto const& childData : data->data()->child_data) {
-    auto buffers = childData->buffers;
-    for (int i = 1; i < buffers.size(); i++) {
-      auto buffer = buffers[i];
-
-      this->_buffer.SetSubData(offset, buffer->size(), buffer->data());
-      offset += buffer->size();
+      this->_buffer.SetSubData(offset, dataBuffer->size(), dataBuffer->data());
+      offset += dataBuffer->size();
     }
+  } else {
+    // Primite data type, just iterate over the buffers
+    // We assume this is a NumericArray, no easy way to check if that's the case because it's templated
+    auto dataBuffer = data->data()->buffers[1];
+    this->_buffer.SetSubData(0, dataBuffer->size(), dataBuffer->data());
   }
 
   this->_length = data->length();

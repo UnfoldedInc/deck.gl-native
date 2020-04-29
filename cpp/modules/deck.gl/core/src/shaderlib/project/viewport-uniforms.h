@@ -30,35 +30,34 @@
 
 namespace deckgl {
 
-// NOTE: When using std140 memory layout in GLSL, vec3 is 16byte aligned, hence the alignas
+/// Uniform buffers use std140 memory layout, which makes vec3 16-byte aligned.
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
+/// The current order is the most efficient representation of this structure. For more details on layout blocks, see:
+/// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 struct ViewportUniforms {
-  int32_t coordinateSystem;
-  int32_t projectionMode;
-  float scale;
-  bool wrapLongitude;
-  float antimeridian;
-  alignas(16) mathgl::Vector3<float> commonUnitsPerMeter;
-  alignas(16) mathgl::Vector3<float> commonUnitsPerWorldUnit;
-  alignas(16) mathgl::Vector3<float> commonUnitsPerWorldUnit2;
-  mathgl::Vector4<float> center;
   mathgl::Matrix4<float> modelMatrix;
   mathgl::Matrix4<float> viewProjectionMatrix;
-  mathgl::Vector2<float> viewportSize;
-  float devicePixelRatio;
-  float focalDistance;
+  mathgl::Vector4<float> center;
+  alignas(16) mathgl::Vector3<float> commonUnitsPerMeter;
+  int32_t coordinateSystem;
+  alignas(16) mathgl::Vector3<float> commonUnitsPerWorldUnit;
+  int32_t projectionMode;
+  alignas(16) mathgl::Vector3<float> commonUnitsPerWorldUnit2;
+  float scale;
   alignas(16) mathgl::Vector3<float> cameraPosition;
+  float antimeridian;
   alignas(16) mathgl::Vector3<float> coordinateOrigin;
+  float devicePixelRatio;
+  mathgl::Vector2<float> viewportSize;
+  float focalDistance;
+  alignas(4) bool wrapLongitude;
 };
 
-/**
- * Returns uniforms for shaders based on current projection
- * includes: projection matrix suitable for shaders
- *
- * TODO - Ensure this works with any viewport, not just WebMercatorViewports
- *
- * @param viewport -
- * @return {Float32Array} - 4x4 projection matrix that can be used in shaders
- */
+/// \brief Returns uniforms for shaders based on current projection
+/// \note Includes projection matrix suitable for shaders
+/// \param viewport
+/// \return 4x4 projection matrix that can be used in shaders
+// TODO(issac@unfolded.ai): Ensure this works with any viewport, not just WebMercatorViewports
 auto getUniformsFromViewport(const std::shared_ptr<Viewport>& viewport, double devicePixelRatio = 1,
                              mathgl::Matrix4<double> modelMatrix = mathgl::Matrix4<double>(),
                              COORDINATE_SYSTEM coordinateSystem = COORDINATE_SYSTEM::DEFAULT,

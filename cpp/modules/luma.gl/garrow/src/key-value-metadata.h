@@ -39,23 +39,23 @@ class KeyValueMetadata {
   void ToUnorderedMap(std::unordered_map<std::string, std::string>* out) const;
 
   /// \brief Appends key and value to metadata.
-  /// @param key Key to append.
-  /// @param value Value to append.
+  /// \param key Key to append.
+  /// \param value Value to append.
   void Append(const std::string& key, const std::string& value);
 
   /// \brief Returns size of key/value pairs contained in the metadata.
   auto size() const -> int64_t { return this->_keys.size(); };
 
   /// \brief Returns key at given index, does not bound check.
-  /// @param i Index of the key to retrieve.
+  /// \param i Index of the key to retrieve.
   auto key(int64_t i) const -> const std::string& { return this->_keys[i]; };
 
   /// \brief Returns value at given index, does not bound check.
-  /// @param i Index of the value to retrieve.
+  /// \param i Index of the value to retrieve.
   auto value(int64_t i) const -> const std::string& { return this->_values[i]; };
 
   /// \brief Perform linear search for key, returning -1 if not found.
-  /// @param key Key to search for.
+  /// \param key Key to search for.
   int FindKey(const std::string& key) const;
 
  private:

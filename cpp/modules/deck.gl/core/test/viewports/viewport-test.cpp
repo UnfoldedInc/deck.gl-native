@@ -27,10 +27,16 @@
 using namespace mathgl;
 using namespace deckgl;
 
-TEST(Viewport, Simple) {
+/// \brief Fixture for testing Viewport implementation.
+class ViewportTest : public ::testing::Test {
+ protected:
+  ViewportTest() {}
+};
+
+TEST_F(ViewportTest, Simple) {
   ViewMatrixOptions viewMatrixOptions;
   ProjectionMatrixOptions projectionMatrixOptions;
-  Viewport viewport("my-viewport-id", viewMatrixOptions, projectionMatrixOptions, 0, 0, 0, 0);
+  Viewport viewport{"my-viewport-id", viewMatrixOptions, projectionMatrixOptions, 0, 0, 0, 0};
   EXPECT_FALSE(viewport.containsPixel(0, 0));
   viewport.width = 10;
   viewport.height = 10;

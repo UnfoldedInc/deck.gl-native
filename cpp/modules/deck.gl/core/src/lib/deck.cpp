@@ -118,6 +118,10 @@ void Deck::run() {
       for (auto const& layer : this->layerManager->layers) {
         // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
         auto viewportUniforms = getUniformsFromViewport(viewport);
+
+        // TODO(ilija@unfolded.ai): Remove and use row_major specifier in uniform layout once drawing works
+        viewportUniforms.viewProjectionMatrix = viewportUniforms.viewProjectionMatrix.Transpose();
+
         auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
                                                                     wgpu::BufferUsage::Uniform);
         for (auto const& model : layer->getModels()) {

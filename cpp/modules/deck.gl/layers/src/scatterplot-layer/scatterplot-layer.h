@@ -53,7 +53,6 @@ class ScatterplotLayer : public Layer {
   void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
-  // TODO(ilija@unfolded.ai): Is there a way to avoid passing device here?
   auto _getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>;
 };
 
