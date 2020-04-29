@@ -56,22 +56,13 @@ TEST_F(ViewportUniformsTest, WebMercator) {
   auto uniforms = getUniformsFromViewport(viewport, 1, Matrix4<double>::MakeUnit(), COORDINATE_SYSTEM::DEFAULT,
                                           Vector3<double>{}, false);
 
-  auto viewProjectionMatrix = Matrix4<double>{0.1060660171779,
-                                              0.0,
-                                              0.0,
-                                              -28.20884652413,
-                                              0.0,
-                                              0.0909038955344,
-                                              0.1083350440839,
-                                              -30.29645116876,
-                                              0.0,
-                                              0.03910417422475,
-                                              -0.0328122981694,
-                                              -11.61662474340,
-                                              0.0,
-                                              0.0361116813613,
-                                              -0.03030129851146,
-                                              -10.53530150774};
+  // clang-format off
+  auto viewProjectionMatrix = Matrix4<double>{0.1060660171779, 0.0,              0.0,               -28.20884652413,
+                                              0.0,             0.0909038955344,  0.1083350440839,   -30.29645116876,
+                                              0.0,             0.03910417422475, -0.0328122981694,  -11.61662474340,
+                                              0.0,             0.0361116813613,  -0.03030129851146, -10.53530150774};
+  // clang-format on
+
   auto viewportSize = Vector2<float>{640.0, 480.0};
 
   EXPECT_EQ(uniforms.coordinateSystem, 1);

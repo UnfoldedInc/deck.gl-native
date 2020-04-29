@@ -879,14 +879,11 @@ auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord
   auto f = 1.0 / tan(fovy / 2.0);
   auto nf = 1.0 / (near - far);
 
-  auto zero = static_cast<coord>(0);
   auto m22 = (far + near) * nf;
   auto m23 = 2.0 * far * near * nf;
 
   // TODO(ib@unfolded.ai): Doesn't support far not being set or far being Infinity
-  return Matrix4<coord>{
-      f / aspect, zero, zero, zero, zero, f, zero, zero, zero, zero, m22, m23, zero, zero, static_cast<coord>(-1),
-      zero};
+  return Matrix4<coord>{f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, m22, m23, 0, 0, static_cast<coord>(-1), 0};
 }
 
 template <typename coord>
