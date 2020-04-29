@@ -18,32 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H
-#define DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H
+#ifndef DECKGL_CORE_SHADERLIB_PROJECT_PROJECT32_GLSL_H
+#define DECKGL_CORE_SHADERLIB_PROJECT_PROJECT32_GLSL_H
 
 #include <string>
 
-#include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
-
-namespace {
+#include "./project.glsl.h"
 
 // NOLINTNEXTLINE(runtime/string)
-static const std::string lineLayerFS = R"GLSL(
-layout(location = 0) in vec4 vColor;
-layout(location = 1) in vec2 uv;
+static const std::string project32VS = projectVS + "\n" + R"GLSL(
+vec4 project_position_to_clipspace(
+  vec3 position, vec3 position64Low, vec3 offset, out vec4 commonPosition
+) {
+  vec3 projectedPosition = project_position(position, position64Low);
+  commonPosition = vec4(projectedPosition + offset, 1.0);
+  return project_common_position_to_clipspace(commonPosition);
+}
 
-layout(location = 0) out vec4 fragColor;
-
-void main(void) {
-  geometry.uv = uv;
-
-  fragColor = vColor;
+vec4 project_position_to_clipspace(
+  vec3 position, vec3 position64Low, vec3 offset
+) {
+  vec4 commonPosition;
+  return project_position_to_clipspace(position, position64Low, offset, commonPosition);
 }
 )GLSL";
 
-}  // anonymous namespace
+#endif  // DECKGL_CORE_SHADERLIB_PROJECT_PROJECT32_GLSL_H
 
-// NOLINTNEXTLINE(runtime/string)
-static const std::string fs = "#version 450\n" + geometryFS + "\n" + lineLayerFS;
-
-#endif  // DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H

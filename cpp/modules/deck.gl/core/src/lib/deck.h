@@ -72,8 +72,8 @@ class Deck : public Component {
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
   std::shared_ptr<lumagl::AnimationLoop> animationLoop{new lumagl::GLFWAnimationLoop()};
-  std::shared_ptr<LayerContext> context{new LayerContext{this, this->animationLoop->device()}};
   std::shared_ptr<ViewManager> viewManager{new ViewManager()};
+  std::shared_ptr<LayerContext> context{new LayerContext{this, this->animationLoop->device()}};
   std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
   std::shared_ptr<ViewState> initialViewState;
   std::shared_ptr<ViewState> viewState;
