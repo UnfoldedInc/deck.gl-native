@@ -77,8 +77,7 @@ class WebMercatorViewport : public Viewport {
   auto addMetersToLngLat(mathgl::Vector3<double> lngLatZ, mathgl::Vector3<double> xyz) -> mathgl::Vector3<double>;
   auto addMetersToLngLat(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> xy) -> mathgl::Vector2<double>;
 
-  /// \brief Get the map center that place a given [lng, lat] coordinate at screen
-  /// \brief point [x, y]
+  /// \brief Get the map center that place a given [lng, lat] coordinate at screen point [x, y]
   /// \param lngLat [lng,lat] coordinates - Specifies a point on the sphere.
   /// \param pos [x,y] coordinates - Specifies a point on the screen.
   /// \return [lng,lat] of the new map center.

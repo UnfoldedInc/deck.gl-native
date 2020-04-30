@@ -62,7 +62,7 @@ auto Deck::Props::getProperties() const -> const Properties* {
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
-  this->setProps(props.get());
+  this->setProps(props);
 }
 
 Deck::~Deck() {
@@ -70,7 +70,7 @@ Deck::~Deck() {
   // this->tooltip.remove();
 }
 
-void Deck::setProps(Deck::Props* props) {
+void Deck::setProps(std::shared_ptr<Deck::Props> props) {
   // this->stats.get('setProps Time').timeStart();
 
   // ViewState tracking
@@ -114,6 +114,8 @@ void Deck::setProps(Deck::Props* props) {
 void Deck::run() {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
   this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
+    this->props()->onBeforeRender(this);
+
     for (auto const& viewport : this->viewManager->getViewports()) {
       // Expose the current viewport to layers for project* function
       this->layerManager->activateViewport(viewport);
@@ -132,6 +134,8 @@ void Deck::run() {
         layer->draw(pass);
       }
     }
+
+    this->props()->onAfterRender(this);
   });
 }
 

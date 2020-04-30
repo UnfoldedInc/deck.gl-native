@@ -124,7 +124,7 @@ auto getMeterZoom(double latitude) -> double;
 auto getDistanceScales(Vector2<double> lngLat, bool highPrecision = false) -> DistanceScales;
 
 /// \brief Offset a lng/lat position by meterOffset (northing, easting)
-/// \param lngLat Vector containing longitude/latitude
+/// \param lngLatZ Vector containing longitude/latitude
 /// \param xyz Meter offset
 /// \return Offset position
 auto addMetersToLngLat(Vector3<double> lngLatZ, Vector3<double> xyz) -> Vector3<double>;

@@ -31,13 +31,13 @@ using namespace deckgl;
 loadersgl::JSONLoader jsonLoader;
 auto fileSystem = std::make_shared<arrow::fs::LocalFileSystem>();
 
-auto createInitialViewState() -> std::shared_ptr<ViewState> {
+auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
   auto initialViewState = std::make_shared<ViewState>();
   initialViewState->latitude = 47.65;
   initialViewState->longitude = 7.0;
   initialViewState->zoom = 4.5;
   initialViewState->pitch = 50.0;
-  initialViewState->bearing = 0.0;
+  initialViewState->bearing = bearing;
 
   return initialViewState;
 }
@@ -76,10 +76,16 @@ int main(int argc, const char *argv[]) {
 
   auto deckProps = std::make_shared<Deck::Props>();
   deckProps->layers = {createLineLayer(flightDataPath)};
-  deckProps->initialViewState = createInitialViewState();
+  deckProps->initialViewState = createViewState(0.0);
   deckProps->views = {std::make_shared<MapView>()};
   deckProps->width = 640;
   deckProps->height = 480;
+
+  deckProps->onAfterRender = [&deckProps](Deck *deck) {
+    static double bearing = 0.0;
+    deckProps->viewState = createViewState(bearing += 0.3);
+    deck->setProps(deckProps);
+  };
 
   auto deck = std::make_shared<Deck>(deckProps);
   deck->run();

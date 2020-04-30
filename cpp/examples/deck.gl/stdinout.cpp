@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
   registerJSONConvertersForDeckLayers(jsonConverter.get());
 
   auto deckProps = make_shared<Deck::Props>();
-  auto deck = unique_ptr<Deck>(new Deck(deckProps));
+  auto deck = make_unique<Deck>(deckProps);
 
   while (true) {
     cout << "> ";
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     auto newProps = jsonConverter->convertJson(jsonStr, "Deck");
     auto deckProps = dynamic_pointer_cast<Deck::Props>(newProps);
 
-    deck->setProps(deckProps.get());
+    deck->setProps(deckProps);
 
     cout << deck->viewManager->getNeedsRedraw(true).value_or("no redraw needed") << endl;
   }
