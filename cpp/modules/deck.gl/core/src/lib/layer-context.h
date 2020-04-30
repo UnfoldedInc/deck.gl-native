@@ -35,13 +35,15 @@ class Viewport;
 // LayerContext is data shared between all layers
 class LayerContext {
  public:
+  // TODO(ilija@unfolded.ai): Do we need to have this circular dependency here?
   Deck* deck;
+  wgpu::Device device;
+  float devicePixelRatio;
+
   // TODO(ilija@unfolded.ai): Do we need to have this circular dependency here?
   LayerManager* layerManager;
   // Make sure context.viewport is not empty on the first layer initialization
   std::shared_ptr<Viewport> viewport{new WebMercatorViewport{{}}};
-
-  wgpu::Device device;
 
   // // General resources
   // stats: null, // for tracking lifecycle performance
@@ -51,7 +53,8 @@ class LayerContext {
   // mousePosition: null,
   // userData: {} // Place for any custom app `context`
 
-  LayerContext(Deck* deck, wgpu::Device device) : deck{deck}, device{device} {}
+  LayerContext(Deck* deck, wgpu::Device device, float devicePixelRatio = 1.0)
+      : deck{deck}, device{device}, devicePixelRatio{devicePixelRatio} {}
 };
 
 }  // namespace deckgl

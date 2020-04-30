@@ -44,8 +44,8 @@ layout(location = 3) in vec4 instanceColors;
 layout(location = 4) in float instanceWidths;
 
 // TODO(ilija@unfolded.ai): Revisit once double splitting is in place
-vec3 instanceSourcePositions64Low = ZERO_64_LOW;
-vec3 instanceTargetPositions64Low = ZERO_64_LOW;
+vec3 instanceSourcePositions64Low = vec3(0.);
+vec3 instanceTargetPositions64Low = vec3(0.);
 
 layout(location = 0) out vec4 vColor;
 layout(location = 1) out vec2 uv;
@@ -91,7 +91,7 @@ void main(void) {
   // Color
   vec4 color = vec4(instanceColors.rgb, instanceColors.a * layerOptions.opacity);
 // Normalize the values
-  vColor = abs(clamp(color, 0, 255)) / 255.0;
+  vColor = clamp(color, 0, 255) / 255.0;
 }
 )GLSL";
 

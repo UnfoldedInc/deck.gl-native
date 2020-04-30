@@ -42,16 +42,17 @@ class AnimationLoop {
   explicit AnimationLoop(const Size& size = Size{640, 480});
   virtual ~AnimationLoop();
 
-  auto size() -> Size { return this->_size; };
-  void setSize(const Size& size);
-
   virtual void run(std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void frame(std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void stop();
 
-  virtual bool shouldQuit() { return false; }
+  virtual auto shouldQuit() -> bool { return false; }
   virtual void flush() {}
   virtual auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat { return wgpu::TextureFormat::Undefined; };
+  virtual auto devicePixelRatio() -> float = 0;
+
+  auto size() -> Size { return this->_size; };
+  void setSize(const Size& size);
 
   bool running{false};
   auto device() -> wgpu::Device { return this->_device; }

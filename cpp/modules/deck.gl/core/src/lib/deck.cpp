@@ -120,8 +120,7 @@ void Deck::run() {
 
       for (auto const& layer : this->layerManager->layers) {
         // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
-        // TODO(ilija@unfolded.ai): Find a way to detect device pixel ratio and pass it here
-        auto viewportUniforms = getUniformsFromViewport(viewport, 2.0);
+        auto viewportUniforms = getUniformsFromViewport(viewport, this->animationLoop->devicePixelRatio());
 
         auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
                                                                     wgpu::BufferUsage::Uniform);
