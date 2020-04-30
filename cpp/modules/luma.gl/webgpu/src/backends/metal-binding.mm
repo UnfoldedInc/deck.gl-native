@@ -41,7 +41,7 @@ class SwapChainImplMTL {
  public:
   using WSIContext = DawnWSIContextMetal;
 
-  SwapChainImplMTL(id nsWindow) : mNsWindow(nsWindow) {}
+  SwapChainImplMTL(NSWindow* nsWindow) : mNsWindow(nsWindow) {}
 
   ~SwapChainImplMTL() {
     [mCurrentTexture release];
@@ -55,7 +55,7 @@ class SwapChainImplMTL {
 
   DawnSwapChainError Configure(WGPUTextureFormat format, WGPUTextureUsage usage, uint32_t width, uint32_t height) {
     if (format != WGPUTextureFormat_BGRA8Unorm) {
-      return "unsupported format";
+      return "Unsupported format";
     }
     ASSERT(width > 0);
     ASSERT(height > 0);
@@ -63,14 +63,13 @@ class SwapChainImplMTL {
     NSView* contentView = [mNsWindow contentView];
     [contentView setWantsLayer:YES];
 
-    CGSize size = {};
-    size.width = width;
-    size.height = height;
+    // Make sure display scale factor is taken into account
+    CGSize drawableSize = CGSizeMake(width * mNsWindow.backingScaleFactor, height * mNsWindow.backingScaleFactor);
 
     mLayer = [CAMetalLayer layer];
     [mLayer setDevice:mMtlDevice];
     [mLayer setPixelFormat:MTLPixelFormatBGRA8Unorm];
-    [mLayer setDrawableSize:size];
+    [mLayer setDrawableSize:drawableSize];
 
     constexpr uint32_t kFramebufferOnlyTextureUsages = WGPUTextureUsage_OutputAttachment | WGPUTextureUsage_Present;
     bool hasOnlyFramebufferUsages = !(usage & (~kFramebufferOnlyTextureUsages));
@@ -106,7 +105,7 @@ class SwapChainImplMTL {
   }
 
  private:
-  id mNsWindow = nil;
+  NSWindow* mNsWindow = nullptr;
   id<MTLDevice> mMtlDevice = nil;
   id<MTLCommandQueue> mCommandQueue = nil;
 

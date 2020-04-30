@@ -40,9 +40,10 @@ class GLFWAnimationLoop : public AnimationLoop {
 
   void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
 
-  bool shouldQuit() override;
+  auto shouldQuit() -> bool override;
   void flush() override;
   auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat override;
+  auto devicePixelRatio() -> float override;
 
  protected:
   auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device override;
@@ -52,7 +53,7 @@ class GLFWAnimationLoop : public AnimationLoop {
   auto _initializeGLFW(const wgpu::BackendType) -> GLFWwindow*;
 
   /// \brief Instance used for adapter discovery and device creation. It has to be kept around as Dawn objects'
-  /// \brief lifecycle seems to depend on it.
+  /// lifecycle seems to depend on it.
   /// \note From Dawn docs: This is an RAII class for Dawn instances and also controls the lifetime of all adapters
   /// for this instance.
   std::unique_ptr<dawn_native::Instance> _instance{nullptr};
