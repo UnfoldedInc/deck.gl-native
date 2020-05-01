@@ -90,8 +90,8 @@ class Viewport {
   auto metersPerPixel() -> double;
   auto projectionMode() -> PROJECTION_MODE;
 
-  /// \brief Projects xyz (possibly latitude and longitude) to pixel coordinates in
-  /// \brief window using viewport projection parameters
+  /// \brief Projects xyz (possibly latitude and longitude) to pixel coordinates in window using
+  /// viewport projection parameters
   /// - [longitude, latitude] to [x, y]
   /// - [longitude, latitude, Z] => [x, y, z]
   /// \note By default, returns top-left coordinates for canvas/SVG type render
@@ -102,11 +102,10 @@ class Viewport {
   /// \overload
   auto project(const mathgl::Vector3<double>& lngLatZ, bool topLeft = true) -> mathgl::Vector3<double>;
 
-  /// \brief Unproject pixel coordinates on screen onto world coordinates,
-  /// \brief (possibly [lon, lat]) on map.
+  /// \brief Unproject pixel coordinates on screen onto world coordinates, (possibly [lon, lat]) on map.
   /// - [x, y] => [lng, lat]
   /// - [x, y, z] => [lng, lat, Z]
-  /// \param xy
+  /// \param xy Pixel coordinates
   /// \param topLeft Whether origin is top left
   /// \return [lng, lat, Z] or [X, Y, Z]
   auto unproject(const mathgl::Vector2<double>& xy, bool topLeft = true, double targetZ = 0.0)

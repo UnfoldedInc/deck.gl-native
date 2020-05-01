@@ -400,6 +400,7 @@ class Matrix4 {
   auto translate(const Vector3<coord> &t) const -> Matrix4<coord>;
   auto rotateX(const coord rad) -> Matrix4<coord>;
   auto rotateY(const coord rad) -> Matrix4<coord>;
+  auto rotateZ(const coord rad) -> Matrix4<coord>;
 
   coord m[4][4];
 };
@@ -996,6 +997,12 @@ auto Matrix4<coord>::rotateY(const coord rad) -> Matrix4<coord> {
                         m20, m[2][1], m22, m[2][3],
                         m30, m[3][1], m32, m[3][3]};
   */
+}
+
+template <typename coord>
+auto Matrix4<coord>::rotateZ(const coord rad) -> Matrix4<coord> {
+  auto rotationVector = Matrix4<coord>::MakeRotationZ(rad);
+  return *this * rotationVector;
 }
 
 template <typename coord>

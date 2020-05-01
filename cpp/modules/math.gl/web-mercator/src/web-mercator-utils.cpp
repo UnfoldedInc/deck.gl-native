@@ -157,7 +157,7 @@ auto getViewMatrix(double height, double pitch, double bearing, double altitude,
   vm = vm.translate(translation);
   // Rotate by bearing, and then by pitch (which tilts the view)
   vm = vm.rotateX(-pitch * DEGREES_TO_RADIANS);
-  vm = vm.rotateY(bearing * DEGREES_TO_RADIANS);
+  vm = vm.rotateZ(bearing * DEGREES_TO_RADIANS);
 
   scale /= height;
 
