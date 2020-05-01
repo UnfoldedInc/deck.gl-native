@@ -93,6 +93,10 @@ target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     ${DECK_DEPS_PATH}/webgpu_cpp.o
     )
 target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} math.gl probe.gl)
+if (NOT APPLE)
+    # TODO: Check if still needed
+    target_link_libraries(luma.gl PUBLIC -pthread -ldl -lX11)
+endif()
 
 # GLFW dependencies
 if (APPLE)
