@@ -63,6 +63,8 @@ auto Deck::Props::getProperties() const -> const Properties* {
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
   this->setProps(props);
+
+  this->context->layerManager = this->layerManager;
 }
 
 Deck::~Deck() {
@@ -111,7 +113,7 @@ void Deck::setProps(std::shared_ptr<Deck::Props> props) {
   // super::setProps();
 }
 
-void Deck::run() {
+void Deck::run(std::function<void(Deck*)> onAfterRender) {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
   this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
     this->props()->onBeforeRender(this);
@@ -135,6 +137,7 @@ void Deck::run() {
       }
     }
 
+    onAfterRender(this);
     this->props()->onAfterRender(this);
   });
 }

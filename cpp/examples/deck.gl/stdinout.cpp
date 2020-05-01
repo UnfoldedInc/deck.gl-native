@@ -34,8 +34,7 @@ int main(int argc, char** argv) {
   registerJSONConvertersForDeckCore(jsonConverter.get());
   registerJSONConvertersForDeckLayers(jsonConverter.get());
 
-  auto deckProps = make_shared<Deck::Props>();
-  auto deck = make_unique<Deck>(deckProps);
+  auto deck = make_unique<Deck>();
 
   while (true) {
     cout << "> ";

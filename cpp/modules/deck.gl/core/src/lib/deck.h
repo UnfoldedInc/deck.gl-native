@@ -39,13 +39,13 @@ class Deck : public Component {
   auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
   void setProps(std::shared_ptr<Deck::Props> props);
 
-  explicit Deck(std::shared_ptr<Deck::Props> props);
+  explicit Deck(std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>());
   ~Deck();
 
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  void run();
+  void run(std::function<void(Deck*)> onAfterRender = [](Deck*) {});
 
   // Check if a redraw is needed
   // Returns an optional string summarizing the redraw reason

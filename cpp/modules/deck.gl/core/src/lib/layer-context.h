@@ -41,7 +41,7 @@ class LayerContext {
   float devicePixelRatio;
 
   // TODO(ilija@unfolded.ai): Do we need to have this circular dependency here?
-  LayerManager* layerManager;
+  std::shared_ptr<LayerManager> layerManager;
   // Make sure context.viewport is not empty on the first layer initialization
   std::shared_ptr<Viewport> viewport{new WebMercatorViewport{{}}};
 

@@ -32,14 +32,14 @@ loadersgl::JSONLoader jsonLoader;
 auto fileSystem = std::make_shared<arrow::fs::LocalFileSystem>();
 
 auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
-  auto initialViewState = std::make_shared<ViewState>();
-  initialViewState->latitude = 47.65;
-  initialViewState->longitude = 7.0;
-  initialViewState->zoom = 4.5;
-  initialViewState->pitch = 50.0;
-  initialViewState->bearing = bearing;
+  auto viewState = std::make_shared<ViewState>();
+  viewState->latitude = 47.65;
+  viewState->longitude = 7.0;
+  viewState->zoom = 4.5;
+  viewState->pitch = 50.0;
+  viewState->bearing = bearing;
 
-  return initialViewState;
+  return viewState;
 }
 
 auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::Props> {
@@ -81,14 +81,12 @@ int main(int argc, const char *argv[]) {
   deckProps->width = 640;
   deckProps->height = 480;
 
-  deckProps->onAfterRender = [&deckProps](Deck *deck) {
+  auto deck = std::make_shared<Deck>(deckProps);
+  deck->run([&deckProps](Deck *deck) {
     static double bearing = 0.0;
     deckProps->viewState = createViewState(bearing += 0.3);
     deck->setProps(deckProps);
-  };
-
-  auto deck = std::make_shared<Deck>(deckProps);
-  deck->run();
+  });
 
   return 0;
 }
