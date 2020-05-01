@@ -276,11 +276,11 @@ class Matrix2 {
   // Matrix2 & operator= (const Matrix2<coord> &) = default;
   // Matrix2 & operator= (Matrix2<coord> &&) = default;
 
-  static auto MakeUnit() -> Matrix2<coord>;
-  static auto MakeScale(coord sx, coord sy) -> Matrix2;
-  static auto MakeRotation(coord angle) -> Matrix2;  // counterclockwise
+  static auto makeUnit() -> Matrix2<coord>;
+  static auto makeScale(coord sx, coord sy) -> Matrix2;
+  static auto makeRotation(coord angle) -> Matrix2;  // counterclockwise
 
-  auto Invert() const -> Matrix2<coord>;
+  auto invert() const -> Matrix2<coord>;
 
   auto operator()(unsigned row, unsigned col) -> coord & { return m[row][col]; }
   auto operator()(unsigned row, unsigned col) const -> const coord { return m[row][col]; }
@@ -613,24 +613,24 @@ Matrix2<coord>::Matrix2(const Matrix2<coord> &m2) {
 }
 
 template <typename coord>
-auto Matrix2<coord>::MakeUnit() -> Matrix2<coord> {
+auto Matrix2<coord>::makeUnit() -> Matrix2<coord> {
   return Matrix2(1, 0, 0, 1);
 }
 
 template <typename coord>
-auto Matrix2<coord>::MakeScale(coord sx, coord sy) -> Matrix2<coord> {
+auto Matrix2<coord>::makeScale(coord sx, coord sy) -> Matrix2<coord> {
   return Matrix2(sx, static_cast<coord>(0), static_cast<coord>(0), sy);
 }
 
 template <typename coord>
-auto Matrix2<coord>::MakeRotation(coord angle) -> Matrix2<coord> {
+auto Matrix2<coord>::makeRotation(coord angle) -> Matrix2<coord> {
   coord sine = static_cast<coord>(sin(angle));
   coord cosine = static_cast<coord>(cos(angle));  // ERROR adapt function to precision?
   return Matrix2(cosine, -sine, sine, cosine);
 }
 
 template <typename coord>
-auto Matrix2<coord>::Invert() const -> Matrix2<coord> {
+auto Matrix2<coord>::invert() const -> Matrix2<coord> {
   // Cramers rule
   coord det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
   if (det == static_cast<coord>(0)) throw std::runtime_error("Attempt to invert singular matrix");
