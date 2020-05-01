@@ -456,16 +456,14 @@ auto Vector2<coord>::Length2() const -> coord {
 
 template <typename coord>
 auto Vector2<coord>::Angle() const -> coord {
-  if (x == static_cast<coord>(0) && y == static_cast<coord>(0))
-    return static_cast<coord>(0);
+  if (x == static_cast<coord>(0) && y == static_cast<coord>(0)) return static_cast<coord>(0);
   return static_cast<coord>(atan2(y, x));
 }
 
 template <typename coord>
 void Vector2<coord>::Normalize() {
   coord length = Length();
-  if (length <= static_cast<coord>(0))
-    throw std::logic_error("normalize called on zero length vector");
+  if (length <= static_cast<coord>(0)) throw std::logic_error("normalize called on zero length vector");
   x /= length;
   y /= length;
 }
@@ -537,8 +535,7 @@ auto Vector3<coord>::toVector2() const -> Vector2<coord> {
 template <typename coord>
 void Vector3<coord>::Normalize() {
   coord length = Length();
-  if (length <= static_cast<coord>(0))
-    throw std::runtime_error("normalize called on zero length vector");
+  if (length <= static_cast<coord>(0)) throw std::runtime_error("normalize called on zero length vector");
   x /= length;
   y /= length;
   z /= length;
@@ -636,8 +633,7 @@ template <typename coord>
 auto Matrix2<coord>::Invert() const -> Matrix2<coord> {
   // Cramers rule
   coord det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
-  if (det == static_cast<coord>(0))
-    throw std::runtime_error("Attempt to invert singular matrix");
+  if (det == static_cast<coord>(0)) throw std::runtime_error("Attempt to invert singular matrix");
   det = 1 / det;
   return Matrix2<coord>(det * m[1][1], -det * m[0][1], -det * m[1][0], det * m[0][0]);
 }
