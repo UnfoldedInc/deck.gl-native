@@ -152,20 +152,20 @@ class Vector3 {
     return *this;
   }
 
-  auto Length() const -> coord;
-  auto Length2() const -> coord;
+  auto length() const -> coord;
+  auto length2() const -> coord;
   auto toVector2() const -> Vector2<coord>;
 
-  void Normalize();
+  void normalize();
 
   coord x, y, z;
 };
 
 template <typename coord>
-auto VectorProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
+auto vectorProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
 
 template <typename coord>
-auto ElementProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
+auto elementProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
 
 template <typename coord>
 auto operator+(const Vector3<coord> &v1, const Vector3<coord> &v2) -> Vector3<coord> {
@@ -518,12 +518,12 @@ Vector3<coord>::Vector3(const Vector3<othercoord> &other)
     : x{static_cast<coord>(other.x)}, y{static_cast<coord>(other.y)}, z{static_cast<coord>(other.z)} {}
 
 template <typename coord>
-auto Vector3<coord>::Length() const -> coord {
+auto Vector3<coord>::length() const -> coord {
   return static_cast<coord>(sqrt(x * x + y * y + z * z));
 }
 
 template <typename coord>
-auto Vector3<coord>::Length2() const -> coord {
+auto Vector3<coord>::length2() const -> coord {
   return static_cast<coord>(x * x + y * y + z * z);
 }
 
@@ -533,8 +533,8 @@ auto Vector3<coord>::toVector2() const -> Vector2<coord> {
 }
 
 template <typename coord>
-void Vector3<coord>::Normalize() {
-  coord length = Length();
+void Vector3<coord>::normalize() {
+  coord length = length();
   if (length <= static_cast<coord>(0)) throw std::runtime_error("normalize called on zero length vector");
   x /= length;
   y /= length;
@@ -542,12 +542,12 @@ void Vector3<coord>::Normalize() {
 }
 
 template <typename coord>
-auto VectorProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
+auto vectorProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
   return Vector3<coord>(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
 }
 
 template <typename coord>
-auto ElementProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
+auto elementProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
   return Vector3<coord>(u.x * v.x, u.y * v.y, u.z * v.z);
 }
 
