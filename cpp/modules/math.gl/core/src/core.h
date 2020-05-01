@@ -233,11 +233,11 @@ class Vector4 {
   auto transform(const Matrix4<coord> &m) const -> Vector4<coord>;
 
   // TODO(ilija@unfolded.ai): These are not implemented?
-  coord Length() const;
-  coord Length2() const;
+  coord length() const;
+  coord length2() const;
   auto toVector3() const -> Vector3<coord>;
 
-  void Normalize();
+  void normalize();
 
   coord x, y, z, w;
 };
@@ -251,10 +251,10 @@ Vector4<coord>::Vector4(const Vector4<othercoord> &other)
       w{static_cast<coord>(other.w)} {}
 
 template <typename coord>
-Vector4<coord> VectorProduct(const Vector4<coord> &, const Vector4<coord> &);
+Vector4<coord> vectorProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
-Vector4<coord> ElementProduct(const Vector4<coord> &, const Vector4<coord> &);
+Vector4<coord> elementProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
 auto Vector4<coord>::toVector3() const -> Vector3<coord> {
