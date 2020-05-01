@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CD066FAA24598E7200FFF3FF /* flight-paths.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE74992244EF71A00FB84CC /* flight-paths.cc */; };
+		CD0F092D245BE3130029A096 /* heathrow-flights.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD0F092B245BE3060029A096 /* heathrow-flights.ndjson */; };
+		CD0F092E245BE3140029A096 /* airports.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD0F092C245BE3060029A096 /* airports.ndjson */; };
 		CD1CCD8C24446C6600C96D72 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD1CCD8B24446C6600C96D72 /* array.cc */; };
 		CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD1CCD8B24446C6600C96D72 /* array.cc */; };
 		CD33DF1F242E1EB4003F3B96 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
@@ -305,8 +307,6 @@
 		CDE5785A243C6A1F000D8EC6 /* csv-loader.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE55C68243C6A10000D8EC6 /* csv-loader.h */; };
 		CDE5785B243C6A1F000D8EC6 /* csv-loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55C69243C6A10000D8EC6 /* csv-loader.cpp */; };
 		CDE5785C243C6A1F000D8EC6 /* csv-loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55C69243C6A10000D8EC6 /* csv-loader.cpp */; };
-		CDE781E4244FF9BC001192F7 /* heathrow-flights.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CDE781E2244FF8C1001192F7 /* heathrow-flights.ndjson */; };
-		CDE781E5244FF9BC001192F7 /* airports.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CDE781E3244FF990001192F7 /* airports.ndjson */; };
 		CDE781EA245058F1001192F7 /* line-layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55C3B243C6A10000D8EC6 /* line-layer.cpp */; };
 /* End PBXBuildFile section */
 
@@ -368,14 +368,17 @@
 			dstPath = data;
 			dstSubfolderSpec = 16;
 			files = (
-				CDE781E4244FF9BC001192F7 /* heathrow-flights.ndjson in CopyFiles */,
-				CDE781E5244FF9BC001192F7 /* airports.ndjson in CopyFiles */,
+				CD0F092D245BE3130029A096 /* heathrow-flights.ndjson in CopyFiles */,
+				CD0F092E245BE3140029A096 /* airports.ndjson in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD0F0928245BE3060029A096 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		CD0F092B245BE3060029A096 /* heathrow-flights.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "heathrow-flights.ndjson"; sourceTree = "<group>"; };
+		CD0F092C245BE3060029A096 /* airports.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = airports.ndjson; sourceTree = "<group>"; };
 		CD1CCD8B24446C6600C96D72 /* array.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = array.cc; sourceTree = "<group>"; };
 		CD2A888E243CD18A0059C3CF /* libSPIRV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPIRV.a; path = "cpp/deps/x64-osx/lib/libSPIRV.a"; sourceTree = "<group>"; };
 		CD2A888F243CD18A0059C3CF /* libOGLCompiler.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOGLCompiler.a; path = "cpp/deps/x64-osx/lib/libOGLCompiler.a"; sourceTree = "<group>"; };
@@ -694,8 +697,6 @@
 		CDE7498C244EB00800FB84CC /* arrow-mapping.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "arrow-mapping.md"; sourceTree = "<group>"; };
 		CDE7498D244EB02600FB84CC /* gpu-table-guide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "gpu-table-guide.md"; sourceTree = "<group>"; };
 		CDE74992244EF71A00FB84CC /* flight-paths.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "flight-paths.cc"; sourceTree = "<group>"; };
-		CDE781E2244FF8C1001192F7 /* heathrow-flights.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "heathrow-flights.ndjson"; sourceTree = "<group>"; };
-		CDE781E3244FF990001192F7 /* airports.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = airports.ndjson; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -804,13 +805,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CD1750AF244F052E00E85547 /* data */ = {
+		CD0F0927245BE3060029A096 /* data */ = {
 			isa = PBXGroup;
 			children = (
-				CDE781E2244FF8C1001192F7 /* heathrow-flights.ndjson */,
-				CDE781E3244FF990001192F7 /* airports.ndjson */,
+				CD0F0928245BE3060029A096 /* README.md */,
+				CD0F0929245BE3060029A096 /* examples */,
 			);
 			path = data;
+			sourceTree = "<group>";
+		};
+		CD0F0929245BE3060029A096 /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				CD0F092A245BE3060029A096 /* flight-paths */,
+			);
+			path = examples;
+			sourceTree = "<group>";
+		};
+		CD0F092A245BE3060029A096 /* flight-paths */ = {
+			isa = PBXGroup;
+			children = (
+				CD0F092B245BE3060029A096 /* heathrow-flights.ndjson */,
+				CD0F092C245BE3060029A096 /* airports.ndjson */,
+			);
+			path = "flight-paths";
 			sourceTree = "<group>";
 		};
 		CD48E81124178A1E00D3C13C /* Products */ = {
@@ -835,6 +853,7 @@
 			isa = PBXGroup;
 			children = (
 				CDE53EA2243C69FB000D8EC6 /* cpp */,
+				CD0F0927245BE3060029A096 /* data */,
 				CD48E81124178A1E00D3C13C /* Products */,
 				CD9F3FC124178F270028047D /* Frameworks */,
 			);
@@ -995,7 +1014,6 @@
 		CDE53EDA243C69FC000D8EC6 /* deck.gl */ = {
 			isa = PBXGroup;
 			children = (
-				CD1750AF244F052E00E85547 /* data */,
 				CDE53EDB243C69FC000D8EC6 /* CMakeLists.txt */,
 				CDE53EDC243C69FC000D8EC6 /* stdinout.cpp */,
 				CDE74992244EF71A00FB84CC /* flight-paths.cc */,

@@ -118,6 +118,8 @@ endif()
 
 # Path to folder with 3rd party dependencies
 set(DECK_DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib)
+# Path to supporting example data
+set(DECK_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data)
 
 # Setup compile and link flags
 set(DECK_COMPILE_FLAGS "")
