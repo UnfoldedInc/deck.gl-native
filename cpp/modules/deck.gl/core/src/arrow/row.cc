@@ -272,7 +272,7 @@ auto Row::getDoubleVector4(const std::string& columnName, const Vector4<double>&
 auto Row::isValid(const std::string& columnName) const -> bool {
   try {
     auto chunk = this->_getChunk(columnName);
-    return chunk->IsValid(this->_rowIndex);
+    return chunk->IsValid(this->_chunkRowIndex);
   } catch (...) {
     return false;
   }
@@ -313,7 +313,7 @@ auto Row::_getChunk(const std::string& columnName) const -> std::shared_ptr<arro
   // Iterate over column chunks and find the chunk that contains row data
   int64_t offset = 0;
   for (auto chunk : column->chunks()) {
-    if (_rowIndex >= offset && _rowIndex < offset + chunk->length()) {
+    if (this->_rowIndex >= offset && this->_rowIndex < offset + chunk->length()) {
       // TODO(ilija@unfolded.ai): Cache
       return chunk;
     }

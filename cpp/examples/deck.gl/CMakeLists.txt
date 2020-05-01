@@ -23,7 +23,7 @@ set(EXAMPLE_SOURCE_FILES
     flight-paths.cc
     )
 set(EXAMPLE_DATA_FILES
-    data/heathrow-flights.ndjson
+    ${DECK_DATA_PATH}/examples/flight-paths/heathrow-flights.ndjson
     )
 
 # Create an executable for each example from the list
@@ -36,7 +36,8 @@ endforeach()
 
 # Copy supporting data files
 foreach(EXAMPLE_DATA_FILE ${EXAMPLE_DATA_FILES})
-    configure_file(${EXAMPLE_DATA_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_DATA_FILE} COPYONLY)
+    get_filename_component(EXAMPLE_DATA_FILE_NAME ${EXAMPLE_DATA_FILE} NAME)
+    configure_file(${EXAMPLE_DATA_FILE} ${CMAKE_CURRENT_BINARY_DIR}/data/${EXAMPLE_DATA_FILE_NAME} COPYONLY)
 endforeach()
 
 # Add example files to global DECK_EXAMPLE_FILES property
