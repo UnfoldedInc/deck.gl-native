@@ -278,13 +278,13 @@ class Matrix2 {
 
   auto Invert() const -> Matrix2<coord>;
 
-  auto operator()(unsigned row, unsigned col) -> coord & { return m[row][col]; }
-  auto operator()(unsigned row, unsigned col) const -> const coord { return m[row][col]; }
+  auto operator()(unsigned row, unsigned col) -> coord & { return _m[row][col]; }
+  auto operator()(unsigned row, unsigned col) const -> const coord { return _m[row][col]; }
 
  private:
-  coord m[2][2];
-  auto at(int i, int j) -> coord & { return m[i][j]; }
-  auto at(int i, int j) const -> const coord { return m[i][j]; }
+  coord _m[2][2];
+  auto at(int row, int column) -> coord & { return (*this)(row, column); }
+  auto at(int row, int column) const -> const coord { return (*this)(row, column); }
 };
 
 // Matrix operator+ (const Matrix &) const;
@@ -304,8 +304,8 @@ class Matrix3 {
   auto operator=(const Matrix3<coord> &) -> Matrix3<coord> &;
   auto operator=(Matrix3<coord> &&) -> Matrix3<coord> &;
 
-  auto operator()(int row, int col) -> coord & { return m[row][col]; }
-  auto operator()(int row, int col) const -> const coord { return m[row][col]; }
+  auto operator()(int row, int col) -> coord & { return _m[row][col]; }
+  auto operator()(int row, int col) const -> const coord { return _m[row][col]; }
 
   // Matrix creation
   static auto MakeUnit() -> Matrix3<coord>;
@@ -328,9 +328,9 @@ class Matrix3 {
   auto MultiplyVector(const Vector2<coord>) const -> Vector2<coord>;
 
  private:
-  coord m[3][3];
-  auto at(int i, int j) -> coord & { return m[i][j]; }
-  auto at(int i, int j) const -> const coord { return m[i][j]; }
+  coord _m[3][3];
+  auto at(int row, int column) -> coord & { return (*this)(row, column); }
+  auto at(int row, int column) const -> const coord { return (*this)(row, column); }
 };
 
 template <class T>
@@ -387,8 +387,8 @@ class Matrix4 {
   static auto MakeProjection(coord distance) -> Matrix4<coord>;
   static auto makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord>;
 
-  auto operator()(int row, int col) -> coord & { return m[row][col]; }
-  auto operator()(int row, int col) const -> const coord { return m[row][col]; }
+  auto operator()(int row, int col) -> coord & { return _m[row][col]; }
+  auto operator()(int row, int col) const -> const coord { return _m[row][col]; }
 
   auto Determinant() const -> coord;
   auto Invert() const -> Matrix4<coord>;
@@ -402,9 +402,9 @@ class Matrix4 {
   auto transform(const Vector4<coord> &) const -> Vector4<coord>;
 
  private:
-  coord m[4][4];
-  auto at(int i, int j) -> coord & { return m[i][j]; }
-  auto at(int i, int j) const -> const coord { return m[i][j]; }
+  coord _m[4][4];
+  auto at(int row, int column) -> coord & { return (*this)(row, column); }
+  auto at(int row, int column) const -> const coord { return (*this)(row, column); }
 };
 
 template <typename coord>
