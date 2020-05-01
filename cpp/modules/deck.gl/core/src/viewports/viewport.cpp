@@ -146,7 +146,7 @@ void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
   this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
 
   // Make a centered version of the matrix for projection modes without an offset
-  this->viewMatrix = (Matrix4<double>::MakeUnit() * this->viewMatrixUncentered).translate(-this->center);
+  this->viewMatrix = (Matrix4<double>::makeUnit() * this->viewMatrixUncentered).translate(-this->center);
 }
 
 auto Viewport::_getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double> {
@@ -175,7 +175,7 @@ void Viewport::_initProjectionMatrix(const ProjectionMatrixOptions& opts) {
 void Viewport::_initPixelMatrices() {
   // Note: As usual, matrix operations should be applied in "reverse" order
   // since vectors will be multiplied in from the right during transformation
-  auto vpm = Matrix4<double>::MakeUnit();
+  auto vpm = Matrix4<double>::makeUnit();
   vpm = vpm * this->projectionMatrix;
   vpm = vpm * this->viewMatrix;
 

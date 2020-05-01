@@ -373,28 +373,28 @@ class Matrix4 {
   auto operator=(Matrix4<coord> &&) -> Matrix4<coord> & = default;
 
   // Matrix Creation
-  static auto MakeUnit() -> Matrix4<coord>;
-  static auto MakeTranslation(const Vector3<coord> &offset) -> Matrix4<coord>;
-  static auto MakeScale(const Vector3<coord> &scale) -> Matrix4<coord>;
-  static auto MakeRotationX(coord angle) -> Matrix4<coord>;
-  static auto MakeRotationY(coord angle) -> Matrix4<coord>;
-  static auto MakeRotationZ(coord angle) -> Matrix4<coord>;
-  static auto MakeShearXY(coord factorX, coord factorY) -> Matrix4<coord>;
-  static auto MakeShearXZ(coord factorX, coord factorZ) -> Matrix4<coord>;
-  static auto MakeShearYX(coord factorY, coord factorZ) -> Matrix4<coord>;
-  static auto MakeProjection(coord distance) -> Matrix4<coord>;
+  static auto makeUnit() -> Matrix4<coord>;
+  static auto makeTranslation(const Vector3<coord> &offset) -> Matrix4<coord>;
+  static auto makeScale(const Vector3<coord> &scale) -> Matrix4<coord>;
+  static auto makeRotationX(coord angle) -> Matrix4<coord>;
+  static auto makeRotationY(coord angle) -> Matrix4<coord>;
+  static auto makeRotationZ(coord angle) -> Matrix4<coord>;
+  static auto makeShearXY(coord factorX, coord factorY) -> Matrix4<coord>;
+  static auto makeShearXZ(coord factorX, coord factorZ) -> Matrix4<coord>;
+  static auto makeShearYX(coord factorY, coord factorZ) -> Matrix4<coord>;
+  static auto makeProjection(coord distance) -> Matrix4<coord>;
   static auto makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord>;
 
   auto operator()(int row, int col) -> coord & { return m[row][col]; }
   auto operator()(int row, int col) const -> const coord { return m[row][col]; }
 
-  auto Determinant() const -> coord;
-  auto Invert() const -> Matrix4<coord>;
-  auto Transpose() const -> Matrix4<coord>;
+  auto determinant() const -> coord;
+  auto invert() const -> Matrix4<coord>;
+  auto transpose() const -> Matrix4<coord>;
 
-  bool IsHomogenous() const;
-  auto MultiplyVector(const Vector3<coord> &) const -> Vector3<coord>;
-  auto MultiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
+  bool isHomogenous() const;
+  auto multiplyVector(const Vector3<coord> &) const -> Vector3<coord>;
+  auto multiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
 
   auto scale(const Vector3<coord> &) const -> Matrix4<coord>;
   auto translate(const Vector3<coord> &t) const -> Matrix4<coord>;
@@ -820,17 +820,17 @@ Matrix4<coord>::Matrix4(const Matrix4<othercoord> &other) {
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeUnit() -> Matrix4<coord> {
+auto Matrix4<coord>::makeUnit() -> Matrix4<coord> {
   return Matrix4<coord>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeTranslation(const Vector3<coord> &offset) -> Matrix4<coord> {
+auto Matrix4<coord>::makeTranslation(const Vector3<coord> &offset) -> Matrix4<coord> {
   return Matrix4<coord>(1, 0, 0, offset.x, 0, 1, 0, offset.y, 0, 0, 1, offset.z, 0, 0, 0, 1);
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeScale(const Vector3<coord> &scale) -> Matrix4<coord> {
+auto Matrix4<coord>::makeScale(const Vector3<coord> &scale) -> Matrix4<coord> {
   return Matrix4<coord>(scale.x, static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(0),
                         static_cast<coord>(0), scale.y, static_cast<coord>(0), static_cast<coord>(0),
                         static_cast<coord>(0), static_cast<coord>(0), scale.z, static_cast<coord>(0),
@@ -838,21 +838,21 @@ auto Matrix4<coord>::MakeScale(const Vector3<coord> &scale) -> Matrix4<coord> {
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeRotationX(coord angle) -> Matrix4<coord> {
+auto Matrix4<coord>::makeRotationX(coord angle) -> Matrix4<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
   return Matrix4<coord>(1, 0, 0, 0, 0, cosine, -sine, 0, 0, sine, cosine, 0, 0, 0, 0, 1);
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeRotationY(coord angle) -> Matrix4<coord> {
+auto Matrix4<coord>::makeRotationY(coord angle) -> Matrix4<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
   return Matrix4<coord>(cosine, 0, sine, 0, 0, 1, 0, 0, -sine, 0, cosine, 0, 0, 0, 0, 1);
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeRotationZ(coord angle) -> Matrix4<coord> {
+auto Matrix4<coord>::makeRotationZ(coord angle) -> Matrix4<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
   return Matrix4<coord>(cosine, -sine, 0, 0, sine, cosine, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
@@ -860,18 +860,18 @@ auto Matrix4<coord>::MakeRotationZ(coord angle) -> Matrix4<coord> {
 
 #ifdef DONT
 template <typename coord>
-auto Matrix4<coord>::MakeShearXY(coord shx, coord shy) -> Matrix4<coord> {
+auto Matrix4<coord>::makeShearXY(coord shx, coord shy) -> Matrix4<coord> {
   return Matrix4<coord>(1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 #endif
 
 template <typename coord>
-auto Matrix4<coord>::MakeShearXZ(coord shx, coord shy) -> Matrix4<coord> {
+auto Matrix4<coord>::makeShearXZ(coord shx, coord shy) -> Matrix4<coord> {
   return Matrix4<coord>(1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 template <typename coord>
-auto Matrix4<coord>::MakeShearXY(coord shx, coord shy) -> Matrix4<coord> {
+auto Matrix4<coord>::makeShearXY(coord shx, coord shy) -> Matrix4<coord> {
   return Matrix4<coord>(1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
@@ -888,24 +888,24 @@ auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord
 }
 
 template <typename coord>
-auto Matrix4<coord>::Transpose() const -> Matrix4<coord> {
+auto Matrix4<coord>::transpose() const -> Matrix4<coord> {
   return Matrix4<coord>{m[0][0], m[1][0], m[2][0], m[3][0], m[0][1], m[1][1], m[2][1], m[3][1],
                         m[0][2], m[1][2], m[2][2], m[3][2], m[0][3], m[1][3], m[2][3], m[3][3]};
 }
 
 template <typename coord>
-auto Matrix4<coord>::IsHomogenous() const -> bool {
+auto Matrix4<coord>::isHomogenous() const -> bool {
   return m[3][0] == 0 && m[3][1] == 0 && m[3][2] == 0 && m[3][3] == 1;
 }
 
 template <typename coord>
-auto Matrix4<coord>::MultiplyVector(const Vector3<coord> &s) const -> Vector3<coord> {
+auto Matrix4<coord>::multiplyVector(const Vector3<coord> &s) const -> Vector3<coord> {
   return Vector3<coord>(m[0][0] * s.x + m[0][1] * s.y + m[0][2] * s.z, m[1][0] * s.x + m[1][1] * s.y + m[1][2] * s.z,
                         m[2][0] * s.x + m[2][1] * s.y + m[2][2] * s.z);
 }
 
 template <typename coord>
-auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coord> {
+auto Matrix4<coord>::multiplyPoint(const Vector3<coord> &s) const -> Vector3<coord> {
   // TODO(ib) - ???
   // coord w = m[3][0] * s.x + m[3][1] * s.y + m[3][2] * s.z + m[3][3] *
   // static_cast<coord>(1); if (abs (w - 1.0) > FLT_EPSILON) throw
@@ -918,7 +918,7 @@ auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coo
 
 template <typename coord>
 auto Matrix4<coord>::scale(const Vector3<coord> &s) const -> Matrix4<coord> {
-  auto scaleMatrix = Matrix4<coord>::MakeScale(s);
+  auto scaleMatrix = Matrix4<coord>::makeScale(s);
   return *this * scaleMatrix;
 
   /*
@@ -931,7 +931,7 @@ auto Matrix4<coord>::scale(const Vector3<coord> &s) const -> Matrix4<coord> {
 
 template <typename coord>
 auto Matrix4<coord>::translate(const Vector3<coord> &t) const -> Matrix4<coord> {
-  auto translationMatrix = Matrix4<coord>::MakeTranslation(t);
+  auto translationMatrix = Matrix4<coord>::makeTranslation(t);
   return *this * translationMatrix;
 
   /*
@@ -949,7 +949,7 @@ auto Matrix4<coord>::translate(const Vector3<coord> &t) const -> Matrix4<coord> 
 
 template <typename coord>
 auto Matrix4<coord>::rotateX(const coord rad) -> Matrix4<coord> {
-  auto rotationVector = Matrix4<coord>::MakeRotationX(rad);
+  auto rotationVector = Matrix4<coord>::makeRotationX(rad);
   return *this * rotationVector;
 
   /*
@@ -975,7 +975,7 @@ auto Matrix4<coord>::rotateX(const coord rad) -> Matrix4<coord> {
 
 template <typename coord>
 auto Matrix4<coord>::rotateY(const coord rad) -> Matrix4<coord> {
-  auto rotationVector = Matrix4<coord>::MakeRotationY(rad);
+  auto rotationVector = Matrix4<coord>::makeRotationY(rad);
   return *this * rotationVector;
 
   /*
@@ -1001,12 +1001,12 @@ auto Matrix4<coord>::rotateY(const coord rad) -> Matrix4<coord> {
 
 template <typename coord>
 auto Matrix4<coord>::rotateZ(const coord rad) -> Matrix4<coord> {
-  auto rotationVector = Matrix4<coord>::MakeRotationZ(rad);
+  auto rotationVector = Matrix4<coord>::makeRotationZ(rad);
   return *this * rotationVector;
 }
 
 template <typename coord>
-auto Matrix4<coord>::Determinant() const -> coord {
+auto Matrix4<coord>::determinant() const -> coord {
   return m[0][0] * m[1][1] * m[2][2] * m[3][3] - m[0][0] * m[1][1] * m[3][2] * m[2][3] -
          m[0][0] * m[2][1] * m[1][2] * m[3][3] + m[0][0] * m[2][1] * m[3][2] * m[1][3] +
          m[0][0] * m[3][1] * m[1][2] * m[2][3] - m[0][0] * m[3][1] * m[2][2] * m[1][3] -
@@ -1034,7 +1034,7 @@ auto Matrix4<coord>::RotationMatrix(coord a_x, coord a_y, coord a_z) -> Matrix4<
 
 #ifdef DONT
 template <typename coord>
-auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> s) const -> Vector3<coord> {
+auto Matrix4<coord>::multiplyPoint(const Vector3<coord> s) const -> Vector3<coord> {
   return Vector3<coord>(v.x = m[0][0] * s.x + m[1][0] * s.y + m[2][0] * s.z + m[3][0] * static_cast<coord>(1);
                         v.y = m[0][1] * s.x + m[1][1] * s.y + m[2][1] * s.z + m[3][1] * static_cast<coord>(1);
                         v.z = m[0][2] * s.x + m[1][2] * s.y + m[2][2] * s.z + m[3][2] * static_cast<coord>(1))
