@@ -318,16 +318,12 @@ inline bool JSONObject::hasProperty(const std::string& key) const { return this-
 
 template <class T>
 void JSONObject::setProperty(const std::string& key, const T& value) {
-  std::cout << "setProperty: getProperties" << std::endl;
   auto properties = this->getProperties();
   if (!properties) {
     throw std::logic_error("Props: No prop types found");
   }
-  std::cout << "setProperty: getProperty" << std::endl;
   if (auto propType = this->getProperties()->getProperty(key)) {
-    std::cout << "setProperty: dynamic_cast" << std::endl;
     if (auto propTypeT = dynamic_cast<const PropertyT<T>*>(propType)) {
-      std::cout << "setting prop" << std::endl;
       propTypeT->set(this, value);
     }
   }

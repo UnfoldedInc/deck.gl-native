@@ -84,6 +84,17 @@ auto GLFWAnimationLoop::getPreferredSwapChainTextureFormat() -> wgpu::TextureFor
   return static_cast<wgpu::TextureFormat>(this->_binding->GetPreferredSwapChainTextureFormat());
 }
 
+auto GLFWAnimationLoop::devicePixelRatio() -> float {
+  // TODO(ilija@unfolded.ai): Not sure when these two would be different?
+  float xscale, yscale;
+  glfwGetWindowContentScale(this->_window, &xscale, &yscale);
+  if (xscale != yscale) {
+    throw std::runtime_error("Device scale factor not equal across axis");
+  }
+
+  return xscale;
+}
+
 auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> wgpu::Device {
   this->_instance = std::make_unique<dawn_native::Instance>();
   DiscoverAdapter(this->_instance.get(), this->_window, backendType);

@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Unfolded Inc
+// Copyright (c) 2020 Unfolded, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,27 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <gtest/gtest.h>
+#ifndef DECKGL_CORE_SHADERLIB_MISC_GEOMETRY_GLSL_H
+#define DECKGL_CORE_SHADERLIB_MISC_GEOMETRY_GLSL_H
 
-#include <memory>
+#include <string>
 
-#include "deck.gl/core.h"
+// NOLINTNEXTLINE(runtime/string)
+static const std::string geometryVS = R"GLSL(
+struct VertexGeometry {
+  vec4 position;
+  vec3 worldPosition;
+  vec3 worldPositionAlt;
+  vec3 normal;
+  vec2 uv;
+  vec3 pickingColor;
+} geometry;
+)GLSL";
 
-using namespace mathgl;
-using namespace deckgl;
+// NOLINTNEXTLINE(runtime/string)
+static const std::string geometryFS = R"GLSL(
+#define SMOOTH_EDGE_RADIUS 0.5
 
-/// \brief Fixture for testing Viewport implementation.
-class ViewportTest : public ::testing::Test {
- protected:
-  ViewportTest() {}
-};
+struct FragmentGeometry {
+  vec2 uv;
+} geometry;
 
-TEST_F(ViewportTest, Simple) {
-  ViewMatrixOptions viewMatrixOptions;
-  ProjectionMatrixOptions projectionMatrixOptions;
-  Viewport viewport{"my-viewport-id", viewMatrixOptions, projectionMatrixOptions, 0, 0, 0, 0};
-  EXPECT_FALSE(viewport.containsPixel(0, 0));
-  viewport.width = 10;
-  viewport.height = 10;
-  EXPECT_TRUE(viewport.containsPixel(2, 1, 5, 5));
+float smoothedge(float edge, float x) {
+  return smoothstep(edge - SMOOTH_EDGE_RADIUS, edge + SMOOTH_EDGE_RADIUS, x);
 }
+)GLSL";
+
+#endif  // DECKGL_CORE_SHADERLIB_MISC_GEOMETRY_GLSL_H

@@ -244,16 +244,11 @@ void LayerManager::updateLayers() {
 }
 */
 
-//
-// PRIVATE METHODS
-//
+// Make a viewport "current" in layer context, updating viewportChanged flags.
+void LayerManager::activateViewport(const std::shared_ptr<Viewport> &viewport) {
+  this->context->viewport = viewport;
 
-// Make a viewport "current" in layer context, updating viewportChanged
-// flags
-/*
-LayerManager::activateViewport(viewport) {
-  assert(viewport, 'LayerManager: viewport not set');
-
+  /*
   const oldViewport = this->context.viewport;
   const viewportChanged = !oldViewport || !viewport.equals(oldViewport);
 
@@ -272,8 +267,12 @@ LayerManager::activateViewport(viewport) {
   }
 
   return this;
+  */
 }
-*/
+
+//
+// PRIVATE METHODS
+//
 
 // void LayerManager::_handleError(stage, error, layer) {
 //   if (this->_onError) {

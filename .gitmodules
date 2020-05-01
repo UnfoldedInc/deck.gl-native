@@ -1,3 +1,6 @@
 [submodule "cpp/deps"]
 	path = cpp/deps
 	url = https://github.com/UnfoldedInc/deck.gl-native-dependencies.git
+[submodule "data"]
+	path = data
+	url = https://github.com/UnfoldedInc/deck.gl-data.git

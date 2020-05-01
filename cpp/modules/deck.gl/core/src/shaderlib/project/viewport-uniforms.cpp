@@ -118,8 +118,7 @@ auto calculateMatrixAndOffset(const std::shared_ptr<Viewport>& viewport, COORDIN
     cameraPosCommon = cameraPosCommon - positionCommonSpace3;
 
     auto positionCommonSpace = Vector4<double>(positionCommonSpace3, 1);
-
-    projectionCenter = viewProjectionMatrix.transform(positionCommonSpace);
+    projectionCenter = positionCommonSpace.transform(viewProjectionMatrix);
 
     // Always apply uncentered projection matrix if available (shader adds center)
     // TODO(isaac@unfolded.ai): elided default of viewport.viewMatrix
@@ -173,24 +172,24 @@ auto calculateViewportUniforms(const std::shared_ptr<Viewport>& viewport, double
   // TODO(ilija@unfolded.ai): wrapLongitude and modelMatrix not set, set them to default values explicitly if they
   // aren't relevant?
   ViewportUniforms uniforms = {// Projection mode values
-                               .coordinateSystem = static_cast<int32_t>(coordinateSystem),
-                               .projectionMode = static_cast<int32_t>(viewport->projectionMode()),
-                               .scale = static_cast<float>(viewport->scale),  // This is the mercator scale (2 ** zoom)
-                               .antimeridian = static_cast<float>(antimeridian),
-                               .commonUnitsPerMeter = Vector3<float>{distanceScales.unitsPerMeter},
-                               .commonUnitsPerWorldUnit = Vector3<float>{distanceScales.unitsPerMeter},
-                               .commonUnitsPerWorldUnit2 = Vector3<float>{DEFAULT_PIXELS_PER_UNIT2},
-                               .center = Vector4<float>{matrixAndOffset.projectionCenter},
                                .viewProjectionMatrix = Matrix4<float>{matrixAndOffset.viewProjectionMatrix},
+                               .center = Vector4<float>{matrixAndOffset.projectionCenter},
+                               .commonUnitsPerMeter = Vector3<float>{distanceScales.unitsPerMeter},
+                               .coordinateSystem = static_cast<int32_t>(coordinateSystem),
+                               .commonUnitsPerWorldUnit = Vector3<float>{distanceScales.unitsPerMeter},
+                               .projectionMode = static_cast<int32_t>(viewport->projectionMode()),
+                               .commonUnitsPerWorldUnit2 = Vector3<float>{DEFAULT_PIXELS_PER_UNIT2},
+                               .scale = static_cast<float>(viewport->scale),  // This is the mercator scale (2 ** zoom)
+                                                                              // This is for lighting calculations
+                               .cameraPosition = Vector3<float>(matrixAndOffset.cameraPosCommon),
+                               .antimeridian = static_cast<float>(antimeridian),
+                               .coordinateOrigin = Vector3<float>{matrixAndOffset.shaderCoordinateOrigin},
+                               .devicePixelRatio = static_cast<float>(devicePixelRatio),
                                // Screen size
                                .viewportSize = Vector2<float>{viewportSize},
-                               .devicePixelRatio = static_cast<float>(devicePixelRatio),
                                // Distance at which screen pixels are projected
                                // TODO(isaac@unfolded.ai): optional focalDistance
-                               .focalDistance = static_cast<float>(viewport->focalDistance),
-                               // This is for lighting calculations
-                               .cameraPosition = Vector3<float>(matrixAndOffset.cameraPosCommon),
-                               .coordinateOrigin = Vector3<float>{matrixAndOffset.shaderCoordinateOrigin}};
+                               .focalDistance = static_cast<float>(viewport->focalDistance)};
 
   if (matrixAndOffset.geospatialOrigin.has_value()) {
     auto distanceScalesAtOrigin = viewport->getDistanceScales(matrixAndOffset.geospatialOrigin.value().toVector2());

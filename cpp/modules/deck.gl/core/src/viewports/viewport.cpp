@@ -32,6 +32,7 @@ Viewport::Viewport(const string& id, const ViewMatrixOptions& viewMatrixOptions,
     : id{id}, x{x}, y{y}, width{width}, height{height} {
   this->_initViewMatrix(viewMatrixOptions);
   this->_initProjectionMatrix(projectionMatrixOptions);
+  this->_initPixelMatrices();
 }
 
 auto Viewport::metersPerPixel() -> double { return this->distanceScales.metersPerUnit.z / this->scale; }
@@ -110,20 +111,11 @@ auto Viewport::getCameraDirection() -> mathgl::Vector3<double> { return this->ca
 
 auto Viewport::getCameraUp() -> mathgl::Vector3<double> { return this->cameraUp; }
 
-auto Viewport::_getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double> {
-  // Make a centered version of the matrix for projection modes without an offset
-  auto center2d = this->projectFlat(lngLat);
-  auto center = Vector3<double>(center2d, 0);
-
-  // elided
-  // if (meterOffset) {
-  //   const commonPosition = new Vector3(meterOffset)
-  //     // Convert to pixels in current zoom
-  //     .scale(distanceScales.unitsPerMeter);
-  //   center.add(commonPosition);
-  // }
-
-  return center;
+auto Viewport::_createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
+                                       double near, double far) -> mathgl::Matrix4<double> {
+  // TODO(isaac@unfolded.ai): support orthographic
+  return orthographic ? throw new std::logic_error("orthographic not supported")
+                      : Matrix4<double>::makePerspective(fovyRadians, aspect, near, far);
 }
 
 void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
@@ -152,28 +144,86 @@ void Viewport::_initViewMatrix(const ViewMatrixOptions& viewMatrixOptions) {
   }
 
   this->viewMatrixUncentered = viewMatrixOptions.viewMatrix;
+
   // Make a centered version of the matrix for projection modes without an offset
-  // TODO(isaac@unfolded.ai): NEEDED
-  // this->viewMatrix = Matrix4<double>()
-  //                        // Apply the uncentered view matrix
-  //                        .multiplyRight(this->viewMatrixUncentered)
-  //                        // And center it
-  //                        .translate(this->center)
-  //                        .negate();
+  this->viewMatrix = (Matrix4<double>::MakeUnit() * this->viewMatrixUncentered).translate(-this->center);
+}
+
+auto Viewport::_getCenterInWorld(const mathgl::Vector2<double>& lngLat) -> mathgl::Vector3<double> {
+  // Make a centered version of the matrix for projection modes without an offset
+  auto center2d = this->projectFlat(lngLat);
+  auto center = Vector3<double>(center2d, 0);
+
+  // elided
+  // if (meterOffset) {
+  //   const commonPosition = new Vector3(meterOffset)
+  //     // Convert to pixels in current zoom
+  //     .scale(distanceScales.unitsPerMeter);
+  //   center.add(commonPosition);
+  // }
+
+  return center;
 }
 
 void Viewport::_initProjectionMatrix(const ProjectionMatrixOptions& opts) {
   this->projectionMatrix = opts.projectionMatrix.has_value()
                                ? opts.projectionMatrix.value()
-                               : this->_createProjectionMatrix(opts.orthographic, opts.fovyRadians, opts.aspect,
+                               : this->_createProjectionMatrix(opts.orthographic, opts.fovy, opts.aspect,
                                                                opts.focalDistance, opts.near, opts.far);
 }
 
-auto Viewport::_createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
-                                       double near, double far) -> mathgl::Matrix4<double> {
-  // TODO(isaac@unfolded.ai): support orthographic
-  return orthographic ? throw new std::logic_error("orthographic not supported")
-                      : Matrix4<double>::makePerspective(fovyRadians, aspect, near, far);
+void Viewport::_initPixelMatrices() {
+  // Note: As usual, matrix operations should be applied in "reverse" order
+  // since vectors will be multiplied in from the right during transformation
+  auto vpm = Matrix4<double>::MakeUnit();
+  vpm = vpm * this->projectionMatrix;
+  vpm = vpm * this->viewMatrix;
+
+  this->viewProjectionMatrix = vpm;
+
+  /*
+  // Calculate inverse view matrix
+  this.viewMatrixInverse = mat4.invert([], this.viewMatrix) || this.viewMatrix;
+
+  // Decompose camera directions
+  const {eye, direction, up, right} = extractCameraVectors({
+    viewMatrix: this.viewMatrix,
+    viewMatrixInverse: this.viewMatrixInverse
+  });
+  this.cameraPosition = eye;
+  this.cameraDirection = direction;
+  this.cameraUp = up;
+  this.cameraRight = right;
+
+  // console.log(this.cameraPosition, this.cameraDirection, this.cameraUp);
+  */
+
+  /*
+   * Builds matrices that converts preprojected lngLats to screen pixels
+   * and vice versa.
+   * Note: Currently returns bottom-left coordinates!
+   * Note: Starts with the GL projection matrix and adds steps to the
+   *       scale and translate that matrix onto the window.
+   * Note: WebGL controls clip space to screen projection with gl.viewport
+   *       and does not need this step.
+   */
+
+  /*
+  // matrix for conversion from world location to screen (pixel) coordinates
+  const viewportMatrix = createMat4(); // matrix from NDC to viewport.
+  const pixelProjectionMatrix = createMat4(); // matrix from world space to viewport.
+  mat4.scale(viewportMatrix, viewportMatrix, [this.width / 2, -this.height / 2, 1]);
+  mat4.translate(viewportMatrix, viewportMatrix, [1, -1, 0]);
+  mat4.multiply(pixelProjectionMatrix, viewportMatrix, this.viewProjectionMatrix);
+  this.pixelProjectionMatrix = pixelProjectionMatrix;
+  this.viewportMatrix = viewportMatrix;
+
+  this.pixelUnprojectionMatrix = mat4.invert(createMat4(), this.pixelProjectionMatrix);
+  if (!this.pixelUnprojectionMatrix) {
+    log.warn('Pixel project matrix not invertible')();
+    // throw new Error('Pixel project matrix not invertible');
+  }
+  */
 }
 
 auto operator==(const Viewport& v1, const Viewport& v2) -> bool {

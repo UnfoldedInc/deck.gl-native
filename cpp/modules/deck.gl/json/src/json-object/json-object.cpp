@@ -31,7 +31,6 @@ using namespace deckgl;
 auto Property::_getPropFromJson(JSONObject* props, const Json::Value& jsonValue,
                                 const JSONConverter* jsonConverter) const -> std::shared_ptr<JSONObject> {
   auto typeHint = this->typeName;
-  std::cout << "getting prop" << typeHint << std::endl;
   std::shared_ptr<JSONObject> propsObject = {jsonConverter->convertClass(jsonValue, typeHint)};
   return propsObject;
 }

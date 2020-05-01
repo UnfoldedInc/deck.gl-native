@@ -114,7 +114,7 @@ auto operator-(const Vector2<coord> &v1, const Vector2<coord> &v2) -> Vector2<co
 
 template <typename coord>
 auto operator==(const Vector2<coord> &v1, const Vector2<coord> &v2) -> bool {
-  return v1.x == v2.x && v1.y == v2.y;
+  return equalsT(v1.x, v2.x) && equalsT(v1.y, v2.y);
 }
 
 template <typename coord>
@@ -179,7 +179,7 @@ auto operator-(const Vector3<coord> &v1, const Vector3<coord> &v2) -> Vector3<co
 
 template <typename coord>
 auto operator==(const Vector3<coord> &v1, const Vector3<coord> &v2) -> bool {
-  return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+  return equalsT(v1.x, v2.x) && equalsT(v1.y, v2.y) && equalsT(v1.z, v2.z);
 }
 
 template <typename coord>
@@ -226,7 +226,11 @@ class Vector4 {
     return Vector4<coord>(x - v.x, y - v.y, z - v.z, w - v.w);
   }
 
-  auto operator==(const Vector4<coord> &v) const -> bool { return x == v.x && y == v.y && z == v.z && w == v.w; }
+  auto operator==(const Vector4<coord> &v) const -> bool {
+    return equalsT(x, v.x) && equalsT(y, v.y) && equalsT(z, v.z) && equalsT(w, v.w);
+  }
+
+  auto transform(const Matrix4<coord> &m) const -> Vector4<coord>;
 
   // TODO(ilija@unfolded.ai): These are not implemented?
   coord Length() const;
@@ -399,7 +403,10 @@ class Matrix4 {
   auto MultiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
 
   auto scale(const Vector3<coord> &) const -> Matrix4<coord>;
-  auto transform(const Vector4<coord> &) const -> Vector4<coord>;
+  auto translate(const Vector3<coord> &t) const -> Matrix4<coord>;
+  auto rotateX(const coord rad) -> Matrix4<coord>;
+  auto rotateY(const coord rad) -> Matrix4<coord>;
+  auto rotateZ(const coord rad) -> Matrix4<coord>;
 
  private:
   coord _m[4][4];
@@ -424,11 +431,13 @@ auto operator<<(std::ostream &os, const Matrix4<coord> &m) -> std::ostream & {
 }
 
 template <typename coord>
-auto operator==(const Matrix4<coord> &m1, const Matrix4<coord> &m2) -> bool {
-  return m1(0, 0) == m2(0, 0) && m1(0, 1) == m2(0, 1) && m1(0, 2) == m2(0, 2) && m1(0, 3) == m2(0, 3) &&
-         m1(1, 0) == m2(1, 0) && m1(1, 1) == m2(1, 1) && m1(1, 2) == m2(1, 2) && m1(1, 3) == m2(1, 3) &&
-         m1(2, 0) == m2(2, 0) && m1(2, 1) == m2(2, 1) && m1(2, 2) == m2(2, 2) && m1(2, 3) == m2(2, 3) &&
-         m1(3, 0) == m2(3, 0) && m1(3, 1) == m2(3, 1) && m1(3, 2) == m2(3, 2) && m1(3, 3) == m2(3, 3);
+auto operator==(const Matrix4<coord> &l, const Matrix4<coord> &r) -> bool {
+  return equalsT(l(0, 0), r(0, 0)) && equalsT(l(0, 1), r(0, 1)) && equalsT(l(0, 2), r(0, 2)) &&
+         equalsT(l(0, 3), r(0, 3)) && equalsT(l(1, 0), r(1, 0)) && equalsT(l(1, 1), r(1, 1)) &&
+         equalsT(l(1, 2), r(1, 2)) && equalsT(l(1, 3), r(1, 3)) && equalsT(l(2, 0), r(2, 0)) &&
+         equalsT(l(2, 1), r(2, 1)) && equalsT(l(2, 2), r(2, 2)) && equalsT(l(2, 3), r(2, 3)) &&
+         equalsT(l(3, 0), r(3, 0)) && equalsT(l(3, 1), r(3, 1)) && equalsT(l(3, 2), r(3, 2)) &&
+         equalsT(l(3, 3), r(3, 3));
 }
 
 template <typename coord>
@@ -580,6 +589,17 @@ template <typename coord>
 auto operator<<(std::ostream &os, const Vector3<coord> &v) -> std::ostream & {
   os << "(" << v.x << "," << v.y << "," << v.z << ")";
   return os;
+}
+
+////////////////////////////
+// Vector4 implementation //
+////////////////////////////
+
+template <typename coord>
+auto Vector4<coord>::transform(const Matrix4<coord> &m) const -> Vector4<coord> {
+  return Vector4<coord>{
+      m(0, 0) * x + m(0, 1) * y + m(0, 2) * z + m(0, 3) * w, m(1, 0) * x + m(1, 1) * y + m(1, 2) * z + m(1, 3) * w,
+      m(2, 0) * x + m(2, 1) * y + m(2, 2) * z + m(2, 3) * w, m(3, 0) * x + m(3, 1) * y + m(3, 2) * z + m(3, 3) * w};
 }
 
 ///////////////////////////////////////////////////////////
@@ -869,8 +889,18 @@ template <typename coord>
 auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord> {
   auto f = 1.0 / tan(fovy / 2.0);
   auto nf = 1.0 / (near - far);
+
+  auto m22 = (far + near) * nf;
+  auto m23 = 2.0 * far * near * nf;
+
   // TODO(ib@unfolded.ai): Doesn't support far not being set or far being Infinity
-  return Matrix4<coord>(f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2.0 * far * near * nf, 0);
+  return Matrix4<coord>{f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, m22, m23, 0, 0, static_cast<coord>(-1), 0};
+}
+
+template <typename coord>
+auto Matrix4<coord>::Transpose() const -> Matrix4<coord> {
+  return Matrix4<coord>{at(0, 0), at(1, 0), at(2, 0), at(3, 0), at(0, 1), at(1, 1), at(2, 1), at(3, 1),
+                        at(0, 2), at(1, 2), at(2, 2), at(3, 2), at(0, 3), at(1, 3), at(2, 3), at(3, 3)};
 }
 
 template <typename coord>
@@ -899,17 +929,91 @@ auto Matrix4<coord>::MultiplyPoint(const Vector3<coord> &s) const -> Vector3<coo
 
 template <typename coord>
 auto Matrix4<coord>::scale(const Vector3<coord> &s) const -> Matrix4<coord> {
-  return Matrix4<coord>(at(0, 0) * s.x, at(0, 1) * s.x, at(0, 2) * s.x, at(0, 3) * s.x, at(1, 0) * s.y, at(1, 1) * s.y,
-                        at(1, 2) * s.y, at(1, 3) * s.y, at(2, 0) * s.z, at(2, 1) * s.z, at(2, 2) * s.z, at(2, 3) * s.z,
-                        at(3, 0), at(3, 1), at(3, 2), at(3, 3));
+  auto scaleMatrix = Matrix4<coord>::MakeScale(s);
+  return *this * scaleMatrix;
+
+  /*
+  return Matrix4<coord>{m[0][0] * s.x, m[0][1] * s.y, m[0][2] * s.z, m[0][3],
+                        m[1][0] * s.x, m[1][1] * s.y, m[1][2] * s.z, m[1][3],
+                        m[2][0] * s.x, m[2][1] * s.y, m[2][2] * s.z, m[2][3],
+                        m[3][0] * s.x, m[3][1] * s.y, m[3][2] * s.z, m[3][3]};
+  */
 }
 
 template <typename coord>
-auto Matrix4<coord>::transform(const Vector4<coord> &xyzw) const -> Vector4<coord> {
-  return Vector4<coord>(at(0, 0) * xyzw.x + at(1, 0) * xyzw.y + at(2, 0) * xyzw.z + at(3, 0) * xyzw.w,
-                        at(0, 1) * xyzw.x + at(1, 1) * xyzw.y + at(2, 1) * xyzw.z + at(3, 1) * xyzw.w,
-                        at(0, 2) * xyzw.x + at(1, 2) * xyzw.y + at(2, 2) * xyzw.z + at(3, 2) * xyzw.w,
-                        at(0, 3) * xyzw.x + at(1, 3) * xyzw.y + at(2, 3) * xyzw.z + at(3, 3) * xyzw.w);
+auto Matrix4<coord>::translate(const Vector3<coord> &t) const -> Matrix4<coord> {
+  auto translationMatrix = Matrix4<coord>::MakeTranslation(t);
+  return *this * translationMatrix;
+
+  /*
+  auto m03 = m[0][0] * t.x + m[0][1] * t.y + m[0][2] * t.z + m[0][3];
+  auto m13 = m[1][0] * t.x + m[1][1] * t.y + m[1][2] * t.z + m[1][3];
+  auto m23 = m[2][0] * t.x + m[2][1] * t.y + m[2][2] * t.z + m[2][3];
+  auto m33 = m[3][0] * t.x + m[3][1] * t.y + m[3][2] * t.z + m[3][3];
+
+  return Matrix4<coord>{m[0][0], m[0][1], m[0][2], m03,
+                        m[1][0], m[1][1], m[1][2], m13,
+                        m[2][0], m[2][1], m[2][2], m23,
+                        m[3][0], m[3][1], m[3][2], m33};
+  */
+}
+
+template <typename coord>
+auto Matrix4<coord>::rotateX(const coord rad) -> Matrix4<coord> {
+  auto rotationVector = Matrix4<coord>::MakeRotationX(rad);
+  return *this * rotationVector;
+
+  /*
+  auto s = sin(rad);
+  auto c = cos(rad);
+
+  auto m01 = m[0][1] * c + m[0][2] * s;
+  auto m11 = m[1][1] * c + m[1][2] * s;
+  auto m21 = m[2][1] * c + m[2][2] * s;
+  auto m31 = m[3][1] * c + m[3][2] * s;
+
+  auto m02 = m[0][2] * c - m[0][1] * s;
+  auto m12 = m[1][2] * c - m[1][1] * s;
+  auto m22 = m[2][2] * c - m[2][1] * s;
+  auto m32 = m[3][2] * c - m[3][1] * s;
+
+  return Matrix4<coord>{m[0][0], m01, m02, m[0][3],
+                        m[1][0], m11, m12, m[1][3],
+                        m[2][0], m21, m22, m[2][3],
+                        m[3][0], m31, m32, m[3][3]};
+  */
+}
+
+template <typename coord>
+auto Matrix4<coord>::rotateY(const coord rad) -> Matrix4<coord> {
+  auto rotationVector = Matrix4<coord>::MakeRotationY(rad);
+  return *this * rotationVector;
+
+  /*
+  auto s = sin(rad);
+  auto c = cos(rad);
+
+  auto m00 = m[0][0] * c - m[0][2] * s;
+  auto m10 = m[1][0] * c - m[1][2] * s;
+  auto m20 = m[2][0] * c - m[2][2] * s;
+  auto m30 = m[3][0] * c - m[3][2] * s;
+
+  auto m02 = m[0][0] * s + m[0][2] * c;
+  auto m12 = m[1][0] * s + m[1][2] * c;
+  auto m22 = m[2][0] * s + m[2][2] * c;
+  auto m32 = m[3][0] * s + m[3][2] * c;
+
+  return Matrix4<coord>{m00, m[0][1], m02, m[0][3],
+                        m10, m[1][1], m12, m[1][3],
+                        m20, m[2][1], m22, m[2][3],
+                        m30, m[3][1], m32, m[3][3]};
+  */
+}
+
+template <typename coord>
+auto Matrix4<coord>::rotateZ(const coord rad) -> Matrix4<coord> {
+  auto rotationVector = Matrix4<coord>::MakeRotationZ(rad);
+  return *this * rotationVector;
 }
 
 template <typename coord>

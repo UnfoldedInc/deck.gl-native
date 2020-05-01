@@ -66,7 +66,7 @@ class ViewManager {
   /// \brief Unproject pixel coordinates on screen onto world coordinates, (possibly [lon, lat]) on map.
   /// - [x, y] => [lng, lat]
   /// - [x, y, z] => [lng, lat, Z]
-  /// @param xy
+  /// @param xy Pixel coordinates
   /// @param topLeft - Whether origin is top left
   /// @return [lng, lat, Z] or [X, Y, Z]
   auto unproject(const mathgl::Vector2<double> xy, bool topLeft = true) -> std::optional<mathgl::Vector2<double>>;

@@ -18,12 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_LAYERS_PROJECT_VERTEX_H
-#define DECKGL_LAYERS_PROJECT_VERTEX_H
+#ifndef DECKGL_CORE_SHADERLIB_PROJECT_PROJECT_GLSL_H
+#define DECKGL_CORE_SHADERLIB_PROJECT_PROJECT_GLSL_H
 
-static const char* projectVS = R"GLSL(
-#version 450
+#include <string>
 
+// NOLINTNEXTLINE(runtime/string)
+static const std::string projectVS = R"GLSL(
 // TODO(ilija@unfolded.ai): Port from luma.gl math32 module
 float tan_fp32(float radians) {
   return tan(radians);
@@ -39,23 +40,25 @@ const int PROJECTION_MODE_WEB_MERCATOR = 1;
 const int PROJECTION_MODE_WEB_MERCATOR_AUTO_OFFSET = 4;
 const int PROJECTION_MODE_IDENTITY = 0;
 
-layout(std140, set = 0, binding = 0) uniform ProjectOptions {
-  int uCoordinateSystem;
-  int uProjectionMode;
-  float uScale;
-  bool uWrapLongitude;
-  float uAntimeridian;
-  vec3 uCommonUnitsPerMeter;
-  vec3 uCommonUnitsPerWorldUnit;
-  vec3 uCommonUnitsPerWorldUnit2;
-  vec4 uCenter;
+// Input matrices currently use row-major format, these will still be used as column-major within GLSL
+// https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)#Matrix_storage_order
+layout(std140, row_major, set = 0, binding = 0) uniform ProjectOptions {
   mat4 uModelMatrix;
   mat4 uViewProjectionMatrix;
-  vec2 uViewportSize;
-  float uDevicePixelRatio;
-  float uFocalDistance;
+  vec4 uCenter;
+  vec3 uCommonUnitsPerMeter;
+  int uCoordinateSystem;
+  vec3 uCommonUnitsPerWorldUnit;
+  int uProjectionMode;
+  vec3 uCommonUnitsPerWorldUnit2;
+  float uScale;
   vec3 uCameraPosition;
+  float uAntimeridian;
   vec3 uCoordinateOrigin;
+  float uDevicePixelRatio;
+  vec2 uViewportSize;
+  float uFocalDistance;
+  bool uWrapLongitude;
 } project;
 
 const float TILE_SIZE = 512.0;
@@ -194,25 +197,6 @@ float project_pixel_size(float pixels) {
 vec2 project_pixel_size(vec2 pixels) {
   return pixels / project.uScale;
 }
-
-/* PROJECT32 */
-
-vec4 project_position_to_clipspace(
-  vec3 position, vec3 position64Low, vec3 offset, out vec4 commonPosition
-) {
-  vec3 projectedPosition = project_position(position, position64Low);
-  commonPosition = vec4(projectedPosition + offset, 1.0);
-  return project_common_position_to_clipspace(commonPosition);
-}
-
-vec4 project_position_to_clipspace(
-  vec3 position, vec3 position64Low, vec3 offset
-) {
-  vec4 commonPosition;
-  return project_position_to_clipspace(position, position64Low, offset, commonPosition);
-}
-
-/* PROJECT32 */
 )GLSL";
 
-#endif  // DECKGL_LAYERS_PROJECT_VERTEX_H
+#endif  // DECKGL_CORE_SHADERLIB_PROJECT_PROJECT_GLSL_H
