@@ -88,11 +88,11 @@ class Vector2 {
     return *this;
   }
 
-  coord Length() const;
-  coord Length2() const;
-  coord Angle() const;
+  coord length() const;
+  coord length2() const;
+  coord angle() const;
 
-  void Normalize();
+  void normalize();
 
   auto lerp(const Vector2<coord> &, coord t) -> Vector2<coord>;
 
@@ -100,7 +100,7 @@ class Vector2 {
 };
 
 template <typename coord>
-auto ElementProduct(const Vector2<coord> &, const Vector2<coord> &) -> Vector2<coord>;
+auto elementProduct(const Vector2<coord> &, const Vector2<coord> &) -> Vector2<coord>;
 
 template <typename coord>
 auto operator+(const Vector2<coord> &v1, const Vector2<coord> &v2) -> Vector2<coord> {
@@ -445,24 +445,24 @@ Vector2<coord>::Vector2(const Vector2<othercoord> &other)
     : x{static_cast<coord>(other.x)}, y{static_cast<coord>(other.y)} {}
 
 template <typename coord>
-auto Vector2<coord>::Length() const -> coord {
+auto Vector2<coord>::length() const -> coord {
   return static_cast<coord>(std::sqrt(x * x + y * y));
 }
 
 template <typename coord>
-auto Vector2<coord>::Length2() const -> coord {
+auto Vector2<coord>::length2() const -> coord {
   return static_cast<coord>(x * x + y * y);
 }
 
 template <typename coord>
-auto Vector2<coord>::Angle() const -> coord {
+auto Vector2<coord>::angle() const -> coord {
   if (x == static_cast<coord>(0) && y == static_cast<coord>(0)) return static_cast<coord>(0);
   return static_cast<coord>(atan2(y, x));
 }
 
 template <typename coord>
-void Vector2<coord>::Normalize() {
-  coord length = Length();
+void Vector2<coord>::normalize() {
+  coord length = length();
   if (length <= static_cast<coord>(0)) throw std::logic_error("normalize called on zero length vector");
   x /= length;
   y /= length;
@@ -474,7 +474,7 @@ auto Vector2<coord>::lerp(const Vector2<coord> &v, coord t) -> Vector2<coord> {
 }
 
 template <typename coord>
-auto ElementProduct(const Vector2<coord> &u, const Vector2<coord> &v) -> Vector2<coord> {
+auto elementProduct(const Vector2<coord> &u, const Vector2<coord> &v) -> Vector2<coord> {
   return Vector2<coord>(u.x * v.x, u.y * v.y);
 }
 
