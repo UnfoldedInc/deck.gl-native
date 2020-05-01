@@ -43,7 +43,7 @@ matrix:
         - cmake -DWARNINGS_AS_ERRORS=OFF -DDECK_ENABLE_GRAPHICS=OFF -DDECK_ENABLE_FORMAT=OFF -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 ..
       script:
         - make -j
-        - valgrind --error-exitcode=99 ./tests
+        - valgrind --error-exitcode=99 ./deckgl-bundle-tests
 
 before_script:
   # Build out of source
