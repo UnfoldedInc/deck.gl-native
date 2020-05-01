@@ -74,9 +74,9 @@ class LineLayer::Props : public Layer::Props {
 
   /// Property accessors
   std::function<ArrowMapper::Vector3FloatAccessor> getSourcePosition{
-      [](const Row& row) { return row.getFloatVector3("sourcePosition"); }};
+      [](const Row& row) { return row.getVector3<float>("sourcePosition"); }};
   std::function<ArrowMapper::Vector3FloatAccessor> getTargetPosition{
-      [](const Row& row) { return row.getFloatVector3("targetPosition"); }};
+      [](const Row& row) { return row.getVector3<float>("targetPosition"); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};

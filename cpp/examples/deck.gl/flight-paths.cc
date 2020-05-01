@@ -47,18 +47,13 @@ auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::
   lineLayerProps->id = "flight-paths";
   lineLayerProps->opacity = 0.8f;
   lineLayerProps->getSourcePosition = [](const Row &row) -> mathgl::Vector3<float> {
-    // NOTE: Decimal array data is being loaded as double
-    auto startPositions = row.getDoubleVector3("start");
-    return mathgl::Vector3<float>{startPositions};
+    return row.getVector3<float>("start");
   };
   lineLayerProps->getTargetPosition = [](const Row &row) -> mathgl::Vector3<float> {
-    // NOTE: Decimal array data is being loaded as double
-    auto endPositions = row.getDoubleVector3("end");
-    return mathgl::Vector3<float>{endPositions};
+    return row.getVector3<float>("end");
   };
   lineLayerProps->getColor = [](const Row &row) -> mathgl::Vector4<float> {
-    // NOTE: Decimal array data is being loaded as double
-    float z = static_cast<float>(row.getDoubleVector3("start").z);
+    float z = row.getVector3<float>("start").z;
     float r = z / 10000.0f;
     return {255.0f * (1.0f - r * 2.0f), 128.0f * r, 255.0f * r, 255.0f * (1.0f - r)};
   };
