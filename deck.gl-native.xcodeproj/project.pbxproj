@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD066FAA24598E7200FFF3FF /* flight-paths.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE74992244EF71A00FB84CC /* flight-paths.cc */; };
 		CD1CCD8C24446C6600C96D72 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD1CCD8B24446C6600C96D72 /* array.cc */; };
 		CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD1CCD8B24446C6600C96D72 /* array.cc */; };
 		CD33DF1F242E1EB4003F3B96 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
@@ -104,7 +105,6 @@
 		CD9DAD4B243F0AB700F69BFC /* webgpu_cpp.o in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786B243C70F6000D8EC6 /* webgpu_cpp.o */; };
 		CD9DAD4C243F0AE300F69BFC /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD9DAD4E243F0AE400F69BFC /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CDC438A624567FE900ACD4AC /* flight-paths.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE74992244EF71A00FB84CC /* flight-paths.cc */; };
 		CDC8E16D244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16E244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16F244D5B5B002A7E60 /* webgpu-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */; };
@@ -415,7 +415,9 @@
 		CD517429243DC4A50051AB3F /* libshaderc_spvc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libshaderc_spvc.dylib; path = "cpp/deps/x64-osx/lib/libshaderc_spvc.dylib"; sourceTree = "<group>"; };
 		CD5EAD1B243227B700E7E354 /* libdawn_proc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdawn_proc.a; path = ../dawn/out/Debug/obj/src/dawn/libdawn_proc.a; sourceTree = "<group>"; };
 		CD6857BC241F654E001F4C59 /* libarrow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarrow.a; path = "../../../../../../usr/local/Cellar/apache-arrow/0.16.0/lib/libarrow.a"; sourceTree = "<group>"; };
-		CD76A0D52450A87000E5D2CF /* project-vertex.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "project-vertex.glsl.h"; sourceTree = "<group>"; };
+		CD74D74D245949EF00D62337 /* geometry.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = geometry.glsl.h; sourceTree = "<group>"; };
+		CD74D74E24594C5800D62337 /* project32.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = project32.glsl.h; sourceTree = "<group>"; };
+		CD76A0D52450A87000E5D2CF /* project.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = project.glsl.h; sourceTree = "<group>"; };
 		CD903E7F241A08DC0047F954 /* libjsoncpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjsoncpp.a; path = "../vcpkg/installed/x64-osx/lib/libjsoncpp.a"; sourceTree = "<group>"; };
 		CD903E80241A08DC0047F954 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = "../vcpkg/installed/x64-osx/lib/libgtest.a"; sourceTree = "<group>"; };
 		CD903E89241A0A2C0047F954 /* libgmockd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgmockd.a; path = "../vcpkg/installed/x64-osx/debug/lib/libgmockd.a"; sourceTree = "<group>"; };
@@ -819,6 +821,14 @@
 				CDE53E9B243C69A4000D8EC6 /* animometer */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CD74D74C245949DB00D62337 /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				CD74D74D245949EF00D62337 /* geometry.glsl.h */,
+			);
+			path = misc;
 			sourceTree = "<group>";
 		};
 		CD759CDE2417625E0001C15C = {
@@ -1684,6 +1694,7 @@
 		CDE55C2E243C6A10000D8EC6 /* shaderlib */ = {
 			isa = PBXGroup;
 			children = (
+				CD74D74C245949DB00D62337 /* misc */,
 				CDE55C2F243C6A10000D8EC6 /* project */,
 			);
 			path = shaderlib;
@@ -1694,6 +1705,8 @@
 			children = (
 				CDE55C30243C6A10000D8EC6 /* viewport-uniforms.cpp */,
 				CDE55C31243C6A10000D8EC6 /* viewport-uniforms.h */,
+				CD76A0D52450A87000E5D2CF /* project.glsl.h */,
+				CD74D74E24594C5800D62337 /* project32.glsl.h */,
 			);
 			path = project;
 			sourceTree = "<group>";
@@ -1736,7 +1749,6 @@
 				CDE55C3B243C6A10000D8EC6 /* line-layer.cpp */,
 				CDE55C3C243C6A10000D8EC6 /* line-layer.h */,
 				CDE55C3D243C6A10000D8EC6 /* line-layer-fragment.glsl.h */,
-				CD76A0D52450A87000E5D2CF /* project-vertex.glsl.h */,
 			);
 			path = "line-layer";
 			sourceTree = "<group>";
@@ -2260,7 +2272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDC438A624567FE900ACD4AC /* flight-paths.cc in Sources */,
+				CD066FAA24598E7200FFF3FF /* flight-paths.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

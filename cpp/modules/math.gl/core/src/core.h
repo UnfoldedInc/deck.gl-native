@@ -400,6 +400,7 @@ class Matrix4 {
   auto translate(const Vector3<coord> &t) const -> Matrix4<coord>;
   auto rotateX(const coord rad) -> Matrix4<coord>;
   auto rotateY(const coord rad) -> Matrix4<coord>;
+  auto rotateZ(const coord rad) -> Matrix4<coord>;
 
   coord m[4][4];
 };
@@ -883,14 +884,11 @@ auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord
   auto f = 1.0 / tan(fovy / 2.0);
   auto nf = 1.0 / (near - far);
 
-  auto zero = static_cast<coord>(0);
   auto m22 = (far + near) * nf;
   auto m23 = 2.0 * far * near * nf;
 
   // TODO(ib@unfolded.ai): Doesn't support far not being set or far being Infinity
-  return Matrix4<coord>{
-      f / aspect, zero, zero, zero, zero, f, zero, zero, zero, zero, m22, m23, zero, zero, static_cast<coord>(-1),
-      zero};
+  return Matrix4<coord>{f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, m22, m23, 0, 0, static_cast<coord>(-1), 0};
 }
 
 template <typename coord>
@@ -1003,6 +1001,12 @@ auto Matrix4<coord>::rotateY(const coord rad) -> Matrix4<coord> {
                         m20, m[2][1], m22, m[2][3],
                         m30, m[3][1], m32, m[3][3]};
   */
+}
+
+template <typename coord>
+auto Matrix4<coord>::rotateZ(const coord rad) -> Matrix4<coord> {
+  auto rotationVector = Matrix4<coord>::MakeRotationZ(rad);
+  return *this * rotationVector;
 }
 
 template <typename coord>

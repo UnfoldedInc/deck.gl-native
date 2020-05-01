@@ -62,7 +62,9 @@ auto Deck::Props::getProperties() const -> const Properties* {
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
-  this->setProps(props.get());
+  this->setProps(props);
+
+  this->context->layerManager = this->layerManager;
 }
 
 Deck::~Deck() {
@@ -70,7 +72,7 @@ Deck::~Deck() {
   // this->tooltip.remove();
 }
 
-void Deck::setProps(Deck::Props* props) {
+void Deck::setProps(std::shared_ptr<Deck::Props> props) {
   // this->stats.get('setProps Time').timeStart();
 
   // ViewState tracking
@@ -111,16 +113,18 @@ void Deck::setProps(Deck::Props* props) {
   // super::setProps();
 }
 
-void Deck::run() {
+void Deck::run(std::function<void(Deck*)> onAfterRender) {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
   this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
+    this->props()->onBeforeRender(this);
+
     for (auto const& viewport : this->viewManager->getViewports()) {
+      // Expose the current viewport to layers for project* function
+      this->layerManager->activateViewport(viewport);
+
       for (auto const& layer : this->layerManager->layers) {
         // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
-        auto viewportUniforms = getUniformsFromViewport(viewport);
-
-        // TODO(ilija@unfolded.ai): Remove and use row_major specifier in uniform layout once drawing works
-        viewportUniforms.viewProjectionMatrix = viewportUniforms.viewProjectionMatrix.Transpose();
+        auto viewportUniforms = getUniformsFromViewport(viewport, this->animationLoop->devicePixelRatio());
 
         auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
                                                                     wgpu::BufferUsage::Uniform);
@@ -132,6 +136,9 @@ void Deck::run() {
         layer->draw(pass);
       }
     }
+
+    onAfterRender(this);
+    this->props()->onAfterRender(this);
   });
 }
 

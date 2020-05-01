@@ -54,13 +54,13 @@ set(CORE_HEADER_FILES
     core/src/lib/layer-manager.h
     core/src/lib/layer-state.h
     core/src/lib/view-manager.h
-    core/src/shaderlib/project/viewport-uniforms.h
     core/src/viewports/viewport.h
     core/src/viewports/web-mercator-viewport.h
     core/src/views/view.h
     core/src/views/view-state.h
     core/src/arrow/row.h
     core/src/arrow/arrow-mapper.h
+    core/src/shaderlib/project/viewport-uniforms.h
     )
 set(CORE_SOURCE_FILES
     core/src/core.cpp

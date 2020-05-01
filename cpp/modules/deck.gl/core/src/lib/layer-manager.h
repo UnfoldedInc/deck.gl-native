@@ -79,12 +79,12 @@ class LayerManager {
   // Update layers from last cycle if `setNeedsUpdate()` has been called
   void updateLayers();
 
+  // Make a viewport "current" in layer context, updating viewportChanged flags
+  void activateViewport(const std::shared_ptr<Viewport> &viewport);
+
   //
   // PRIVATE METHODS
   //
-
-  // Make a viewport "current" in layer context, updating viewportChanged flags
-  // void activateViewport(viewport);
 
   // void _handleError(stage, error, layer);
 

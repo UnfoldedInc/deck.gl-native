@@ -53,24 +53,6 @@ auto LineLayer::Props::getProperties() const -> const Properties* {
   return &properties;
 }
 
-/*
-const defaultProps = {
-  getSourcePosition: {type: 'accessor', value: x => x.sourcePosition},
-  getTargetPosition: {type: 'accessor', value: x => x.targetPosition},
-  getColor: {type: 'accessor', value: DEFAULT_COLOR},
-  getWidth: {type: 'accessor', value: 1},
-
-  widthUnits: 'pixels',
-  widthScale: {type: 'number', value: 1, min: 0},
-  widthMinPixels: {type: 'number', value: 0, min: 0},
-  widthMaxPixels: {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
-};
-*/
-
-// getShaders() {
-//   return super.getShaders({vs, fs, modules: [project32, picking]});
-// }
-
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
@@ -112,9 +94,11 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 
 void LineLayer::finalizeState() {}
 
-void LineLayer::drawState(wgpu::RenderPassEncoder pass) {  // {uniforms}
+void LineLayer::drawState(wgpu::RenderPassEncoder pass) {
   auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
-  LineLayerUniforms layerUniforms{props->opacity, props->widthScale, props->widthMinPixels, props->widthMaxPixels};
+  float widthMultiplier = props->widthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
+  auto widthScale = props->widthScale * widthMultiplier;
+  LineLayerUniforms layerUniforms{props->opacity, widthScale, props->widthMinPixels, props->widthMaxPixels};
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
     model->setUniforms(
@@ -153,9 +137,7 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
       std::make_shared<garrow::Field>("instanceWidths", wgpu::VertexFormat::Float)};
   auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
-  // TODO(ilija@unfolded.ai): Get rid of this once shader modules are in place
-  std::string combinedVS = std::string{projectVS} + std::string{vs};
-  auto modelOptions = Model::Options{combinedVS,
+  auto modelOptions = Model::Options{vs,
                                      fs,
                                      attributeSchema,
                                      instancedAttributeSchema,
@@ -163,6 +145,13 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
                                      wgpu::PrimitiveTopology::TriangleStrip};
   auto model = std::make_shared<lumagl::Model>(device, modelOptions);
 
+  //
+  //  (0, -1)-------------_(1, -1)
+  //       |          _,-"  |
+  //       o      _,-"      o
+  //       |  _,-"          |
+  //  (0, 1)"-------------(1, 1)
+  //
   std::vector<mathgl::Vector3<float>> positionData = {{0, -1, 0}, {0, 1, 0}, {1, -1, 0}, {1, 1, 0}};
   std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
       std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
@@ -174,31 +163,6 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
   model->vertexCount = static_cast<int>(positionData.size());
 
   return model;
-
-  //
-  //  (0, -1)-------------_(1, -1)
-  //       |          _,-"  |
-  //       o      _,-"      o
-  //       |  _,-"          |
-  //  (0, 1)"-------------(1, 1)
-  //
-  /*
-  const positions = [0, -1, 0, 0, 1, 0, 1, -1, 0, 1, 1, 0];
-
-  return new lumagl::Model(
-    gl,
-    Object.assign({}, this->getShaders(), {
-      id: this->props.id,
-      geometry: new Geometry({
-        drawMode: GL.TRIANGLE_STRIP,
-        attributes: {
-          positions: new Float32Array(positions)
-        }
-      }),
-      isInstanced: true
-    })
-  );
-  */
 }
 
 auto LineLayer::getSourcePositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {

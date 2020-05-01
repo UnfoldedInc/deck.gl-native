@@ -179,9 +179,6 @@ void Viewport::_initPixelMatrices() {
   vpm = vpm * this->projectionMatrix;
   vpm = vpm * this->viewMatrix;
 
-  // Flip the view projection matrix on Z-axis in order to make it WebGPU-compatible
-  //  vpm = vpm * Matrix4<double>{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0};
-
   this->viewProjectionMatrix = vpm;
 
   /*

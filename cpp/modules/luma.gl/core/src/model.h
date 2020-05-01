@@ -98,14 +98,14 @@ class Model::Options {
           const std::shared_ptr<garrow::Schema>& instancedAttributeSchema =
               std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{}),
           const std::vector<UniformDescriptor>& uniforms = {},
-          const wgpu::PrimitiveTopology topology = wgpu::PrimitiveTopology::TriangleList,
+          const wgpu::PrimitiveTopology primitiveTopology = wgpu::PrimitiveTopology::TriangleList,
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
       : vs{vs},
         fs{fs},
         attributeSchema{attributeSchema},
         instancedAttributeSchema{instancedAttributeSchema},
         uniforms{uniforms},
-        topology{topology},
+        primitiveTopology{primitiveTopology},
         textureFormat{textureFormat} {}
 
   /// \brief Vertex shader source.
@@ -119,7 +119,7 @@ class Model::Options {
   /// \brief Uniform definitions.
   const std::vector<UniformDescriptor> uniforms;
   /// \brief Type of geometry topology that will be contained in vertex buffers.
-  const wgpu::PrimitiveTopology topology;
+  const wgpu::PrimitiveTopology primitiveTopology;
   /// \brief Texture format that the pipeline will use.
   wgpu::TextureFormat textureFormat;
 };

@@ -31,7 +31,13 @@ const std::vector<const Property*> propTypeDefs = {
         [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->latitude = value; }, 0.0},
     new PropertyT<std::optional<double>>{
         "zoom", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->zoom; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->zoom = value; }, 10}};
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->zoom = value; }, 10},
+    new PropertyT<std::optional<double>>{
+        "bearing", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->bearing; },
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->bearing = value; }, 0.0},
+    new PropertyT<std::optional<double>>{
+        "pitch", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->pitch; },
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->pitch = value; }, 0.0}};
 
 auto ViewState::getProperties() const -> const Properties* {
   static Properties properties{Properties::from<ViewState>("ViewState", propTypeDefs)};
