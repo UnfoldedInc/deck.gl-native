@@ -86,7 +86,7 @@ TEST_F(JSONConverterTest, JSONConverterDeck) {
   EXPECT_TRUE(deckProps);
 
   // Test deckProps.layers
-  EXPECT_EQ(deckProps->layers.size(), 2);
+  EXPECT_EQ(deckProps->layers.size(), size_t{2});
 
   auto layer0Props = deckProps->layers.front();
   EXPECT_TRUE(layer0Props);

@@ -20,6 +20,8 @@
 
 #include "./webgpu-utils.h"  // NOLINT(build/include)
 
+#include <stdexcept>
+
 namespace lumagl {
 namespace garrow {
 
@@ -72,6 +74,7 @@ auto getVertexFormatSize(wgpu::VertexFormat format) -> size_t {
     case Format::Int4:
       return 16;
   }
+  throw std::logic_error("Invalid vertex format");
 }
 
 }  // namespace garrow
