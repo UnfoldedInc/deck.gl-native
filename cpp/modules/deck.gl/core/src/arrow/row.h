@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "math.gl/core.h"
+#include "probe.gl/core.h"
 
 namespace deckgl {
 
@@ -57,34 +58,40 @@ class Row {
   template <typename T>
   auto getVector2(const std::string& columnName, const mathgl::Vector2<T>& defaultValue = {}) const
       -> mathgl::Vector2<T> {
-    auto data = this->_getVectorData<T>(columnName);
-    if (!data) {
+    auto optionalData = this->_getVectorData<T>(columnName);
+    if (!optionalData) {
+      probegl::WarningLog() << "Unsupported vector data type, returning default value";
       return defaultValue;
     }
 
-    return mathgl::Vector2<T>{data->size() > 0 ? data->at(0) : 0, data->size() > 1 ? data->at(1) : 0};
+    auto data = optionalData.value();
+    return mathgl::Vector2<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0};
   }
   template <typename T>
   auto getVector3(const std::string& columnName, const mathgl::Vector3<T>& defaultValue = {}) const
       -> mathgl::Vector3<T> {
-    auto data = this->_getVectorData<T>(columnName);
-    if (!data) {
+    auto optionalData = this->_getVectorData<T>(columnName);
+    if (!optionalData) {
+      probegl::WarningLog() << "Unsupported vector data type, returning default value";
       return defaultValue;
     }
 
-    return mathgl::Vector3<T>{data->size() > 0 ? data->at(0) : 0, data->size() > 1 ? data->at(1) : 0,
-                              data->size() > 2 ? data->at(2) : 0};
+    auto data = optionalData.value();
+    return mathgl::Vector3<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
+                              data.size() > 2 ? data.at(2) : 0};
   }
   template <typename T>
   auto getVector4(const std::string& columnName, const mathgl::Vector4<T>& defaultValue = {}) const
       -> mathgl::Vector4<T> {
-    auto data = this->_getVectorData<T>(columnName);
-    if (!data) {
+    auto optionalData = this->_getVectorData<T>(columnName);
+    if (!optionalData) {
+      probegl::WarningLog() << "Unsupported vector data type, returning default value";
       return defaultValue;
     }
 
-    return mathgl::Vector4<T>{data->size() > 0 ? data->at(0) : 0, data->size() > 1 ? data->at(1) : 0,
-                              data->size() > 2 ? data->at(2) : 0, data->size() > 3 ? data->at(3) : 0};
+    auto data = optionalData.value();
+    return mathgl::Vector4<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
+                              data.size() > 2 ? data.at(2) : 0, data.size() > 3 ? data.at(3) : 0};
   }
 
   /// \brief Checks whether value at this row, for columnName is valid and not null.
@@ -111,35 +118,52 @@ class Row {
 
   auto _getDouble(const std::shared_ptr<arrow::Array>& chunk) const -> std::optional<double>;
   auto _getListArrayMetadata(const std::shared_ptr<arrow::Array>& array, int64_t index) const
-      -> std::shared_ptr<ListArrayMetadata>;
+      -> std::optional<ListArrayMetadata>;
 
   template <typename T>
-  auto _getVectorData(const std::string& columnName) const -> std::shared_ptr<std::vector<T>> {
+  auto _getVectorData(const std::string& columnName) const -> std::optional<std::vector<T>> {
     if (!this->isValid(columnName)) {
-      return nullptr;
+      return std::nullopt;
     }
 
-    auto metadata = this->_getListArrayMetadata(this->_getChunk(columnName), this->_chunkRowIndex);
+    auto optionalMetadata = this->_getListArrayMetadata(this->_getChunk(columnName), this->_chunkRowIndex);
+    if (!optionalMetadata) {
+      return std::nullopt;
+    }
 
-    auto data = std::make_shared<std::vector<T>>();
-    if (auto doubleArray = std::dynamic_pointer_cast<arrow::DoubleArray>(metadata->values)) {
-      for (int i = 0; i < metadata->length; i++) {
-        data->push_back(static_cast<T>(doubleArray->Value(metadata->offset + i)));
+    auto metadata = optionalMetadata.value();
+    std::vector<T> data;
+    switch (metadata.values->type_id()) {
+      case arrow::Type::type::DOUBLE: {
+        auto doubleArray = std::static_pointer_cast<arrow::DoubleArray>(metadata.values);
+        for (int32_t i = 0; i < metadata.length; i++) {
+          data.push_back(static_cast<T>(doubleArray->Value(metadata.offset + i)));
+        }
+        break;
       }
-    } else if (auto floatArray = std::dynamic_pointer_cast<arrow::FloatArray>(metadata->values)) {
-      for (int i = 0; i < metadata->length; i++) {
-        data->push_back(static_cast<T>(floatArray->Value(metadata->offset + i)));
+      case arrow::Type::type::FLOAT: {
+        auto floatArray = std::static_pointer_cast<arrow::FloatArray>(metadata.values);
+        for (int32_t i = 0; i < metadata.length; i++) {
+          data.push_back(static_cast<T>(floatArray->Value(metadata.offset + i)));
+        }
+        break;
       }
-    } else if (auto intArray = std::dynamic_pointer_cast<arrow::Int64Array>(metadata->values)) {
-      for (int i = 0; i < metadata->length; i++) {
-        data->push_back(static_cast<T>(intArray->Value(metadata->offset + i)));
+      case arrow::Type::type::INT64: {
+        auto int64Array = std::static_pointer_cast<arrow::Int64Array>(metadata.values);
+        for (int32_t i = 0; i < metadata.length; i++) {
+          data.push_back(static_cast<T>(int64Array->Value(metadata.offset + i)));
+        }
+        break;
       }
-    } else if (auto intArray = std::dynamic_pointer_cast<arrow::Int32Array>(metadata->values)) {
-      for (int i = 0; i < metadata->length; i++) {
-        data->push_back(static_cast<T>(intArray->Value(metadata->offset + i)));
+      case arrow::Type::type::INT32: {
+        auto int32Array = std::static_pointer_cast<arrow::Int32Array>(metadata.values);
+        for (int32_t i = 0; i < metadata.length; i++) {
+          data.push_back(static_cast<T>(int32Array->Value(metadata.offset + i)));
+        }
+        break;
       }
-    } else {
-      return nullptr;
+      default:
+        return std::nullopt;
     }
 
     return data;

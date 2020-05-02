@@ -40,7 +40,7 @@ auto Row::getInt(const std::string& columnName, int defaultValue) const -> int {
   }
 
   auto chunk = this->_getChunk(columnName);
-  auto doubleValue = this->_getDouble(chunk);
+  std::optional<double> doubleValue = this->_getDouble(chunk);
   if (doubleValue) {
     return static_cast<int>(doubleValue.value());
   }
@@ -54,7 +54,7 @@ auto Row::getFloat(const std::string& columnName, float defaultValue) const -> f
   }
 
   auto chunk = this->_getChunk(columnName);
-  auto doubleValue = this->_getDouble(chunk);
+  std::optional<double> doubleValue = this->_getDouble(chunk);
   if (doubleValue) {
     return static_cast<float>(doubleValue.value());
   }
@@ -68,7 +68,7 @@ auto Row::getDouble(const std::string& columnName, double defaultValue) const ->
   }
 
   auto chunk = this->_getChunk(columnName);
-  auto doubleValue = this->_getDouble(chunk);
+  std::optional<double> doubleValue = this->_getDouble(chunk);
   if (doubleValue) {
     return doubleValue.value();
   }
@@ -84,7 +84,7 @@ auto Row::getBool(const std::string& columnName, bool defaultValue) const -> boo
   auto chunk = this->_getChunk(columnName);
   if (auto boolArray = std::dynamic_pointer_cast<arrow::BooleanArray>(chunk)) {
     return boolArray->Value(this->_chunkRowIndex);
-  } else if (auto doubleValue = this->_getDouble(chunk)) {
+  } else if (std::optional<double> doubleValue = this->_getDouble(chunk)) {
     return static_cast<bool>(doubleValue.value());
   }
 
@@ -201,23 +201,23 @@ auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) const -> std::o
 }
 
 auto Row::_getListArrayMetadata(const std::shared_ptr<arrow::Array>& array, int64_t index) const
-    -> std::shared_ptr<ListArrayMetadata> {
+    -> std::optional<ListArrayMetadata> {
   switch (array->type_id()) {
     case arrow::Type::FIXED_SIZE_LIST: {
       auto listArray = std::static_pointer_cast<arrow::FixedSizeListArray>(array);
       auto offset = listArray->value_offset(index);
       auto length = listArray->value_length();
 
-      return std::make_shared<ListArrayMetadata>(offset, length, listArray->values());
+      return ListArrayMetadata{offset, length, listArray->values()};
     }
     case arrow::Type::LIST: {
       auto listArray = std::static_pointer_cast<arrow::ListArray>(array);
       auto offset = listArray->value_offset(index);
       auto length = listArray->value_length(index);
 
-      return std::make_shared<ListArrayMetadata>(offset, length, listArray->values());
+      return ListArrayMetadata{offset, length, listArray->values()};
     }
     default:
-      return nullptr;
+      return std::nullopt;
   }
 }
