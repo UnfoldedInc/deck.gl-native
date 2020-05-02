@@ -18,19 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-static const char* fs = R"GLSL(
-#define SHADER_NAME scatterplot-layer-fragment-shader
+#ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_FRAGMENT_H
+#define DECKGL_LAYERS_SCATTERPLOT_LAYER_FRAGMENT_H
 
-precision highp float;
+#include <string>
 
-uniform bool filled;
-uniform float stroked;
+#include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
 
-varying vec4 vFillColor;
-varying vec4 vLineColor;
-varying vec2 unitPosition;
-varying float innerUnitRadius;
-varying float outerRadiusPixels;
+namespace {
+
+// NOLINTNEXTLINE(runtime/string)
+static const std::string scatterplotLayerFS = R"GLSL(
+layout(std140, set = 0, binding = 1) uniform ScatterplotLayerOptions {
+  float opacity;
+  float radiusScale;
+  float radiusMinPixels;
+  float radiusMaxPixels;
+  float lineWidthScale;
+  float lineWidthMinPixels;
+  float lineWidthMaxPixels;
+  float stroked;
+  bool filled;
+} layerOptions;
+
+layout(location = 0) in vec4 vFillColor;
+layout(location = 1) in vec4 vLineColor;
+layout(location = 2) in vec2 unitPosition;
+layout(location = 3) in float innerUnitRadius;
+layout(location = 4) in float outerRadiusPixels;
+
+layout(location = 0) out vec4 fragColor;
 
 void main(void) {
   geometry.uv = unitPosition;
@@ -42,23 +59,29 @@ void main(void) {
     discard;
   }
 
-  if (stroked > 0.5) {
+  if (layerOptions.stroked > 0.5) {
     float isLine = smoothedge(innerUnitRadius * outerRadiusPixels, distToCenter);
-    if (filled) {
-      gl_FragColor = mix(vFillColor, vLineColor, isLine);
+    if (layerOptions.filled) {
+      fragColor = mix(vFillColor, vLineColor, isLine);
     } else {
       if (isLine == 0.0) {
         discard;
       }
-      gl_FragColor = vec4(vLineColor.rgb, vLineColor.a * isLine);
+      fragColor = vec4(vLineColor.rgb, vLineColor.a * isLine);
     }
-  } else if (filled) {
-    gl_FragColor = vFillColor;
+  } else if (layerOptions.filled) {
+    fragColor = vFillColor;
   } else {
     discard;
   }
 
-  gl_FragColor.a *= inCircle;
-  DECKGL_FILTER_COLOR(gl_FragColor, geometry);
+  fragColor.a *= inCircle;
 }
 )GLSL";
+
+}  // anonymous namespace
+
+// NOLINTNEXTLINE(runtime/string)
+static const std::string fs = "#version 450\n" + geometryFS + "\n" + scatterplotLayerFS;
+
+#endif  // DECKGL_LAYERS_SCATTERPLOT_LAYER_FRAGMENT_H

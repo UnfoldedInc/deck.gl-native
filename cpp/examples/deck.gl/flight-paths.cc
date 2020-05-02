@@ -63,14 +63,40 @@ auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::
   return lineLayerProps;
 }
 
+auto createScatterplotLayer(const std::string &dataPath) -> std::shared_ptr<ScatterplotLayer::Props> {
+  auto scatterplotLayerProps = std::make_shared<ScatterplotLayer::Props>();
+  scatterplotLayerProps->id = "airports";
+  scatterplotLayerProps->getPosition = [](const Row &row) -> mathgl::Vector3<float> {
+    return row.getVector3<float>("coordinates");
+  };
+  scatterplotLayerProps->getRadius = [](const Row &row) -> float {
+    auto type = row.getString("type");
+    if (type == "major") {
+      return 100.0f;
+    } else if (type == "small") {
+      return 30.0f;
+    } else {
+      return 60.0f;
+    }
+  };
+  scatterplotLayerProps->getFillColor = [](const Row &row) -> mathgl::Vector4<float> {
+    return mathgl::Vector4<float>{255.0f, 144.0f, 0.0f, 255.0f};
+  };
+  scatterplotLayerProps->radiusScale = 20.0f;
+  scatterplotLayerProps->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
+
+  return scatterplotLayerProps;
+}
+
 int main(int argc, const char *argv[]) {
   // Get data file paths relative to working directory
   auto programPath = std::string{argv[0]};
   auto programDirectory = programPath.erase(programPath.find_last_of("/"));
-  auto flightDataPath = programDirectory.append("/data/heathrow-flights.ndjson");
+  auto flightDataPath = programDirectory + "/data/heathrow-flights.ndjson";
+  auto airportDataPath = programDirectory + "/data/airports.ndjson";
 
   auto deckProps = std::make_shared<Deck::Props>();
-  deckProps->layers = {createLineLayer(flightDataPath)};
+  deckProps->layers = {createLineLayer(flightDataPath), createScatterplotLayer(airportDataPath)};
   deckProps->initialViewState = createViewState(0.0);
   deckProps->views = {std::make_shared<MapView>()};
   deckProps->width = 640;

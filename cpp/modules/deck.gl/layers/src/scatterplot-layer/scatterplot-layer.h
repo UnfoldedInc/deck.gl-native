@@ -21,13 +21,11 @@
 #ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 #define DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 
+#include <limits>
 #include <memory>
 #include <string>
 
-#include "deck.gl/core.h"  // import {Layer, project32, picking} from '@deck.gl/core';
-
-// import GL from '@luma.gl/constants';
-// import {Model, Geometry} from '@luma.gl/core';
+#include "deck.gl/core.h"
 
 namespace deckgl {
 
@@ -71,13 +69,13 @@ class ScatterplotLayer::Props : public Layer::Props {
   bool stroked{false};
 
   std::string lineWidthUnits{"meters"};
-  float lineWidthScale{1.0};      //
-  float lineWidthMinPixels{1.0};  // min point radius in pixels
-  float lineWidthMaxPixels{2.0};  // max point radius in pixels
+  float lineWidthScale{1.0};
+  float lineWidthMinPixels{0.0};
+  float lineWidthMaxPixels{std::numeric_limits<float>::max()};
 
   float radiusScale{1.0};
-  float radiusMinPixels{1.0};  // min point radius in pixels
-  float radiusMaxPixels{2.0};  // max point radius in pixels
+  float radiusMinPixels{0.0};                                // min point radius in pixels
+  float radiusMaxPixels{std::numeric_limits<float>::max()};  // max point radius in pixels
 
   /// Property accessors
   std::function<ArrowMapper::Vector3FloatAccessor> getPosition{
@@ -88,6 +86,21 @@ class ScatterplotLayer::Props : public Layer::Props {
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getLineWidth{[](auto row) { return 1.0; }};
+};
+
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
+/// bool has a 4-byte alignment in GLSL.
+/// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
+struct ScatterplotLayerUniforms {
+  float opacity;
+  float radiusScale;
+  float radiusMinPixels;
+  float radiusMaxPixels;
+  float lineWidthScale;
+  float lineWidthMinPixels;
+  float lineWidthMaxPixels;
+  float stroked;
+  alignas(4) bool filled;
 };
 
 }  // namespace deckgl

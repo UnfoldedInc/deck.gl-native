@@ -67,10 +67,10 @@ class LineLayer::Props : public Layer::Props {
     return new LineLayer{std::dynamic_pointer_cast<LineLayer::Props>(props)};
   }
 
-  std::string widthUnits{"pixels"};                         // 'pixels',
-  float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
-  float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
-  float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+  std::string widthUnits{"pixels"};
+  float widthScale{1};
+  float widthMinPixels{0};
+  float widthMaxPixels{std::numeric_limits<float>::max()};
 
   /// Property accessors
   std::function<ArrowMapper::Vector3FloatAccessor> getSourcePosition{
@@ -82,6 +82,7 @@ class LineLayer::Props : public Layer::Props {
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};
 };
 
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
 struct LineLayerUniforms {
   float opacity;
   float widthScale;
