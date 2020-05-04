@@ -152,7 +152,7 @@ auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<Unifor
     -> wgpu::BindGroupLayout {
   std::vector<wgpu::BindGroupLayoutBinding> bindings;
   for (uint32_t i = 0; i < uniforms.size(); i++) {
-    auto binding = wgpu::BindGroupLayoutBinding{i, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer,
+    auto binding = wgpu::BindGroupLayoutBinding{i, uniforms[i].shaderStage, wgpu::BindingType::UniformBuffer,
                                                 uniforms[i].isDynamic};
     bindings.push_back(binding);
   }

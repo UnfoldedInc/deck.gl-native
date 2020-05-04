@@ -29,12 +29,15 @@
 #include <string>
 
 #include "deck.gl/core.h"
+#include "luma.gl/garrow.h"
 #include "luma.gl/webgpu.h"
 
 namespace deckgl {
 
 class LineLayer : public Layer {
  public:
+  using super = Layer;
+
   class Props;
   explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
@@ -54,6 +57,8 @@ class LineLayer : public Layer {
 
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;
+
+  std::shared_ptr<lumagl::garrow::Array> _layerUniforms;
 };
 
 class LineLayer::Props : public Layer::Props {
@@ -67,10 +72,10 @@ class LineLayer::Props : public Layer::Props {
     return new LineLayer{std::dynamic_pointer_cast<LineLayer::Props>(props)};
   }
 
-  std::string widthUnits{"pixels"};                         // 'pixels',
-  float widthScale{1};                                      // {type: 'number', value: 1, min: 0},
-  float widthMinPixels{0};                                  // {type: 'number', value: 0, min: 0},
-  float widthMaxPixels{std::numeric_limits<float>::max()};  // {type: 'number', value: Number.MAX_SAFE_INTEGER, min: 0}
+  std::string widthUnits{"pixels"};
+  float widthScale{1};
+  float widthMinPixels{0};
+  float widthMaxPixels{std::numeric_limits<float>::max()};
 
   /// Property accessors
   std::function<ArrowMapper::Vector3FloatAccessor> getSourcePosition{
@@ -82,6 +87,7 @@ class LineLayer::Props : public Layer::Props {
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};
 };
 
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
 struct LineLayerUniforms {
   float opacity;
   float widthScale;
