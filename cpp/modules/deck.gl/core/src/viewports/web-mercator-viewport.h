@@ -27,12 +27,10 @@
 
 namespace deckgl {
 
-// View and Projection Matrix calculations for mapbox-js style map view properties
-
-// Creates view/projection matrices from mercator params
-// Note: The Viewport is immutable in the sense that it only has accessors.
-// A new viewport instance should be created if any parameters have changed.
-//
+/// \brief View and Projection Matrix calculations for mapbox-js style map view properties
+/// Creates view/projection matrices from mercator params
+/// \note The Viewport is immutable in the sense that it only has accessors.
+/// \note A new viewport instance should be created if any parameters have changed.
 class WebMercatorViewport : public Viewport {
  public:
   struct Options {
@@ -70,40 +68,28 @@ class WebMercatorViewport : public Viewport {
   // elided subViewports feature
   // get subViewports()
 
-  /**
-   * Add a meter delta to a base lnglat coordinate, returning a new lnglat array
-   *
-   * Note: Uses simple linear approximation around the viewport center
-   * Error increases with size of offset (roughly 1% per 100km)
-   *
-   * @param lngLatZ - base coordinate
-   * @param xyz - array of meter deltas
-   * @return {[Number,Number]|[Number,Number,Number]) array of [lng,lat,z] deltas
-   */
+  /// \brief Add a meter delta to a base lnglat coordinate, returning a new lnglat array
+  /// \note Uses simple linear approximation around the viewport center
+  /// \note Error increases with size of offset (roughly 1% per 100km)
+  /// \param lngLatZ Base coordinate
+  /// \param xyz Array of meter deltas
+  /// \return Array of [lng,lat,z] deltas
   auto addMetersToLngLat(mathgl::Vector3<double> lngLatZ, mathgl::Vector3<double> xyz) -> mathgl::Vector3<double>;
   auto addMetersToLngLat(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> xy) -> mathgl::Vector2<double>;
 
-  /**
-   * Get the map center that place a given [lng, lat] coordinate at screen
-   * point [x, y]
-   *
-   * @param lngLat - [lng,lat] coordinates
-   *   Specifies a point on the sphere.
-   * @param pos - [x,y] coordinates
-   *   Specifies a point on the screen.
-   * @return {Array} [lng,lat] new map center.
-   */
+  /// \brief Get the map center that place a given [lng, lat] coordinate at screen point [x, y]
+  /// \param lngLat [lng,lat] coordinates - Specifies a point on the sphere.
+  /// \param pos [x,y] coordinates - Specifies a point on the screen.
+  /// \return [lng,lat] of the new map center.
   auto getMapCenterByLngLatPosition(mathgl::Vector2<double> lngLat, mathgl::Vector2<double> pos)
       -> mathgl::Vector2<double>;
 
-  /**
-   * Returns a new viewport that fit around the given rectangle.
-   * Only supports non-perspective mode.
-   * @param padding - The amount of padding in pixels to add to the given bounds.
-   * @param offset - The center of the given bounds relative to the map's center,
-   *    [x, y] measured in pixels.
-   * @returns {WebMercatorViewport}
-   */
+  /// \brief Returns a new viewport that fit around the given rectangle.
+  /// \note Only supports non-perspective mode.
+  /// \param padding The amount of padding in pixels to add to the given bounds.
+  /// \param offset The center of the given bounds relative to the map's center,
+  ///    [x, y] measured in pixels.
+  /// \return New WebMercatorViewport
   auto fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vector2<double> bottomRight, double minExtent = 0.0,
                  double maxZoom = 24.0, int padding = 0, mathgl::Vector2<int> offset = mathgl::Vector2<int>())
       -> WebMercatorViewport;

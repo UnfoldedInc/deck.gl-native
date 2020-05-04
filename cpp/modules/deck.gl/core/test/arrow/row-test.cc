@@ -152,21 +152,21 @@ TEST_F(RowTest, GetString) {
 TEST_F(RowTest, getFloatVector2) {
   auto row = std::make_unique<Row>(table, 0);
   auto expectedVector = mathgl::Vector2<float>{355.1, -26.1};
-  EXPECT_EQ(row->getFloatVector2("list"), expectedVector);
+  EXPECT_EQ(row->getVector2<float>("list"), expectedVector);
 
   row = std::make_unique<Row>(table, 1);
   expectedVector = mathgl::Vector2<float>{};
-  EXPECT_EQ(row->getFloatVector2("list"), expectedVector);
+  EXPECT_EQ(row->getVector2<float>("list"), expectedVector);
 }
 
 TEST_F(RowTest, getDoubleVector3) {
   auto row = std::make_unique<Row>(table, 0);
   auto expectedVector = mathgl::Vector3<double>{-256.2, 0.0, 1.23};
-  EXPECT_EQ(row->getDoubleVector3("fixed_list"), expectedVector);
+  EXPECT_EQ(row->getVector3<double>("fixed_list"), expectedVector);
 
   row = std::make_unique<Row>(table, 1);
   expectedVector = mathgl::Vector3<double>{1.0, 2.0, 3.0};
-  EXPECT_EQ(row->getDoubleVector3("fixed_list", expectedVector), expectedVector);
+  EXPECT_EQ(row->getVector3<double>("fixed_list", expectedVector), expectedVector);
 }
 
 TEST_F(RowTest, isValid) {

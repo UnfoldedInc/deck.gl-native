@@ -21,36 +21,29 @@
 #ifndef DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H
 #define DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H
 
-static const char* fs = R"GLSL(
-#version 450
+#include <string>
 
+#include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
+
+namespace {
+
+// NOLINTNEXTLINE(runtime/string)
+static const std::string lineLayerFS = R"GLSL(
 layout(location = 0) in vec4 vColor;
 layout(location = 1) in vec2 uv;
 
 layout(location = 0) out vec4 fragColor;
 
-void main() {
-    fragColor = vColor;
-}
-)GLSL";
-
-/*
-static const char* fs = R"GLSL(
-#define SHADER_NAME line-layer-fragment-shader
-
-precision highp float;
-
-varying vec4 vColor;
-varying vec2 uv;
-
 void main(void) {
   geometry.uv = uv;
 
-  gl_FragColor = vColor;
-
-  DECKGL_FILTER_COLOR(gl_FragColor, geometry);
+  fragColor = vColor;
 }
 )GLSL";
-*/
+
+}  // anonymous namespace
+
+// NOLINTNEXTLINE(runtime/string)
+static const std::string fs = "#version 450\n" + geometryFS + "\n" + lineLayerFS;
 
 #endif  // DECKGL_LAYERS_LINE_LAYER_FRAGMENT_H

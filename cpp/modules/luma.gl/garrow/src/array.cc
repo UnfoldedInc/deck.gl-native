@@ -43,9 +43,9 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
   auto vertexFormat = vertexFormatOptional.value();
   auto vertexSize = getVertexFormatSize(vertexFormat);
 
-  if (!this->_buffer || data->length() != this->_length) {
-    auto size = vertexSize * data->length();
-    this->_buffer = this->_createBuffer(this->_device, size, usage);
+  auto bufferByteSize = vertexSize * data->length();
+  if (!this->_buffer || bufferByteSize != this->_bufferByteSize) {
+    this->_buffer = this->_createBuffer(this->_device, bufferByteSize, usage);
   }
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
@@ -53,16 +53,27 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
     throw new std::runtime_error("Data with null values is currently not supported");
   }
 
-  auto buffers = data->data()->buffers;
-  uint64_t offset = 0;
-  // Starting from buffer at index 1, as the first buffer is used for null bitmap
-  for (int i = 1; i < buffers.size(); i++) {
-    auto buffer = buffers[i];
+  // If child_data isn't empty, data is a list array
+  if (!data->data()->child_data.empty()) {
+    uint64_t offset = 0;
 
-    this->_buffer.SetSubData(offset, buffer->size(), buffer->data());
-    offset += buffer->size();
+    // Go through child data for list data types and use child buffers
+    for (auto const& childData : data->data()->child_data) {
+      // We assume this is a NumericArray, no easy way to check if that's the case because it's templated
+      auto dataBuffer = childData->buffers[1];
+
+      this->_buffer.SetSubData(offset, dataBuffer->size(), dataBuffer->data());
+      offset += dataBuffer->size();
+    }
+  } else {
+    // Primite data type, just iterate over the buffers
+    // We assume this is a NumericArray, no easy way to check if that's the case because it's templated
+    auto dataBuffer = data->data()->buffers[1];
+    this->_buffer.SetSubData(0, dataBuffer->size(), dataBuffer->data());
   }
+
   this->_length = data->length();
+  this->_bufferByteSize = bufferByteSize;
 }
 
 auto Array::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {

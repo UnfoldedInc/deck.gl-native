@@ -31,64 +31,21 @@
 #include "deck.gl/json.h"
 #include "luma.gl/core.h"
 
-/*
-import LayerManager from './layer-manager';
-import ViewManager from './view-manager';
-import MapView from '../views/map-view';
-import EffectManager from './effect-manager';
-import Effect from './effect';
-import DeckRenderer from './deck-renderer';
-import DeckPicker from './deck-picker';
-import Tooltip from './tooltip';
-import log from '../utils/log';
-import {deepEqual} from '../utils/deep-equal';
-import deckGlobal from './init';
-
-import {getBrowser} from 'probe.gl/env';
-import GL from '@luma.gl/constants';
-import {
-  AnimationLoop,
-  createGLContext,
-  instrumentGLContext,
-  setParameters,
-  Timeline,
-  lumaStats
-} from '@luma.gl/core';
-import {Stats} from 'probe.gl';
-import {EventManager} from 'mjolnir.js';
-
-import assert from '../utils/assert';
-import {EVENTS} from './constants';
-*/
-
 namespace deckgl {
 
 class Deck : public Component {
  public:
   class Props;
   auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
+  void setProps(std::shared_ptr<Deck::Props> props);
+
+  explicit Deck(std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>());
+  ~Deck();
 
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  std::shared_ptr<lumagl::AnimationLoop> animationLoop{new lumagl::GLFWAnimationLoop()};
-  std::shared_ptr<LayerContext> context{new LayerContext{this, this->animationLoop->device()}};
-  std::shared_ptr<ViewManager> viewManager{new ViewManager()};
-  std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
-  std::shared_ptr<ViewState> initialViewState;
-  std::shared_ptr<ViewState> viewState;
-
-  //  private:
-  std::optional<std::string> _needsRedraw;
-
-  explicit Deck(std::shared_ptr<Deck::Props> props);
-  ~Deck();
-
-  void setProps(Deck::Props *);
-
-  // Public API
-
-  void run();
+  void run(std::function<void(Deck*)> onAfterRender = [](Deck*) {});
 
   // Check if a redraw is needed
   // Returns an optional string summarizing the redraw reason
@@ -98,22 +55,25 @@ class Deck : public Component {
 
   auto getViews() -> std::list<std::shared_ptr<View>> { return this->viewManager->getViews(); }
 
-  // Get a set of viewports for a given width and height
-  // `getViewports`(rect);
-  // `pickObject`({x, y, radius = 0, layerIds = nullptr, unproject3D})
-  // `pickMultipleObjects`({x, y, radius = 0, layerIds = nullptr, unproject3D, depth = 10})
-  // `pickObjects`({x, y, width = 1, height = 1, layerIds = nullptr})
+  std::shared_ptr<lumagl::AnimationLoop> animationLoop{new lumagl::GLFWAnimationLoop()};
+  std::shared_ptr<ViewManager> viewManager{new ViewManager()};
+  std::shared_ptr<LayerContext> context{new LayerContext{this, this->animationLoop->device()}};
+  std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
+  std::shared_ptr<ViewState> initialViewState;
+  std::shared_ptr<ViewState> viewState;
 
  private:
   // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
-  auto _getViewState() -> ViewState *;  // { return this->props->viewState || this->viewState; }
+  auto _getViewState() -> ViewState*;  // { return this->props->viewState || this->viewState; }
+
+  std::optional<std::string> _needsRedraw;
 
   // Get the view descriptor list
   void _getViews();
-  void _drawLayers(const std::string &redrawReason);  // , renderOptions);
-  void _onRendererInitialized(void *gl);
-  void _onRenderFrame();      // animationProps);
-  void _onViewStateChange();  // params);
+  void _drawLayers(const std::string& redrawReason);
+  void _onRendererInitialized(void* gl);
+  void _onRenderFrame();
+  void _onViewStateChange();
 };
 
 class Deck::Props : public Component::Props {
@@ -125,37 +85,28 @@ class Deck::Props : public Component::Props {
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
   // layer/view/controller settings
-  std::list<std::shared_ptr<Layer::Props>> layers;  // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  std::list<std::shared_ptr<View>> views;           // PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  std::shared_ptr<ViewState> viewState;             // PropTypes.object,
+  std::list<std::shared_ptr<Layer::Props>> layers;
+  std::list<std::shared_ptr<View>> views;
   std::shared_ptr<ViewState> initialViewState;
-
-  void *_framebuffer{nullptr};  // PropTypes.object, // Experimental props
-  bool _animate{false};         // PropTypes.bool // Forces a redraw every animation frame
-  float pickingRadius{5};       // PropTypes.number,
+  std::shared_ptr<ViewState> viewState;
 
   // Debug settings
   bool debug{false};
-  bool drawPickingColors{false};
 
   // Callbacks
-  std::function<void(Deck *, void *gl)> onWebGLInitialized{[](Deck *, void *gl) {}};
-  std::function<void(Deck *, int width, int height)> onResize{[](Deck *, int width, int height) {}};
-  std::function<auto(Deck *, ViewState *)->ViewState *> onViewStateChange{[](Deck *, ViewState *vs) { return vs; }};
-  std::function<void(Deck *)> onBeforeRender{[](Deck *) {}};
-  std::function<void(Deck *)> onAfterRender{[](Deck *) {}};
-  std::function<void(Deck *)> onLoad{[](Deck *) {}};
-  std::function<void(Deck *, const std::exception &)> onError{[](Deck *, const std::exception &) {}};
+  std::function<void(Deck*)> onBeforeRender{[](Deck*) {}};
+  std::function<void(Deck*)> onAfterRender{[](Deck*) {}};
 
-  // GL settings - these are creation parameters, can not be updated, maybe move out of props?
-  // gl,
-  // glOptions,
-  // parameters,
+  //  std::function<void(Deck*, void* gl)> onWebGLInitialized{[](Deck*, void* gl) {}};
+  //  std::function<void(Deck*, int width, int height)> onResize{[](Deck*, int width, int height) {}};
+  //  std::function<auto(Deck*, ViewState*) -> ViewState*> onViewStateChange{[](Deck*, ViewState* vs) { return vs; }};
+  //  std::function<void(Deck*)> onLoad{[](Deck*) {}};
+  //  std::function<void(Deck*, const std::exception &)> onError{[](Deck*, const std::exception &) {}};
 
   // Prop Type Machinery
-  static constexpr const char *getTypeName() { return "Deck"; }
-  auto getProperties() const -> const Properties * override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> Deck * override {
+  static constexpr const char* getTypeName() { return "Deck"; }
+  auto getProperties() const -> const Properties* override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> Deck* override {
     return new Deck{std::dynamic_pointer_cast<Deck::Props>(props)};
   }
 };

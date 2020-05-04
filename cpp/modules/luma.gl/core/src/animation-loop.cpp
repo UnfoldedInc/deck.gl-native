@@ -45,15 +45,6 @@ AnimationLoop::~AnimationLoop() {
   // TODO(ilija@unfolded.ai): Cleanup?
 }
 
-void AnimationLoop::setSize(const Size& size) {
-  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
-  if (sizeChanged) {
-    this->_size = size;
-    this->_swapchain = this->_createSwapchain(this->_device);
-    // TODO(ilija@unfolded.ai): Trigger redraw
-  }
-}
-
 void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   this->running = true;
   // TODO(ilija@unfolded.ai): Add needsRedraw and check it
@@ -88,6 +79,15 @@ void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender)
 }
 
 void AnimationLoop::stop() { this->running = false; }
+
+void AnimationLoop::setSize(const Size& size) {
+  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
+  if (sizeChanged) {
+    this->_size = size;
+    this->_swapchain = this->_createSwapchain(this->_device);
+    // TODO(ilija@unfolded.ai): Trigger redraw
+  }
+}
 
 void AnimationLoop::_initialize(const wgpu::BackendType backendType, wgpu::Device device) {
   this->_procs.deviceSetUncapturedErrorCallback(

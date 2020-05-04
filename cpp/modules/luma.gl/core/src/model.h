@@ -38,7 +38,13 @@ struct AttributePropertyKeys {};
 
 // TODO(ilija@unfolded.ai): Move out and revisit
 struct UniformDescriptor {
+ public:
+  UniformDescriptor(size_t elementSize, wgpu::ShaderStage shaderStage = wgpu::ShaderStage::Vertex,
+                    bool isDynamic = false)
+      : elementSize{elementSize}, shaderStage{shaderStage}, isDynamic{isDynamic} {}
+
   size_t elementSize;
+  wgpu::ShaderStage shaderStage;
   bool isDynamic{false};
 };
 
@@ -91,18 +97,21 @@ class Model {
   std::vector<std::shared_ptr<utils::BindingInitializationHelper>> _bindings;
 };
 
+/// \brief Initializer options for the Model class.
 class Model::Options {
  public:
   Options(const std::string& vs, const std::string& fs, const std::shared_ptr<garrow::Schema>& attributeSchema,
           const std::shared_ptr<garrow::Schema>& instancedAttributeSchema =
               std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{}),
           const std::vector<UniformDescriptor>& uniforms = {},
+          const wgpu::PrimitiveTopology primitiveTopology = wgpu::PrimitiveTopology::TriangleList,
           const wgpu::TextureFormat& textureFormat = static_cast<wgpu::TextureFormat>(WGPUTextureFormat_BGRA8Unorm))
       : vs{vs},
         fs{fs},
         attributeSchema{attributeSchema},
         instancedAttributeSchema{instancedAttributeSchema},
         uniforms{uniforms},
+        primitiveTopology{primitiveTopology},
         textureFormat{textureFormat} {}
 
   /// \brief Vertex shader source.
@@ -115,6 +124,8 @@ class Model::Options {
   const std::shared_ptr<garrow::Schema> instancedAttributeSchema;
   /// \brief Uniform definitions.
   const std::vector<UniformDescriptor> uniforms;
+  /// \brief Type of geometry topology that will be contained in vertex buffers.
+  const wgpu::PrimitiveTopology primitiveTopology;
   /// \brief Texture format that the pipeline will use.
   wgpu::TextureFormat textureFormat;
 };

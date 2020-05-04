@@ -20,6 +20,8 @@
 
 #include "./model.h"  // NOLINT(build/include)
 
+#include <algorithm>
+
 #include "luma.gl/garrow/src/util/webgpu-utils.h"
 #include "luma.gl/webgpu.h"
 #include "math.gl/core.h"
@@ -38,6 +40,7 @@ Model::Model(wgpu::Device device, const Model::Options& options) {
   ComboRenderPipelineDescriptor descriptor{device};
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
+  descriptor.primitiveTopology = options.primitiveTopology;
   descriptor.cColorStates[0].format = options.textureFormat;
 
   this->_initializeVertexState(&descriptor.cVertexState, options.attributeSchema, options.instancedAttributeSchema);
@@ -106,7 +109,11 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
   this->_setVertexBuffers(pass);
   // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
   pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
-  pass.Draw(this->vertexCount, 1, 0, 0);
+
+  // Make sure at least one instance is being drawn in case no instanced attributes are present
+  uint32_t minimumInstances = 1;
+  auto instanceCount = std::max(static_cast<uint32_t>(this->_instancedAttributeTable->num_rows()), minimumInstances);
+  pass.Draw(this->vertexCount, instanceCount, 0, 0);
 }
 
 void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
@@ -144,8 +151,8 @@ void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor
 auto Model::_createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
     -> wgpu::BindGroupLayout {
   std::vector<wgpu::BindGroupLayoutBinding> bindings;
-  for (uint32 i = 0; i < uniforms.size(); i++) {
-    auto binding = wgpu::BindGroupLayoutBinding{i, wgpu::ShaderStage::Vertex, wgpu::BindingType::UniformBuffer,
+  for (uint32_t i = 0; i < uniforms.size(); i++) {
+    auto binding = wgpu::BindGroupLayoutBinding{i, uniforms[i].shaderStage, wgpu::BindingType::UniformBuffer,
                                                 uniforms[i].isDynamic};
     bindings.push_back(binding);
   }

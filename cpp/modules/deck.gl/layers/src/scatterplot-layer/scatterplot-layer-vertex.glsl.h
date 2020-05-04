@@ -18,69 +18,83 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-static const char *vs = R"GLSL(
-#define SHADER_NAME scatterplot-layer-vertex-shader
+#ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_VERTEX_H
+#define DECKGL_LAYERS_SCATTERPLOT_LAYER_VERTEX_H
 
-attribute vec3 positions;
+#include <string>
 
-attribute vec3 instancePositions;
-attribute vec3 instancePositions64Low;
-attribute float instanceRadius;
-attribute float instanceLineWidths;
-attribute vec4 instanceFillColors;
-attribute vec4 instanceLineColors;
-attribute vec3 instancePickingColors;
+#include "deck.gl/core/src/shaderlib/project/project32.glsl.h"
+#include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
 
-uniform float opacity;
-uniform float radiusScale;
-uniform float radiusMinPixels;
-uniform float radiusMaxPixels;
-uniform float lineWidthScale;
-uniform float lineWidthMinPixels;
-uniform float lineWidthMaxPixels;
-uniform float stroked;
-uniform bool filled;
+namespace {
 
-varying vec4 vFillColor;
-varying vec4 vLineColor;
-varying vec2 unitPosition;
-varying float innerUnitRadius;
-varying float outerRadiusPixels;
+// NOLINTNEXTLINE(runtime/string)
+static const std::string scatterplotLayerVS = R"GLSL(
+layout(std140, set = 0, binding = 1) uniform ScatterplotLayerOptions {
+  float opacity;
+  float radiusScale;
+  float radiusMinPixels;
+  float radiusMaxPixels;
+  float lineWidthScale;
+  float lineWidthMinPixels;
+  float lineWidthMaxPixels;
+  float stroked;
+  bool filled;
+} layerOptions;
+
+layout(location = 0) in vec3 positions;
+
+layout(location = 1) in vec3 instancePositions;
+layout(location = 2) in float instanceRadius;
+layout(location = 3) in vec4 instanceFillColors;
+layout(location = 4) in vec4 instanceLineColors;
+layout(location = 5) in float instanceLineWidths;
+
+// TODO(ilija@unfolded.ai): Revisit once double splitting is in place
+vec3 instancePositions64Low = vec3(0.);
+
+layout(location = 0) out vec4 vFillColor;
+layout(location = 1) out vec4 vLineColor;
+layout(location = 2) out vec2 unitPosition;
+layout(location = 3) out float innerUnitRadius;
+layout(location = 4) out float outerRadiusPixels;
 
 void main(void) {
   geometry.worldPosition = instancePositions;
 
   // Multiply out radius and clamp to limits
   outerRadiusPixels = clamp(
-    project_size_to_pixel(radiusScale * instanceRadius),
-    radiusMinPixels, radiusMaxPixels
+    project_size_to_pixel(layerOptions.radiusScale * instanceRadius),
+    layerOptions.radiusMinPixels, layerOptions.radiusMaxPixels
   );
 
   // Multiply out line width and clamp to limits
   float lineWidthPixels = clamp(
-    project_size_to_pixel(lineWidthScale * instanceLineWidths),
-    lineWidthMinPixels, lineWidthMaxPixels
+    project_size_to_pixel(layerOptions.lineWidthScale * instanceLineWidths),
+    layerOptions.lineWidthMinPixels, layerOptions.lineWidthMaxPixels
   );
 
-  // outer radius needs to offset by half stroke width
-  outerRadiusPixels += stroked * lineWidthPixels / 2.0;
+  // Outer radius needs to offset by half stroke width
+  outerRadiusPixels += layerOptions.stroked * lineWidthPixels / 2.0;
 
-  // position on the containing square in [-1, 1] space
+  // Position on the containing square in [-1, 1] space
   unitPosition = positions.xy;
   geometry.uv = unitPosition;
-  geometry.pickingColor = instancePickingColors;
 
-  innerUnitRadius = 1.0 - stroked * lineWidthPixels / outerRadiusPixels;
+  innerUnitRadius = 1.0 - layerOptions.stroked * lineWidthPixels / outerRadiusPixels;
 
   vec3 offset = positions * project_pixel_size(outerRadiusPixels);
-  DECKGL_FILTER_SIZE(offset, geometry);
   gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset, geometry.position);
-  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);
 
-  // Apply opacity to instance color, or return instance picking color
-  vFillColor = vec4(instanceFillColors.rgb, instanceFillColors.a * opacity);
-  DECKGL_FILTER_COLOR(vFillColor, geometry);
-  vLineColor = vec4(instanceLineColors.rgb, instanceLineColors.a * opacity);
-  DECKGL_FILTER_COLOR(vLineColor, geometry);
+  // Apply opacity to instance color, or return instance picking color, then normalize the values
+  vFillColor = clamp(vec4(instanceFillColors.rgb, instanceFillColors.a * layerOptions.opacity), 0, 255) / 255.0;
+  vLineColor = clamp(vec4(instanceLineColors.rgb, instanceLineColors.a * layerOptions.opacity), 0, 255) / 255.0;
 }
 )GLSL";
+
+}  // anonymous namespace
+
+// NOLINTNEXTLINE(runtime/string)
+static const std::string vs = "#version 450\n" + geometryVS + "\n" + project32VS + "\n" + scatterplotLayerVS;
+
+#endif  // DECKGL_LAYERS_SCATTERPLOT_LAYER_VERTEX_H

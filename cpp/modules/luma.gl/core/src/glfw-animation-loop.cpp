@@ -40,7 +40,7 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-GLFWAnimationLoop::GLFWAnimationLoop(const wgpu::BackendType backendType, wgpu::Device device, const Size& size)
+GLFWAnimationLoop::GLFWAnimationLoop(const Size& size, const wgpu::BackendType backendType, wgpu::Device device)
     : AnimationLoop{size} {
   this->_window = this->_initializeGLFW(backendType);
 
@@ -82,6 +82,17 @@ auto GLFWAnimationLoop::getPreferredSwapChainTextureFormat() -> wgpu::TextureFor
   // TODO(ilija@unfolded.ai): Why do we flush here?
   this->flush();
   return static_cast<wgpu::TextureFormat>(this->_binding->GetPreferredSwapChainTextureFormat());
+}
+
+auto GLFWAnimationLoop::devicePixelRatio() -> float {
+  // TODO(ilija@unfolded.ai): Not sure when these two would be different?
+  float xscale, yscale;
+  glfwGetWindowContentScale(this->_window, &xscale, &yscale);
+  if (xscale != yscale) {
+    throw std::runtime_error("Device scale factor not equal across axis");
+  }
+
+  return xscale;
 }
 
 auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> wgpu::Device {

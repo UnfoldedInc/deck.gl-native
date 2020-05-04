@@ -37,59 +37,55 @@ class ViewManager {
   ViewManager();
   virtual ~ViewManager();
 
-  // Check if a redraw is needed
+  /// \brief Check if a redraw is needed
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
-  // Views will be updated deeply (in next animation frame)
+  /// \brief Views will be updated deeply (in next animation frame)
   void setNeedsUpdate(const std::string &reason);
 
-  // Checks each viewport for transition updates
+  /// \brief Checks each viewport for transition updates
   void updateViewStates();
 
-  /** Get a set of viewports for a given width and height
-   * TODO - Intention is for deck.gl to autodeduce width and height and drop
-   * the need for props
-   */
+  /// \brief Get a set of viewports for a given width and height
   auto getViewports() -> std::list<std::shared_ptr<Viewport>>;  // (rect)
 
   auto getViews() -> std::list<std::shared_ptr<View>>;
 
-  // Resolves a viewId string to a View, if already a View returns it.
+  /// \brief Resolves a viewId string to a View, if already a View returns it.
   auto getView(const std::string &viewOrViewId) -> std::shared_ptr<View>;
 
-  // Returns the viewState for a specific viewId. Matches the viewState by
-  // 1. view.viewStateId
-  // 2. view.id
-  // 3. root viewState
-  // then applies the view's filter if any
+  /// \brief Returns the viewState for a specific viewId.
+  /// Matches the viewState by:
+  ///   1. view.viewStateId
+  ///   2. view.id
+  ///   3. root viewState
+  /// then applies the view's filter if any
   auto getViewState(const std::string &viewId) -> std::shared_ptr<ViewState>;
   auto getViewport(const std::string &viewId) -> std::shared_ptr<Viewport>;
 
-  /**
-   * Unproject pixel coordinates on screen onto world coordinates,
-   * (possibly [lon, lat]) on map.
-   * - [x, y] => [lng, lat]
-   * - [x, y, z] => [lng, lat, Z]
-   * @param xyz -
-   * @param topLeft - Whether origin is top left
-   * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
-   */
-  auto unproject(const mathgl::Vector3<double> xyz, bool topLeft = true) -> std::optional<mathgl::Vector3<double>>;
+  /// \brief Unproject pixel coordinates on screen onto world coordinates, (possibly [lon, lat]) on map.
+  /// - [x, y] => [lng, lat]
+  /// - [x, y, z] => [lng, lat, Z]
+  /// @param xy Pixel coordinates
+  /// @param topLeft - Whether origin is top left
+  /// @return [lng, lat, Z] or [X, Y, Z]
   auto unproject(const mathgl::Vector2<double> xy, bool topLeft = true) -> std::optional<mathgl::Vector2<double>>;
+  /// \overload
+  auto unproject(const mathgl::Vector3<double> xyz, bool topLeft = true) -> std::optional<mathgl::Vector3<double>>;
 
   //
   // MODIFIERS
   //
 
-  // Set the size of the window
+  /// \brief Set the size of the window
   void setSize(int width, int height);
   void setWidth(int width);
   void setHeight(int height);
 
-  // Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called)
+  /// \brief Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called)
   void setViews(const std::list<std::shared_ptr<View>> &views);
 
-  // Update the view state
+  /// \brief Update the view state
   void setViewState(std::shared_ptr<ViewState> viewStates);
   void setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates);
 

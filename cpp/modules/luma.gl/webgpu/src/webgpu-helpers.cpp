@@ -23,6 +23,7 @@
 
 #include "./webgpu-helpers.h"  // NOLINT(build/include)
 
+#include <algorithm>
 #include <cstring>
 #include <iomanip>
 #include <sstream>

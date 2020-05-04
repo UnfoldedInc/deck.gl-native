@@ -32,8 +32,8 @@ auto const LNGLAT_TOLERANCE = 1e-6;
 auto const OFFSET_TOLERANCE = 1e-5;
 auto const ZOOM_TOLERANCE = 1e-6;
 
-WebMercatorViewport makeTestViewport(int width, int height, double longitude, double latitude, double zoom,
-                                     double pitch, double bearing) {
+auto makeTestViewport(int width, int height, double longitude, double latitude, double zoom, double pitch,
+                      double bearing) -> WebMercatorViewport {
   WebMercatorViewport::Options opts;
   opts.width = width;
   opts.height = height;
@@ -43,19 +43,35 @@ WebMercatorViewport makeTestViewport(int width, int height, double longitude, do
   opts.pitch = pitch;
   opts.bearing = bearing;
 
-  return WebMercatorViewport(opts);
+  return WebMercatorViewport{opts};
 }
 
 const WebMercatorViewport TEST_VIEWPORTS[] = {makeTestViewport(800, 600, -122, 38, 11, 0, 0),
                                               makeTestViewport(800, 600, 20, 23, 15, 30, -85),
                                               makeTestViewport(800, 600, 42, 65, 16, 15, 30)};
 
-TEST(WebMercatorViewport, Ctor) {
+/// \brief Fixture for testing WebMercatorViewport implementation.
+class WebMercatorViewportTest : public ::testing::Test {
+ protected:
+  WebMercatorViewportTest() {}
+};
+
+TEST_F(WebMercatorViewportTest, Simple) {
+  ViewMatrixOptions viewMatrixOptions;
+  ProjectionMatrixOptions projectionMatrixOptions;
+  Viewport viewport{"my-viewport-id", viewMatrixOptions, projectionMatrixOptions, 0, 0, 0, 0};
+  EXPECT_FALSE(viewport.containsPixel(0, 0));
+  viewport.width = 10;
+  viewport.height = 10;
+  EXPECT_TRUE(viewport.containsPixel(2, 1, 5, 5));
+}
+
+TEST_F(WebMercatorViewportTest, Ctor) {
   // Construct with 0 width and height
   makeTestViewport(0, 0, 0, 0, 11, 0, 0);
 }
 
-TEST(WebMercatorViewport, projectFlat) {
+TEST_F(WebMercatorViewportTest, projectFlat) {
   for (auto viewport : TEST_VIEWPORTS) {
     for (auto tc : TEST_VIEWPORTS) {
       auto lngLatIn = Vector2<double>(tc.longitude, tc.latitude);
@@ -69,7 +85,7 @@ TEST(WebMercatorViewport, projectFlat) {
 }
 
 // TODO(isaac@unfolded.ai): project/unproject not implemented
-// TEST(WebMercatorViewport, project3D) {
+// TEST_F(WebMercatorViewportTest, project3D) {
 //   for (auto viewport : TEST_VIEWPORTS) {
 //     const double TEST_OFFSETS[] = {0, 0.5, 1.0, 5.0};
 //     for (auto offset : TEST_OFFSETS) {
@@ -87,7 +103,7 @@ TEST(WebMercatorViewport, projectFlat) {
 // }
 
 // TODO(isaac@unfolded.ai): project/unproject not implemented
-// TEST(WebMercatorViewport, project2D) {
+// TEST_F(WebMercatorViewportTest, project2D) {
 //   for (auto viewport : TEST_VIEWPORTS) {
 //     const double TEST_OFFSETS[] = {0, 0.5, 1.0, 5.0};
 //     for (auto offset : TEST_OFFSETS) {
@@ -103,7 +119,7 @@ TEST(WebMercatorViewport, projectFlat) {
 //   }
 // }
 
-TEST(WebMercatorViewport, getScales) {
+TEST_F(WebMercatorViewportTest, getScales) {
   for (auto viewport : TEST_VIEWPORTS) {
     auto distanceScales = viewport.getDistanceScales();
 
@@ -128,7 +144,7 @@ TEST(WebMercatorViewport, getScales) {
   }
 }
 
-TEST(WebMercatorViewport, fitBounds) {
+TEST_F(WebMercatorViewportTest, fitBounds) {
   struct fitBoundsArgs {
     Vector2<double> topLeft;
     Vector2<double> bottomRight;
@@ -169,4 +185,29 @@ TEST(WebMercatorViewport, fitBounds) {
     EXPECT_NEAR(result.zoom, EXPECTED[i].zoom, ZOOM_TOLERANCE);
     i++;
   }
+}
+
+// Ensures viewport matrix values are correct by comparing them to a known expected output.
+// Input and output values taken from web-based deck.gl Flight Paths example.
+TEST_F(WebMercatorViewportTest, FlightPathsMatrices) {
+  auto viewport = makeTestViewport(640, 480, 7.0, 47.65, 4.5, 50.0, 0.0);
+
+  auto projectionMatrix = Matrix4<double>{
+      2.25, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0, -1.082867724532, -0.2082867724532, 0.0, 0.0, -1.0, 0.0};
+
+  // clang-format off
+  auto viewMatrix = Matrix4<double>{0.0471404520791, 0.0,              0.0,              -12.53726512183,
+                                    0.0,             0.03030129851146, 0.0361116813613,  -10.09881705625,
+                                    0.0,             -0.0361116813613, 0.03030129851146, 10.53530150774,
+                                    0.0,             0.0,              0.0,              1.0};
+
+  auto viewProjectionMatrix = Matrix4<double>{0.1060660171779, 0.0,              0.0,               -28.20884652413,
+                                              0.0,             0.0909038955344,  0.1083350440839,   -30.29645116876,
+                                              0.0,             0.03910417422475, -0.0328122981694,  -11.61662474340,
+                                              0.0,             0.0361116813613,  -0.03030129851146, -10.53530150774};
+  // clang-format on
+
+  EXPECT_EQ(viewport.projectionMatrix, projectionMatrix);
+  EXPECT_EQ(viewport.viewMatrix, viewMatrix);
+  EXPECT_EQ(viewport.viewProjectionMatrix, viewProjectionMatrix);
 }

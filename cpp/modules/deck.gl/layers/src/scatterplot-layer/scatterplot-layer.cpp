@@ -20,9 +20,8 @@
 
 #include "./scatterplot-layer.h"  // NOLINT(build/include)
 
-// #include "./scatterplot-layer-fragment.glsl.h"
-// #include "./scatterplot-layer-vertex.glsl.h"
-#include "deck.gl/core.h"
+#include "./scatterplot-layer-fragment.glsl.h"
+#include "./scatterplot-layer-vertex.glsl.h"
 
 using namespace deckgl;
 using namespace lumagl;
@@ -36,10 +35,13 @@ const std::vector<const Property*> propTypeDefs = {
         "stroked", [](const JSONObject* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->stroked; },
         [](JSONObject* props, bool value) { return dynamic_cast<ScatterplotLayer::Props*>(props)->stroked = value; },
         false},
-    // new PropertyT<std::string>{"lineWidthUnits",
-    //     [](const JSONObject* props) { return dynamic_cast<ScatterplotLayer::Props *>(props)->widthUnits; },
-    //     [](JSONObject* props, bool value) { return dynamic_cast<ScatterplotLayer::Props
-    //     *>(props)->widthUnits = value; }, true}},
+    new PropertyT<std::string>{
+        "lineWidthUnits",
+        [](const JSONObject* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthUnits; },
+        [](JSONObject* props, std::string value) {
+          return dynamic_cast<ScatterplotLayer::Props*>(props)->lineWidthUnits = value;
+        },
+        "meters"},
     new PropertyT<float>{
         "lineWidthScale",
         [](const JSONObject* props) { return dynamic_cast<const ScatterplotLayer::Props*>(props)->lineWidthScale; },
@@ -89,35 +91,6 @@ auto ScatterplotLayer::Props::getProperties() const -> const Properties* {
   return &properties;
 }
 
-/*
-const DEFAULT_COLOR = [0, 0, 0, 255];
-
-const defaultProps = {
-  radiusScale: {type: 'number', min: 0, value: 1},
-  radiusMinPixels: {type: 'number', min: 0, value: 0}, //  min point radius in
-pixels radiusMaxPixels: {type: 'number', min: 0, value:
-Number.MAX_SAFE_INTEGER}, // max point radius in pixels
-
-  lineWidthUnits: 'meters',
-  lineWidthScale: {type: 'number', min: 0, value: 1},
-  lineWidthMinPixels: {type: 'number', min: 0, value: 0},
-  lineWidthMaxPixels: {type: 'number', min: 0, value: Number.MAX_SAFE_INTEGER},
-
-  stroked: false,
-  filled: true,
-
-  getPosition: {type: 'accessor', value: x => x.position},
-  getRadius: {type: 'accessor', value: 1},
-  getFillColor: {type: 'accessor', value: DEFAULT_COLOR},
-  getLineColor: {type: 'accessor', value: DEFAULT_COLOR},
-  getLineWidth: {type: 'accessor', value: 1},
-};
-*/
-
-// auto ScatterplotLayer::getShaders(id) {
-//   return super.getShaders({vs, fs, modules: [project32, picking]});
-// }
-
 void ScatterplotLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
@@ -140,9 +113,30 @@ void ScatterplotLayer::initializeState() {
   auto lineWidth = std::make_shared<arrow::Field>("instanceLineWidths", arrow::float32());
   auto getLineWidth = std::bind(&ScatterplotLayer::getLineWidthData, this, std::placeholders::_1);
   this->attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
+
+  this->models = {this->_getModel(this->context->device)};
+  this->_layerUniforms = std::make_shared<garrow::Array>(this->context->device);
 }
 
 void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  super::updateState(changeFlags, oldProps);
+
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  float widthMultiplier = props->lineWidthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
+
+  ScatterplotLayerUniforms uniforms;
+  uniforms.opacity = props->opacity;
+  uniforms.radiusScale = props->radiusScale;
+  uniforms.radiusMinPixels = props->radiusMinPixels;
+  uniforms.radiusMaxPixels = props->radiusMaxPixels;
+  uniforms.lineWidthScale = props->lineWidthScale * widthMultiplier;
+  uniforms.lineWidthMinPixels = props->lineWidthMinPixels;
+  uniforms.lineWidthMaxPixels = props->lineWidthMaxPixels;
+  uniforms.stroked = props->stroked ? 1.0f : 0.0f;
+  uniforms.filled = props->filled;
+
+  this->_layerUniforms->setData(&uniforms, 1, wgpu::BufferUsage::Uniform);
+
   /*
   super.updateState({props, oldProps, changeFlags});
   if (changeFlags.extensionsChanged) {
@@ -158,38 +152,15 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
 
 void ScatterplotLayer::finalizeState() {}
 
-void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {  // uniforms
-  /*
-    const {viewport} = this->context;
-    const {
-      radiusScale,
-      radiusMinPixels,
-      radiusMaxPixels,
-      stroked,
-      filled,
-      lineWidthUnits,
-      lineWidthScale,
-      lineWidthMinPixels,
-      lineWidthMaxPixels
-    } = this->props;
+void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {
+  // TODO(ilija@unfolded.ai): Remove. updateState currently doesn't seem to be called when viewport changes
+  this->updateState(Layer::ChangeFlags{}, nullptr);
 
-    const widthMultiplier = lineWidthUnits === 'pixels' ?
-      viewport.metersPerPixel : 1;
-
-    this->state.model
-      .setUniforms(uniforms)
-      .setUniforms({
-        stroked: stroked ? 1 : 0,
-        filled,
-        radiusScale,
-        radiusMinPixels,
-        radiusMaxPixels,
-        lineWidthScale: lineWidthScale * widthMultiplier,
-        lineWidthMinPixels,
-        lineWidthMaxPixels
-      })
-      .draw();
-    */
+  for (auto const& model : this->getModels()) {
+    // Layer uniforms are currently bound to index 1
+    model->setUniforms(this->_layerUniforms, 1);
+    model->draw(pass);
+  }
 }
 
 auto ScatterplotLayer::getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
@@ -238,20 +209,46 @@ auto ScatterplotLayer::getLineWidthData(const std::shared_ptr<arrow::Table>& tab
 }
 
 auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model> {
+  std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+      std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3)};
+  auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
+
+  // TODO(ilija@unfolded.ai): **arrow**::Fields are already being specified in initializeState, consolidate?
+  std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+      std::make_shared<garrow::Field>("instancePositions", wgpu::VertexFormat::Float3),
+      std::make_shared<garrow::Field>("instanceRadius", wgpu::VertexFormat::Float),
+      std::make_shared<garrow::Field>("instanceFillColors", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4),
+      std::make_shared<garrow::Field>("instanceLineWidths", wgpu::VertexFormat::Float)};
+  auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
+
+  std::vector<UniformDescriptor> uniforms = {
+      {sizeof(ViewportUniforms)},
+      {sizeof(ScatterplotLayerUniforms), wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
+  auto modelOptions = Model::Options{
+      vs, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::TriangleStrip};
+  auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+
   // a square that minimally cover the unit circle
   // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
-  auto devicePtr = std::make_shared<wgpu::Device>(std::move(device));
-  return nullptr;  // std::shared_ptr<lumagl::Model>(new lumagl::Model(devicePtr));
-  // Object.assign(this->getShaders(), {
-  //   id: this->props.id,
-  //   geometry: new Geometry({
-  //     drawMode: GL.TRIANGLE_FAN,
-  //     vertexCount: 4,
-  //     attributes: {
-  //       positions: {size: 3, value: new Float32Array(positions)}
-  //     }
-  //   }),
-  //   isInstanced: true
-  // })
+  // A square that minimally covers the unit circle
+  //
+  //  (-1, -1)_------------_(1, -1)
+  //        |  "-,_          |
+  //        o      "-,_      o
+  //        |          "-,_  |
+  //  (-1, 1)"-------------"(1, 1)
+  //
+  std::vector<mathgl::Vector3<float>> positionData = {{-1, 1, 0}, {-1, -1, 0}, {1, 1, 0}, {1, -1, 0}};
+  std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+      std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
+  model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+  auto instancedAttributes = this->attributeManager->update(this->props()->data);
+  model->setInstancedAttributes(instancedAttributes);
+
+  model->vertexCount = static_cast<int>(positionData.size());
+
+  return model;
 }

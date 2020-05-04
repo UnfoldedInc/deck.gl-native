@@ -131,7 +131,9 @@ int main(int argc, const char* argv[]) {
 
   auto attributes = createAttributeTable(device);
   auto instancedSchema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
-  Model model{device, {vs, fs, attributes->schema(), instancedSchema, {{sizeof(ShaderData)}}}};
+  Model model{
+      device,
+      {vs, fs, attributes->schema(), instancedSchema, {{sizeof(ShaderData)}}, wgpu::PrimitiveTopology::TriangleList}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
   std::vector<std::shared_ptr<garrow::Array>> uniforms;
@@ -146,7 +148,7 @@ int main(int argc, const char* argv[]) {
     static int f = 0;
     f++;
 
-    for (auto i = 0; i < uniforms.size(); ++i) {
+    for (size_t i = 0; i < uniforms.size(); ++i) {
       // Update buffer
       shaderData[i].time = f / 60.0f;
       uniforms[i]->buffer().SetSubData(0, sizeof(ShaderData), &(shaderData[i]));

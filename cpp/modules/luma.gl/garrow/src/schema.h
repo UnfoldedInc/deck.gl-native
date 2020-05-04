@@ -39,7 +39,7 @@ class Schema {
   /// \brief Returns number of fields that this schema contains.
   auto num_fields() const -> int { return static_cast<int>(this->_fields.size()); }
 
-  /// Returns the ith schema element. Does not boundscheck.
+  /// \brief Returns the ith schema element. Does not boundscheck.
   auto field(int i) const -> std::shared_ptr<Field> { return this->_fields[i]; };
 
   /// \brief Returns a collection of fields that are part of this schema.
