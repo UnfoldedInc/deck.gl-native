@@ -21,18 +21,20 @@
 #ifndef DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 #define DECKGL_LAYERS_SCATTERPLOT_LAYER_H
 
+#include <limits>
 #include <memory>
 #include <string>
 
-#include "deck.gl/core.h"  // import {Layer, project32, picking} from '@deck.gl/core';
-
-// import GL from '@luma.gl/constants';
-// import {Model, Geometry} from '@luma.gl/core';
+#include "deck.gl/core.h"
+#include "luma.gl/garrow.h"
+#include "luma.gl/webgpu.h"
 
 namespace deckgl {
 
 class ScatterplotLayer : public Layer {
  public:
+  using super = Layer;
+
   class Props;
   explicit ScatterplotLayer(std::shared_ptr<ScatterplotLayer::Props> props)
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
@@ -54,6 +56,8 @@ class ScatterplotLayer : public Layer {
 
  private:
   auto _getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>;
+
+  std::shared_ptr<lumagl::garrow::Array> _layerUniforms;
 };
 
 class ScatterplotLayer::Props : public Layer::Props {
@@ -71,23 +75,38 @@ class ScatterplotLayer::Props : public Layer::Props {
   bool stroked{false};
 
   std::string lineWidthUnits{"meters"};
-  float lineWidthScale{1.0};      //
-  float lineWidthMinPixels{1.0};  // min point radius in pixels
-  float lineWidthMaxPixels{2.0};  // max point radius in pixels
+  float lineWidthScale{1.0};
+  float lineWidthMinPixels{0.0};
+  float lineWidthMaxPixels{std::numeric_limits<float>::max()};
 
   float radiusScale{1.0};
-  float radiusMinPixels{1.0};  // min point radius in pixels
-  float radiusMaxPixels{2.0};  // max point radius in pixels
+  float radiusMinPixels{0.0};                                // min point radius in pixels
+  float radiusMaxPixels{std::numeric_limits<float>::max()};  // max point radius in pixels
 
   /// Property accessors
   std::function<ArrowMapper::Vector3FloatAccessor> getPosition{
-      [](const Row& row) { return row.getFloatVector3("position"); }};
+      [](const Row& row) { return row.getVector3<float>("position"); }};
   std::function<ArrowMapper::FloatAccessor> getRadius{[](const Row&) { return 1.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getLineWidth{[](auto row) { return 1.0; }};
+};
+
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
+/// bool has a 4-byte alignment in GLSL.
+/// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
+struct ScatterplotLayerUniforms {
+  float opacity;
+  float radiusScale;
+  float radiusMinPixels;
+  float radiusMaxPixels;
+  float lineWidthScale;
+  float lineWidthMinPixels;
+  float lineWidthMaxPixels;
+  float stroked;
+  alignas(4) bool filled;
 };
 
 }  // namespace deckgl

@@ -77,19 +77,19 @@ TEST(ViewManager, SetViews) {
   // Setting view causes redraw
   viewManager->setViews({view1});
   EXPECT_TRUE(viewManager->getNeedsRedraw(true));
-  EXPECT_EQ(1, viewManager->getViews().size());
+  EXPECT_EQ(size_t{1}, viewManager->getViews().size());
   // Same view does not cause redraw
   viewManager->setViews({view1});
   EXPECT_FALSE(viewManager->getNeedsRedraw());
-  EXPECT_EQ(1, viewManager->getViews().size());
+  EXPECT_EQ(size_t{1}, viewManager->getViews().size());
   // Adding a view causes redraw
   viewManager->setViews({view1, view2});
   EXPECT_TRUE(viewManager->getNeedsRedraw(true));
-  EXPECT_EQ(2, viewManager->getViews().size());
+  EXPECT_EQ(size_t{2}, viewManager->getViews().size());
   // Ordering matters
   viewManager->setViews({view2, view1});
   EXPECT_TRUE(viewManager->getNeedsRedraw(true));
-  EXPECT_EQ(2, viewManager->getViews().size());
+  EXPECT_EQ(size_t{2}, viewManager->getViews().size());
 
   EXPECT_EQ(view2, *(viewManager->getViews().begin()));
   EXPECT_EQ(view1, *(++(viewManager->getViews().begin())));

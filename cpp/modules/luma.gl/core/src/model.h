@@ -38,7 +38,13 @@ struct AttributePropertyKeys {};
 
 // TODO(ilija@unfolded.ai): Move out and revisit
 struct UniformDescriptor {
+ public:
+  UniformDescriptor(size_t elementSize, wgpu::ShaderStage shaderStage = wgpu::ShaderStage::Vertex,
+                    bool isDynamic = false)
+      : elementSize{elementSize}, shaderStage{shaderStage}, isDynamic{isDynamic} {}
+
   size_t elementSize;
+  wgpu::ShaderStage shaderStage;
   bool isDynamic{false};
 };
 

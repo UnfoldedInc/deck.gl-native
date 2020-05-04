@@ -38,6 +38,7 @@ layout(std140, set = 0, binding = 1) uniform LineLayerOptions {
 } layerOptions;
 
 layout(location = 0) in vec3 positions;
+
 layout(location = 1) in vec3 instanceSourcePositions;
 layout(location = 2) in vec3 instanceTargetPositions;
 layout(location = 3) in vec4 instanceColors;
@@ -90,7 +91,7 @@ void main(void) {
 
   // Color
   vec4 color = vec4(instanceColors.rgb, instanceColors.a * layerOptions.opacity);
-// Normalize the values
+  // Normalize the values
   vColor = clamp(color, 0, 255) / 255.0;
 }
 )GLSL";

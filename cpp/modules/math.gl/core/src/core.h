@@ -282,10 +282,13 @@ class Matrix2 {
 
   auto invert() const -> Matrix2<coord>;
 
-  auto operator()(unsigned row, unsigned col) -> coord & { return m[row][col]; }
-  auto operator()(unsigned row, unsigned col) const -> const coord { return m[row][col]; }
+  auto operator()(unsigned row, unsigned col) -> coord & { return _m[row][col]; }
+  auto operator()(unsigned row, unsigned col) const -> const coord { return _m[row][col]; }
 
-  coord m[2][2];
+ private:
+  coord _m[2][2];
+  auto at(int row, int column) -> coord & { return (*this)(row, column); }
+  auto at(int row, int column) const -> const coord { return (*this)(row, column); }
 };
 
 // Matrix operator+ (const Matrix &) const;
@@ -305,8 +308,8 @@ class Matrix3 {
   auto operator=(const Matrix3<coord> &) -> Matrix3<coord> &;
   auto operator=(Matrix3<coord> &&) -> Matrix3<coord> &;
 
-  auto operator()(int row, int col) -> coord & { return m[row][col]; }
-  auto operator()(int row, int col) const -> const coord { return m[row][col]; }
+  auto operator()(int row, int col) -> coord & { return _m[row][col]; }
+  auto operator()(int row, int col) const -> const coord { return _m[row][col]; }
 
   // Matrix creation
   static auto makeUnit() -> Matrix3<coord>;
@@ -328,7 +331,10 @@ class Matrix3 {
   auto multiplyPoint(const Vector2<coord>) const -> Vector2<coord>;
   auto multiplyVector(const Vector2<coord>) const -> Vector2<coord>;
 
-  coord m[3][3];
+ private:
+  coord _m[3][3];
+  auto at(int row, int column) -> coord & { return (*this)(row, column); }
+  auto at(int row, int column) const -> const coord { return (*this)(row, column); }
 };
 
 template <class T>
@@ -385,8 +391,8 @@ class Matrix4 {
   static auto makeProjection(coord distance) -> Matrix4<coord>;
   static auto makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord>;
 
-  auto operator()(int row, int col) -> coord & { return m[row][col]; }
-  auto operator()(int row, int col) const -> const coord { return m[row][col]; }
+  auto operator()(int row, int col) -> coord & { return _m[row][col]; }
+  auto operator()(int row, int col) const -> const coord { return _m[row][col]; }
 
   auto determinant() const -> coord;
   auto invert() const -> Matrix4<coord>;
@@ -402,7 +408,10 @@ class Matrix4 {
   auto rotateY(const coord rad) -> Matrix4<coord>;
   auto rotateZ(const coord rad) -> Matrix4<coord>;
 
-  coord m[4][4];
+ private:
+  coord _m[4][4];
+  auto at(int row, int column) -> coord & { return (*this)(row, column); }
+  auto at(int row, int column) const -> const coord { return (*this)(row, column); }
 };
 
 template <typename coord>
@@ -598,18 +607,18 @@ auto Vector4<coord>::transform(const Matrix4<coord> &m) const -> Vector4<coord> 
 
 template <typename coord>
 Matrix2<coord>::Matrix2(coord a11, coord a12, coord a21, coord a22) {
-  m[0][0] = a11;
-  m[0][1] = a12;
-  m[1][0] = a21;
-  m[1][1] = a22;
+  at(0, 0) = a11;
+  at(0, 1) = a12;
+  at(1, 0) = a21;
+  at(1, 1) = a22;
 }
 
 template <typename coord>
 Matrix2<coord>::Matrix2(const Matrix2<coord> &m2) {
-  m[0][0] = m2.m[0][0];
-  m[0][1] = m2.m[0][1];
-  m[1][0] = m2.m[1][0];
-  m[1][1] = m2.m[1][1];
+  at(0, 0) = m2(0, 0);
+  at(0, 1) = m2(0, 1);
+  at(1, 0) = m2(1, 0);
+  at(1, 1) = m2(1, 1);
 }
 
 template <typename coord>
@@ -632,10 +641,10 @@ auto Matrix2<coord>::makeRotation(coord angle) -> Matrix2<coord> {
 template <typename coord>
 auto Matrix2<coord>::invert() const -> Matrix2<coord> {
   // Cramers rule
-  coord det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+  coord det = at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0);
   if (det == static_cast<coord>(0)) throw std::runtime_error("Attempt to invert singular matrix");
   det = 1 / det;
-  return Matrix2<coord>(det * m[1][1], -det * m[0][1], -det * m[1][0], det * m[0][0]);
+  return Matrix2<coord>(det * at(1, 1), -det * at(0, 1), -det * at(1, 0), det * at(0, 0));
 }
 
 template <typename coord>
@@ -669,40 +678,40 @@ auto operator<<(std::ostream &os, const Matrix2<coord> &m) -> std::ostream & {
 template <typename coord>
 Matrix3<coord>::Matrix3(coord a11, coord a12, coord a13, coord a21, coord a22, coord a23, coord a31, coord a32,
                         coord a33) {
-  m[0][0] = a11;
-  m[0][1] = a12;
-  m[0][2] = a13;
-  m[1][0] = a21;
-  m[1][1] = a22;
-  m[1][2] = a23;
-  m[2][0] = a31;
-  m[2][1] = a32;
-  m[2][2] = a33;
+  at(0, 0) = a11;
+  at(0, 1) = a12;
+  at(0, 2) = a13;
+  at(1, 0) = a21;
+  at(1, 1) = a22;
+  at(1, 2) = a23;
+  at(2, 0) = a31;
+  at(2, 1) = a32;
+  at(2, 2) = a33;
 }
 
 template <typename coord>
 Matrix3<coord>::Matrix3(const Matrix3<coord> &m2) {
-  m[0][0] = m2.m[0][0];
-  m[0][1] = m2.m[0][1];
-  m[0][2] = m2.m[0][2];
-  m[1][0] = m2.m[1][0];
-  m[1][1] = m2.m[1][1];
-  m[1][2] = m2.m[1][2];
-  m[2][0] = m2.m[2][0];
-  m[2][1] = m2.m[2][1];
-  m[2][2] = m2.m[2][2];
+  at(0, 0) = m2(0, 0);
+  at(0, 1) = m2(0, 1);
+  at(0, 2) = m2(0, 2);
+  at(1, 0) = m2(1, 0);
+  at(1, 1) = m2(1, 1);
+  at(1, 2) = m2(1, 2);
+  at(2, 0) = m2(2, 0);
+  at(2, 1) = m2(2, 1);
+  at(2, 2) = m2(2, 2);
 }
 
 template <typename coord>
 bool Matrix3<coord>::isHomogenous() const {
-  return m[2][0] == 0 && m[2][1] == 0 && m[3][2] == 1;
+  return at(2, 0) == 0 && at(2, 1) == 0 && at(3, 2) == 1;
 }
 
 template <typename coord>
 Vector2<coord> Matrix3<coord>::multiplyPoint(const Vector2<coord> s) const {
   Vector2<coord> v;
-  v.x = m[0][0] * s.x + m[0][1] * s.y + m[0][2] * static_cast<coord>(1);
-  v.y = m[1][0] * s.x + m[1][1] * s.y + m[1][2] * static_cast<coord>(1);
+  v.x = at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * static_cast<coord>(1);
+  v.y = at(1, 0) * s.x + at(1, 1) * s.y + at(1, 2) * static_cast<coord>(1);
   return v;
 }
 
@@ -712,7 +721,7 @@ auto operator*(const Matrix3<coord> &m1, const Matrix3<coord> &m2) -> Matrix3<co
   for (int row = 0; row < 3; ++row)
     for (int col = 0; col < 3; ++col) {
       coord sum = static_cast<coord>(0);
-      for (int k = 0; k < 3; ++k) sum += m1.m[row][k] * m2.m[k][col];
+      for (int k = 0; k < 3; ++k) sum += m1(row, k) * m2(k, col);
       result(row, col) = sum;
     }
   return result;
@@ -721,29 +730,30 @@ auto operator*(const Matrix3<coord> &m1, const Matrix3<coord> &m2) -> Matrix3<co
 #ifdef DONT
 template <typename coord>
 auto Matrix3<coord>::multiplyVector(const Vector3<coord> v, *vout) const -> Vector3<coord> {
-  vout->x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
-  vout->y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
-  vout->z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
+  vout->x = at(0, 0) * v.x + at(0, 1) * v.y + at(0, 2) * v.z;
+  vout->y = at(1, 0) * v.x + at(1, 1) * v.y + at(1, 2) * v.z;
+  vout->z = at(2, 0) * v.x + at(2, 1) * v.y + at(2, 2) * v.z;
 }
 #endif
 
 template <typename coord>
 auto Matrix3<coord>::determinant() const -> coord {
-  return m[0][0] * m[1][1] * m[2][2] + m[0][1] * m[1][2] * m[2][0] + m[0][2] * m[1][0] * m[2][1] -
-         m[0][2] * m[1][1] * m[2][0] - m[0][1] * m[1][0] * m[2][2] - m[0][0] * m[1][2] * m[2][1];
+  return at(0, 0) * at(1, 1) * at(2, 2) + at(0, 1) * at(1, 2) * at(2, 0) + at(0, 2) * at(1, 0) * at(2, 1) -
+         at(0, 2) * at(1, 1) * at(2, 0) - at(0, 1) * at(1, 0) * at(2, 2) - at(0, 0) * at(1, 2) * at(2, 1);
 }
 
 template <typename coord>
 auto Matrix3<coord>::invert() const -> Matrix3<coord> {
   coord det = 1 / determinant();
-  return Matrix3<coord>(det * (m[1][1] * m[2][2] - m[1][2] * m[2][1]), -det * (m[0][1] * m[2][2] - m[0][2] * m[2][1]),
-                        det * (m[0][1] * m[1][2] - m[0][2] * m[1][1]),
+  return Matrix3<coord>(
+      det * (at(1, 1) * at(2, 2) - at(1, 2) * at(2, 1)), -det * (at(0, 1) * at(2, 2) - at(0, 2) * at(2, 1)),
+      det * (at(0, 1) * at(1, 2) - at(0, 2) * at(1, 1)),
 
-                        -det * (m[1][0] * m[2][2] - m[1][2] * m[2][0]), det * (m[0][0] * m[2][2] - m[0][2] * m[2][0]),
-                        -det * (m[0][0] * m[1][2] - m[0][2] * m[1][0]),
+      -det * (at(1, 0) * at(2, 2) - at(1, 2) * at(2, 0)), det * (at(0, 0) * at(2, 2) - at(0, 2) * at(2, 0)),
+      -det * (at(0, 0) * at(1, 2) - at(0, 2) * at(1, 0)),
 
-                        det * (m[1][0] * m[2][1] - m[1][1] * m[2][0]), -det * (m[0][0] * m[2][1] - m[0][1] * m[2][0]),
-                        det * (m[0][0] * m[1][1] - m[0][1] * m[1][0]));
+      det * (at(1, 0) * at(2, 1) - at(1, 1) * at(2, 0)), -det * (at(0, 0) * at(2, 1) - at(0, 1) * at(2, 0)),
+      det * (at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0)));
 }
 
 //  Matrix Creation
@@ -780,43 +790,43 @@ Matrix4<coord>::Matrix4() : Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
 template <typename coord>
 Matrix4<coord>::Matrix4(coord m11, coord m12, coord m13, coord m14, coord m21, coord m22, coord m23, coord m24,
                         coord m31, coord m32, coord m33, coord m34, coord m41, coord m42, coord m43, coord m44) {
-  m[0][0] = m11;
-  m[0][1] = m12;
-  m[0][2] = m13;
-  m[0][3] = m14;
-  m[1][0] = m21;
-  m[1][1] = m22;
-  m[1][2] = m23;
-  m[1][3] = m24;
-  m[2][0] = m31;
-  m[2][1] = m32;
-  m[2][2] = m33;
-  m[2][3] = m34;
-  m[3][0] = m41;
-  m[3][1] = m42;
-  m[3][2] = m43;
-  m[3][3] = m44;
+  at(0, 0) = m11;
+  at(0, 1) = m12;
+  at(0, 2) = m13;
+  at(0, 3) = m14;
+  at(1, 0) = m21;
+  at(1, 1) = m22;
+  at(1, 2) = m23;
+  at(1, 3) = m24;
+  at(2, 0) = m31;
+  at(2, 1) = m32;
+  at(2, 2) = m33;
+  at(2, 3) = m34;
+  at(3, 0) = m41;
+  at(3, 1) = m42;
+  at(3, 2) = m43;
+  at(3, 3) = m44;
 }
 
 template <typename coord>
 template <typename othercoord>
 Matrix4<coord>::Matrix4(const Matrix4<othercoord> &other) {
-  m[0][0] = static_cast<coord>(other.m[0][0]);
-  m[0][1] = static_cast<coord>(other.m[0][1]);
-  m[0][2] = static_cast<coord>(other.m[0][2]);
-  m[0][3] = static_cast<coord>(other.m[0][3]);
-  m[1][0] = static_cast<coord>(other.m[1][0]);
-  m[1][1] = static_cast<coord>(other.m[1][1]);
-  m[1][2] = static_cast<coord>(other.m[1][2]);
-  m[1][3] = static_cast<coord>(other.m[1][3]);
-  m[2][0] = static_cast<coord>(other.m[2][0]);
-  m[2][1] = static_cast<coord>(other.m[2][1]);
-  m[2][2] = static_cast<coord>(other.m[2][2]);
-  m[2][3] = static_cast<coord>(other.m[2][3]);
-  m[3][0] = static_cast<coord>(other.m[3][0]);
-  m[3][1] = static_cast<coord>(other.m[3][1]);
-  m[3][2] = static_cast<coord>(other.m[3][2]);
-  m[3][3] = static_cast<coord>(other.m[3][3]);
+  at(0, 0) = static_cast<coord>(other(0, 0));
+  at(0, 1) = static_cast<coord>(other(0, 1));
+  at(0, 2) = static_cast<coord>(other(0, 2));
+  at(0, 3) = static_cast<coord>(other(0, 3));
+  at(1, 0) = static_cast<coord>(other(1, 0));
+  at(1, 1) = static_cast<coord>(other(1, 1));
+  at(1, 2) = static_cast<coord>(other(1, 2));
+  at(1, 3) = static_cast<coord>(other(1, 3));
+  at(2, 0) = static_cast<coord>(other(2, 0));
+  at(2, 1) = static_cast<coord>(other(2, 1));
+  at(2, 2) = static_cast<coord>(other(2, 2));
+  at(2, 3) = static_cast<coord>(other(2, 3));
+  at(3, 0) = static_cast<coord>(other(3, 0));
+  at(3, 1) = static_cast<coord>(other(3, 1));
+  at(3, 2) = static_cast<coord>(other(3, 2));
+  at(3, 3) = static_cast<coord>(other(3, 3));
 }
 
 template <typename coord>
@@ -889,31 +899,32 @@ auto Matrix4<coord>::makePerspective(coord fovy, coord aspect, coord near, coord
 
 template <typename coord>
 auto Matrix4<coord>::transpose() const -> Matrix4<coord> {
-  return Matrix4<coord>{m[0][0], m[1][0], m[2][0], m[3][0], m[0][1], m[1][1], m[2][1], m[3][1],
-                        m[0][2], m[1][2], m[2][2], m[3][2], m[0][3], m[1][3], m[2][3], m[3][3]};
+  return Matrix4<coord>{at(0, 0), at(1, 0), at(2, 0), at(3, 0), at(0, 1), at(1, 1), at(2, 1), at(3, 1),
+                        at(0, 2), at(1, 2), at(2, 2), at(3, 2), at(0, 3), at(1, 3), at(2, 3), at(3, 3)};
 }
 
 template <typename coord>
 auto Matrix4<coord>::isHomogenous() const -> bool {
-  return m[3][0] == 0 && m[3][1] == 0 && m[3][2] == 0 && m[3][3] == 1;
+  return at(3, 0) == 0 && at(3, 1) == 0 && at(3, 2) == 0 && at(3, 3) == 1;
 }
 
 template <typename coord>
 auto Matrix4<coord>::multiplyVector(const Vector3<coord> &s) const -> Vector3<coord> {
-  return Vector3<coord>(m[0][0] * s.x + m[0][1] * s.y + m[0][2] * s.z, m[1][0] * s.x + m[1][1] * s.y + m[1][2] * s.z,
-                        m[2][0] * s.x + m[2][1] * s.y + m[2][2] * s.z);
+  return Vector3<coord>(at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * s.z,
+                        at(1, 0) * s.x + at(1, 1) * s.y + at(1, 2) * s.z,
+                        at(2, 0) * s.x + at(2, 1) * s.y + at(2, 2) * s.z);
 }
 
 template <typename coord>
 auto Matrix4<coord>::multiplyPoint(const Vector3<coord> &s) const -> Vector3<coord> {
   // TODO(ib) - ???
-  // coord w = m[3][0] * s.x + m[3][1] * s.y + m[3][2] * s.z + m[3][3] *
+  // coord w = at(3, 0) * s.x + at(3, 1) * s.y + at(3, 2) * s.z + at(3, 3) *
   // static_cast<coord>(1); if (abs (w - 1.0) > FLT_EPSILON) throw
   // std::runtime_error ("error");
 
-  return Vector3<coord>(m[0][0] * s.x + m[0][1] * s.y + m[0][2] * s.z + m[0][3] * static_cast<coord>(1),
-                        m[1][0] * s.x + m[1][1] * s.y + m[1][2] * s.z + m[1][3] * static_cast<coord>(1),
-                        m[2][0] * s.x + m[2][1] * s.y + m[2][2] * s.z + m[2][3] * static_cast<coord>(1));
+  return Vector3<coord>(at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * s.z + at(0, 3) * static_cast<coord>(1),
+                        at(1, 0) * s.x + at(1, 1) * s.y + at(1, 2) * s.z + at(1, 3) * static_cast<coord>(1),
+                        at(2, 0) * s.x + at(2, 1) * s.y + at(2, 2) * s.z + at(2, 3) * static_cast<coord>(1));
 }
 
 template <typename coord>
@@ -1007,18 +1018,18 @@ auto Matrix4<coord>::rotateZ(const coord rad) -> Matrix4<coord> {
 
 template <typename coord>
 auto Matrix4<coord>::determinant() const -> coord {
-  return m[0][0] * m[1][1] * m[2][2] * m[3][3] - m[0][0] * m[1][1] * m[3][2] * m[2][3] -
-         m[0][0] * m[2][1] * m[1][2] * m[3][3] + m[0][0] * m[2][1] * m[3][2] * m[1][3] +
-         m[0][0] * m[3][1] * m[1][2] * m[2][3] - m[0][0] * m[3][1] * m[2][2] * m[1][3] -
-         m[1][0] * m[0][1] * m[2][2] * m[3][3] + m[1][0] * m[0][1] * m[3][2] * m[2][3] +
-         m[1][0] * m[2][1] * m[0][2] * m[3][3] - m[1][0] * m[2][1] * m[3][2] * m[0][3] -
-         m[1][0] * m[3][1] * m[0][2] * m[2][3] + m[1][0] * m[3][1] * m[2][2] * m[0][3] +
-         m[2][0] * m[0][1] * m[1][2] * m[3][3] - m[2][0] * m[0][1] * m[3][2] * m[1][3] -
-         m[2][0] * m[1][1] * m[0][2] * m[3][3] + m[2][0] * m[1][1] * m[3][2] * m[0][3] +
-         m[2][0] * m[3][1] * m[0][2] * m[1][3] - m[2][0] * m[3][1] * m[1][2] * m[0][3] -
-         m[3][0] * m[0][1] * m[1][2] * m[2][3] + m[3][0] * m[0][1] * m[2][2] * m[1][3] +
-         m[3][0] * m[1][1] * m[0][2] * m[2][3] - m[3][0] * m[1][1] * m[2][2] * m[0][3] -
-         m[3][0] * m[2][1] * m[0][2] * m[1][3] + m[3][0] * m[2][1] * m[1][2] * m[0][3];
+  return at(0, 0) * at(1, 1) * at(2, 2) * at(3, 3) - at(0, 0) * at(1, 1) * at(3, 2) * at(2, 3) -
+         at(0, 0) * at(2, 1) * at(1, 2) * at(3, 3) + at(0, 0) * at(2, 1) * at(3, 2) * at(1, 3) +
+         at(0, 0) * at(3, 1) * at(1, 2) * at(2, 3) - at(0, 0) * at(3, 1) * at(2, 2) * at(1, 3) -
+         at(1, 0) * at(0, 1) * at(2, 2) * at(3, 3) + at(1, 0) * at(0, 1) * at(3, 2) * at(2, 3) +
+         at(1, 0) * at(2, 1) * at(0, 2) * at(3, 3) - at(1, 0) * at(2, 1) * at(3, 2) * at(0, 3) -
+         at(1, 0) * at(3, 1) * at(0, 2) * at(2, 3) + at(1, 0) * at(3, 1) * at(2, 2) * at(0, 3) +
+         at(2, 0) * at(0, 1) * at(1, 2) * at(3, 3) - at(2, 0) * at(0, 1) * at(3, 2) * at(1, 3) -
+         at(2, 0) * at(1, 1) * at(0, 2) * at(3, 3) + at(2, 0) * at(1, 1) * at(3, 2) * at(0, 3) +
+         at(2, 0) * at(3, 1) * at(0, 2) * at(1, 3) - at(2, 0) * at(3, 1) * at(1, 2) * at(0, 3) -
+         at(3, 0) * at(0, 1) * at(1, 2) * at(2, 3) + at(3, 0) * at(0, 1) * at(2, 2) * at(1, 3) +
+         at(3, 0) * at(1, 1) * at(0, 2) * at(2, 3) - at(3, 0) * at(1, 1) * at(2, 2) * at(0, 3) -
+         at(3, 0) * at(2, 1) * at(0, 2) * at(1, 3) + at(3, 0) * at(2, 1) * at(1, 2) * at(0, 3);
 }
 
 #ifdef DONT
@@ -1035,9 +1046,9 @@ auto Matrix4<coord>::RotationMatrix(coord a_x, coord a_y, coord a_z) -> Matrix4<
 #ifdef DONT
 template <typename coord>
 auto Matrix4<coord>::multiplyPoint(const Vector3<coord> s) const -> Vector3<coord> {
-  return Vector3<coord>(v.x = m[0][0] * s.x + m[1][0] * s.y + m[2][0] * s.z + m[3][0] * static_cast<coord>(1);
-                        v.y = m[0][1] * s.x + m[1][1] * s.y + m[2][1] * s.z + m[3][1] * static_cast<coord>(1);
-                        v.z = m[0][2] * s.x + m[1][2] * s.y + m[2][2] * s.z + m[3][2] * static_cast<coord>(1))
+  return Vector3<coord>(v.x = at(0, 0) * s.x + at(1, 0) * s.y + at(2, 0) * s.z + at(3, 0) * static_cast<coord>(1);
+                        v.y = at(0, 1) * s.x + at(1, 1) * s.y + at(2, 1) * s.z + at(3, 1) * static_cast<coord>(1);
+                        v.z = at(0, 2) * s.x + at(1, 2) * s.y + at(2, 2) * s.z + at(3, 2) * static_cast<coord>(1))
 }
 #endif
 
@@ -1062,7 +1073,7 @@ auto operator*(const Matrix4<coord> &m1, const Matrix4<coord> &m2) -> Matrix4<co
   for (int row = 0; row < 4; ++row)
     for (int col = 0; col < 4; ++col) {
       coord sum = static_cast<coord>(0);
-      for (int k = 0; k < 4; ++k) sum += m1.m[row][k] * m2.m[k][col];
+      for (int k = 0; k < 4; ++k) sum += m1(row, k) * m2(k, col);
       result(row, col) = sum;
     }
 

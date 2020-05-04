@@ -148,7 +148,7 @@ int main(int argc, const char* argv[]) {
     static int f = 0;
     f++;
 
-    for (auto i = 0; i < uniforms.size(); ++i) {
+    for (size_t i = 0; i < uniforms.size(); ++i) {
       // Update buffer
       shaderData[i].time = f / 60.0f;
       uniforms[i]->buffer().SetSubData(0, sizeof(ShaderData), &(shaderData[i]));

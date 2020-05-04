@@ -96,6 +96,7 @@ auto arrowTypeFromVertexFormat(wgpu::VertexFormat format) -> std::shared_ptr<arr
     case Format::Int4:
       return arrow::fixed_size_list(arrow::int32(), 4);
   }
+  throw std::logic_error("Invalid vertex format");
 }
 
 auto vertexFormatFromArrowType(const std::shared_ptr<arrow::DataType>& type) -> std::optional<wgpu::VertexFormat> {
