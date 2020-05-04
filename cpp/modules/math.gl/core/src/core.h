@@ -327,7 +327,7 @@ class Matrix3 {
   auto multiply(const Vector3<coord>) const -> Vector3<coord>;
 
   // Homogenous coordinates
-  auto isHomogenous() const -> bool;
+  auto isHomogeneous() const -> bool;
   auto multiplyPoint(const Vector2<coord>) const -> Vector2<coord>;
   auto multiplyVector(const Vector2<coord>) const -> Vector2<coord>;
 
@@ -398,7 +398,7 @@ class Matrix4 {
   auto invert() const -> Matrix4<coord>;
   auto transpose() const -> Matrix4<coord>;
 
-  bool isHomogenous() const;
+  bool isHomogeneous() const;
   auto multiplyVector(const Vector3<coord> &) const -> Vector3<coord>;
   auto multiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
 
@@ -703,7 +703,7 @@ Matrix3<coord>::Matrix3(const Matrix3<coord> &m2) {
 }
 
 template <typename coord>
-bool Matrix3<coord>::isHomogenous() const {
+bool Matrix3<coord>::isHomogeneous() const {
   return at(2, 0) == 0 && at(2, 1) == 0 && at(3, 2) == 1;
 }
 
@@ -904,7 +904,7 @@ auto Matrix4<coord>::transpose() const -> Matrix4<coord> {
 }
 
 template <typename coord>
-auto Matrix4<coord>::isHomogenous() const -> bool {
+auto Matrix4<coord>::isHomogeneous() const -> bool {
   return at(3, 0) == 0 && at(3, 1) == 0 && at(3, 2) == 0 && at(3, 3) == 1;
 }
 
