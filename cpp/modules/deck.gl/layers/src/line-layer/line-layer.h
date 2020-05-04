@@ -29,12 +29,15 @@
 #include <string>
 
 #include "deck.gl/core.h"
+#include "luma.gl/garrow.h"
 #include "luma.gl/webgpu.h"
 
 namespace deckgl {
 
 class LineLayer : public Layer {
  public:
+  using super = Layer;
+
   class Props;
   explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
@@ -54,6 +57,8 @@ class LineLayer : public Layer {
 
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;
+
+  std::shared_ptr<lumagl::garrow::Array> _layerUniforms;
 };
 
 class LineLayer::Props : public Layer::Props {

@@ -43,9 +43,9 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
   auto vertexFormat = vertexFormatOptional.value();
   auto vertexSize = getVertexFormatSize(vertexFormat);
 
-  if (!this->_buffer || data->length() != this->_length) {
-    auto byteLength = vertexSize * data->length();
-    this->_buffer = this->_createBuffer(this->_device, byteLength, usage);
+  auto bufferByteSize = vertexSize * data->length();
+  if (!this->_buffer || bufferByteSize != this->_bufferByteSize) {
+    this->_buffer = this->_createBuffer(this->_device, bufferByteSize, usage);
   }
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
@@ -73,6 +73,7 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
   }
 
   this->_length = data->length();
+  this->_bufferByteSize = bufferByteSize;
 }
 
 auto Array::_createBuffer(wgpu::Device device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {

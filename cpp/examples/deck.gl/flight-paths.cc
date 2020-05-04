@@ -43,33 +43,26 @@ auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
 }
 
 auto createLineLayer(const std::string &dataPath) -> std::shared_ptr<LineLayer::Props> {
-  auto lineLayerProps = std::make_shared<LineLayer::Props>();
-  lineLayerProps->id = "flight-paths";
-  lineLayerProps->opacity = 0.8f;
-  lineLayerProps->getSourcePosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getVector3<float>("start");
-  };
-  lineLayerProps->getTargetPosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getVector3<float>("end");
-  };
-  lineLayerProps->getColor = [](const Row &row) -> mathgl::Vector4<float> {
-    float z = row.getVector3<float>("start").z;
-    float r = z / 10000.0f;
+  auto props = std::make_shared<LineLayer::Props>();
+  props->id = "flight-paths";
+  props->opacity = 0.8f;
+  props->getSourcePosition = [](const Row &row) { return row.getVector3<float>("start"); };
+  props->getTargetPosition = [](const Row &row) { return row.getVector3<float>("end"); };
+  props->getColor = [](const Row &row) -> mathgl::Vector4<float> {
+    float r = row.getVector3<float>("start").z / 10000.0f;
     return {255.0f * (1.0f - r * 2.0f), 128.0f * r, 255.0f * r, 255.0f * (1.0f - r)};
   };
-  lineLayerProps->getWidth = [](const Row &row) -> float { return 3.0f; };
-  lineLayerProps->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
+  props->getWidth = [](const Row &row) { return 3.0f; };
+  props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
 
-  return lineLayerProps;
+  return props;
 }
 
 auto createScatterplotLayer(const std::string &dataPath) -> std::shared_ptr<ScatterplotLayer::Props> {
-  auto scatterplotLayerProps = std::make_shared<ScatterplotLayer::Props>();
-  scatterplotLayerProps->id = "airports";
-  scatterplotLayerProps->getPosition = [](const Row &row) -> mathgl::Vector3<float> {
-    return row.getVector3<float>("coordinates");
-  };
-  scatterplotLayerProps->getRadius = [](const Row &row) -> float {
+  auto props = std::make_shared<ScatterplotLayer::Props>();
+  props->id = "airports";
+  props->getPosition = [](const Row &row) { return row.getVector3<float>("coordinates"); };
+  props->getRadius = [](const Row &row) -> float {
     auto type = row.getString("type");
     if (type == "major") {
       return 100.0f;
@@ -79,13 +72,15 @@ auto createScatterplotLayer(const std::string &dataPath) -> std::shared_ptr<Scat
       return 60.0f;
     }
   };
-  scatterplotLayerProps->getFillColor = [](const Row &row) -> mathgl::Vector4<float> {
-    return mathgl::Vector4<float>{255.0f, 144.0f, 0.0f, 255.0f};
-  };
-  scatterplotLayerProps->radiusScale = 20.0f;
-  scatterplotLayerProps->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
+  props->getFillColor = [](const Row &row) { return mathgl::Vector4<float>{255.0f, 144.0f, 0.0f, 255.0f}; };
+  props->radiusScale = 20.0f;
+  props->stroked = true;
+  props->getLineWidth = [](const Row &row) { return 5.0f; };
+  props->getLineColor = [](const Row &row) { return mathgl::Vector4<float>{255.0f, 0.0f, 0.0f, 255.0f}; };
 
-  return scatterplotLayerProps;
+  props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
+
+  return props;
 }
 
 int main(int argc, const char *argv[]) {

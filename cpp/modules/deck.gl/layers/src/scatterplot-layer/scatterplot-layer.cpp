@@ -22,7 +22,6 @@
 
 #include "./scatterplot-layer-fragment.glsl.h"
 #include "./scatterplot-layer-vertex.glsl.h"
-#include "deck.gl/core.h"
 
 using namespace deckgl;
 using namespace lumagl;
@@ -115,11 +114,29 @@ void ScatterplotLayer::initializeState() {
   auto getLineWidth = std::bind(&ScatterplotLayer::getLineWidthData, this, std::placeholders::_1);
   this->attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
 
-  // TODO(ilija@unfolded.ai): Where should we initialize models?
   this->models = {this->_getModel(this->context->device)};
+  this->_layerUniforms = std::make_shared<garrow::Array>(this->context->device);
 }
 
 void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  super::updateState(changeFlags, oldProps);
+
+  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+  float widthMultiplier = props->lineWidthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
+
+  ScatterplotLayerUniforms uniforms;
+  uniforms.opacity = props->opacity;
+  uniforms.radiusScale = props->radiusScale;
+  uniforms.radiusMinPixels = props->radiusMinPixels;
+  uniforms.radiusMaxPixels = props->radiusMaxPixels;
+  uniforms.lineWidthScale = props->lineWidthScale * widthMultiplier;
+  uniforms.lineWidthMinPixels = props->lineWidthMinPixels;
+  uniforms.lineWidthMaxPixels = props->lineWidthMaxPixels;
+  uniforms.stroked = props->stroked ? 1.0f : 0.0f;
+  uniforms.filled = props->filled;
+
+  this->_layerUniforms->setData(&uniforms, 1, wgpu::BufferUsage::Uniform);
+
   /*
   super.updateState({props, oldProps, changeFlags});
   if (changeFlags.extensionsChanged) {
@@ -136,18 +153,12 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
 void ScatterplotLayer::finalizeState() {}
 
 void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {
-  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
-  float widthMultiplier = props->lineWidthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
-  auto lineWidthScale = props->lineWidthScale * widthMultiplier;
+  // TODO(ilija@unfolded.ai): Remove. updateState currently doesn't seem to be called when viewport changes
+  this->updateState(Layer::ChangeFlags{}, nullptr);
 
-  ScatterplotLayerUniforms layerUniforms{
-      props->opacity, props->radiusScale,        props->radiusMinPixels,    props->radiusMaxPixels,
-      lineWidthScale, props->lineWidthMinPixels, props->lineWidthMaxPixels, props->stroked ? 1.0f : 0.0f,
-      props->filled};
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
-    model->setUniforms(
-        std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform), 1);
+    model->setUniforms(this->_layerUniforms, 1);
     model->draw(pass);
   }
 }
@@ -217,6 +228,9 @@ auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl:
   auto modelOptions = Model::Options{
       vs, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::TriangleStrip};
   auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+
+  // a square that minimally cover the unit circle
+  // const positions = [ -1, -1, 0, -1, 1, 0, 1, 1, 0, 1, -1, 0 ];
 
   // A square that minimally covers the unit circle
   //

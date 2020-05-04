@@ -75,34 +75,46 @@ void LineLayer::initializeState() {
   auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
   this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
 
-  // TODO(ilija@unfolded.ai): Where should we initialize models?
   this->models = {this->_getModel(this->context->device)};
+  this->_layerUniforms = std::make_shared<garrow::Array>(this->context->device);
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
-  // super::updateState(props, oldProps, changeFlags);
+  super::updateState(changeFlags, oldProps);
 
-  // if (changeFlags.extensionsChanged) {
-  //   const {gl} = this->context;
-  //   if (this->state->model) {
-  //     this->state->model;
-  //   }
-  //   this->setState({model: this->_getModel(gl)});
-  //   this->getAttributeManager().invalidateAll();
-  // }
+  auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
+  float widthMultiplier = props->widthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
+  LineLayerUniforms layerUniforms;
+  layerUniforms.opacity = props->opacity;
+  layerUniforms.widthScale = props->widthScale * widthMultiplier;
+  layerUniforms.widthMinPixels = props->widthMinPixels;
+  layerUniforms.widthMaxPixels = props->widthMaxPixels;
+
+  this->_layerUniforms->setData(&layerUniforms, 1, wgpu::BufferUsage::Uniform);
+
+  /*
+  super::updateState(props, oldProps, changeFlags);
+
+  if (changeFlags.extensionsChanged) {
+    const {gl} = this->context;
+    if (this->state->model) {
+      this->state->model;
+    }
+    this->setState({model: this->_getModel(gl)});
+    this->getAttributeManager().invalidateAll();
+  }
+  */
 }
 
 void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {
-  auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
-  float widthMultiplier = props->widthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
-  auto widthScale = props->widthScale * widthMultiplier;
-  LineLayerUniforms layerUniforms{props->opacity, widthScale, props->widthMinPixels, props->widthMaxPixels};
+  // TODO(ilija@unfolded.ai): Remove. updateState currently doesn't seem to be called when viewport changes
+  this->updateState(Layer::ChangeFlags{}, nullptr);
+
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
-    model->setUniforms(
-        std::make_shared<garrow::Array>(this->context->device, &layerUniforms, 1, wgpu::BufferUsage::Uniform), 1);
+    model->setUniforms(this->_layerUniforms, 1);
     model->draw(pass);
   }
 }

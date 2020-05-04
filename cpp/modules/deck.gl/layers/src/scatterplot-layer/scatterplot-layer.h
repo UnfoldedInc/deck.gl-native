@@ -26,11 +26,15 @@
 #include <string>
 
 #include "deck.gl/core.h"
+#include "luma.gl/garrow.h"
+#include "luma.gl/webgpu.h"
 
 namespace deckgl {
 
 class ScatterplotLayer : public Layer {
  public:
+  using super = Layer;
+
   class Props;
   explicit ScatterplotLayer(std::shared_ptr<ScatterplotLayer::Props> props)
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
@@ -52,6 +56,8 @@ class ScatterplotLayer : public Layer {
 
  private:
   auto _getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>;
+
+  std::shared_ptr<lumagl::garrow::Array> _layerUniforms;
 };
 
 class ScatterplotLayer::Props : public Layer::Props {

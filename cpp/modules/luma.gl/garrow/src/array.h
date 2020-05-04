@@ -41,12 +41,10 @@ class Array {
   template <typename T>
   Array(wgpu::Device device, const std::vector<T>& data, wgpu::BufferUsage usage) : Array{device} {
     this->setData(data.data(), data.size(), usage);
-    this->_length = data.size();
   }
   template <typename T>
   Array(wgpu::Device device, const T* data, size_t length, wgpu::BufferUsage usage) : Array{device} {
     this->setData(data, length, usage);
-    this->_length = length;
   }
   ~Array();
 
@@ -55,16 +53,18 @@ class Array {
 
   /* Arrow non-compliant API */
 
-  // TODO(ilija@unfolded.ai): Is array/buffer mutability something we'll be making use of?
+  // TODO(ilija@unfolded.ai): Arrays are not mutable in Arrow. Revisit once ArrayData is in place
   void setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage);
   template <typename T>
   void setData(const T* data, size_t length, wgpu::BufferUsage usage) {
-    auto bufferSize = sizeof(T) * length;
-    if (!this->_buffer || length != this->_length) {
-      this->_buffer = this->_createBuffer(this->_device, bufferSize, usage);
+    auto bufferByteSize = sizeof(T) * length;
+    if (!this->_buffer || bufferByteSize != this->_bufferByteSize) {
+      this->_buffer = this->_createBuffer(this->_device, bufferByteSize, usage);
     }
 
-    this->_buffer.SetSubData(0, bufferSize, data);
+    this->_buffer.SetSubData(0, bufferByteSize, data);
+    this->_length = length;
+    this->_bufferByteSize = bufferByteSize;
   }
 
   /// \brief Returns the backing buffer that this array manages.
@@ -76,6 +76,7 @@ class Array {
   wgpu::Device _device;
   wgpu::Buffer _buffer{nullptr};
   int64_t _length{0};
+  uint64_t _bufferByteSize{0};
 };
 
 }  // namespace garrow
