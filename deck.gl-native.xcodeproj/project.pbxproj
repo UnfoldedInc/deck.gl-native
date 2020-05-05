@@ -30,8 +30,6 @@
 		CD5856C82461326C0076227F /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD5856C92461326C0076227F /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
 		CD5856CA2461326C0076227F /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CD5856CB2461326C0076227F /* libdawn_wire.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; };
-		CD5856CC2461326C0076227F /* libdawn_wire.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD5856D1246133D40076227F /* libdeck.gl-native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD903E9E241A0DB50047F954 /* libdeck.gl-native.a */; };
 		CD5856D42461351D0076227F /* animometer.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE53ED8243C69FC000D8EC6 /* animometer.cc */; };
 		CD5856E0246135640076227F /* libdeck.gl-native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD903E9E241A0DB50047F954 /* libdeck.gl-native.a */; };
@@ -40,12 +38,6 @@
 		CD5856E5246135BC0076227F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
 		CD5856E6246135BF0076227F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
 		CD5856E7246135C20076227F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2F242E2076003F3B96 /* IOKit.framework */; };
-		CD5856E8246135D70076227F /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
-		CD5856E9246135D70076227F /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CD5856EA246135D70076227F /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
-		CD5856EB246135D70076227F /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CD5856EC246135D70076227F /* libdawn_wire.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; };
-		CD5856ED246135D70076227F /* libdawn_wire.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD5856EF2461361E0076227F /* heathrow-flights.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD0F092B245BE3060029A096 /* heathrow-flights.ndjson */; };
 		CD5856F02461361E0076227F /* airports.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD0F092C245BE3060029A096 /* airports.ndjson */; };
 		CD5856FC246136540076227F /* manhattan.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD58569D24612E200076227F /* manhattan.ndjson */; };
@@ -58,41 +50,30 @@
 		CD5857052461367E0076227F /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD5857062461367E0076227F /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
 		CD5857072461367E0076227F /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CD5857082461367E0076227F /* libdawn_wire.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; };
-		CD5857092461367E0076227F /* libdawn_wire.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD58570C246136B60076227F /* manhattan-population.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD9BE17E246061F00019835B /* manhattan-population.cc */; };
 		CD98D2BF2449AB5D00E42B4F /* arrow-utils-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD98D2BE2449AB5D00E42B4F /* arrow-utils-test.cc */; };
 		CD98D2C52449AEAB00E42B4F /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
 		CD98D2C62449AEAB00E42B4F /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD98D2C72449AEAB00E42B4F /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
 		CD98D2C82449AEAB00E42B4F /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CD98D2C92449AEAB00E42B4F /* libdawn_wire.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; };
-		CD98D2CA2449AEAB00E42B4F /* libdawn_wire.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57862243C70F5000D8EC6 /* libdawn_wire.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD9DAD14243F09ED00F69BFC /* libarrow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57861243C70F5000D8EC6 /* libarrow.a */; };
-		CD9DAD16243F09ED00F69BFC /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
-		CD9DAD17243F09ED00F69BFC /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
 		CD9DAD19243F09ED00F69BFC /* libfmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786C243C70F6000D8EC6 /* libfmt.a */; };
-		CD9DAD1A243F09ED00F69BFC /* libglfw.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57866243C70F5000D8EC6 /* libglfw.a */; };
-		CD9DAD1B243F09ED00F69BFC /* libglslang.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8896243CD18B0059C3CF /* libglslang.a */; };
-		CD9DAD1C243F09ED00F69BFC /* libgmock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57869243C70F5000D8EC6 /* libgmock.a */; };
-		CD9DAD1D243F09ED00F69BFC /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57865243C70F5000D8EC6 /* libgtest.a */; };
-		CD9DAD1E243F09ED00F69BFC /* libHLSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8898243CD18B0059C3CF /* libHLSL.a */; };
 		CD9DAD1F243F09ED00F69BFC /* libjsoncpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786D243C70F6000D8EC6 /* libjsoncpp.a */; };
-		CD9DAD20243F09ED00F69BFC /* libOGLCompiler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A888F243CD18A0059C3CF /* libOGLCompiler.a */; };
-		CD9DAD21243F09ED00F69BFC /* libOSDependent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8894243CD18B0059C3CF /* libOSDependent.a */; };
 		CD9DAD22243F09ED00F69BFC /* libshaderc_combined.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8893243CD18A0059C3CF /* libshaderc_combined.a */; };
-		CD9DAD24243F09ED00F69BFC /* libshaderc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57863243C70F5000D8EC6 /* libshaderc.a */; };
-		CD9DAD25243F09ED00F69BFC /* libSPIRV-Tools-link.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8897243CD18B0059C3CF /* libSPIRV-Tools-link.a */; };
-		CD9DAD26243F09ED00F69BFC /* libSPIRV-Tools-opt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8891243CD18A0059C3CF /* libSPIRV-Tools-opt.a */; };
-		CD9DAD27243F09ED00F69BFC /* libSPIRV-Tools-reduce.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8892243CD18A0059C3CF /* libSPIRV-Tools-reduce.a */; };
-		CD9DAD28243F09ED00F69BFC /* libSPIRV-Tools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8895243CD18B0059C3CF /* libSPIRV-Tools.a */; };
-		CD9DAD29243F09ED00F69BFC /* libSPIRV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A888E243CD18A0059C3CF /* libSPIRV.a */; };
-		CD9DAD2A243F09ED00F69BFC /* libSPVRemapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8890243CD18A0059C3CF /* libSPVRemapper.a */; };
 		CD9DAD2B243F09ED00F69BFC /* webgpu_cpp.o in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786B243C70F6000D8EC6 /* webgpu_cpp.o */; };
 		CDC8E16E244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16F244D5B5B002A7E60 /* webgpu-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */; };
 		CDC8E173244D6420002A7E60 /* key-value-metadata.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E170244D6420002A7E60 /* key-value-metadata.cc */; };
 		CDC8E174244D6420002A7E60 /* key-value-metadata.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC8E171244D6420002A7E60 /* key-value-metadata.h */; };
+		CDCD8F2324614CA7009604C5 /* libglfw.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57866243C70F5000D8EC6 /* libglfw.a */; };
+		CDCD8F2424614CFB009604C5 /* libgmock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57869243C70F5000D8EC6 /* libgmock.a */; };
+		CDCD8F2524614CFC009604C5 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57865243C70F5000D8EC6 /* libgtest.a */; };
+		CDCD8F2824614F27009604C5 /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
+		CDCD8F2924614F27009604C5 /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
+		CDCD8F2A24614F5F009604C5 /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
+		CDCD8F2B24614F60009604C5 /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
+		CDCD8F2C24614F73009604C5 /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CDCD8F2E24614F74009604C5 /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CDE55C6A243C6A11000D8EC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE53EA4243C69FB000D8EC6 /* main.cpp */; };
 		CDE57747243C6A1E000D8EC6 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE55B2B243C6A10000D8EC6 /* core.h */; };
 		CDE57748243C6A1E000D8EC6 /* timer-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55B2F243C6A10000D8EC6 /* timer-test.cpp */; };
@@ -243,14 +224,14 @@
 			remoteGlobalIDString = CD903E9D241A0DB50047F954;
 			remoteInfo = "deck.gl-native";
 		};
-		CD5856E1246135640076227F /* PBXContainerItemProxy */ = {
+		CD5856FE2461365F0076227F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD759CDF2417625E0001C15C /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = CD903E9D241A0DB50047F954;
 			remoteInfo = "deck.gl-native";
 		};
-		CD5856FE2461365F0076227F /* PBXContainerItemProxy */ = {
+		CDCD8F2624614D84009604C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD759CDF2417625E0001C15C /* Project object */;
 			proxyType = 1;
@@ -275,7 +256,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CD5856CC2461326C0076227F /* libdawn_wire.dylib in Embed Libraries */,
 				CD5856CA2461326C0076227F /* libdawn_proc.dylib in Embed Libraries */,
 				CD5856C82461326C0076227F /* libdawn_native.dylib in Embed Libraries */,
 			);
@@ -291,19 +271,6 @@
 				CD5856EF2461361E0076227F /* heathrow-flights.ndjson in CopyFiles */,
 				CD5856F02461361E0076227F /* airports.ndjson in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CD5856EE246135D70076227F /* Embed Libraries */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				CD5856ED246135D70076227F /* libdawn_wire.dylib in Embed Libraries */,
-				CD5856EB246135D70076227F /* libdawn_proc.dylib in Embed Libraries */,
-				CD5856E9246135D70076227F /* libdawn_native.dylib in Embed Libraries */,
-			);
-			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CD5856F32461364B0076227F /* CopyFiles */ = {
@@ -322,7 +289,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CD5857092461367E0076227F /* libdawn_wire.dylib in Embed Libraries */,
 				CD5857072461367E0076227F /* libdawn_proc.dylib in Embed Libraries */,
 				CD5857052461367E0076227F /* libdawn_native.dylib in Embed Libraries */,
 			);
@@ -335,9 +301,20 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CD98D2CA2449AEAB00E42B4F /* libdawn_wire.dylib in Embed Libraries */,
 				CD98D2C82449AEAB00E42B4F /* libdawn_proc.dylib in Embed Libraries */,
 				CD98D2C62449AEAB00E42B4F /* libdawn_native.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CDCD8F2D24614F73009604C5 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CDCD8F2E24614F74009604C5 /* libdawn_proc.dylib in Embed Libraries */,
+				CDCD8F2C24614F73009604C5 /* libdawn_native.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -687,10 +664,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD33DF3D242E2207003F3B96 /* QuartzCore.framework in Frameworks */,
-				CD98D2C92449AEAB00E42B4F /* libdawn_wire.dylib in Frameworks */,
+				CDCD8F2424614CFB009604C5 /* libgmock.a in Frameworks */,
 				CD5856D1246133D40076227F /* libdeck.gl-native.a in Frameworks */,
 				CD33DF34242E2089003F3B96 /* Cocoa.framework in Frameworks */,
 				CD33DF33242E2084003F3B96 /* IOKit.framework in Frameworks */,
+				CDCD8F2524614CFC009604C5 /* libgtest.a in Frameworks */,
 				CD98D2C52449AEAB00E42B4F /* libdawn_native.dylib in Frameworks */,
 				CD98D2C72449AEAB00E42B4F /* libdawn_proc.dylib in Frameworks */,
 				CD33DF20242E1EBC003F3B96 /* Metal.framework in Frameworks */,
@@ -704,11 +682,10 @@
 				CD5856E6246135BF0076227F /* QuartzCore.framework in Frameworks */,
 				CD5856E4246135B80076227F /* Cocoa.framework in Frameworks */,
 				CD5856E5246135BC0076227F /* Metal.framework in Frameworks */,
-				CD5856EC246135D70076227F /* libdawn_wire.dylib in Frameworks */,
-				CD5856E8246135D70076227F /* libdawn_native.dylib in Frameworks */,
 				CD5856E7246135C20076227F /* IOKit.framework in Frameworks */,
 				CD5856E0246135640076227F /* libdeck.gl-native.a in Frameworks */,
-				CD5856EA246135D70076227F /* libdawn_proc.dylib in Frameworks */,
+				CDCD8F2A24614F5F009604C5 /* libdawn_native.dylib in Frameworks */,
+				CDCD8F2B24614F60009604C5 /* libdawn_proc.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -719,7 +696,6 @@
 				CD5857022461366F0076227F /* QuartzCore.framework in Frameworks */,
 				CD585703246136780076227F /* Cocoa.framework in Frameworks */,
 				CD585700246136660076227F /* Metal.framework in Frameworks */,
-				CD5857082461367E0076227F /* libdawn_wire.dylib in Frameworks */,
 				CD5857042461367E0076227F /* libdawn_native.dylib in Frameworks */,
 				CD5856FD2461365F0076227F /* libdeck.gl-native.a in Frameworks */,
 				CD5857012461366A0076227F /* IOKit.framework in Frameworks */,
@@ -736,26 +712,13 @@
 				CD33DF2E242E2073003F3B96 /* Cocoa.framework in Frameworks */,
 				CD33DF1F242E1EB4003F3B96 /* Metal.framework in Frameworks */,
 				CD9DAD14243F09ED00F69BFC /* libarrow.a in Frameworks */,
-				CD9DAD16243F09ED00F69BFC /* libdawn_native.dylib in Frameworks */,
-				CD9DAD17243F09ED00F69BFC /* libdawn_proc.dylib in Frameworks */,
 				CD9DAD19243F09ED00F69BFC /* libfmt.a in Frameworks */,
-				CD9DAD1A243F09ED00F69BFC /* libglfw.a in Frameworks */,
-				CD9DAD1B243F09ED00F69BFC /* libglslang.a in Frameworks */,
-				CD9DAD1C243F09ED00F69BFC /* libgmock.a in Frameworks */,
-				CD9DAD1D243F09ED00F69BFC /* libgtest.a in Frameworks */,
-				CD9DAD1E243F09ED00F69BFC /* libHLSL.a in Frameworks */,
 				CD9DAD1F243F09ED00F69BFC /* libjsoncpp.a in Frameworks */,
-				CD9DAD20243F09ED00F69BFC /* libOGLCompiler.a in Frameworks */,
-				CD9DAD21243F09ED00F69BFC /* libOSDependent.a in Frameworks */,
+				CDCD8F2324614CA7009604C5 /* libglfw.a in Frameworks */,
 				CD9DAD22243F09ED00F69BFC /* libshaderc_combined.a in Frameworks */,
-				CD9DAD24243F09ED00F69BFC /* libshaderc.a in Frameworks */,
-				CD9DAD25243F09ED00F69BFC /* libSPIRV-Tools-link.a in Frameworks */,
-				CD9DAD26243F09ED00F69BFC /* libSPIRV-Tools-opt.a in Frameworks */,
-				CD9DAD27243F09ED00F69BFC /* libSPIRV-Tools-reduce.a in Frameworks */,
-				CD9DAD28243F09ED00F69BFC /* libSPIRV-Tools.a in Frameworks */,
-				CD9DAD29243F09ED00F69BFC /* libSPIRV.a in Frameworks */,
-				CD9DAD2A243F09ED00F69BFC /* libSPVRemapper.a in Frameworks */,
 				CD9DAD2B243F09ED00F69BFC /* webgpu_cpp.o in Frameworks */,
+				CDCD8F2824614F27009604C5 /* libdawn_native.dylib in Frameworks */,
+				CDCD8F2924614F27009604C5 /* libdawn_proc.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -766,7 +729,6 @@
 				CD5856C62461323E0076227F /* Cocoa.framework in Frameworks */,
 				CD5856C5246132350076227F /* QuartzCore.framework in Frameworks */,
 				CD5856C4246132280076227F /* IOKit.framework in Frameworks */,
-				CD5856CB2461326C0076227F /* libdawn_wire.dylib in Frameworks */,
 				CD5856C72461326C0076227F /* libdawn_native.dylib in Frameworks */,
 				CD5856C3246132240076227F /* Metal.framework in Frameworks */,
 				CD5856C0246131740076227F /* libdeck.gl-native.a in Frameworks */,
@@ -2021,12 +1983,12 @@
 				CD5856D7246135540076227F /* CopyFiles */,
 				CD5856D5246135540076227F /* Sources */,
 				CD5856D6246135540076227F /* Frameworks */,
-				CD5856EE246135D70076227F /* Embed Libraries */,
+				CDCD8F2D24614F73009604C5 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				CD5856E2246135640076227F /* PBXTargetDependency */,
+				CDCD8F2724614D84009604C5 /* PBXTargetDependency */,
 			);
 			name = "flight-paths";
 			productName = "flight-paths";
@@ -2285,15 +2247,15 @@
 			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
 			targetProxy = CD5856D2246133D40076227F /* PBXContainerItemProxy */;
 		};
-		CD5856E2246135640076227F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
-			targetProxy = CD5856E1246135640076227F /* PBXContainerItemProxy */;
-		};
 		CD5856FF2461365F0076227F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
 			targetProxy = CD5856FE2461365F0076227F /* PBXContainerItemProxy */;
+		};
+		CDCD8F2724614D84009604C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
+			targetProxy = CDCD8F2624614D84009604C5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2347,6 +2309,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2397,6 +2363,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2427,6 +2397,10 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2453,6 +2427,10 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2520,7 +2498,6 @@
 		CD759CE32417625E0001C15C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CC = gcc;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2539,7 +2516,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CXX = "g++";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2566,7 +2542,6 @@
 		CD759CE42417625E0001C15C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CC = gcc;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2585,7 +2560,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CXX = "g++";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2658,9 +2632,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/examples/luma.gl/build",
 					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-					"$(PROJECT_DIR)/cpp/deps/x64-linux/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -2717,9 +2689,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/examples/luma.gl/build",
 					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-					"$(PROJECT_DIR)/cpp/deps/x64-linux/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;

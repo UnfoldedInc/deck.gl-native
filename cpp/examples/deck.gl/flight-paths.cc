@@ -62,6 +62,7 @@ auto createScatterplotLayer(const std::string &dataPath) -> std::shared_ptr<Scat
   auto props = std::make_shared<ScatterplotLayer::Props>();
   props->id = "airports";
   props->getPosition = [](const Row &row) { return row.getVector3<float>("coordinates"); };
+  props->radiusScale = 40.0f;
   props->getRadius = [](const Row &row) -> float {
     auto type = row.getString("type");
     if (type == "major") {
@@ -73,7 +74,6 @@ auto createScatterplotLayer(const std::string &dataPath) -> std::shared_ptr<Scat
     }
   };
   props->getFillColor = [](const Row &row) { return mathgl::Vector4<float>{255.0f, 144.0f, 0.0f, 255.0f}; };
-  props->radiusScale = 20.0f;
   props->stroked = true;
   props->getLineWidth = [](const Row &row) { return 5.0f; };
   props->getLineColor = [](const Row &row) { return mathgl::Vector4<float>{255.0f, 0.0f, 0.0f, 255.0f}; };
