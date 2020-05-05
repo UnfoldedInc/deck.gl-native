@@ -53,7 +53,7 @@ TEST_F(ViewportUniformsTest, WebMercator) {
   opts.bearing = 0.0;
 
   auto viewport = std::make_shared<WebMercatorViewport>(opts);
-  auto uniforms = getUniformsFromViewport(viewport, 1, Matrix4<double>::MakeUnit(), COORDINATE_SYSTEM::DEFAULT,
+  auto uniforms = getUniformsFromViewport(viewport, 1, Matrix4<double>::makeUnit(), COORDINATE_SYSTEM::DEFAULT,
                                           Vector3<double>{}, false);
 
   // clang-format off
@@ -71,7 +71,7 @@ TEST_F(ViewportUniformsTest, WebMercator) {
   //  EXPECT_EQ(uniforms.wrapLongitude, false);
   EXPECT_FLOAT_EQ(uniforms.antimeridian, -173.0f);
   EXPECT_EQ(uniforms.center, Vector4<float>{});
-  EXPECT_EQ(uniforms.modelMatrix, Matrix4<float>::MakeUnit());
+  EXPECT_EQ(uniforms.modelMatrix, Matrix4<float>::makeUnit());
   EXPECT_EQ(uniforms.viewProjectionMatrix, Matrix4<float>{viewProjectionMatrix});
   EXPECT_EQ(uniforms.viewportSize, viewportSize);
   EXPECT_FLOAT_EQ(uniforms.devicePixelRatio, 1.0);

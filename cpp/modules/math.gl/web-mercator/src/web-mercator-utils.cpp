@@ -150,7 +150,7 @@ auto getViewMatrix(double height, double pitch, double bearing, double altitude,
   //
   // Note: As usual, matrix operation orders should be read in reverse
   // since vectors will be multiplied from the right during transformation
-  auto vm = Matrix4<double>::MakeUnit();
+  auto vm = Matrix4<double>::makeUnit();
 
   // Move camera to altitude (along the pitch & bearing direction)
   auto translation = Vector3<double>(0.0, 0.0, -altitude);
