@@ -41,7 +41,12 @@ Model::Model(wgpu::Device device, const Model::Options& options) {
   descriptor.vertexStage.module = this->vsModule;
   descriptor.cFragmentStage.module = this->fsModule;
   descriptor.primitiveTopology = options.primitiveTopology;
+
   descriptor.cColorStates[0].format = options.textureFormat;
+  descriptor.cColorStates[0].colorBlend.srcFactor = wgpu::BlendFactor::SrcAlpha;
+  descriptor.cColorStates[0].colorBlend.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
+  descriptor.cColorStates[0].alphaBlend.srcFactor = wgpu::BlendFactor::SrcAlpha;
+  descriptor.cColorStates[0].alphaBlend.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
 
   this->_initializeVertexState(&descriptor.cVertexState, options.attributeSchema, options.instancedAttributeSchema);
 
