@@ -65,7 +65,9 @@ auto SolidPolygonLayer::Props::getProperties() const -> const Properties* {
 
 void SolidPolygonLayer::initializeState() {
   auto polygon = std::make_shared<arrow::Field>("instancePolygons", arrow::fixed_size_list(arrow::float32(), 4));
-  auto getPolygon = std::bind(&SolidPolygonLayer::getPolygonData, this, std::placeholders::_1);
+  // auto getPolygon = std::bind(&SolidPolygonLayer::getPolygonData, this, std::placeholders::_1);
+  // // TODO(randy@unfolded.ai): ensure correct implementation of lambda vs. std::bind
+  auto getPolygon = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPolygonData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{polygon, getPolygon});
 
   auto elevation = std::make_shared<arrow::Field>("instanceElevations", arrow::float32());
@@ -97,6 +99,12 @@ auto SolidPolygonLayer::getPickingInfo(params) {
 */
 
 void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  super::updateState(changeFlags, oldProps);
+
+  updateGeometry(changeFlags, oldProps);
+
+  auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
+
   /*
     super.updateState(updateParams);
 
@@ -121,8 +129,8 @@ void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const
   */
 }
 
-/*
 void SolidPolygonLayer::updateGeometry(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  /*
     const geometryConfigChanged =
       changeFlags.dataChanged ||
       (changeFlags.updateTriggersChanged &&
@@ -155,7 +163,8 @@ void SolidPolygonLayer::updateGeometry(const Layer::ChangeFlags& changeFlags, co
         this.getAttributeManager().invalidateAll();
       }
     }
-*/
+    */
+}
 
 void SolidPolygonLayer::finalizeState() {}
 

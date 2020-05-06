@@ -30,6 +30,8 @@ namespace deckgl {
 
 class SolidPolygonLayer : public Layer {
  public:
+  using super = Layer;
+
   class Props;
   explicit SolidPolygonLayer(std::shared_ptr<SolidPolygonLayer::Props> props)
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
@@ -44,7 +46,7 @@ class SolidPolygonLayer : public Layer {
   void initializeState() override;
   // auto getPickingInfo() override;
   void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
-  // void updateGeometry(const ChangeFlag &, const Layer::Props* oldProps) override;
+  void updateGeometry(const ChangeFlags&, const Layer::Props* oldProps);
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
 
@@ -74,7 +76,7 @@ class SolidPolygonLayer::Props : public Layer::Props {
   float elevationScale{1.0};
 
   std::function<ArrowMapper::Vector4FloatAccessor> getPolygon{
-      [](const Row& row) { return row.getFloatVector4("polygon"); }};
+      [](const Row& row) { return row.getVector4<float>("polygon"); }};
   std::function<ArrowMapper::FloatAccessor> getElevation{[](const Row& row) { return 1000.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
