@@ -611,12 +611,12 @@ auto operator<<(std::ostream &os, const Vector3<coord> &v) -> std::ostream & {
 ////////////////////////////
 
 template <typename coord>
-auto Vector4<coord>::length() const -> coord{
+auto Vector4<coord>::length() const -> coord {
   return static_cast<coord>(sqrt(x * x + y * y + z * z + w * w));
 }
 
 template <typename coord>
-auto Vector4<coord>::length2() const -> coord{
+auto Vector4<coord>::length2() const -> coord {
   return static_cast<coord>(x * x + y * y + z * z + w * w);
 }
 
@@ -654,10 +654,8 @@ auto vectorProduct(const Vector4<coord> &v1, const Vector4<coord> &v2, const Vec
   coord H = v1.y;
   coord I = v1.z;
   coord J = v1.w;
-  return Vector4<coord>(  H*F  - I*E + J*D,
-                        -(G*F) + I*C - J*B,
-                          G*E  - H*C + J*A,
-                        -(G*D) + H*B - I*A);
+  return Vector4<coord>(H * F - I * E + J * D, -(G * F) + I * C - J * B, G * E - H * C + J * A,
+                        -(G * D) + H * B - I * A);
 }
 
 template <typename coord>
@@ -677,21 +675,21 @@ auto operator*(const Vector4<coord> &v, coord c) -> Vector4<coord> {
 
 template <typename coord>
 auto operator*(coord c, const Vector4<coord> &v) -> Vector4<coord> {
-  return Vector4<coord>(v.x * c, v.y * c, v.z * c, );
+  return Vector4<coord>(v.x * c, v.y * c, v.z * c, v.w * c);
 }
 
 template <typename coord>
 auto operator/(const Vector4<coord> &v, coord c) -> Vector4<coord> {
-  return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w /c);
+  return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w / c);
 }
 
 // TODO(randy@unfolded.ai): explore legality of scalar/vector
 // Current implementation implies dividing a scalar by a vector is a legal operation
 // maybe scalar/vector could be interpreted as: Vector4<coord>(c/v.x, c/v.y, c/v.z, c/v.w) (?)
-template <typename coord>
-auto operator/(coord c, const Vector3<coord> &v) -> Vector3<coord> {
-  return Vector3<coord>(v.x / c, v.y / c, v.z / c);
-}
+// template <typename coord>
+// auto operator/(coord c, const Vector4<coord> &v) -> Vector4<coord> {
+//   return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w / c);
+// }
 
 template <typename coord>
 auto operator<<(std::ostream &os, const Vector4<coord> &v) -> std::ostream & {
