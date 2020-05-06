@@ -251,14 +251,29 @@ Vector4<coord>::Vector4(const Vector4<othercoord> &other)
       w{static_cast<coord>(other.w)} {}
 
 template <typename coord>
-Vector4<coord> vectorProduct(const Vector4<coord> &, const Vector4<coord> &);
+Vector4<coord> vectorProduct(const Vector4<coord> &, const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
 Vector4<coord> elementProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
-auto Vector4<coord>::toVector3() const -> Vector3<coord> {
-  return Vector3<coord>(x, y, z);
+auto operator+(const Vector4<coord> &v1, const Vector4<coord> &v2) -> Vector4<coord> {
+  return Vector4<coord>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w);
+}
+
+template <typename coord>
+auto operator-(const Vector4<coord> &v1, const Vector4<coord> &v2) -> Vector4<coord> {
+  return Vector4<coord>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w);
+}
+
+template <typename coord>
+auto operator==(const Vector4<coord> &v1, const Vector4<coord> &v2) -> bool {
+  return equalsT(v1.x, v2.x) && equalsT(v1.y, v2.y) && equalsT(v1.z, v2.z) && equalsT(v1.w, v2.w);
+}
+
+template <typename coord>
+auto operator!=(const Vector4<coord> &v1, const Vector4<coord> &v2) -> bool {
+  return !(v1 == v2);
 }
 
 ///////////////////////////////////////////////////////////
@@ -596,10 +611,92 @@ auto operator<<(std::ostream &os, const Vector3<coord> &v) -> std::ostream & {
 ////////////////////////////
 
 template <typename coord>
+auto Vector4<coord>::length() const -> coord{
+  return static_cast<coord>(sqrt(x * x + y * y + z * z + w * w));
+}
+
+template <typename coord>
+auto Vector4<coord>::length2() const -> coord{
+  return static_cast<coord>(x * x + y * y + z * z + w * w);
+}
+
+template <typename coord>
+auto Vector4<coord>::toVector3() const -> Vector3<coord> {
+  return Vector3<coord>(this->x, this->y, this->z);
+}
+
+template <typename coord>
 auto Vector4<coord>::transform(const Matrix4<coord> &m) const -> Vector4<coord> {
   return Vector4<coord>{
       m(0, 0) * x + m(0, 1) * y + m(0, 2) * z + m(0, 3) * w, m(1, 0) * x + m(1, 1) * y + m(1, 2) * z + m(1, 3) * w,
       m(2, 0) * x + m(2, 1) * y + m(2, 2) * z + m(2, 3) * w, m(3, 0) * x + m(3, 1) * y + m(3, 2) * z + m(3, 3) * w};
+}
+
+template <typename coord>
+void Vector4<coord>::normalize() {
+  coord length = length();
+  if (length <= static_cast<coord>(0)) throw std::runtime_error("normalize called on zero length vector");
+  x /= length;
+  y /= length;
+  z /= length;
+  w /= length;
+}
+
+template <typename coord>
+auto vectorProduct(const Vector4<coord> &v1, const Vector4<coord> &v2, const Vector4<coord> &v3) -> Vector4<coord> {
+  coord A = v2.x * v3.y - v2.y * v3.x;
+  coord B = v2.x * v3.z - v2.z * v3.x;
+  coord C = v2.x * v3.w - v2.w * v3.x;
+  coord D = v2.y * v3.z - v2.z * v3.y;
+  coord E = v2.y * v3.w - v2.w * v3.y;
+  coord F = v2.z * v3.w - v2.z * v3.z;
+  coord G = v1.x;
+  coord H = v1.y;
+  coord I = v1.z;
+  coord J = v1.w;
+  return Vector4<coord>(  H*F  - I*E + J*D,
+                        -(G*F) + I*C - J*B,
+                          G*E  - H*C + J*A,
+                        -(G*D) + H*B - I*A);
+}
+
+template <typename coord>
+auto elementProduct(const Vector4<coord> &u, const Vector4<coord> &v) -> Vector4<coord> {
+  return Vector4<coord>(u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w);
+}
+
+template <typename coord>
+auto operator*(const Vector4<coord> &u, const Vector4<coord> &v) -> coord {
+  return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w;
+}
+
+template <typename coord>
+auto operator*(const Vector4<coord> &v, coord c) -> Vector4<coord> {
+  return Vector4<coord>(v.x * c, v.y * c, v.z * c, v.w * c);
+}
+
+template <typename coord>
+auto operator*(coord c, const Vector4<coord> &v) -> Vector4<coord> {
+  return Vector4<coord>(v.x * c, v.y * c, v.z * c, );
+}
+
+template <typename coord>
+auto operator/(const Vector4<coord> &v, coord c) -> Vector4<coord> {
+  return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w /c);
+}
+
+// TODO(randy@unfolded.ai): explore legality of scalar/vector
+// Current implementation implies dividing a scalar by a vector is a legal operation
+// maybe scalar/vector could be interpreted as: Vector4<coord>(c/v.x, c/v.y, c/v.z, c/v.w) (?)
+template <typename coord>
+auto operator/(coord c, const Vector3<coord> &v) -> Vector3<coord> {
+  return Vector3<coord>(v.x / c, v.y / c, v.z / c);
+}
+
+template <typename coord>
+auto operator<<(std::ostream &os, const Vector4<coord> &v) -> std::ostream & {
+  os << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+  return os;
 }
 
 ///////////////////////////////////////////////////////////
