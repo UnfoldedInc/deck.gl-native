@@ -56,23 +56,28 @@ auto LineLayer::Props::getProperties() const -> const Properties* {
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
+  // Using lambdas over std::bind - potential C++ retain cycle issue
   auto sourcePosition =
       std::make_shared<arrow::Field>("instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3));
-  auto getSourcePosition = std::bind(&LineLayer::getSourcePositionData, this, std::placeholders::_1);
+  auto getSourcePosition = [this](const std::shared_ptr<arrow::Table>& table) {
+    return this->getSourcePositionData(table);
+  };
   this->attributeManager->add(garrow::ColumnBuilder{sourcePosition, getSourcePosition});
 
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto targetPosition =
       std::make_shared<arrow::Field>("instanceTargetPositions", arrow::fixed_size_list(arrow::float32(), 3));
-  auto getTargetPosition = std::bind(&LineLayer::getTargetPositionData, this, std::placeholders::_1);
+  auto getTargetPosition = [this](const std::shared_ptr<arrow::Table>& table) {
+    return this->getTargetPositionData(table);
+  };
   this->attributeManager->add(garrow::ColumnBuilder{targetPosition, getTargetPosition});
 
   auto color = std::make_shared<arrow::Field>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4));
-  auto getColor = std::bind(&LineLayer::getColorData, this, std::placeholders::_1);
+  auto getColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getColorData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{color, getColor});
 
   auto width = std::make_shared<arrow::Field>("instanceWidths", arrow::float32());
-  auto getWidth = std::bind(&LineLayer::getWidthData, this, std::placeholders::_1);
+  auto getWidth = [this](const std::shared_ptr<arrow::Table>& table) { return this->getWidthData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
 
   this->models = {this->_getModel(this->context->device)};
