@@ -58,7 +58,7 @@ class LineLayer : public Layer {
  private:
   auto _getModel(wgpu::Device) -> std::shared_ptr<lumagl::Model>;
 
-  std::shared_ptr<lumagl::garrow::Array> _layerUniforms;
+  wgpu::Buffer _layerUniforms;
 };
 
 class LineLayer::Props : public Layer::Props {

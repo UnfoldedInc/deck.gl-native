@@ -69,11 +69,14 @@ set(HEADER_FILE_LIST
     core/src/animation-loop.h
     core/src/glfw-animation-loop.h
     core/src/model.h
+    core/src/blit-model.h
+    core/src/size.h
     )
 set(SOURCE_FILE_LIST
     core/src/animation-loop.cpp
     core/src/glfw-animation-loop.cpp
     core/src/model.cpp
+    core/src/blit-model.cc
     )
 set(TESTS_SOURCE_FILE_LIST
     )

@@ -18,13 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_H
-#define LUMAGL_CORE_H
+#ifndef LUMAGL_CORE_SIZE_H
+#define LUMAGL_CORE_SIZE_H
 
-#include "./core/src/animation-loop.h"
-#include "./core/src/blit-model.h"
-#include "./core/src/glfw-animation-loop.h"
-#include "./core/src/model.h"
-#include "./core/src/size.h"
+namespace lumagl {
 
-#endif  // LUMAGL_CORE_CORE_H
+struct Size {
+ public:
+  Size(int width, int height) : width{width}, height{height} {}
+
+  template <typename T>
+  auto operator*(const T& value) -> Size {
+    return Size{this->width * static_cast<int>(value), this->height * static_cast<int>(value)};
+  }
+
+  int width;
+  int height;
+};
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_CORE_SIZE_H

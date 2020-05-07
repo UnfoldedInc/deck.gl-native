@@ -115,7 +115,8 @@ void ScatterplotLayer::initializeState() {
   this->attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
 
   this->models = {this->_getModel(this->context->device)};
-  this->_layerUniforms = std::make_shared<garrow::Array>(this->context->device);
+  this->_layerUniforms =
+      utils::createBuffer(this->context->device, sizeof(ScatterplotLayerUniforms), wgpu::BufferUsage::Uniform);
 }
 
 void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -135,7 +136,7 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
   uniforms.stroked = props->stroked ? 1.0f : 0.0f;
   uniforms.filled = props->filled;
 
-  this->_layerUniforms->setData(&uniforms, 1, wgpu::BufferUsage::Uniform);
+  this->_layerUniforms.SetSubData(0, sizeof(ScatterplotLayerUniforms), &uniforms);
 
   /*
   super.updateState({props, oldProps, changeFlags});
@@ -158,7 +159,7 @@ void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {
 
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
-    model->setUniforms(this->_layerUniforms, 1);
+    model->setUniformBuffer(1, this->_layerUniforms);
     model->draw(pass);
   }
 }
@@ -223,8 +224,7 @@ auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl:
   auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
   std::vector<UniformDescriptor> uniforms = {
-      {sizeof(ViewportUniforms)},
-      {sizeof(ScatterplotLayerUniforms), wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
+      UniformDescriptor{}, UniformDescriptor{wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
   auto modelOptions = Model::Options{
       vs, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::TriangleStrip};
   auto model = std::make_shared<lumagl::Model>(device, modelOptions);

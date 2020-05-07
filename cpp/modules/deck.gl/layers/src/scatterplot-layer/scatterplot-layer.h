@@ -57,7 +57,7 @@ class ScatterplotLayer : public Layer {
  private:
   auto _getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>;
 
-  std::shared_ptr<lumagl::garrow::Array> _layerUniforms;
+  wgpu::Buffer _layerUniforms;
 };
 
 class ScatterplotLayer::Props : public Layer::Props {

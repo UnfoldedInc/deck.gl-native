@@ -38,6 +38,8 @@ namespace utils {
 
 enum Expectation { Success, Failure };
 
+auto createBuffer(const wgpu::Device& device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer;
+
 auto createBufferFromData(const wgpu::Device& device, const void* data, uint64_t size, wgpu::BufferUsage usage)
     -> wgpu::Buffer;
 

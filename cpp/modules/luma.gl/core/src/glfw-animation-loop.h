@@ -22,6 +22,7 @@
 #define LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
 
 #include <memory>
+#include <string>
 
 #include "./animation-loop.h"
 #include "luma.gl/webgpu/src/backends/backend-binding.h"
@@ -33,9 +34,11 @@ namespace lumagl {
 
 class GLFWAnimationLoop : public AnimationLoop {
  public:
-  GLFWAnimationLoop(const Size& size = Size{640, 480},
-                    const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType(),
-                    wgpu::Device device = nullptr);
+  using super = AnimationLoop;
+
+  GLFWAnimationLoop(const Size& size = Size{640, 480}, const std::string& windowTitle = "deck.gl",
+                    const wgpu::Device& device = nullptr, const wgpu::Queue& queue = nullptr,
+                    const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType());
   ~GLFWAnimationLoop();
 
   void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
@@ -44,13 +47,12 @@ class GLFWAnimationLoop : public AnimationLoop {
   void flush() override;
   auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat override;
   auto devicePixelRatio() -> float override;
-
- protected:
-  auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device override;
-  auto _createSwapchain(wgpu::Device device) -> wgpu::SwapChain override;
+  void setSize(const Size& size) override;
 
  private:
-  auto _initializeGLFW(const wgpu::BackendType) -> GLFWwindow*;
+  auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device;
+  auto _createSwapchain(wgpu::Device device) -> wgpu::SwapChain;
+  auto _initializeGLFW(const wgpu::BackendType backendType, const std::string& windowTitle) -> GLFWwindow*;
 
   /// \brief Instance used for adapter discovery and device creation. It has to be kept around as Dawn objects'
   /// lifecycle seems to depend on it.
@@ -58,6 +60,8 @@ class GLFWAnimationLoop : public AnimationLoop {
   /// for this instance.
   std::unique_ptr<dawn_native::Instance> _instance{nullptr};
   utils::BackendBinding* _binding{nullptr};
+  wgpu::SwapChain _swapchain;
+
   GLFWwindow* _window{nullptr};
 };
 

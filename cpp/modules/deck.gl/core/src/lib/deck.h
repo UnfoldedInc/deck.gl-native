@@ -39,6 +39,7 @@ class Deck : public Component {
   auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
   void setProps(std::shared_ptr<Deck::Props> props);
 
+  struct RenderingOptions;
   explicit Deck(std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>());
   ~Deck();
 
@@ -46,6 +47,9 @@ class Deck : public Component {
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
   void run(std::function<void(Deck*)> onAfterRender = [](Deck*) {});
+  void draw(
+      wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender = [](Deck*) {});
+  void stop();
 
   // Check if a redraw is needed
   // Returns an optional string summarizing the redraw reason
@@ -55,10 +59,10 @@ class Deck : public Component {
 
   auto getViews() -> std::list<std::shared_ptr<View>> { return this->viewManager->getViews(); }
 
-  std::shared_ptr<lumagl::AnimationLoop> animationLoop{new lumagl::GLFWAnimationLoop()};
+  std::shared_ptr<lumagl::AnimationLoop> animationLoop;
   std::shared_ptr<ViewManager> viewManager{new ViewManager()};
-  std::shared_ptr<LayerContext> context{new LayerContext{this, this->animationLoop->device()}};
-  std::shared_ptr<LayerManager> layerManager{new LayerManager{this->context}};
+  std::shared_ptr<LayerContext> context;
+  std::shared_ptr<LayerManager> layerManager;
   std::shared_ptr<ViewState> initialViewState;
   std::shared_ptr<ViewState> viewState;
 
@@ -66,14 +70,27 @@ class Deck : public Component {
   // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
   auto _getViewState() -> ViewState*;  // { return this->props->viewState || this->viewState; }
 
-  std::optional<std::string> _needsRedraw;
-
+  auto _createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop>;
   // Get the view descriptor list
   void _getViews();
+  void _draw(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender);
   void _drawLayers(const std::string& redrawReason);
   void _onRendererInitialized(void* gl);
   void _onRenderFrame();
   void _onViewStateChange();
+
+  std::optional<std::string> _needsRedraw;
+  wgpu::Buffer _viewportUniformsBuffer;
+};
+
+struct Deck::RenderingOptions {
+ public:
+  explicit RenderingOptions(wgpu::Device device, wgpu::Queue queue, bool usesWindow = true)
+      : device{device}, queue{queue}, usesWindow{usesWindow} {}
+
+  wgpu::Device device;
+  wgpu::Queue queue;
+  bool usesWindow;
 };
 
 class Deck::Props : public Component::Props {
@@ -83,6 +100,8 @@ class Deck::Props : public Component::Props {
   std::string id{"deckgl"};
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
+
+  std::optional<Deck::RenderingOptions> renderingOptions;
 
   // layer/view/controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;

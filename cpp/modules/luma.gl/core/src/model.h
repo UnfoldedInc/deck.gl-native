@@ -24,6 +24,7 @@
 #include <dawn/webgpu_cpp.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,15 +37,14 @@ namespace lumagl {
 // TODO(ilija@unfolded.ai): Document metadata properties and the behavior they trigger once we finalize the list
 struct AttributePropertyKeys {};
 
-// TODO(ilija@unfolded.ai): Move out and revisit
 struct UniformDescriptor {
  public:
-  UniformDescriptor(size_t elementSize, wgpu::ShaderStage shaderStage = wgpu::ShaderStage::Vertex,
-                    bool isDynamic = false)
-      : elementSize{elementSize}, shaderStage{shaderStage}, isDynamic{isDynamic} {}
+  explicit UniformDescriptor(wgpu::ShaderStage shaderStage = wgpu::ShaderStage::Vertex,
+                             wgpu::BindingType bindingType = wgpu::BindingType::UniformBuffer, bool isDynamic = false)
+      : shaderStage{shaderStage}, bindingType{bindingType}, isDynamic{isDynamic} {}
 
-  size_t elementSize;
   wgpu::ShaderStage shaderStage;
+  wgpu::BindingType bindingType;
   bool isDynamic{false};
 };
 
@@ -59,8 +59,10 @@ class Model {
   void setAttributes(const std::shared_ptr<garrow::Table>& attributes);
   void setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes);
 
-  void setUniforms(const std::vector<std::shared_ptr<garrow::Array>>& uniforms);
-  void setUniforms(const std::shared_ptr<garrow::Array>& uniforms, uint32_t index);
+  void setUniformBuffer(uint32_t binding, const wgpu::Buffer& buffer, uint64_t offset = 0,
+                        uint64_t size = wgpu::kWholeSize);
+  void setUniformTexture(uint32_t binding, const wgpu::TextureView& textureView);
+  void setUniformSampler(uint32_t binding, const wgpu::Sampler& sampler);
 
   void draw(wgpu::RenderPassEncoder pass);
 
@@ -86,15 +88,15 @@ class Model {
   auto _createBindGroupLayout(wgpu::Device device, const std::vector<UniformDescriptor>& uniforms)
       -> wgpu::BindGroupLayout;
 
+  void _setBinding(uint32_t binding, const utils::BindingInitializationHelper& initHelper);
   void _setVertexBuffers(wgpu::RenderPassEncoder pass);
 
   wgpu::Device _device;
   std::shared_ptr<garrow::Table> _attributeTable;
   std::shared_ptr<garrow::Table> _instancedAttributeTable;
   std::vector<UniformDescriptor> _uniformDescriptors;
-  // Retaining a reference to uniform buffers so they don't go out of scope before drawing
-  std::vector<std::shared_ptr<garrow::Array>> _uniforms;
-  std::vector<std::shared_ptr<utils::BindingInitializationHelper>> _bindings;
+  // TODO(ilija@unfolded.ai) Should probably be a map
+  std::vector<std::optional<utils::BindingInitializationHelper>> _bindings;
 };
 
 /// \brief Initializer options for the Model class.

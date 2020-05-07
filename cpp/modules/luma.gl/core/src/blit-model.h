@@ -18,13 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_H
-#define LUMAGL_CORE_H
+#ifndef LUMAGL_CORE_BLIT_MODEL_H
+#define LUMAGL_CORE_BLIT_MODEL_H
 
-#include "./core/src/animation-loop.h"
-#include "./core/src/blit-model.h"
-#include "./core/src/glfw-animation-loop.h"
-#include "./core/src/model.h"
-#include "./core/src/size.h"
+#include "./model.h"
+#include "./size.h"
 
-#endif  // LUMAGL_CORE_CORE_H
+namespace lumagl {
+
+/// Model subclass that provides an easy way to render draw a given texture.
+class BlitModel : public Model {
+ public:
+  BlitModel(const wgpu::Device& device, const wgpu::TextureView& textureView, const Size& textureSize);
+};
+
+}  // namespace lumagl
+
+#endif  // LUMAGL_CORE_BLIT_MODEL_H

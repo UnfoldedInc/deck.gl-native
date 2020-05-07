@@ -8,6 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD1CCD8B24446C6600C96D72 /* array.cc */; };
+		CD235261246256F400E3F139 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2D242E2072003F3B96 /* Cocoa.framework */; };
+		CD23526224627CBE00E3F139 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
+		CD23526324627CC300E3F139 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
+		CD23526424627CC700E3F139 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2F242E2076003F3B96 /* IOKit.framework */; };
+		CD23526524627CD000E3F139 /* libdeck.gl-native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD903E9E241A0DB50047F954 /* libdeck.gl-native.a */; };
+		CD23526824627CD500E3F139 /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
+		CD23526924627CD500E3F139 /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CD23526D24627CDF00E3F139 /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
+		CD23526E24627CDF00E3F139 /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CD23526F24627F7800E3F139 /* manhattan.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CD58569D24612E200076227F /* manhattan.ndjson */; };
 		CD33DF1F242E1EB4003F3B96 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
 		CD33DF20242E1EBC003F3B96 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
 		CD33DF2E242E2073003F3B96 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2D242E2072003F3B96 /* Cocoa.framework */; };
@@ -21,6 +31,9 @@
 		CD452A51244852DE00DD44A5 /* field.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A4E244852DE00DD44A5 /* field.h */; };
 		CD452A552448565000DD44A5 /* schema.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A522448565000DD44A5 /* schema.cc */; };
 		CD452A562448565000DD44A5 /* schema.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A532448565000DD44A5 /* schema.h */; };
+		CD57340F24640A3300D22A70 /* blit-model.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD57340D24640A3300D22A70 /* blit-model.cc */; };
+		CD57341024640A3300D22A70 /* blit-model.h in Headers */ = {isa = PBXBuildFile; fileRef = CD57340E24640A3300D22A70 /* blit-model.h */; };
+		CD57341224640E6200D22A70 /* size.h in Headers */ = {isa = PBXBuildFile; fileRef = CD57341124640E6200D22A70 /* size.h */; };
 		CD5856C0246131740076227F /* libdeck.gl-native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD903E9E241A0DB50047F954 /* libdeck.gl-native.a */; };
 		CD5856C3246132240076227F /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
 		CD5856C4246132280076227F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2F242E2076003F3B96 /* IOKit.framework */; };
@@ -74,6 +87,7 @@
 		CDCD8F2B24614F60009604C5 /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
 		CDCD8F2C24614F73009604C5 /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CDCD8F2E24614F74009604C5 /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CDCD8F3D2461841D009604C5 /* texture-render.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDCD8F2F246183FC009604C5 /* texture-render.cc */; };
 		CDE55C6A243C6A11000D8EC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE53EA4243C69FB000D8EC6 /* main.cpp */; };
 		CDE57747243C6A1E000D8EC6 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE55B2B243C6A10000D8EC6 /* core.h */; };
 		CDE57748243C6A1E000D8EC6 /* timer-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55B2F243C6A10000D8EC6 /* timer-test.cpp */; };
@@ -210,6 +224,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CD23526624627CD000E3F139 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD759CDF2417625E0001C15C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD903E9D241A0DB50047F954;
+			remoteInfo = "deck.gl-native";
+		};
 		CD5856BE246131280076227F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD759CDF2417625E0001C15C /* Project object */;
@@ -241,6 +262,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		CD23526C24627CD500E3F139 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CD23526E24627CDF00E3F139 /* libdawn_proc.dylib in Embed Libraries */,
+				CD23526924627CD500E3F139 /* libdawn_native.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD48E80E24178A1E00D3C13C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -319,6 +352,16 @@
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDCD8F3424618413009604C5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = data;
+			dstSubfolderSpec = 16;
+			files = (
+				CD23526F24627F7800E3F139 /* manhattan.ndjson in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CDE53E99243C69A4000D8EC6 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -371,6 +414,9 @@
 		CD452A532448565000DD44A5 /* schema.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schema.h; sourceTree = "<group>"; };
 		CD48E81024178A1E00D3C13C /* deck.gl-native-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "deck.gl-native-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD517429243DC4A50051AB3F /* libshaderc_spvc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libshaderc_spvc.dylib; path = "cpp/deps/x64-osx/lib/libshaderc_spvc.dylib"; sourceTree = "<group>"; };
+		CD57340D24640A3300D22A70 /* blit-model.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "blit-model.cc"; sourceTree = "<group>"; };
+		CD57340E24640A3300D22A70 /* blit-model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "blit-model.h"; sourceTree = "<group>"; };
+		CD57341124640E6200D22A70 /* size.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = size.h; sourceTree = "<group>"; };
 		CD58569D24612E200076227F /* manhattan.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = manhattan.ndjson; sourceTree = "<group>"; };
 		CD5856D9246135540076227F /* flight-paths */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "flight-paths"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD5856F52461364B0076227F /* manhattan-population */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "manhattan-population"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -394,6 +440,8 @@
 		CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "webgpu-utils.h"; sourceTree = "<group>"; };
 		CDC8E170244D6420002A7E60 /* key-value-metadata.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "key-value-metadata.cc"; sourceTree = "<group>"; };
 		CDC8E171244D6420002A7E60 /* key-value-metadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "key-value-metadata.h"; sourceTree = "<group>"; };
+		CDCD8F2F246183FC009604C5 /* texture-render.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "texture-render.cc"; sourceTree = "<group>"; };
+		CDCD8F3624618413009604C5 /* texture-render */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "texture-render"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDE53E9B243C69A4000D8EC6 /* animometer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = animometer; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDE53EA4243C69FB000D8EC6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CDE53EA7243C69FB000D8EC6 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -722,6 +770,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDCD8F3324618413009604C5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD23526224627CBE00E3F139 /* Metal.framework in Frameworks */,
+				CD235261246256F400E3F139 /* Cocoa.framework in Frameworks */,
+				CD23526524627CD000E3F139 /* libdeck.gl-native.a in Frameworks */,
+				CD23526824627CD500E3F139 /* libdawn_native.dylib in Frameworks */,
+				CD23526324627CC300E3F139 /* QuartzCore.framework in Frameworks */,
+				CD23526424627CC700E3F139 /* IOKit.framework in Frameworks */,
+				CD23526D24627CDF00E3F139 /* libdawn_proc.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CDE53E98243C69A4000D8EC6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -774,6 +836,7 @@
 				CDE53E9B243C69A4000D8EC6 /* animometer */,
 				CD5856D9246135540076227F /* flight-paths */,
 				CD5856F52461364B0076227F /* manhattan-population */,
+				CDCD8F3624618413009604C5 /* texture-render */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -963,6 +1026,7 @@
 				CDE53EDC243C69FC000D8EC6 /* stdinout.cpp */,
 				CDE74992244EF71A00FB84CC /* flight-paths.cc */,
 				CD9BE17E246061F00019835B /* manhattan-population.cc */,
+				CDCD8F2F246183FC009604C5 /* texture-render.cc */,
 			);
 			path = deck.gl;
 			sourceTree = "<group>";
@@ -1061,10 +1125,13 @@
 			children = (
 				CDE55B4A243C6A10000D8EC6 /* model.h */,
 				CDE55B4B243C6A10000D8EC6 /* model.cpp */,
+				CD57340E24640A3300D22A70 /* blit-model.h */,
+				CD57340D24640A3300D22A70 /* blit-model.cc */,
 				CDE55B4D243C6A10000D8EC6 /* animation-loop.h */,
 				CDE55B45243C6A10000D8EC6 /* animation-loop.cpp */,
 				CDE55B46243C6A10000D8EC6 /* glfw-animation-loop.h */,
 				CDE55B44243C6A10000D8EC6 /* glfw-animation-loop.cpp */,
+				CD57341124640E6200D22A70 /* size.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1876,6 +1943,7 @@
 				CDE577F0243C6A1F000D8EC6 /* deck.h in Headers */,
 				CDE577B4243C6A1F000D8EC6 /* web-mercator.h in Headers */,
 				CDE57855243C6A1F000D8EC6 /* json.h in Headers */,
+				CD57341224640E6200D22A70 /* size.h in Headers */,
 				CDE5785A243C6A1F000D8EC6 /* csv-loader.h in Headers */,
 				CDE5774E243C6A1F000D8EC6 /* compiler.h in Headers */,
 				CD452A51244852DE00DD44A5 /* field.h in Headers */,
@@ -1918,6 +1986,7 @@
 				CDE57845243C6A1F000D8EC6 /* json.h in Headers */,
 				CDE5780D243C6A1F000D8EC6 /* view-state.h in Headers */,
 				CDE57846243C6A1F000D8EC6 /* json-object.h in Headers */,
+				CD57341024640A3300D22A70 /* blit-model.h in Headers */,
 				CDE577EB243C6A1F000D8EC6 /* viewport.h in Headers */,
 				CDE577A9243C6A1F000D8EC6 /* sample-viewports.h in Headers */,
 				CDE57807243C6A1F000D8EC6 /* view-manager.h in Headers */,
@@ -2032,6 +2101,25 @@
 			productReference = CD903E9E241A0DB50047F954 /* libdeck.gl-native.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		CDCD8F3524618413009604C5 /* texture-render */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CDCD8F3A24618413009604C5 /* Build configuration list for PBXNativeTarget "texture-render" */;
+			buildPhases = (
+				CDCD8F3224618413009604C5 /* Sources */,
+				CDCD8F3324618413009604C5 /* Frameworks */,
+				CDCD8F3424618413009604C5 /* CopyFiles */,
+				CD23526C24627CD500E3F139 /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CD23526724627CD000E3F139 /* PBXTargetDependency */,
+			);
+			name = "texture-render";
+			productName = "texture-render";
+			productReference = CDCD8F3624618413009604C5 /* texture-render */;
+			productType = "com.apple.product-type.tool";
+		};
 		CDE53E9A243C69A4000D8EC6 /* animometer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CDE53E9F243C69A4000D8EC6 /* Build configuration list for PBXNativeTarget "animometer" */;
@@ -2072,6 +2160,9 @@
 					CD903E9D241A0DB50047F954 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
+					CDCD8F3524618413009604C5 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
 					CDE53E9A243C69A4000D8EC6 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
@@ -2099,6 +2190,7 @@
 				CDE53E9A243C69A4000D8EC6 /* animometer */,
 				CD5856D8246135540076227F /* flight-paths */,
 				CD5856F42461364B0076227F /* manhattan-population */,
+				CDCD8F3524618413009604C5 /* texture-render */,
 			);
 		};
 /* End PBXProject section */
@@ -2193,6 +2285,7 @@
 				CDE5778E243C6A1F000D8EC6 /* backend-binding.cpp in Sources */,
 				CDE577A0243C6A1F000D8EC6 /* combo-render-pipeline-descriptor.cpp in Sources */,
 				CDE577A7243C6A1F000D8EC6 /* web-mercator-utils-test.cpp in Sources */,
+				CD57340F24640A3300D22A70 /* blit-model.cc in Sources */,
 				CDE577FC243C6A1F000D8EC6 /* deck.cpp in Sources */,
 				CDE57781243C6A1F000D8EC6 /* webgpu-helpers.cpp in Sources */,
 				CD452A552448565000DD44A5 /* schema.cc in Sources */,
@@ -2226,6 +2319,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDCD8F3224618413009604C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDCD8F3D2461841D009604C5 /* texture-render.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CDE53E97243C69A4000D8EC6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2237,6 +2338,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		CD23526724627CD000E3F139 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
+			targetProxy = CD23526624627CD000E3F139 /* PBXContainerItemProxy */;
+		};
 		CD5856BF246131280076227F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
@@ -2700,6 +2806,71 @@
 			};
 			name = Release;
 		};
+		CDCD8F3B24618413009604C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		CDCD8F3C24618413009604C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		CDE53EA0243C69A4000D8EC6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2962,6 +3133,15 @@
 			buildConfigurations = (
 				CD903EA0241A0DB50047F954 /* Debug */,
 				CD903EA1241A0DB50047F954 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CDCD8F3A24618413009604C5 /* Build configuration list for PBXNativeTarget "texture-render" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CDCD8F3B24618413009604C5 /* Debug */,
+				CDCD8F3C24618413009604C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -66,15 +66,20 @@ void main() {
     ypos = yrot + c.offsetY;
     v_color = vec4(fade, 1.0 - fade, 0.0, 1.0) + color;
     gl_Position = vec4(xpos, ypos, 0.0, 1.0);
-})";
+}
+)";
 
 auto fs = R"(
 #version 450
+
 layout(location = 0) in vec4 v_color;
+
 layout(location = 0) out vec4 fragColor;
+
 void main() {
     fragColor = v_color;
-})";
+}
+)";
 
 auto randomFloat(float min, float max) -> float {
   float zeroOne = rand() / float(RAND_MAX);
@@ -97,7 +102,7 @@ auto createSampleData(int count) -> std::vector<ShaderData> {
   shaderData.resize(count);
   for (auto& data : shaderData) {
     data.scale = randomFloat(0.2f, 0.4f);
-    data.time = 0.0;
+    data.time = 0.0f;
     data.offsetX = randomFloat(-0.9f, 0.9f);
     data.offsetY = randomFloat(-0.9f, 0.9f);
     data.scalar = randomFloat(0.5f, 2.0f);
@@ -131,18 +136,16 @@ int main(int argc, const char* argv[]) {
 
   auto attributes = createAttributeTable(device);
   auto instancedSchema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
-  Model model{
-      device,
-      {vs, fs, attributes->schema(), instancedSchema, {{sizeof(ShaderData)}}, wgpu::PrimitiveTopology::TriangleList}};
+  Model model{device, {vs, fs, attributes->schema(), instancedSchema, {UniformDescriptor{}}}};
 
   std::vector<ShaderData> shaderData = createSampleData(kNumTriangles);
-  std::vector<std::shared_ptr<garrow::Array>> uniforms;
+  std::vector<wgpu::Buffer> uniforms;
   for (auto const& data : shaderData) {
-    uniforms.push_back(std::make_shared<garrow::Array>(device, &data, 1, wgpu::BufferUsage::Uniform));
+    uniforms.push_back(utils::createBufferFromData(device, &data, sizeof(ShaderData), wgpu::BufferUsage::Uniform));
   }
 
   model.setAttributes(attributes);
-  model.vertexCount = 3;
+  model.vertexCount = static_cast<int>(attributes->num_rows());
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;
@@ -151,9 +154,9 @@ int main(int argc, const char* argv[]) {
     for (size_t i = 0; i < uniforms.size(); ++i) {
       // Update buffer
       shaderData[i].time = f / 60.0f;
-      uniforms[i]->buffer().SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
+      uniforms[i].SetSubData(0, sizeof(ShaderData), &(shaderData[i]));
 
-      model.setUniforms({uniforms[i]});
+      model.setUniformBuffer(0, uniforms[i]);
       model.draw(pass);
     }
   });

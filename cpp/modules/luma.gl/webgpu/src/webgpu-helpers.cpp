@@ -37,14 +37,19 @@ using namespace lumagl::utils;
 namespace lumagl {
 namespace utils {
 
-auto createBufferFromData(const wgpu::Device& device, const void* data, uint64_t size, wgpu::BufferUsage usage)
-    -> wgpu::Buffer {
+auto createBuffer(const wgpu::Device& device, uint64_t size, wgpu::BufferUsage usage) -> wgpu::Buffer {
   wgpu::BufferDescriptor descriptor;
   descriptor.size = size;
   descriptor.usage = usage | wgpu::BufferUsage::CopyDst;
 
-  wgpu::Buffer buffer = device.CreateBuffer(&descriptor);
+  return device.CreateBuffer(&descriptor);
+}
+
+auto createBufferFromData(const wgpu::Device& device, const void* data, uint64_t size, wgpu::BufferUsage usage)
+    -> wgpu::Buffer {
+  auto buffer = createBuffer(device, size, usage);
   buffer.SetSubData(0, size, data);
+
   return buffer;
 }
 

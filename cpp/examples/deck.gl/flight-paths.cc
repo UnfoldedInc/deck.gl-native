@@ -91,6 +91,7 @@ int main(int argc, const char *argv[]) {
   auto airportDataPath = programDirectory + "/data/airports.ndjson";
 
   auto deckProps = std::make_shared<Deck::Props>();
+  deckProps->id = "Heathrow Flights";
   deckProps->layers = {createLineLayer(flightDataPath), createScatterplotLayer(airportDataPath)};
   deckProps->initialViewState = createViewState(0.0);
   deckProps->views = {std::make_shared<MapView>()};
