@@ -339,11 +339,13 @@ class Matrix3 {
   auto transpose() const -> Matrix3<coord>;
 
   // Vector multiplication
+  // TODO(randy@unfolded.ai) multiply
   auto multiply(const Vector3<coord>) const -> Vector3<coord>;
 
   // Homogenous coordinates
   auto isHomogeneous() const -> bool;
   auto multiplyPoint(const Vector2<coord>) const -> Vector2<coord>;
+  // Commented out?
   auto multiplyVector(const Vector2<coord>) const -> Vector2<coord>;
 
  private:
@@ -400,23 +402,31 @@ class Matrix4 {
   static auto makeRotationX(coord angle) -> Matrix4<coord>;
   static auto makeRotationY(coord angle) -> Matrix4<coord>;
   static auto makeRotationZ(coord angle) -> Matrix4<coord>;
+  // Commented out
   static auto makeShearXY(coord factorX, coord factorY) -> Matrix4<coord>;
   static auto makeShearXZ(coord factorX, coord factorZ) -> Matrix4<coord>;
+  // TODO(randy@unfolded.ai)
   static auto makeShearYX(coord factorY, coord factorZ) -> Matrix4<coord>;
+  // TODO(randy@unfolded.ai)
+  // can't find one that just takes a distance parameter, maybe just use orthogonal?
   static auto makeProjection(coord distance) -> Matrix4<coord>;
+  // TODO(randy@unfolded.ai)
   static auto makePerspective(coord fovy, coord aspect, coord near, coord far) -> Matrix4<coord>;
 
   auto operator()(int row, int col) -> coord & { return _m[row][col]; }
   auto operator()(int row, int col) const -> const coord { return _m[row][col]; }
 
   auto determinant() const -> coord;
+  // TODO(randy@unfolded.ai)
   auto invert() const -> Matrix4<coord>;
   auto transpose() const -> Matrix4<coord>;
 
   bool isHomogeneous() const;
+  // incorrect current implementation for multiplyVector/multiplyPoint
   auto multiplyVector(const Vector3<coord> &) const -> Vector3<coord>;
   auto multiplyPoint(const Vector3<coord> &) const -> Vector3<coord>;
 
+  // TODO(randy@unfolded.ai) revisit
   auto scale(const Vector3<coord> &) const -> Matrix4<coord>;
   auto translate(const Vector3<coord> &t) const -> Matrix4<coord>;
   auto rotateX(const coord rad) -> Matrix4<coord>;
@@ -654,8 +664,11 @@ auto vectorProduct(const Vector4<coord> &v1, const Vector4<coord> &v2, const Vec
   coord H = v1.y;
   coord I = v1.z;
   coord J = v1.w;
-  return Vector4<coord>(H * F - I * E + J * D, -(G * F) + I * C - J * B, G * E - H * C + J * A,
-                        -(G * D) + H * B - I * A);
+  coord newX = H * F - I * E + J * D;
+  coord newY = -(G * F) + I * C - J * B;
+  coord newZ = G * E - H * C + J * A;
+  coord newW = -(G * D) + H * B - I * A;
+  return Vector4<coord>(newX, newY, newZ, newW);
 }
 
 template <typename coord>
@@ -851,6 +864,11 @@ auto Matrix3<coord>::invert() const -> Matrix3<coord> {
       det * (at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0)));
 }
 
+template <typename coord>
+auto Matrix3<coord>::transpose() const -> Matrix3<coord> {
+  return Matrix3<coord>(at(0, 0), at(1, 0), at(2, 0), at(0, 1), at(1, 1), at(2, 1), at(0, 2), at(1, 2), at(2, 2));
+}
+
 //  Matrix Creation
 
 template <typename coord>
@@ -874,6 +892,11 @@ auto Matrix3<coord>::makeRotation(coord angle) -> Matrix3<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
   return Matrix3<coord>(cosine, -sine, 0, sine, cosine, 0, 0, 0, 1);
+}
+
+template <typename coord>
+auto Matrix3<coord>::makeShear(coord factorX, coord factorY) -> Matrix3<coord> {
+  return Matrix3<coord>(1, factorX, 0, factorY, 1, 0, 0, 0, 1);
 }
 
 ///////////////////////////////////////////////////////////
