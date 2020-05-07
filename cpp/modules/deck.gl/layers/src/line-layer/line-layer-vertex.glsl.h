@@ -90,9 +90,8 @@ void main(void) {
   gl_Position = p + vec4(project_pixel_size_to_clipspace(offset.xy), 0.0, 0.0);
 
   // Color
-  vec4 color = vec4(instanceColors.rgb, instanceColors.a * layerOptions.opacity);
-  // Normalize the values
-  vColor = clamp(color, 0, 255) / 255.0;
+  vec4 normalizedInstanceColors = clamp(instanceColors, 0, 255) / 255.0;
+  vColor = vec4(normalizedInstanceColors.rgb, normalizedInstanceColors.a * layerOptions.opacity);
 }
 )GLSL";
 

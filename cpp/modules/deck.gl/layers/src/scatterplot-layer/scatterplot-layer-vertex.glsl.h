@@ -87,8 +87,10 @@ void main(void) {
   gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset, geometry.position);
 
   // Apply opacity to instance color, or return instance picking color, then normalize the values
-  vFillColor = clamp(vec4(instanceFillColors.rgb, instanceFillColors.a * layerOptions.opacity), 0, 255) / 255.0;
-  vLineColor = clamp(vec4(instanceLineColors.rgb, instanceLineColors.a * layerOptions.opacity), 0, 255) / 255.0;
+  vec4 normalizedFillColors = clamp(instanceFillColors, 0, 255) / 255.0;
+  vFillColor = vec4(normalizedFillColors.rgb, normalizedFillColors.a * layerOptions.opacity);
+  vec4 normalizedLineColors = clamp(instanceLineColors, 0, 255) / 255.0;
+  vLineColor = vec4(normalizedLineColors.rgb, normalizedLineColors.a * layerOptions.opacity);
 }
 )GLSL";
 

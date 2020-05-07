@@ -21,9 +21,12 @@
 set(EXAMPLE_SOURCE_FILES
     stdinout.cpp
     flight-paths.cc
+    manhattan-population.cc
     )
 set(EXAMPLE_DATA_FILES
     ${DECK_DATA_PATH}/examples/flight-paths/heathrow-flights.ndjson
+    ${DECK_DATA_PATH}/examples/flight-paths/airports.ndjson
+    ${DECK_DATA_PATH}/examples/manhattan-population/manhattan.ndjson
     )
 
 # Create an executable for each example from the list

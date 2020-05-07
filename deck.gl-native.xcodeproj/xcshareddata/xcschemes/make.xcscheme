@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CD48E80F24178A1E00D3C13C"
-               BuildableName = "cpp-tests"
-               BlueprintName = "cpp-tests"
+               BlueprintIdentifier = "CDE97AA8241B601000FF5BC7"
+               BuildableName = "make"
+               BlueprintName = "make"
                ReferencedContainer = "container:deck.gl-native.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -40,16 +40,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD48E80F24178A1E00D3C13C"
-            BuildableName = "cpp-tests"
-            BlueprintName = "cpp-tests"
-            ReferencedContainer = "container:deck.gl-native.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -57,16 +47,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD48E80F24178A1E00D3C13C"
-            BuildableName = "cpp-tests"
-            BlueprintName = "cpp-tests"
+            BlueprintIdentifier = "CDE97AA8241B601000FF5BC7"
+            BuildableName = "make"
+            BlueprintName = "make"
             ReferencedContainer = "container:deck.gl-native.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
