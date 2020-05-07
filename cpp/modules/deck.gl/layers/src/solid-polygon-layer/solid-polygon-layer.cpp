@@ -71,15 +71,18 @@ void SolidPolygonLayer::initializeState() {
   this->attributeManager->add(garrow::ColumnBuilder{polygon, getPolygon});
 
   auto elevation = std::make_shared<arrow::Field>("instanceElevations", arrow::float32());
-  auto getElevation = std::bind(&SolidPolygonLayer::getElevationData, this, std::placeholders::_1);
+  // auto getElevation = std::bind(&SolidPolygonLayer::getElevationData, this, std::placeholders::_1);
+  auto getElevation = [this](const std::shared_ptr<arrow::Table>& table) { return this->getElevationData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{elevation, getElevation});
 
   auto fillColor = std::make_shared<arrow::Field>("instanceFillColors", arrow::fixed_size_list(arrow::float32(), 4));
-  auto getFillColor = std::bind(&SolidPolygonLayer::getFillColorData, this, std::placeholders::_1);
+  // auto getFillColor = std::bind(&SolidPolygonLayer::getFillColorData, this, std::placeholders::_1);
+  auto getFillColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getFillColorData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
 
   auto lineColor = std::make_shared<arrow::Field>("instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4));
-  auto getLineColor = std::bind(&SolidPolygonLayer::getLineColorData, this, std::placeholders::_1);
+  // auto getLineColor = std::bind(&SolidPolygonLayer::getLineColorData, this, std::placeholders::_1);
+  auto getLineColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineColorData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 }
 
@@ -98,12 +101,25 @@ auto SolidPolygonLayer::getPickingInfo(params) {
 }
 */
 
-void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const SolidPolygonLayer::Props* oldProps) {
   super::updateState(changeFlags, oldProps);
 
   updateGeometry(changeFlags, oldProps);
 
   auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
+
+  bool regenerateModels =
+      (changeFlags.extensionsChanged || (props->filled != oldProps->filled) || (props->extruded != oldProps->extruded));
+
+  if (regenerateModels) {
+    if (!(this->models.empty())) {
+      // for:each that deletes models
+      for (auto model : this->models) {
+      }
+    }
+    // set state
+    // invalidate all in attr manager
+  }
 
   /*
     super.updateState(updateParams);

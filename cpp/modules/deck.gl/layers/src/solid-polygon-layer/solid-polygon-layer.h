@@ -45,7 +45,7 @@ class SolidPolygonLayer : public Layer {
  protected:
   void initializeState() override;
   // auto getPickingInfo() override;
-  void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
+  void updateState(const ChangeFlags&, const SolidPolygonLayer::Props* oldProps);
   void updateGeometry(const ChangeFlags&, const Layer::Props* oldProps);
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
