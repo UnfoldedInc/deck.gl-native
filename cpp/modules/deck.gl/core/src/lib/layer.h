@@ -261,7 +261,7 @@ class Layer : public Component {
     std::optional<std::string> viewportChanged;
     // std::optional<std::string> updateTriggersChanged;
     // std::optional<std::string> stateChanged;
-    // std::optional<std::string> extensionsChanged;
+    std::optional<std::string> extensionsChanged;
 
     // Derived changeFlags
     std::optional<std::string> propsOrDataChanged;

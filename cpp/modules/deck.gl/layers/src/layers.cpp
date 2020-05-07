@@ -28,4 +28,8 @@ void deckgl::registerJSONConvertersForDeckLayers(JSONConverter *jsonConverter) {
   jsonConverter->classes["ScatterplotLayer"] = [](const Json::Value &) {
     return std::make_shared<ScatterplotLayer::Props>();
   };
+
+  jsonConverter->classes["SolidPolygonLayer"] = [](const Json::Value &) {
+    return std::make_shared<SolidPolygonLayer::Props>();
+  };
 }

@@ -94,24 +94,25 @@ auto ScatterplotLayer::Props::getProperties() const -> const Properties* {
 void ScatterplotLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
+  // Using lambdas over std::bind - potential C++ retain cycle issue
   auto position = std::make_shared<arrow::Field>("instancePositions", arrow::fixed_size_list(arrow::float32(), 3));
-  auto getPosition = std::bind(&ScatterplotLayer::getPositionData, this, std::placeholders::_1);
+  auto getPosition = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPositionData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{position, getPosition});
 
   auto radius = std::make_shared<arrow::Field>("instanceRadius", arrow::float32());
-  auto getRadius = std::bind(&ScatterplotLayer::getRadiusData, this, std::placeholders::_1);
+  auto getRadius = [this](const std::shared_ptr<arrow::Table>& table) { return this->getRadiusData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{radius, getRadius});
 
   auto fillColor = std::make_shared<arrow::Field>("instanceFillColors", arrow::fixed_size_list(arrow::float32(), 4));
-  auto getFillColor = std::bind(&ScatterplotLayer::getFillColorData, this, std::placeholders::_1);
+  auto getFillColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getFillColorData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
 
   auto lineColor = std::make_shared<arrow::Field>("instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4));
-  auto getLineColor = std::bind(&ScatterplotLayer::getLineColorData, this, std::placeholders::_1);
+  auto getLineColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineColorData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 
   auto lineWidth = std::make_shared<arrow::Field>("instanceLineWidths", arrow::float32());
-  auto getLineWidth = std::bind(&ScatterplotLayer::getLineWidthData, this, std::placeholders::_1);
+  auto getLineWidth = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineWidthData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
 
   this->models = {this->_getModel(this->context->device)};
