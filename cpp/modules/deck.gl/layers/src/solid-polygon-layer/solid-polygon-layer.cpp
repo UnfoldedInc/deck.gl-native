@@ -66,7 +66,9 @@ auto SolidPolygonLayer::Props::getProperties() const -> const Properties* {
 void SolidPolygonLayer::initializeState() {
   // Using lambdas over std::bind - potential C++ retain cycle issue
 
-  auto polygon = std::make_shared<arrow::Field>("instancePolygons", arrow::fixed_size_list(arrow::float32(), 4));
+  // list<fixed_size_list(Vector3)>
+  auto polygon =
+      std::make_shared<arrow::Field>("instancePolygons", arrow::list(arrow::fixed_size_list(arrow::float32(), 3)));
   auto getPolygon = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPolygonData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{polygon, getPolygon});
 
@@ -189,7 +191,7 @@ auto SolidPolygonLayer::getPolygonData(const std::shared_ptr<arrow::Table>& tabl
     throw std::logic_error("Invalid layer properties");
   }
 
-  return ArrowMapper::mapVector4FloatColumn(table, props->getPolygon);
+  return ArrowMapper::mapVector3FloatColumn(table, props->getPolygon);
 }
 
 auto SolidPolygonLayer::getElevationData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {

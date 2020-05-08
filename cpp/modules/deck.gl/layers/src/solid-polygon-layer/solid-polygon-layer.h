@@ -75,8 +75,8 @@ class SolidPolygonLayer::Props : public Layer::Props {
 
   float elevationScale{1.0};
 
-  std::function<ArrowMapper::Vector4FloatAccessor> getPolygon{
-      [](const Row& row) { return row.getVector4<float>("polygon"); }};
+  std::function<ArrowMapper::Vector3FloatAccessor> getPolygon{
+      [](const Row& row) { return row.getVector3<float>("polygon"); }};
   std::function<ArrowMapper::FloatAccessor> getElevation{[](const Row& row) { return 1000.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
