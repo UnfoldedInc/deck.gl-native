@@ -43,14 +43,12 @@ auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
 }
 
 auto createSolidPolygonLayer(const std::string &dataPath) -> std::shared_ptr<SolidPolygonLayer::Props> {
-    auto props = std::make_shared<SolidPolygonLayer::Props>();
-    props->id = "ground";
-    props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
-    props->getFillColor = [](const Row &row) {
-        return mathgl::Vector4<float>{0.0f, 0.0f, 0.0f, 0.0f};
-        };
-    props->stroked = false;
-    props->getPolygon = [](const Row &row) { return row.getVector3<float>("coordinates"); };
+  auto props = std::make_shared<SolidPolygonLayer::Props>();
+  props->id = "ground";
+  props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
+  props->getFillColor = [](const Row &row) { return mathgl::Vector4<float>{0.0f, 0.0f, 0.0f, 0.0f}; };
+  props->stroked = false;
+  props->getPolygon = [](const Row &row) { return row.getVector3<float>("coordinates"); };
 }
 
 int main(int argc, const char *argv[]) {
