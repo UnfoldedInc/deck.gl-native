@@ -50,6 +50,11 @@ const std::vector<const Property*> propTypeDefs = {
         [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->normalize; },
         [](JSONObject* props, bool value) { return dynamic_cast<SolidPolygonLayer::Props*>(props)->normalize = value; },
         true},
+    new PropertyT<bool>{
+        "stroked",
+        [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->stroked; },
+        [](JSONObject* props, bool value) { return dynamic_cast<SolidPolygonLayer::Props*>(props)->stroked = value; },
+        false},
     new PropertyT<float>{
         "elevationScale",
         [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->elevationScale; },
