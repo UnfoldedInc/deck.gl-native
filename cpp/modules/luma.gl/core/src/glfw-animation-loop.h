@@ -36,12 +36,12 @@ class GLFWAnimationLoop : public AnimationLoop {
  public:
   using super = AnimationLoop;
 
-  GLFWAnimationLoop(const Size& size = Size{640, 480}, const std::string& windowTitle = "deck.gl",
+  GLFWAnimationLoop(const Size& size = Size{640, 480}, const std::string& windowTitle = "luma.gl",
                     const wgpu::Device& device = nullptr, const wgpu::Queue& queue = nullptr,
                     const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType());
   ~GLFWAnimationLoop();
 
-  void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
+  void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
 
   auto shouldQuit() -> bool override;
   void flush() override;

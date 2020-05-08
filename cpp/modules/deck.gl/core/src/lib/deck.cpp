@@ -70,6 +70,7 @@ Deck::Deck(std::shared_ptr<Deck::Props> props)
 
   this->context->layerManager = this->layerManager;
 
+  // TODO(ilija@unfolded.ai): Delegate to project shader module
   this->_viewportUniformsBuffer =
       lumagl::utils::createBuffer(this->animationLoop->device(), sizeof(ViewportUniforms), wgpu::BufferUsage::Uniform);
 }
@@ -127,7 +128,7 @@ void Deck::run(std::function<void(Deck*)> onAfterRender) {
 
 void Deck::draw(wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender) {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
-  this->animationLoop->frame(textureView, [&](wgpu::RenderPassEncoder pass) { this->_draw(pass, onAfterRender); });
+  this->animationLoop->draw(textureView, [&](wgpu::RenderPassEncoder pass) { this->_draw(pass, onAfterRender); });
 }
 
 void Deck::stop() { this->animationLoop->stop(); }

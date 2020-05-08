@@ -68,8 +68,6 @@ class Model {
 
   auto device() -> wgpu::Device { return this->_device; }
 
-  int vertexCount;
-
   /// \brief Rendering pipeline.
   wgpu::RenderPipeline pipeline;
   /// \brief Layout of the bind group.

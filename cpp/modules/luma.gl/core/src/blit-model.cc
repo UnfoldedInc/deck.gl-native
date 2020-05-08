@@ -42,23 +42,21 @@ void main() {
 }
 )";
 
-// Escape curly braces not used in fmt::format by using double braces (https://fmt.dev/dev/syntax.html)
 static auto fs = R"(
 #version 450
 
 layout(set = 0, binding = 0) uniform sampler textureSampler;
 layout(set = 0, binding = 1) uniform texture2D blitTexture;
+layout(std140, set = 0, binding = 2) uniform TextureOptions {
+  ivec2 size;
+} textureOptions;
 
 layout(location = 0) out vec4 fragColor;
 
-void main() {{
-  fragColor = texture(sampler2D(blitTexture, textureSampler), gl_FragCoord.xy / vec2({}, {}));
-}}
-)";
-
-static auto getFragmentShader(const Size& textureSize) -> std::string {
-  return fmt::format(fs, textureSize.width, textureSize.height);
+void main() {
+  fragColor = texture(sampler2D(blitTexture, textureSampler), gl_FragCoord.xy / textureOptions.size);
 }
+)";
 
 static auto attributeSchema = std::make_shared<garrow::Schema>(
     std::vector<std::shared_ptr<garrow::Field>>{std::make_shared<garrow::Field>("pos", wgpu::VertexFormat::Float2)});
@@ -67,11 +65,12 @@ static auto getOptions(const wgpu::Device& device, const Size& textureSize) -> M
   auto instancedSchema = std::make_shared<garrow::Schema>(std::vector<std::shared_ptr<garrow::Field>>{});
 
   return Model::Options{vs,
-                        getFragmentShader(textureSize),
+                        fs,
                         attributeSchema,
                         instancedSchema,
                         {UniformDescriptor{wgpu::ShaderStage::Fragment, wgpu::BindingType::Sampler},
-                         UniformDescriptor{wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture}},
+                         UniformDescriptor{wgpu::ShaderStage::Fragment, wgpu::BindingType::SampledTexture},
+                         UniformDescriptor{wgpu::ShaderStage::Fragment, wgpu::BindingType::UniformBuffer}},
                         wgpu::PrimitiveTopology::TriangleStrip};
 }
 
@@ -88,7 +87,17 @@ BlitModel::BlitModel(const wgpu::Device& device, const wgpu::TextureView& textur
   auto attributes = std::make_shared<garrow::Table>(attributeSchema, attribureArrays);
 
   this->setAttributes(attributes);
-  this->vertexCount = static_cast<int>(attributes->num_rows());
   this->setUniformSampler(0, sampler);
   this->setUniformTexture(1, textureView);
+  this->setTextureSize(textureSize);
+}
+
+void BlitModel::setTextureSize(const Size& textureSize) {
+  this->setUniformBuffer(2, this->_uniformBufferFromSize(textureSize));
+}
+
+auto BlitModel::_uniformBufferFromSize(const Size& size) -> wgpu::Buffer {
+  // Using Vector2 when creating uniform buffers to stay consistent, Size structure is subject to change
+  auto sizeVector = mathgl::Vector2<int>{size.width, size.height};
+  return utils::createBufferFromData(this->device(), &sizeVector, sizeof(sizeVector), wgpu::BufferUsage::Uniform);
 }

@@ -101,12 +101,16 @@ int main(int argc, const char* argv[]) {
 
   auto framebufferSize = windowSize * animationLoop.devicePixelRatio();
 
-  // Create a Deck and draw into a newly created texture
   auto deck = createDeck(argv, device, windowSize);
   auto textureView = createTextureView(device, framebufferSize, animationLoop.getPreferredSwapChainTextureFormat());
-  deck->draw(textureView);
 
-  // Draw the texture onto the screen
-  BlitModel model{device, textureView, framebufferSize};
-  animationLoop.run([&](wgpu::RenderPassEncoder pass) { model.draw(pass); });
+  BlitModel blitModel{device, textureView, framebufferSize};
+  animationLoop.run([&](wgpu::RenderPassEncoder pass) {
+    static double bearing = 0.0;
+    deck->props()->viewState = createViewState(bearing -= 0.3);
+    deck->setProps(deck->props());
+
+    deck->draw(textureView);
+    blitModel.draw(pass);
+  });
 }

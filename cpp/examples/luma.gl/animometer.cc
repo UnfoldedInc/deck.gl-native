@@ -145,7 +145,6 @@ int main(int argc, const char* argv[]) {
   }
 
   model.setAttributes(attributes);
-  model.vertexCount = static_cast<int>(attributes->num_rows());
 
   animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static int f = 0;

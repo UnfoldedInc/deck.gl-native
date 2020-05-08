@@ -60,7 +60,7 @@ GLFWAnimationLoop::GLFWAnimationLoop(const Size& size, const std::string& window
 
   this->_binding = CreateBinding(backendType, this->_window, _device.Get());
   if (!this->_binding) {
-    throw new std::runtime_error("Failed to create binding");
+    throw new std::runtime_error("Failed to initialize GLFWAnimationLoop, no backends enable for luma.gl");
   }
 
   this->_swapchain = this->_createSwapchain(_device);
@@ -74,14 +74,14 @@ GLFWAnimationLoop::~GLFWAnimationLoop() {
   // TODO(ilija@unfolded.ai): Additional cleanup?
 }
 
-void GLFWAnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
+void GLFWAnimationLoop::draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   // Break the run loop if esc is pressed
   if (glfwGetKey(this->_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(this->_window, true);
   }
 
   wgpu::TextureView backbufferView = this->_swapchain.GetCurrentTextureView();
-  super::frame(backbufferView, onRender);
+  super::draw(backbufferView, onRender);
   this->_swapchain.Present();
 }
 

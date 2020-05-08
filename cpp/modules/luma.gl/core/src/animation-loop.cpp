@@ -36,45 +36,38 @@ AnimationLoop::~AnimationLoop() {
   // TODO(ilija@unfolded.ai): Cleanup?
 }
 
-void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
-  this->running = true;
-  // TODO(ilija@unfolded.ai): Add needsRedraw and check it
-  while (this->running && !this->shouldQuit()) {
-    this->frame(onRender);
-    // TODO(ib@unfolded.ai): We should not wait 16ms, we should wait **max** 16ms.
-    probegl::uSleep(16000);
-  }
-  this->running = false;
-}
-
-void AnimationLoop::frame(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender) {
+void AnimationLoop::draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender) {
   // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
   utils::ComboRenderPassDescriptor passDescriptor({textureView});
   wgpu::CommandEncoder encoder = this->_device.CreateCommandEncoder();
-  {
-    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
+  wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
 
-    try {
-      onRender(pass);
-    } catch (const std::runtime_error& re) {
-      // Speciffic handling for runtime_error
-      probegl::ErrorLog() << "Drawing failed with untime error: " << re.what();
-    } catch (const std::exception& ex) {
-      // Speciffic handling for all exceptions extending std::exception, except
-      // std::runtime_error which is handled explicitly
-      probegl::ErrorLog() << "Drawing failed with exception: " << ex.what();
-    } catch (...) {
-      // Catch any other errors (that we have no information about)
-      probegl::ErrorLog() << "Unknown failure occurred during drawing. Possible memory corruption";
-    }
-
-    pass.EndPass();
+  try {
+    onRender(pass);
+  } catch (const std::exception& ex) {
+    probegl::ErrorLog() << "Drawing failed with an exception: " << ex.what();
+  } catch (...) {
+    // Catch any other errors (that we have no information about)
+    probegl::ErrorLog() << "Unknown failure occurred during drawing. Possible memory corruption";
   }
+
+  pass.EndPass();
 
   wgpu::CommandBuffer commands = encoder.Finish();
   this->_queue.Submit(1, &commands);
 
   this->flush();
+}
+
+void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
+  this->running = true;
+  // TODO(ilija@unfolded.ai): Add needsRedraw and check it
+  while (this->running && !this->shouldQuit()) {
+    this->draw(onRender);
+    // TODO(ib@unfolded.ai): We should not wait 16ms, we should wait **max** 16ms.
+    probegl::uSleep(16000);
+  }
+  this->running = false;
 }
 
 void AnimationLoop::stop() { this->running = false; }

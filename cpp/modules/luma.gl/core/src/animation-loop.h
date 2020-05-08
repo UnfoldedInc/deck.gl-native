@@ -36,9 +36,9 @@ class AnimationLoop {
   AnimationLoop(wgpu::Device device, wgpu::Queue queue = nullptr, const Size& size = Size{640, 480});
   virtual ~AnimationLoop();
 
+  virtual void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {}
+  virtual void draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void run(std::function<void(wgpu::RenderPassEncoder)> onRender);
-  virtual void frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {}
-  virtual void frame(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void stop();
 
   virtual auto shouldQuit() -> bool { return false; }
@@ -47,7 +47,7 @@ class AnimationLoop {
   virtual auto devicePixelRatio() -> float { return 1.0f; }
   virtual void setSize(const Size& size);
 
-  auto size() -> Size { return this->_size; };
+  auto size() const -> Size { return this->_size; };
 
   bool running{false};
   auto device() -> wgpu::Device { return this->_device; }

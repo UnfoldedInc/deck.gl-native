@@ -30,6 +30,11 @@ namespace lumagl {
 class BlitModel : public Model {
  public:
   BlitModel(const wgpu::Device& device, const wgpu::TextureView& textureView, const Size& textureSize);
+
+  void setTextureSize(const Size& textureSize);
+
+ private:
+  auto _uniformBufferFromSize(const Size& size) -> wgpu::Buffer;
 };
 
 }  // namespace lumagl

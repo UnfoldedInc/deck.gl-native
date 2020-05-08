@@ -248,7 +248,5 @@ auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl:
   auto instancedAttributes = this->attributeManager->update(this->props()->data);
   model->setInstancedAttributes(instancedAttributes);
 
-  model->vertexCount = static_cast<int>(positionData.size());
-
   return model;
 }

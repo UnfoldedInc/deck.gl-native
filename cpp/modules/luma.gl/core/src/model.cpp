@@ -94,10 +94,11 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
   // The last two arguments are used for specifying dynamic offsets, which is not something we support right now
   pass.SetBindGroup(0, this->bindGroup, 0, nullptr);
 
+  auto vertexCount = static_cast<uint32_t>(this->_attributeTable->num_rows());
   // Make sure at least one instance is being drawn in case no instanced attributes are present
   uint32_t minimumInstances = 1;
   auto instanceCount = std::max(static_cast<uint32_t>(this->_instancedAttributeTable->num_rows()), minimumInstances);
-  pass.Draw(this->vertexCount, instanceCount, 0, 0);
+  pass.Draw(vertexCount, instanceCount, 0, 0);
 }
 
 void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
