@@ -251,9 +251,6 @@ Vector4<coord>::Vector4(const Vector4<othercoord> &other)
       w{static_cast<coord>(other.w)} {}
 
 template <typename coord>
-Vector4<coord> vectorProduct(const Vector4<coord> &, const Vector4<coord> &, const Vector4<coord> &);
-
-template <typename coord>
 Vector4<coord> elementProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
@@ -653,25 +650,6 @@ void Vector4<coord>::normalize() {
 }
 
 template <typename coord>
-auto vectorProduct(const Vector4<coord> &v1, const Vector4<coord> &v2, const Vector4<coord> &v3) -> Vector4<coord> {
-  coord A = v2.x * v3.y - v2.y * v3.x;
-  coord B = v2.x * v3.z - v2.z * v3.x;
-  coord C = v2.x * v3.w - v2.w * v3.x;
-  coord D = v2.y * v3.z - v2.z * v3.y;
-  coord E = v2.y * v3.w - v2.w * v3.y;
-  coord F = v2.z * v3.w - v2.z * v3.z;
-  coord G = v1.x;
-  coord H = v1.y;
-  coord I = v1.z;
-  coord J = v1.w;
-  coord newX = H * F - I * E + J * D;
-  coord newY = -(G * F) + I * C - J * B;
-  coord newZ = G * E - H * C + J * A;
-  coord newW = -(G * D) + H * B - I * A;
-  return Vector4<coord>(newX, newY, newZ, newW);
-}
-
-template <typename coord>
 auto elementProduct(const Vector4<coord> &u, const Vector4<coord> &v) -> Vector4<coord> {
   return Vector4<coord>(u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w);
 }
@@ -695,14 +673,6 @@ template <typename coord>
 auto operator/(const Vector4<coord> &v, coord c) -> Vector4<coord> {
   return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w / c);
 }
-
-// TODO(randy@unfolded.ai): explore legality of scalar/vector
-// Current implementation implies dividing a scalar by a vector is a legal operation
-// maybe scalar/vector could be interpreted as: Vector4<coord>(c/v.x, c/v.y, c/v.z, c/v.w) (?)
-// template <typename coord>
-// auto operator/(coord c, const Vector4<coord> &v) -> Vector4<coord> {
-//   return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w / c);
-// }
 
 template <typename coord>
 auto operator<<(std::ostream &os, const Vector4<coord> &v) -> std::ostream & {
