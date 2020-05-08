@@ -50,6 +50,7 @@ set(CORE_HEADER_FILES
     core/src/lib/component.h
     core/src/lib/constants.h
     core/src/lib/deck.h
+    core/src/lib/earcut.hpp
     core/src/lib/layer.h
     core/src/lib/layer-manager.h
     core/src/lib/layer-state.h
