@@ -70,7 +70,7 @@ class Vector2 {
   template <typename othercoord>
   explicit Vector2(const Vector2<othercoord> &other);
 
-  auto operator-() const -> Vector2<coord> { return Vector2<coord>(-x, -y); }
+  auto operator-() const -> Vector2<coord> { return Vector2<coord>{-x, -y}; }
   auto operator+=(const Vector2<coord> &v) -> Vector2<coord> {
     x += v.x, y += v.y;
     return *this;
@@ -104,12 +104,12 @@ auto dotProduct(const Vector2<coord> &, const Vector2<coord> &) -> Vector2<coord
 
 template <typename coord>
 auto operator+(const Vector2<coord> &v1, const Vector2<coord> &v2) -> Vector2<coord> {
-  return Vector2<coord>(v1.x + v2.x, v1.y + v2.y);
+  return Vector2<coord>{v1.x + v2.x, v1.y + v2.y};
 }
 
 template <typename coord>
 auto operator-(const Vector2<coord> &v1, const Vector2<coord> &v2) -> Vector2<coord> {
-  return Vector2<coord>(v1.x - v2.x, v1.y - v2.y);
+  return Vector2<coord>{v1.x - v2.x, v1.y - v2.y};
 }
 
 template <typename coord>
@@ -134,7 +134,7 @@ class Vector3 {
   template <typename othercoord>
   explicit Vector3(const Vector3<othercoord> &other);
 
-  auto operator-() const -> Vector3<coord> { return Vector3<coord>(-x, -y, -z); }
+  auto operator-() const -> Vector3<coord> { return Vector3<coord>{-x, -y, -z}; }
   auto operator+=(const Vector3<coord> &v) -> Vector3<coord> {
     x += v.x, y += v.y, z += v.z;
     return *this;
@@ -169,12 +169,12 @@ auto dotProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord
 
 template <typename coord>
 auto operator+(const Vector3<coord> &v1, const Vector3<coord> &v2) -> Vector3<coord> {
-  return Vector3<coord>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+  return Vector3<coord>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
 }
 
 template <typename coord>
 auto operator-(const Vector3<coord> &v1, const Vector3<coord> &v2) -> Vector3<coord> {
-  return Vector3<coord>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+  return Vector3<coord>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
 }
 
 template <typename coord>
@@ -199,7 +199,7 @@ class Vector4 {
   template <typename othercoord>
   explicit Vector4(const Vector4<othercoord> &other);
 
-  auto operator-() const -> Vector4<coord> { return Vector4<coord>(-x, -y, -z, -w); }
+  auto operator-() const -> Vector4<coord> { return Vector4<coord>{-x, -y, -z, -w}; }
 
   auto operator+=(const Vector4<coord> &v) -> Vector4<coord> {
     x += v.x, y += v.y, z += v.z, w += v.w;
@@ -219,11 +219,11 @@ class Vector4 {
   }
 
   auto operator+(const Vector4<coord> &v) const -> Vector4<coord> {
-    return Vector4<coord>(x + v.x, y + v.y, z + v.z, w + v.w);
+    return Vector4<coord>{x + v.x, y + v.y, z + v.z, w + v.w};
   }
 
   auto operator-(const Vector4<coord> &v) const -> Vector4<coord> {
-    return Vector4<coord>(x - v.x, y - v.y, z - v.z, w - v.w);
+    return Vector4<coord>{x - v.x, y - v.y, z - v.z, w - v.w};
   }
 
   auto operator==(const Vector4<coord> &v) const -> bool {
@@ -255,12 +255,12 @@ Vector4<coord> dotProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
 auto operator+(const Vector4<coord> &v1, const Vector4<coord> &v2) -> Vector4<coord> {
-  return Vector4<coord>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w);
+  return Vector4<coord>{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w};
 }
 
 template <typename coord>
 auto operator-(const Vector4<coord> &v1, const Vector4<coord> &v2) -> Vector4<coord> {
-  return Vector4<coord>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w);
+  return Vector4<coord>{v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w};
 }
 
 template <typename coord>
@@ -501,37 +501,32 @@ void Vector2<coord>::normalize() {
 
 template <typename coord>
 auto Vector2<coord>::lerp(const Vector2<coord> &v, coord t) -> Vector2<coord> {
-  return Vector2<coord>(x + t * (v.x - x), y + t * (v.y - y));
+  return Vector2<coord>{x + t * (v.x - x), y + t * (v.y - y)};
 }
 
 template <typename coord>
 auto dotProduct(const Vector2<coord> &u, const Vector2<coord> &v) -> Vector2<coord> {
-  return Vector2<coord>(u.x * v.x, u.y * v.y);
+  return Vector2<coord>{u.x * v.x, u.y * v.y};
 }
 
 template <typename coord>
-coord operator*(const Vector2<coord> &u, const Vector2<coord> &v) {
+auto operator*(const Vector2<coord> &u, const Vector2<coord> &v) -> coord {
   return u.x * v.x + u.y * v.y;
 }
 
 template <typename coord>
 auto operator*(const Vector2<coord> &v, coord c) -> Vector2<coord> {
-  return Vector2<coord>(v.x * c, v.y * c);
+  return Vector2<coord>{v.x * c, v.y * c};
 }
 
 template <typename coord>
 auto operator*(coord c, const Vector2<coord> &v) -> Vector2<coord> {
-  return Vector2<coord>(v.x * c, v.y * c);
+  return Vector2<coord>{v.x * c, v.y * c};
 }
 
 template <typename coord>
 auto operator/(const Vector2<coord> &v, coord c) -> Vector2<coord> {
-  return Vector2<coord>(v.x / c, v.y / c);
-}
-
-template <typename coord>
-auto operator/(coord c, const Vector2<coord> &v) -> Vector2<coord> {
-  return Vector2<coord>(v.x / c, v.y / c);
+  return Vector2<coord>{v.x / c, v.y / c};
 }
 
 template <typename coord>
@@ -560,7 +555,7 @@ auto Vector3<coord>::length2() const -> coord {
 
 template <typename coord>
 auto Vector3<coord>::toVector2() const -> Vector2<coord> {
-  return Vector2<coord>(this->x, this->y);
+  return Vector2<coord>{this->x, this->y};
 }
 
 template <typename coord>
@@ -574,12 +569,12 @@ void Vector3<coord>::normalize() {
 
 template <typename coord>
 auto crossProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
-  return Vector3<coord>(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
+  return Vector3<coord>{u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x};
 }
 
 template <typename coord>
 auto dotProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
-  return Vector3<coord>(u.x * v.x, u.y * v.y, u.z * v.z);
+  return Vector3<coord>{u.x * v.x, u.y * v.y, u.z * v.z};
 }
 
 template <typename coord>
@@ -589,22 +584,17 @@ auto operator*(const Vector3<coord> &u, const Vector3<coord> &v) -> coord {
 
 template <typename coord>
 auto operator*(const Vector3<coord> &v, coord c) -> Vector3<coord> {
-  return Vector3<coord>(v.x * c, v.y * c, v.z * c);
+  return Vector3<coord>{v.x * c, v.y * c, v.z * c};
 }
 
 template <typename coord>
 auto operator*(coord c, const Vector3<coord> &v) -> Vector3<coord> {
-  return Vector3<coord>(v.x * c, v.y * c, v.z * c);
+  return Vector3<coord>{v.x * c, v.y * c, v.z * c};
 }
 
 template <typename coord>
 auto operator/(const Vector3<coord> &v, coord c) -> Vector3<coord> {
-  return Vector3<coord>(v.x / c, v.y / c, v.z / c);
-}
-
-template <typename coord>
-auto operator/(coord c, const Vector3<coord> &v) -> Vector3<coord> {
-  return Vector3<coord>(v.x / c, v.y / c, v.z / c);
+  return Vector3<coord>{v.x / c, v.y / c, v.z / c};
 }
 
 template <typename coord>
@@ -629,7 +619,7 @@ auto Vector4<coord>::length2() const -> coord {
 
 template <typename coord>
 auto Vector4<coord>::toVector3() const -> Vector3<coord> {
-  return Vector3<coord>(this->x, this->y, this->z);
+  return Vector3<coord>{this->x, this->y, this->z};
 }
 
 template <typename coord>
@@ -651,7 +641,7 @@ void Vector4<coord>::normalize() {
 
 template <typename coord>
 auto dotProduct(const Vector4<coord> &u, const Vector4<coord> &v) -> Vector4<coord> {
-  return Vector4<coord>(u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w);
+  return Vector4<coord>{u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w};
 }
 
 template <typename coord>
@@ -661,17 +651,17 @@ auto operator*(const Vector4<coord> &u, const Vector4<coord> &v) -> coord {
 
 template <typename coord>
 auto operator*(const Vector4<coord> &v, coord c) -> Vector4<coord> {
-  return Vector4<coord>(v.x * c, v.y * c, v.z * c, v.w * c);
+  return Vector4<coord>{v.x * c, v.y * c, v.z * c, v.w * c};
 }
 
 template <typename coord>
 auto operator*(coord c, const Vector4<coord> &v) -> Vector4<coord> {
-  return Vector4<coord>(v.x * c, v.y * c, v.z * c, v.w * c);
+  return Vector4<coord>{v.x * c, v.y * c, v.z * c, v.w * c};
 }
 
 template <typename coord>
 auto operator/(const Vector4<coord> &v, coord c) -> Vector4<coord> {
-  return Vector4<coord>(v.x / c, v.y / c, v.z / c, v.w / c);
+  return Vector4<coord>{v.x / c, v.y / c, v.z / c, v.w / c};
 }
 
 template <typename coord>
@@ -713,7 +703,7 @@ template <typename coord>
 auto Matrix2<coord>::makeRotation(coord angle) -> Matrix2<coord> {
   coord sine = static_cast<coord>(sin(angle));
   coord cosine = static_cast<coord>(cos(angle));  // ERROR adapt function to precision?
-  return Matrix2(cosine, -sine, sine, cosine);
+  return Matrix2{cosine, -sine, sine, cosine};
 }
 
 template <typename coord>
@@ -722,19 +712,19 @@ auto Matrix2<coord>::invert() const -> Matrix2<coord> {
   coord det = at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0);
   if (det == static_cast<coord>(0)) throw std::runtime_error("Attempt to invert singular matrix");
   det = 1 / det;
-  return Matrix2<coord>(det * at(1, 1), -det * at(0, 1), -det * at(1, 0), det * at(0, 0));
+  return Matrix2<coord>{det * at(1, 1), -det * at(0, 1), -det * at(1, 0), det * at(0, 0)};
 }
 
 template <typename coord>
 auto operator*(const Matrix2<coord> &m1, const Matrix2<coord> &m2) -> Matrix2<coord> {
   // Unrolled multiply
-  return Matrix2<coord>(m1(0, 0) * m2(0, 0) + m1(0, 1) * m2(1, 0), m1(0, 0) * m2(1, 0) + m1(0, 1) * m2(1, 1),
-                        m1(0, 1) * m2(0, 0) + m1(1, 1) * m2(1, 0), m1(0, 1) * m2(1, 0) + m1(1, 1) * m2(1, 1));
+  return Matrix2<coord>{m1(0, 0) * m2(0, 0) + m1(0, 1) * m2(1, 0), m1(0, 0) * m2(1, 0) + m1(0, 1) * m2(1, 1),
+                        m1(0, 1) * m2(0, 0) + m1(1, 1) * m2(1, 0), m1(0, 1) * m2(1, 0) + m1(1, 1) * m2(1, 1)};
 }
 
 template <typename coord>
 auto operator*(const Matrix2<coord> &m, const Vector2<coord> &v) -> Vector2<coord> {
-  return Vector2<coord>(m(0, 0) * v.x + m(0, 1) * v.y, m(1, 0) * v.x + m(1, 1) * v.y);
+  return Vector2<coord>{m(0, 0) * v.x + m(0, 1) * v.y, m(1, 0) * v.x + m(1, 1) * v.y};
 }
 
 template <typename coord>
@@ -823,50 +813,57 @@ auto Matrix3<coord>::determinant() const -> coord {
 template <typename coord>
 auto Matrix3<coord>::invert() const -> Matrix3<coord> {
   coord det = 1 / determinant();
-  return Matrix3<coord>(
-      det * (at(1, 1) * at(2, 2) - at(1, 2) * at(2, 1)), -det * (at(0, 1) * at(2, 2) - at(0, 2) * at(2, 1)),
+  return Matrix3<coord>{
+      det * (at(1, 1) * at(2, 2) - at(1, 2) * at(2, 1)),  -det * (at(0, 1) * at(2, 2) - at(0, 2) * at(2, 1)),
       det * (at(0, 1) * at(1, 2) - at(0, 2) * at(1, 1)),
 
       -det * (at(1, 0) * at(2, 2) - at(1, 2) * at(2, 0)), det * (at(0, 0) * at(2, 2) - at(0, 2) * at(2, 0)),
       -det * (at(0, 0) * at(1, 2) - at(0, 2) * at(1, 0)),
 
-      det * (at(1, 0) * at(2, 1) - at(1, 1) * at(2, 0)), -det * (at(0, 0) * at(2, 1) - at(0, 1) * at(2, 0)),
-      det * (at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0)));
+      det * (at(1, 0) * at(2, 1) - at(1, 1) * at(2, 0)),  -det * (at(0, 0) * at(2, 1) - at(0, 1) * at(2, 0)),
+      det * (at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0))};
 }
 
 template <typename coord>
 auto Matrix3<coord>::transpose() const -> Matrix3<coord> {
-  return Matrix3<coord>(at(0, 0), at(1, 0), at(2, 0), at(0, 1), at(1, 1), at(2, 1), at(0, 2), at(1, 2), at(2, 2));
+  return Matrix3<coord>{at(0, 0), at(1, 0), at(2, 0), at(0, 1), at(1, 1), at(2, 1), at(0, 2), at(1, 2), at(2, 2)};
 }
 
 //  Matrix Creation
 
 template <typename coord>
 auto Matrix3<coord>::makeUnit() -> Matrix3<coord> {
-  return Matrix3<coord>(1, 0, 0, 0, 1, 0, 0, 0, 1);
+  return Matrix3<coord>{1, 0, 0, 0, 1, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix3<coord>::makeTranslation(const Vector2<coord> &offset) -> Matrix3<coord> {
-  return Matrix3<coord>(1, 0, offset.x, 0, 1, offset.y, 0, 0, 1);
+  return Matrix3<coord>{1, 0, offset.x, 0, 1, offset.y, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix3<coord>::makeScale(coord scaleX, coord scaleY) -> Matrix3<coord> {
-  return Matrix3<coord>(scaleX, static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(0), scaleY,
-                        static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(1));
+  return Matrix3<coord>{scaleX,
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        scaleY,
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(1)};
 }
 
 template <typename coord>
 auto Matrix3<coord>::makeRotation(coord angle) -> Matrix3<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
-  return Matrix3<coord>(cosine, -sine, 0, sine, cosine, 0, 0, 0, 1);
+  return Matrix3<coord>{cosine, -sine, 0, sine, cosine, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix3<coord>::makeShear(coord factorX, coord factorY) -> Matrix3<coord> {
-  return Matrix3<coord>(1, factorX, 0, factorY, 1, 0, 0, 0, 1);
+  return Matrix3<coord>{1, factorX, 0, factorY, 1, 0, 0, 0, 1};
 }
 
 ///////////////////////////////////////////////////////////
@@ -919,58 +916,70 @@ Matrix4<coord>::Matrix4(const Matrix4<othercoord> &other) {
 
 template <typename coord>
 auto Matrix4<coord>::makeUnit() -> Matrix4<coord> {
-  return Matrix4<coord>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix4<coord>::makeTranslation(const Vector3<coord> &offset) -> Matrix4<coord> {
-  return Matrix4<coord>(1, 0, 0, offset.x, 0, 1, 0, offset.y, 0, 0, 1, offset.z, 0, 0, 0, 1);
+  return Matrix4<coord>{1, 0, 0, offset.x, 0, 1, 0, offset.y, 0, 0, 1, offset.z, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix4<coord>::makeScale(const Vector3<coord> &scale) -> Matrix4<coord> {
-  return Matrix4<coord>(scale.x, static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(0),
-                        static_cast<coord>(0), scale.y, static_cast<coord>(0), static_cast<coord>(0),
-                        static_cast<coord>(0), static_cast<coord>(0), scale.z, static_cast<coord>(0),
-                        static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(0), static_cast<coord>(1));
+  return Matrix4<coord>{scale.x,
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        scale.y,
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        scale.z,
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(0),
+                        static_cast<coord>(1)};
 }
 
 template <typename coord>
 auto Matrix4<coord>::makeRotationX(coord angle) -> Matrix4<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
-  return Matrix4<coord>(1, 0, 0, 0, 0, cosine, -sine, 0, 0, sine, cosine, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{1, 0, 0, 0, 0, cosine, -sine, 0, 0, sine, cosine, 0, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix4<coord>::makeRotationY(coord angle) -> Matrix4<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
-  return Matrix4<coord>(cosine, 0, sine, 0, 0, 1, 0, 0, -sine, 0, cosine, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{cosine, 0, sine, 0, 0, 1, 0, 0, -sine, 0, cosine, 0, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix4<coord>::makeRotationZ(coord angle) -> Matrix4<coord> {
   coord sine = std::sin(angle);
   coord cosine = std::cos(angle);
-  return Matrix4<coord>(cosine, -sine, 0, 0, sine, cosine, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{cosine, -sine, 0, 0, sine, cosine, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 
 #ifdef DONT
 template <typename coord>
 auto Matrix4<coord>::makeShearXY(coord shx, coord shy) -> Matrix4<coord> {
-  return Matrix4<coord>(1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 #endif
 
 template <typename coord>
 auto Matrix4<coord>::makeShearXZ(coord shx, coord shy) -> Matrix4<coord> {
-  return Matrix4<coord>(1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 
 template <typename coord>
 auto Matrix4<coord>::makeShearXY(coord shx, coord shy) -> Matrix4<coord> {
-  return Matrix4<coord>(1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  return Matrix4<coord>{1, 0, shx, 0, 0, 1, shy, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 
 template <typename coord>
@@ -998,9 +1007,9 @@ auto Matrix4<coord>::isHomogeneous() const -> bool {
 
 template <typename coord>
 auto Matrix4<coord>::multiplyVector(const Vector3<coord> &s) const -> Vector3<coord> {
-  return Vector3<coord>(at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * s.z,
+  return Vector3<coord>{at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * s.z,
                         at(1, 0) * s.x + at(1, 1) * s.y + at(1, 2) * s.z,
-                        at(2, 0) * s.x + at(2, 1) * s.y + at(2, 2) * s.z);
+                        at(2, 0) * s.x + at(2, 1) * s.y + at(2, 2) * s.z};
 }
 
 template <typename coord>
@@ -1010,9 +1019,9 @@ auto Matrix4<coord>::multiplyPoint(const Vector3<coord> &s) const -> Vector3<coo
   // static_cast<coord>(1); if (abs (w - 1.0) > FLT_EPSILON) throw
   // std::runtime_error ("error");
 
-  return Vector3<coord>(at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * s.z + at(0, 3) * static_cast<coord>(1),
+  return Vector3<coord>{at(0, 0) * s.x + at(0, 1) * s.y + at(0, 2) * s.z + at(0, 3) * static_cast<coord>(1),
                         at(1, 0) * s.x + at(1, 1) * s.y + at(1, 2) * s.z + at(1, 3) * static_cast<coord>(1),
-                        at(2, 0) * s.x + at(2, 1) * s.y + at(2, 2) * s.z + at(2, 3) * static_cast<coord>(1));
+                        at(2, 0) * s.x + at(2, 1) * s.y + at(2, 2) * s.z + at(2, 3) * static_cast<coord>(1)};
 }
 
 template <typename coord>
@@ -1123,20 +1132,33 @@ auto Matrix4<coord>::determinant() const -> coord {
 #ifdef DONT
 template <typename coord>
 auto Matrix4<coord>::RotationMatrix(coord a_x, coord a_y, coord a_z) -> Matrix4<coord> {
-  return Matrix(cos(a_z) * cos(a_y), -sin(a_z) * cos(a_y), sin(a_y), 0,
+  return Matrix{cos(a_z) * cos(a_y),
+                -sin(a_z) * cos(a_y),
+                sin(a_y),
+                0,
                 sin(a_z) * cos(a_x) + cos(a_z) * sin(a_y) * sin(a_x),
-                cos(a_z) * cos(a_x) - sin(a_z) * sin(a_y) * sin(a_x), -cos(a_y) * sin(a_x), 0,
+                cos(a_z) * cos(a_x) - sin(a_z) * sin(a_y) * sin(a_x),
+                -cos(a_y) * sin(a_x),
+                0,
                 sin(a_z) * sin(a_x) - cos(a_z) * sin(a_y) * cos(a_x),
-                cos(a_z) * sin(a_x) + sin(a_z) * sin(a_y) * cos(a_x), cos(a_y) * cos(a_x), 0, 0, 0, 0, 1);
+                cos(a_z) * sin(a_x) + sin(a_z) * sin(a_y) * cos(a_x),
+                cos(a_y) * cos(a_x),
+                0,
+                0,
+                0,
+                0,
+                1};
 }
 #endif
 
 #ifdef DONT
 template <typename coord>
 auto Matrix4<coord>::multiplyPoint(const Vector3<coord> s) const -> Vector3<coord> {
-  return Vector3<coord>(v.x = at(0, 0) * s.x + at(1, 0) * s.y + at(2, 0) * s.z + at(3, 0) * static_cast<coord>(1);
-                        v.y = at(0, 1) * s.x + at(1, 1) * s.y + at(2, 1) * s.z + at(3, 1) * static_cast<coord>(1);
-                        v.z = at(0, 2) * s.x + at(1, 2) * s.y + at(2, 2) * s.z + at(3, 2) * static_cast<coord>(1))
+  return Vector3<coord> {
+    v.x = at(0, 0) * s.x + at(1, 0) * s.y + at(2, 0) * s.z + at(3, 0) * static_cast<coord>(1);
+    v.y = at(0, 1) * s.x + at(1, 1) * s.y + at(2, 1) * s.z + at(3, 1) * static_cast<coord>(1);
+    v.z = at(0, 2) * s.x + at(1, 2) * s.y + at(2, 2) * s.z + at(3, 2) * static_cast<coord>(1)
+  }
 }
 #endif
 
