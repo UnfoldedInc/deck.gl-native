@@ -43,7 +43,31 @@ TEST(Earcut, IndicesLength) {
   // Length of indices list should be 3* that of the input polygon list
   EXPECT_EQ(indices.size() / 3, (mainPolygon.size() + holes.size()));
 
-  //   std::cout << "Indicies: ";
+  //   std::cout << "Indices: ";
+  //   for (int i = 0; i < indices.size(); i++) {
+  //     std::cout << indices.at(i) << ' ';
+  //   }
+  //   std::cout << '\n';
+}
+
+TEST(Earcut, IndicesLength3) {
+  using Coord = double;
+  using N = uint16_t;
+
+  using Point = std::array<Coord, 3>;
+  std::vector<std::vector<Point>> polygon;
+  std::vector<Point> mainPolygon = {{100, 0, 1}, {100, 100, 2}, {0, 100, 3}, {0, 0, 4}};
+  std::vector<Point> holes = {{75, 25, 1}, {75, 75, 2}, {25, 75, 3}, {25, 25, 4}};
+
+  polygon.push_back(mainPolygon);
+  polygon.push_back(holes);
+
+  std::vector<N> indices = mapbox::earcut<N>(polygon);
+
+  // Length of indices list should be 3* that of the input polygon list
+  EXPECT_EQ(indices.size() / 3, (mainPolygon.size() + holes.size()));
+
+  //   std::cout << "Indices3: ";
   //   for (int i = 0; i < indices.size(); i++) {
   //     std::cout << indices.at(i) << ' ';
   //   }
