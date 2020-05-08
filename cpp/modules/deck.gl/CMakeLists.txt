@@ -89,6 +89,7 @@ set(CORE_TEST_SOURCE_FILES
     core/test/lib/layer-test.cpp
     core/test/lib/layer-manager-test.cpp
     core/test/lib/view-manager-test.cpp
+    core/test/lib/earcut-test.cpp
     core/test/shaderlib/project/viewport-uniforms-test.cpp
     core/test/viewports/viewport-test.cpp
     core/test/viewports/web-mercator-viewport-test.cpp
