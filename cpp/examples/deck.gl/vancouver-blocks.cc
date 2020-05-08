@@ -49,6 +49,8 @@ auto createSolidPolygonLayer(const std::string &dataPath) -> std::shared_ptr<Sol
   props->getFillColor = [](const Row &row) { return mathgl::Vector4<float>{0.0f, 0.0f, 0.0f, 0.0f}; };
   props->stroked = false;
   props->getPolygon = [](const Row &row) { return row.getVector3<float>("coordinates"); };
+
+  return props;
 }
 
 int main(int argc, const char *argv[]) {
@@ -57,6 +59,21 @@ int main(int argc, const char *argv[]) {
   auto programDirectory = programPath.erase(programPath.find_last_of("/"));
   auto vancouverDataPath = programDirectory + "/data/vancouver-blocks.ndjson";
   auto landDataPath = programDirectory + "/data/land-cover.ndjson";
+
+  auto deckProps = std::make_shared<Deck::Props>();
+  deckProps->id = "Land Cover";
+  deckProps->layers = {createSolidPolygonLayer(landDataPath)};
+  deckProps->initialViewState = createViewState(0.0);
+  deckProps->views = {std::make_shared<MapView>()};
+  deckProps->width = 640;
+  deckProps->height = 480;
+
+  auto deck = std::make_shared<Deck>(deckProps);
+  deck->run([&deckProps](Deck *deck) {
+    static double bearing = 0.0;
+    deckProps->viewState = createViewState(bearing += 0.3);
+    deck->setProps(deckProps);
+  });
 
   return 0;
 }
