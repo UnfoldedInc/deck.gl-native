@@ -100,7 +100,7 @@ class Vector2 {
 };
 
 template <typename coord>
-auto elementProduct(const Vector2<coord> &, const Vector2<coord> &) -> Vector2<coord>;
+auto dotProduct(const Vector2<coord> &, const Vector2<coord> &) -> Vector2<coord>;
 
 template <typename coord>
 auto operator+(const Vector2<coord> &v1, const Vector2<coord> &v2) -> Vector2<coord> {
@@ -162,10 +162,10 @@ class Vector3 {
 };
 
 template <typename coord>
-auto vectorProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
+auto crossProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
 
 template <typename coord>
-auto elementProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
+auto dotProduct(const Vector3<coord> &, const Vector3<coord> &) -> Vector3<coord>;
 
 template <typename coord>
 auto operator+(const Vector3<coord> &v1, const Vector3<coord> &v2) -> Vector3<coord> {
@@ -251,7 +251,7 @@ Vector4<coord>::Vector4(const Vector4<othercoord> &other)
       w{static_cast<coord>(other.w)} {}
 
 template <typename coord>
-Vector4<coord> elementProduct(const Vector4<coord> &, const Vector4<coord> &);
+Vector4<coord> dotProduct(const Vector4<coord> &, const Vector4<coord> &);
 
 template <typename coord>
 auto operator+(const Vector4<coord> &v1, const Vector4<coord> &v2) -> Vector4<coord> {
@@ -505,7 +505,7 @@ auto Vector2<coord>::lerp(const Vector2<coord> &v, coord t) -> Vector2<coord> {
 }
 
 template <typename coord>
-auto elementProduct(const Vector2<coord> &u, const Vector2<coord> &v) -> Vector2<coord> {
+auto dotProduct(const Vector2<coord> &u, const Vector2<coord> &v) -> Vector2<coord> {
   return Vector2<coord>(u.x * v.x, u.y * v.y);
 }
 
@@ -573,12 +573,12 @@ void Vector3<coord>::normalize() {
 }
 
 template <typename coord>
-auto vectorProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
+auto crossProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
   return Vector3<coord>(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
 }
 
 template <typename coord>
-auto elementProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
+auto dotProduct(const Vector3<coord> &u, const Vector3<coord> &v) -> Vector3<coord> {
   return Vector3<coord>(u.x * v.x, u.y * v.y, u.z * v.z);
 }
 
@@ -650,7 +650,7 @@ void Vector4<coord>::normalize() {
 }
 
 template <typename coord>
-auto elementProduct(const Vector4<coord> &u, const Vector4<coord> &v) -> Vector4<coord> {
+auto dotProduct(const Vector4<coord> &u, const Vector4<coord> &v) -> Vector4<coord> {
   return Vector4<coord>(u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w);
 }
 
