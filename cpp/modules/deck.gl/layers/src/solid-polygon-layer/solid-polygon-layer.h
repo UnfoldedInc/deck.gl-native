@@ -69,6 +69,7 @@ class SolidPolygonLayer::Props : public Layer::Props {
   bool extruded{false};
   bool wireframe{false};
   bool material{true};
+  bool stroked{false};
 
   // _normalize in JS, intended to be private?
   bool normalize{true};
