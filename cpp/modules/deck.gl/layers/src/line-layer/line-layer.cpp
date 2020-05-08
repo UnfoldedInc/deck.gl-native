@@ -81,7 +81,8 @@ void LineLayer::initializeState() {
   this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
 
   this->models = {this->_getModel(this->context->device)};
-  this->_layerUniforms = std::make_shared<garrow::Array>(this->context->device);
+  this->_layerUniforms =
+      utils::createBuffer(this->context->device, sizeof(LineLayerUniforms), wgpu::BufferUsage::Uniform);
 }
 
 void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
@@ -95,7 +96,7 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
   layerUniforms.widthMinPixels = props->widthMinPixels;
   layerUniforms.widthMaxPixels = props->widthMaxPixels;
 
-  this->_layerUniforms->setData(&layerUniforms, 1, wgpu::BufferUsage::Uniform);
+  this->_layerUniforms.SetSubData(0, sizeof(LineLayerUniforms), &layerUniforms);
 
   /*
   super::updateState(props, oldProps, changeFlags);
@@ -119,7 +120,7 @@ void LineLayer::drawState(wgpu::RenderPassEncoder pass) {
 
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
-    model->setUniforms(this->_layerUniforms, 1);
+    model->setUniformBuffer(1, this->_layerUniforms);
     model->draw(pass);
   }
 }
@@ -141,7 +142,7 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
                                      fs,
                                      attributeSchema,
                                      instancedAttributeSchema,
-                                     {{sizeof(ViewportUniforms)}, {sizeof(LineLayerUniforms)}},
+                                     {UniformDescriptor{}, UniformDescriptor{}},
                                      wgpu::PrimitiveTopology::TriangleStrip};
   auto model = std::make_shared<lumagl::Model>(device, modelOptions);
 
@@ -159,8 +160,6 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
 
   auto instancedAttributes = this->attributeManager->update(this->props()->data);
   model->setInstancedAttributes(instancedAttributes);
-
-  model->vertexCount = static_cast<int>(positionData.size());
 
   return model;
 }

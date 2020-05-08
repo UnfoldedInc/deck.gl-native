@@ -40,22 +40,31 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-GLFWAnimationLoop::GLFWAnimationLoop(const Size& size, const wgpu::BackendType backendType, wgpu::Device device)
+GLFWAnimationLoop::GLFWAnimationLoop(const Size& size, const std::string& windowTitle, const wgpu::Device& device,
+                                     const wgpu::Queue& queue, const wgpu::BackendType backendType)
     : AnimationLoop{size} {
-  this->_window = this->_initializeGLFW(backendType);
+  this->_window = this->_initializeGLFW(backendType, windowTitle);
+
+  // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
+  // TODO(ilija@unfolded.ai): Set this globally elsewhere
+  static bool procTableInitialized = false;
+  DawnProcTable procs = dawn_native::GetProcs();
+  if (!procTableInitialized) {
+    dawnProcSetProcs(&procs);
+    procTableInitialized = true;
+  }
 
   // Create a device if none was provided
-  auto _device = device;
-  if (device == nullptr) {
-    _device = this->_createDevice(backendType);
-  }
+  auto _device = device ? device : this->_createDevice(backendType);
+  auto _queue = queue ? queue : _device.CreateQueue();
 
   this->_binding = CreateBinding(backendType, this->_window, _device.Get());
-  if (this->_binding == nullptr) {
-    throw new std::runtime_error("Failed to create binding");
+  if (!this->_binding) {
+    throw new std::runtime_error("Failed to initialize GLFWAnimationLoop, no backends enable for luma.gl");
   }
 
-  this->_initialize(backendType, _device);
+  this->_swapchain = this->_createSwapchain(_device);
+  this->_initialize(_device, _queue);
 }
 
 GLFWAnimationLoop::~GLFWAnimationLoop() {
@@ -65,13 +74,15 @@ GLFWAnimationLoop::~GLFWAnimationLoop() {
   // TODO(ilija@unfolded.ai): Additional cleanup?
 }
 
-void GLFWAnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
+void GLFWAnimationLoop::draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   // Break the run loop if esc is pressed
   if (glfwGetKey(this->_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(this->_window, true);
   }
 
-  AnimationLoop::frame(onRender);
+  wgpu::TextureView backbufferView = this->_swapchain.GetCurrentTextureView();
+  super::draw(backbufferView, onRender);
+  this->_swapchain.Present();
 }
 
 bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->_window); }
@@ -93,6 +104,15 @@ auto GLFWAnimationLoop::devicePixelRatio() -> float {
   }
 
   return xscale;
+}
+
+void GLFWAnimationLoop::setSize(const Size& size) {
+  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
+  if (sizeChanged) {
+    this->_swapchain = this->_createSwapchain(this->_device);
+  }
+
+  super::setSize(size);
 }
 
 auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> wgpu::Device {
@@ -126,7 +146,8 @@ auto GLFWAnimationLoop::_createSwapchain(wgpu::Device device) -> wgpu::SwapChain
   return swapchain;
 }
 
-auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType) -> GLFWwindow* {
+auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType, const std::string& windowTitle)
+    -> GLFWwindow* {
   // Set up an error logging callback
   glfwSetErrorCallback(
       [](int code, const char* message) { probegl::ErrorLog() << "GLFW error: " << code << " - " << message; });
@@ -151,7 +172,7 @@ auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType) -> 
       glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   }
 
-  auto window = glfwCreateWindow(this->_size.width, this->_size.height, "deck.gl window", nullptr, nullptr);
+  auto window = glfwCreateWindow(this->_size.width, this->_size.height, windowTitle.c_str(), nullptr, nullptr);
   if (!window) {
     throw new std::runtime_error("Failed to create GLFW window");
   }

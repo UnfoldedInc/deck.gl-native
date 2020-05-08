@@ -27,48 +27,42 @@
 #include <functional>
 #include <memory>
 
+#include "./size.h"
+
 namespace lumagl {
-
-struct Size {
- public:
-  Size(int width, int height) : width{width}, height{height} {}
-
-  int width;
-  int height;
-};
 
 class AnimationLoop {
  public:
-  explicit AnimationLoop(const Size& size = Size{640, 480});
+  AnimationLoop(wgpu::Device device, wgpu::Queue queue = nullptr, const Size& size = Size{640, 480});
   virtual ~AnimationLoop();
 
+  virtual void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {}
+  virtual void draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void run(std::function<void(wgpu::RenderPassEncoder)> onRender);
-  virtual void frame(std::function<void(wgpu::RenderPassEncoder)> onRender);
   virtual void stop();
 
   virtual auto shouldQuit() -> bool { return false; }
   virtual void flush() {}
   virtual auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat { return wgpu::TextureFormat::Undefined; };
-  virtual auto devicePixelRatio() -> float = 0;
+  virtual auto devicePixelRatio() -> float { return 1.0f; }
+  virtual void setSize(const Size& size);
 
-  auto size() -> Size { return this->_size; };
-  void setSize(const Size& size);
+  auto size() const -> Size { return this->_size; };
 
   bool running{false};
   auto device() -> wgpu::Device { return this->_device; }
+  auto queue() -> wgpu::Queue { return this->_queue; }
 
  protected:
-  void _initialize(const wgpu::BackendType backendType, wgpu::Device device);
-  virtual auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device = 0;
-  virtual auto _createSwapchain(wgpu::Device device) -> wgpu::SwapChain = 0;
+  // Used by GLFWAnimationLoop as passing a Device to the constructor is not very easy
+  explicit AnimationLoop(const Size& size = Size{640, 480}) : _size{size} {}
+  void _initialize(wgpu::Device device, wgpu::Queue queue);
 
   Size _size;
+  wgpu::Device _device;
 
  private:
-  DawnProcTable _procs;
-  wgpu::Device _device;
   wgpu::Queue _queue;
-  wgpu::SwapChain _swapchain;
 };
 
 }  // namespace lumagl

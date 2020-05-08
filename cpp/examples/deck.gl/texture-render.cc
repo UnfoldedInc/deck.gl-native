@@ -18,15 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Port of https://github.com/visgl/deck.gl/tree/master/examples/website/scatterplot
-
 #include <arrow/filesystem/localfs.h>
+
+#include <limits>
 
 #include "deck.gl/core.h"
 #include "deck.gl/layers.h"
 #include "loaders.gl/json.h"
 
 using namespace deckgl;
+using namespace lumagl;
+
+// Deck setup taken from manhattan-population example
 
 loadersgl::JSONLoader jsonLoader;
 auto fileSystem = std::make_shared<arrow::fs::LocalFileSystem>();
@@ -45,21 +48,21 @@ auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
   return viewState;
 }
 
-auto createScatterplotLayer(const std::string &dataPath) -> std::shared_ptr<ScatterplotLayer::Props> {
+auto createScatterplotLayer(const std::string& dataPath) -> std::shared_ptr<ScatterplotLayer::Props> {
   auto props = std::make_shared<ScatterplotLayer::Props>();
   props->id = "population";
   props->radiusScale = 30.0f;
   props->radiusMinPixels = 0.25f;
-  props->getPosition = [](const Row &row) { return row.getVector3<float>("pos"); };
-  props->getRadius = [](const Row &row) { return 1.0f; };
-  props->getFillColor = [](const Row &row) { return row.getInt("gender") == 1 ? maleColor : femaleColor; };
+  props->getPosition = [](const Row& row) { return row.getVector3<float>("pos"); };
+  props->getRadius = [](const Row& row) { return 1.0f; };
+  props->getFillColor = [](const Row& row) { return row.getInt("gender") == 1 ? maleColor : femaleColor; };
 
   props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
 
   return props;
 }
 
-int main(int argc, const char *argv[]) {
+auto createDeck(const char* argv[], const wgpu::Device& device, const lumagl::Size& size) -> std::shared_ptr<Deck> {
   // Get data file paths relative to working directory
   auto programPath = std::string{argv[0]};
   auto programDirectory = programPath.erase(programPath.find_last_of("/"));
@@ -70,15 +73,44 @@ int main(int argc, const char *argv[]) {
   deckProps->layers = {createScatterplotLayer(populationDataPath)};
   deckProps->initialViewState = createViewState(0.0);
   deckProps->views = {std::make_shared<MapView>()};
-  deckProps->width = 640;
-  deckProps->height = 480;
+  deckProps->width = size.width;
+  deckProps->height = size.height;
 
-  auto deck = std::make_shared<Deck>(deckProps);
-  deck->run([&deckProps](Deck *deck) {
+  deckProps->renderingOptions = Deck::RenderingOptions{device, device.CreateQueue(), false};
+
+  return std::make_shared<Deck>(deckProps);
+}
+
+auto createTextureView(const wgpu::Device& device, const lumagl::Size& size, const wgpu::TextureFormat textureFormat)
+    -> wgpu::TextureView {
+  wgpu::TextureDescriptor descriptor;
+  descriptor.size.width = size.width;
+  descriptor.size.height = size.height;
+  descriptor.size.depth = 1;
+  descriptor.format = textureFormat;
+  descriptor.usage = wgpu::TextureUsage::Present | wgpu::TextureUsage::OutputAttachment | wgpu::TextureUsage::Sampled;
+  auto texture = device.CreateTexture(&descriptor);
+
+  return texture.CreateView();
+}
+
+int main(int argc, const char* argv[]) {
+  auto windowSize = lumagl::Size{640, 480};
+  GLFWAnimationLoop animationLoop{windowSize, "Texture Render"};
+  auto device = animationLoop.device();
+
+  auto framebufferSize = windowSize * animationLoop.devicePixelRatio();
+
+  auto deck = createDeck(argv, device, windowSize);
+  auto textureView = createTextureView(device, framebufferSize, animationLoop.getPreferredSwapChainTextureFormat());
+
+  BlitModel blitModel{device, textureView, framebufferSize};
+  animationLoop.run([&](wgpu::RenderPassEncoder pass) {
     static double bearing = 0.0;
-    deckProps->viewState = createViewState(bearing += 0.3);
-    deck->setProps(deckProps);
-  });
+    deck->props()->viewState = createViewState(bearing -= 0.3);
+    deck->setProps(deck->props());
 
-  return 0;
+    deck->draw(textureView);
+    blitModel.draw(pass);
+  });
 }

@@ -62,9 +62,17 @@ auto Deck::Props::getProperties() const -> const Properties* {
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
+  this->animationLoop = this->_createAnimationLoop(props);
+  this->context = std::make_shared<LayerContext>(this, this->animationLoop->device());
+  this->layerManager = std::make_shared<LayerManager>(this->context);
+
   this->setProps(props);
 
   this->context->layerManager = this->layerManager;
+
+  // TODO(ilija@unfolded.ai): Delegate to project shader module
+  this->_viewportUniformsBuffer =
+      lumagl::utils::createBuffer(this->animationLoop->device(), sizeof(ViewportUniforms), wgpu::BufferUsage::Uniform);
 }
 
 Deck::~Deck() {
@@ -115,32 +123,15 @@ void Deck::setProps(std::shared_ptr<Deck::Props> props) {
 
 void Deck::run(std::function<void(Deck*)> onAfterRender) {
   // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
-  this->animationLoop->run([&](wgpu::RenderPassEncoder pass) {
-    this->props()->onBeforeRender(this);
-
-    for (auto const& viewport : this->viewManager->getViewports()) {
-      // Expose the current viewport to layers for project* function
-      this->layerManager->activateViewport(viewport);
-
-      for (auto const& layer : this->layerManager->layers) {
-        // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
-        auto viewportUniforms = getUniformsFromViewport(viewport, this->animationLoop->devicePixelRatio());
-
-        auto uniformArray = std::make_shared<lumagl::garrow::Array>(this->context->device, &viewportUniforms, 1,
-                                                                    wgpu::BufferUsage::Uniform);
-        for (auto const& model : layer->getModels()) {
-          // Viewport uniforms are currently bound to index 0
-          model->setUniforms(uniformArray, 0);
-        }
-
-        layer->draw(pass);
-      }
-    }
-
-    onAfterRender(this);
-    this->props()->onAfterRender(this);
-  });
+  this->animationLoop->run([&](wgpu::RenderPassEncoder pass) { this->_draw(pass, onAfterRender); });
 }
+
+void Deck::draw(wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender) {
+  // TODO(ilija@unfolded.ai): We've got a retain cycle here, revisit
+  this->animationLoop->draw(textureView, [&](wgpu::RenderPassEncoder pass) { this->_draw(pass, onAfterRender); });
+}
+
+void Deck::stop() { this->animationLoop->stop(); }
 
 // Public API
 // Check if a redraw is needed
@@ -220,6 +211,46 @@ pickObjects(opts) {
 */
 
 // Private Methods
+
+auto Deck::_createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop> {
+  auto size = lumagl::Size{props->width, props->height};
+  if (props->renderingOptions) {
+    auto options = props->renderingOptions.value();
+    if (options.usesWindow) {
+      return std::make_shared<lumagl::GLFWAnimationLoop>(size, props->id, options.device, options.queue);
+    } else {
+      return std::make_shared<lumagl::AnimationLoop>(options.device, options.queue, size);
+    }
+  } else {
+    return std::make_shared<lumagl::GLFWAnimationLoop>(size, props->id);
+  }
+}
+
+void Deck::_draw(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender) {
+  this->props()->onBeforeRender(this);
+
+  for (auto const& viewport : this->viewManager->getViewports()) {
+    // Expose the current viewport to layers for project* function
+    this->layerManager->activateViewport(viewport);
+
+    for (auto const& layer : this->layerManager->layers) {
+      // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
+      auto viewportUniforms = getUniformsFromViewport(viewport, this->animationLoop->devicePixelRatio());
+
+      this->_viewportUniformsBuffer.SetSubData(0, sizeof(ViewportUniforms), &viewportUniforms);
+      for (auto const& model : layer->getModels()) {
+        // Viewport uniforms are currently bound to index 0
+        model->setUniformBuffer(0, this->_viewportUniformsBuffer);
+      }
+
+      layer->draw(pass);
+    }
+  }
+
+  onAfterRender(this);
+  this->props()->onAfterRender(this);
+}
+
 // Get the most relevant view state: props->viewState, if supplied,
 // shadows internal viewState
 // TODO(ib@unfolded.ai): For backwards compatibility ensure numeric width and height is

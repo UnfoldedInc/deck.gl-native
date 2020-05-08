@@ -28,54 +28,46 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-AnimationLoop::AnimationLoop(const Size& size) : _size{size} {
-  // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
-  // TODO(ilija@unfolded.ai): Set this globally elsewhere
-  static bool procTableInitialized = false;
-  DawnProcTable procs = dawn_native::GetProcs();
-  if (!procTableInitialized) {
-    dawnProcSetProcs(&procs);
-    procTableInitialized = true;
-  }
-
-  this->_procs = procs;
+AnimationLoop::AnimationLoop(wgpu::Device device, wgpu::Queue queue, const Size& size) : _size{size} {
+  this->_initialize(device, queue);
 }
 
 AnimationLoop::~AnimationLoop() {
   // TODO(ilija@unfolded.ai): Cleanup?
 }
 
+void AnimationLoop::draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender) {
+  // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
+  utils::ComboRenderPassDescriptor passDescriptor({textureView});
+  wgpu::CommandEncoder encoder = this->_device.CreateCommandEncoder();
+  wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
+
+  try {
+    onRender(pass);
+  } catch (const std::exception& ex) {
+    probegl::ErrorLog() << "Drawing failed with an exception: " << ex.what();
+  } catch (...) {
+    // Catch any other errors (that we have no information about)
+    probegl::ErrorLog() << "Unknown failure occurred during drawing. Possible memory corruption";
+  }
+
+  pass.EndPass();
+
+  wgpu::CommandBuffer commands = encoder.Finish();
+  this->_queue.Submit(1, &commands);
+
+  this->flush();
+}
+
 void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   this->running = true;
   // TODO(ilija@unfolded.ai): Add needsRedraw and check it
   while (this->running && !this->shouldQuit()) {
-    this->frame(onRender);
+    this->draw(onRender);
     // TODO(ib@unfolded.ai): We should not wait 16ms, we should wait **max** 16ms.
     probegl::uSleep(16000);
   }
   this->running = false;
-}
-
-void AnimationLoop::frame(std::function<void(wgpu::RenderPassEncoder)> onRender) {
-  // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
-  wgpu::TextureView backbufferView = this->_swapchain.GetCurrentTextureView();
-
-  utils::ComboRenderPassDescriptor passDescriptor({backbufferView});
-  wgpu::CommandEncoder encoder = this->_device.CreateCommandEncoder();
-  {
-    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
-
-    onRender(pass);  // TODO(ib@unfolded.ai): protect with try catch
-
-    pass.EndPass();
-  }
-
-  wgpu::CommandBuffer commands = encoder.Finish();
-
-  this->_queue.Submit(1, &commands);
-  this->_swapchain.Present();
-
-  this->flush();
 }
 
 void AnimationLoop::stop() { this->running = false; }
@@ -84,13 +76,12 @@ void AnimationLoop::setSize(const Size& size) {
   bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
   if (sizeChanged) {
     this->_size = size;
-    this->_swapchain = this->_createSwapchain(this->_device);
     // TODO(ilija@unfolded.ai): Trigger redraw
   }
 }
 
-void AnimationLoop::_initialize(const wgpu::BackendType backendType, wgpu::Device device) {
-  this->_procs.deviceSetUncapturedErrorCallback(
+void AnimationLoop::_initialize(wgpu::Device device, wgpu::Queue queue) {
+  dawn_native::GetProcs().deviceSetUncapturedErrorCallback(
       device.Get(),
       [](WGPUErrorType errorType, const char* message, void*) {
         probegl::ErrorLog() << getWebGPUErrorName(errorType) << " error: " << message;
@@ -98,6 +89,5 @@ void AnimationLoop::_initialize(const wgpu::BackendType backendType, wgpu::Devic
       nullptr);
 
   this->_device = device;
-  this->_queue = this->_device.CreateQueue();
-  this->_swapchain = this->_createSwapchain(this->_device);
+  this->_queue = queue ? queue : device.CreateQueue();
 }

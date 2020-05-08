@@ -22,6 +22,7 @@ set(EXAMPLE_SOURCE_FILES
     stdinout.cpp
     flight-paths.cc
     manhattan-population.cc
+    texture-render.cc
     )
 set(EXAMPLE_DATA_FILES
     ${DECK_DATA_PATH}/examples/flight-paths/heathrow-flights.ndjson
