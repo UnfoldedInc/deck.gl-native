@@ -42,12 +42,6 @@ TEST(Earcut, IndicesLength) {
 
   // Length of indices list should be 3* that of the input polygon list
   EXPECT_EQ(indices.size() / 3, (mainPolygon.size() + holes.size()));
-
-  //   std::cout << "Indices: ";
-  //   for (int i = 0; i < indices.size(); i++) {
-  //     std::cout << indices.at(i) << ' ';
-  //   }
-  //   std::cout << '\n';
 }
 
 TEST(Earcut, IndicesLength3) {
@@ -66,10 +60,4 @@ TEST(Earcut, IndicesLength3) {
 
   // Length of indices list should be 3* that of the input polygon list
   EXPECT_EQ(indices.size() / 3, (mainPolygon.size() + holes.size()));
-
-  //   std::cout << "Indices3: ";
-  //   for (int i = 0; i < indices.size(); i++) {
-  //     std::cout << indices.at(i) << ' ';
-  //   }
-  //   std::cout << '\n';
 }
