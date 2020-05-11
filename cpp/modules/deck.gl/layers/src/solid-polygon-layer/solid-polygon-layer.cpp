@@ -20,6 +20,7 @@
 
 #include "./solid-polygon-layer.h"  // NOLINT(build/include)
 
+#include "./solid-polygon-layer-vertex-main.glsl.h"
 #include "deck.gl/core.h"
 
 using namespace deckgl;
