@@ -50,6 +50,7 @@ set(CORE_HEADER_FILES
     core/src/lib/component.h
     core/src/lib/constants.h
     core/src/lib/deck.h
+    core/src/lib/earcut.hpp
     core/src/lib/layer.h
     core/src/lib/layer-manager.h
     core/src/lib/layer-state.h
@@ -88,6 +89,7 @@ set(CORE_TEST_SOURCE_FILES
     core/test/lib/layer-test.cpp
     core/test/lib/layer-manager-test.cpp
     core/test/lib/view-manager-test.cpp
+    core/test/lib/earcut-test.cpp
     core/test/shaderlib/project/viewport-uniforms-test.cpp
     core/test/viewports/viewport-test.cpp
     core/test/viewports/web-mercator-viewport-test.cpp

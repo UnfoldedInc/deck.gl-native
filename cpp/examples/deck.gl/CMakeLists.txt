@@ -23,11 +23,14 @@ set(EXAMPLE_SOURCE_FILES
     flight-paths.cc
     manhattan-population.cc
     texture-render.cc
+    vancouver-blocks.cc
     )
 set(EXAMPLE_DATA_FILES
     ${DECK_DATA_PATH}/examples/flight-paths/heathrow-flights.ndjson
     ${DECK_DATA_PATH}/examples/flight-paths/airports.ndjson
     ${DECK_DATA_PATH}/examples/manhattan-population/manhattan.ndjson
+    ${DECK_DATA_PATH}/examples/vancouver-blocks/vancouver-blocks.ndjson
+    ${DECK_DATA_PATH}/examples/vancouver-blocks/land-cover.ndjson
     )
 
 # Create an executable for each example from the list

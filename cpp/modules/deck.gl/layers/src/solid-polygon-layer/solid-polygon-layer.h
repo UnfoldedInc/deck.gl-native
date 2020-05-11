@@ -21,6 +21,7 @@
 #ifndef DECKGL_LAYERS_SOLIDPOLYGON_LAYER_H
 #define DECKGL_LAYERS_SOLIDPOLYGON_LAYER_H
 
+#include <list>
 #include <memory>
 #include <string>
 
@@ -35,7 +36,7 @@ class SolidPolygonLayer : public Layer {
   class Props;
   explicit SolidPolygonLayer(std::shared_ptr<SolidPolygonLayer::Props> props)
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
-  auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
+  auto props() { return std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->_props); }
 
   auto getPolygonData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getElevationData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -51,7 +52,7 @@ class SolidPolygonLayer : public Layer {
   void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
-  auto _getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>;
+  auto _getModels(wgpu::Device device) -> std::list<std::shared_ptr<lumagl::Model>>;
 };
 
 class SolidPolygonLayer::Props : public Layer::Props {
@@ -69,14 +70,15 @@ class SolidPolygonLayer::Props : public Layer::Props {
   bool extruded{false};
   bool wireframe{false};
   bool material{true};
+  bool stroked{false};
 
   // _normalize in JS, intended to be private?
   bool normalize{true};
 
   float elevationScale{1.0};
 
-  std::function<ArrowMapper::Vector4FloatAccessor> getPolygon{
-      [](const Row& row) { return row.getVector4<float>("polygon"); }};
+  std::function<ArrowMapper::Vector3FloatAccessor> getPolygon{
+      [](const Row& row) { return row.getVector3<float>("polygon"); }};
   std::function<ArrowMapper::FloatAccessor> getElevation{[](const Row& row) { return 1000.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};

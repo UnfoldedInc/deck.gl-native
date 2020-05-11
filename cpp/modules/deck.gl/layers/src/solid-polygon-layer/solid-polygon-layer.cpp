@@ -50,6 +50,11 @@ const std::vector<const Property*> propTypeDefs = {
         [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->normalize; },
         [](JSONObject* props, bool value) { return dynamic_cast<SolidPolygonLayer::Props*>(props)->normalize = value; },
         true},
+    new PropertyT<bool>{
+        "stroked",
+        [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->stroked; },
+        [](JSONObject* props, bool value) { return dynamic_cast<SolidPolygonLayer::Props*>(props)->stroked = value; },
+        false},
     new PropertyT<float>{
         "elevationScale",
         [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->elevationScale; },
@@ -66,7 +71,8 @@ auto SolidPolygonLayer::Props::getProperties() const -> const Properties* {
 void SolidPolygonLayer::initializeState() {
   // Using lambdas over std::bind - potential C++ retain cycle issue
 
-  auto polygon = std::make_shared<arrow::Field>("instancePolygons", arrow::fixed_size_list(arrow::float32(), 4));
+  auto polygon =
+      std::make_shared<arrow::Field>("instancePolygons", arrow::list(arrow::fixed_size_list(arrow::float32(), 3)));
   auto getPolygon = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPolygonData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{polygon, getPolygon});
 
@@ -189,7 +195,7 @@ auto SolidPolygonLayer::getPolygonData(const std::shared_ptr<arrow::Table>& tabl
     throw std::logic_error("Invalid layer properties");
   }
 
-  return ArrowMapper::mapVector4FloatColumn(table, props->getPolygon);
+  return ArrowMapper::mapVector3FloatColumn(table, props->getPolygon);
 }
 
 auto SolidPolygonLayer::getElevationData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
