@@ -18,9 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_SIDE_H
-#define DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_SIDE_H
-#define IS_SIDE_VERTEX
+#ifndef DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_TOP_H
+#define DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_TOP_H
 
 #include <string>
 
@@ -31,20 +30,18 @@
 namespace {
 
 // NOLINTNEXTLINE(runtime/string)
-static const std::string solidPolygonLayerVSS1 = R"GLSL(
+static const std::string solidPolygonLayerVST1 = R"GLSL(
   layout(location = 0) in vec3 instancePositions;
-  layout(location = 1) in vec3 nextPositions;
-  layout(location = 2) in float instanceElevations;
-  layout(location = 3) in vec4 instanceFillColors;
-  layout(location = 4) in vec4 instanceLineColors;
-  layout(location = 5) in vec3 instancePickingColors;
+  layout(location = 1) in float instanceElevations;
+  layout(location = 2) in vec4 instanceFillColors;
+  layout(location = 3) in vec4 instanceLineColors;
+  layout(location = 4) in vec3 instancePickingColors;
   vec3 instancePositions64Low = vec3(0.);
-  vec3 nextPositions64Low = vec3(0.);
 
 )GLSL";
 
 // NOLINTNEXTLINE(runtime/string)
-static const std::string solidPolygonLayerVSS2 = R"GLSL(
+static const std::string solidPolygonLayerVST2 = R"GLSL(
   void main(void){
     PolygonProps props;
     props.positions = instancePositions;
@@ -53,18 +50,16 @@ static const std::string solidPolygonLayerVSS2 = R"GLSL(
     props.fillColors = instanceFillColors;
     props.lineColors = instanceLineColors;
     props.pickingColors = instancePickingColors;
-    props.nextPositions = nextPositions;
-    props.nextPositions64Low = nextPositions64Low;
 
     calculatePosition(props);
   }
 )GLSL";
 
 // NOLINTNEXTLINE(runtime/string)
-static const std::string solidPolygonLayerVSS = solidPolygonLayerVSS1 + solidPolygonLayerVSM + solidPolygonLayerVSS2;
-// NOLINTNEXTLINE(runtime/string)
-static const std::string vs = "#version 450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVSS;
+static const std::string solidPolygonLayerVST = solidPolygonLayerVST1 + solidPolygonLayerVSM + solidPolygonLayerVST2;
+// NOLINTNEXTLINE(runtime/string
+static const std::string vs = "#version450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVST;
 
 }  // anonymous namespace
 
-#endif  // DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_SIDE_H
+#endif  // DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_TOP_H
