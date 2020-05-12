@@ -275,8 +275,8 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
     std::vector<UniformDescriptor> uniforms = {
         UniformDescriptor{}, UniformDescriptor{wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
 
-    auto modelOptions = Model::Options{
-        vss, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::TriangleStrip};
+    auto modelOptions =
+        Model::Options{vss, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::LineList};
 
     auto model = std::make_shared<lumagl::Model>(device, modelOptions);
     std::vector<mathgl::Vector2<float>> positionData = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};

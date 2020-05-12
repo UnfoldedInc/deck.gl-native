@@ -31,11 +31,11 @@ namespace {
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVST1 = R"GLSL(
-  layout(location = 0) in vec3 instancePositions;
-  layout(location = 1) in float instanceElevations;
-  layout(location = 2) in vec4 instanceFillColors;
-  layout(location = 3) in vec4 instanceLineColors;
-  layout(location = 4) in vec3 instancePickingColors;
+  layout(location = 2) in vec3 instancePositions;
+  layout(location = 3) in float instanceElevations;
+  layout(location = 4) in vec4 instanceFillColors;
+  layout(location = 5) in vec4 instanceLineColors;
+  layout(location = 6) in vec3 instancePickingColors;
   vec3 instancePositions64Low = vec3(0.);
 
 )GLSL";

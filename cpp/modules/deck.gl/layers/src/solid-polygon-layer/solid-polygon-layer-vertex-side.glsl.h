@@ -32,12 +32,12 @@ namespace {
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVSS1 = R"GLSL(
-  layout(location = 0) in vec3 instancePositions;
-  layout(location = 1) in vec3 nextPositions;
-  layout(location = 2) in float instanceElevations;
-  layout(location = 3) in vec4 instanceFillColors;
-  layout(location = 4) in vec4 instanceLineColors;
-  layout(location = 5) in vec3 instancePickingColors;
+  layout(location = 2) in vec3 instancePositions;
+  layout(location = 3) in vec3 nextPositions;
+  layout(location = 4) in float instanceElevations;
+  layout(location = 5) in vec4 instanceFillColors;
+  layout(location = 6) in vec4 instanceLineColors;
+  layout(location = 7) in vec3 instancePickingColors;
   vec3 instancePositions64Low = vec3(0.);
   vec3 nextPositions64Low = vec3(0.);
 

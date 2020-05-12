@@ -39,7 +39,7 @@ layout(std140, set = 0, binding = 1) uniform SolidPolygonLayerOptions {
 layout(location = 0) in vec4 vColor;
 layout(location = 1) in float isValid;
 
-layout(location = 0) in bool fragColor;
+layout(location = 0) out vec4 fragColor;
 
 void main(void) {
   if (isValid < 0.5) {
