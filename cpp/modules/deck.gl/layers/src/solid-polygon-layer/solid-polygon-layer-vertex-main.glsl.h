@@ -32,7 +32,7 @@ namespace {
 static const std::string solidPolygonLayerVSM = R"GLSL(
 layout(std140, set = 0, binding = 1) uniform SolidPolygonLayerOptions {
   bool extruded;
-  bool isWireframe;
+  bool wireframe;
   float elevationScale;
   float opacity;
 } layerOptions;
@@ -67,7 +67,7 @@ void calculatePosition(PolygonProps props){
   vec3 pos;
   vec3 pos64Low;
   vec3 normal;
-  vec4 colors = layerOptions.isWireframe ? props.lineColors : props.fillColors;
+  vec4 colors = layerOptions.wireframe ? props.lineColors : props.fillColors;
   
   geometry.worldPosition = props.positions;
   geometry.worldPositionAlt = props.nextPositions;

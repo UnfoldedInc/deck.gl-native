@@ -58,7 +58,7 @@ static const std::string solidPolygonLayerVST2 = R"GLSL(
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVST = solidPolygonLayerVST1 + solidPolygonLayerVSM + solidPolygonLayerVST2;
 // NOLINTNEXTLINE(runtime/string
-static const std::string vs = "#version450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVST;
+static const std::string vst = "#version450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVST;
 
 }  // anonymous namespace
 
