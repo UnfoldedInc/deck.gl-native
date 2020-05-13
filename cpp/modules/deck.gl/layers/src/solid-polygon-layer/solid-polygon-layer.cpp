@@ -114,8 +114,6 @@ auto SolidPolygonLayer::getPickingInfo(params) {
 
 void SolidPolygonLayer::updateStateSPL(const Layer::ChangeFlags& changeFlags,
                                        const SolidPolygonLayer::Props* oldProps) {
-  // super::updateState(changeFlags, oldProps);
-
   updateGeometry(changeFlags, oldProps);
 
   auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
@@ -257,6 +255,35 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
 
   if (filled) {
     // make new model using vsTop
+    // TODO(randy@unfolded.ai): Remove instanced fields, add (wireframe, isSideVertex) uniforms to top
+    std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2)};
+
+    auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
+
+    std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+        std::make_shared<garrow::Field>("instancePositions", wgpu::VertexFormat::Float3),
+        std::make_shared<garrow::Field>("instanceElevations", wgpu::VertexFormat::Float),
+        std::make_shared<garrow::Field>("instanceFillColors", wgpu::VertexFormat::Float4),
+        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4)};
+    auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
+
+    std::vector<UniformDescriptor> uniforms = {
+        UniformDescriptor{}, UniformDescriptor{wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
+
+    auto modelOptions = Model::Options{
+        vss, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::TriangleList};
+
+    auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+    std::vector<mathgl::Vector2<float>> positionData = {{0, 1}};
+    std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+        std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
+    model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+    // auto instancedAttributes = this->attributeManager->update(this->props()->data);
+    // model->setInstancedAttributes(instancedAttributes);
+
+    models_list.push_back(model);
   }
   if (extruded) {
     // make new model using vsSide
@@ -290,5 +317,6 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
     models_list.push_back(model);
   }
   // return list of created models
+  std::cout << "Size of models list: " << models_list.size() << '\n';
   return models_list;
 }

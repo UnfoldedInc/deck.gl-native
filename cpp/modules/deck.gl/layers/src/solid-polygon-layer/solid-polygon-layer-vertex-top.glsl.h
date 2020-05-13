@@ -31,12 +31,12 @@ namespace {
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVST1 = R"GLSL(
-  layout(location = 2) in vec3 instancePositions;
-  layout(location = 3) in float instanceElevations;
-  layout(location = 4) in vec4 instanceFillColors;
-  layout(location = 5) in vec4 instanceLineColors;
-  layout(location = 6) in vec3 instancePickingColors;
-  vec3 instancePositions64Low = vec3(0.);
+  layout(location = 2) in vec3 positions;
+  layout(location = 3) in float elevations;
+  layout(location = 4) in vec4 fillColors;
+  layout(location = 5) in vec4 lineColors;
+  layout(location = 6) in vec3 pickingColors;
+  vec3 positions64Low = vec3(0.);
 
 )GLSL";
 
@@ -44,12 +44,12 @@ static const std::string solidPolygonLayerVST1 = R"GLSL(
 static const std::string solidPolygonLayerVST2 = R"GLSL(
   void main(void){
     PolygonProps props;
-    props.positions = instancePositions;
-    props.positions64Low = instancePositions64Low;
-    props.elevations = instanceElevations;
-    props.fillColors = instanceFillColors;
-    props.lineColors = instanceLineColors;
-    props.pickingColors = instancePickingColors;
+    props.positions = positions;
+    props.positions64Low = positions64Low;
+    props.elevations = elevations;
+    props.fillColors = fillColors;
+    props.lineColors = lineColors;
+    props.pickingColors = pickingColors;
 
     calculatePosition(props);
   }

@@ -115,8 +115,4 @@ void calculatePosition(PolygonProps props){
 
 }  // anonymous namespace
 
-// not sure that the following "vsm" definition is necessary - vs defined in side/top
-// NOLINTNEXTLINE(runtime/string)
-static const std::string vsm = "#version450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVSM;
-
 #endif  // DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_MAIN_H
