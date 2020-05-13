@@ -257,15 +257,20 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
     // make new model using vsTop
     // TODO(randy@unfolded.ai): Remove instanced fields, add (wireframe, isSideVertex) uniforms to top
     std::vector<std::shared_ptr<garrow::Field>> attributeFields{
-        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2)};
+        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2),
+        std::make_shared<garrow::Field>("vertexValid", wgpu::VertexFormat::Float),
+        std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3),
+        std::make_shared<garrow::Field>("elevations", wgpu::VertexFormat::Float),
+        std::make_shared<garrow::Field>("fillColors", wgpu::VertexFormat::Float4),
+        std::make_shared<garrow::Field>("lineColors", wgpu::VertexFormat::Float4),
+        std::make_shared<garrow::Field>("pickingColors", wgpu::VertexFormat::Float3)};
 
     auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
 
+    // TODO(randy@unfolded.ai): Although instanced fields don't seem to be used in the JS vertex-top shader,
+    //                          leaving as nullptr causes a segmentation fault. Using placeholder for now.
     std::vector<std::shared_ptr<garrow::Field>> instancedFields{
-        std::make_shared<garrow::Field>("instancePositions", wgpu::VertexFormat::Float3),
-        std::make_shared<garrow::Field>("instanceElevations", wgpu::VertexFormat::Float),
-        std::make_shared<garrow::Field>("instanceFillColors", wgpu::VertexFormat::Float4),
-        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4)};
+        std::make_shared<garrow::Field>("placeholder", wgpu::VertexFormat::Float)};
     auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
     std::vector<UniformDescriptor> uniforms = {
@@ -288,15 +293,18 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
   if (extruded) {
     // make new model using vsSide
     std::vector<std::shared_ptr<garrow::Field>> attributeFields{
-        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2)};
+        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2),
+        std::make_shared<garrow::Field>("vertexValid", wgpu::VertexFormat::Float)};
 
     auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
 
     std::vector<std::shared_ptr<garrow::Field>> instancedFields{
         std::make_shared<garrow::Field>("instancePositions", wgpu::VertexFormat::Float3),
+        std::make_shared<garrow::Field>("nextPositions", wgpu::VertexFormat::Float3),
         std::make_shared<garrow::Field>("instanceElevations", wgpu::VertexFormat::Float),
         std::make_shared<garrow::Field>("instanceFillColors", wgpu::VertexFormat::Float4),
-        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4)};
+        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4),
+        std::make_shared<garrow::Field>("instancePickingColors", wgpu::VertexFormat::Float3)};
     auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
     std::vector<UniformDescriptor> uniforms = {
@@ -316,7 +324,5 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
 
     models_list.push_back(model);
   }
-  // return list of created models
-  std::cout << "Size of models list: " << models_list.size() << '\n';
   return models_list;
 }

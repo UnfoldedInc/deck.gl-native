@@ -69,7 +69,7 @@ class SolidPolygonLayer::Props : public Layer::Props {
   }
 
   bool filled{true};
-  bool extruded{false};
+  bool extruded{true};
   bool wireframe{false};
   bool material{true};
   bool stroked{false};
