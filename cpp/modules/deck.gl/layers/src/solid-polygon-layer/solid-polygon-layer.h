@@ -46,13 +46,15 @@ class SolidPolygonLayer : public Layer {
  protected:
   void initializeState() override;
   // auto getPickingInfo() override;
-  void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
+  void updateStateSPL(const ChangeFlags&, const SolidPolygonLayer::Props* oldProps);
   void updateGeometry(const ChangeFlags&, const Layer::Props* oldProps);
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
   auto _getModels(wgpu::Device device) -> std::list<std::shared_ptr<lumagl::Model>>;
+
+  wgpu::Buffer _layerUniforms;
 };
 
 class SolidPolygonLayer::Props : public Layer::Props {
@@ -67,7 +69,7 @@ class SolidPolygonLayer::Props : public Layer::Props {
   }
 
   bool filled{true};
-  bool extruded{false};
+  bool extruded{true};
   bool wireframe{false};
   bool material{true};
   bool stroked{false};
@@ -84,6 +86,16 @@ class SolidPolygonLayer::Props : public Layer::Props {
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+};
+
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
+/// bool has a 4-byte alignment in GLSL.
+/// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
+struct SolidPolygonLayerUniforms {
+  alignas(4) bool extruded;
+  alignas(4) bool wireframe;
+  float elevationScale;
+  float opacity;
 };
 
 }  // namespace deckgl

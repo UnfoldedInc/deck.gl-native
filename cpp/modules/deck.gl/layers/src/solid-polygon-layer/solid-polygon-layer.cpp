@@ -20,6 +20,10 @@
 
 #include "./solid-polygon-layer.h"  // NOLINT(build/include)
 
+#include "./solid-polygon-layer-fragment.glsl.h"
+#include "./solid-polygon-layer-vertex-main.glsl.h"
+#include "./solid-polygon-layer-vertex-side.glsl.h"
+#include "./solid-polygon-layer-vertex-top.glsl.h"
 #include "deck.gl/core.h"
 
 using namespace deckgl;
@@ -87,6 +91,10 @@ void SolidPolygonLayer::initializeState() {
   auto lineColor = std::make_shared<arrow::Field>("instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getLineColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineColorData(table); };
   this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
+
+  this->models = {this->_getModels(this->context->device)};
+  this->_layerUniforms =
+      utils::createBuffer(this->context->device, sizeof(SolidPolygonLayerUniforms), wgpu::BufferUsage::Uniform);
 }
 
 /*
@@ -104,23 +112,26 @@ auto SolidPolygonLayer::getPickingInfo(params) {
 }
 */
 
-void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
-  // super::updateState(changeFlags, oldProps);
+void SolidPolygonLayer::updateStateSPL(const Layer::ChangeFlags& changeFlags,
+                                       const SolidPolygonLayer::Props* oldProps) {
+  updateGeometry(changeFlags, oldProps);
 
-  // updateGeometry(changeFlags, oldProps);
+  auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
 
-  // auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
+  bool regenerateModels =
+      (changeFlags.extensionsChanged || (props->filled != oldProps->filled) || (props->extruded != oldProps->extruded));
 
-  // bool regenerateModels = (changeFlags.extensionsChanged ||
-  //                            (props->filled != oldProps->filled) ||
-  //                            (props->extruded != oldProps->extruded));
+  SolidPolygonLayerUniforms uniforms;
+  uniforms.elevationScale = props->elevationScale;
+  uniforms.extruded = props->extruded;
+  uniforms.wireframe = props->wireframe;
+  uniforms.opacity = props->opacity;
 
-  // if (regenerateModels) {
-  //   if (!(this->models.empty())) {
-  //     // for:each that deletes models
-  //     for (auto model : this->models) {
-  //     }
-  //   }
+  this->_layerUniforms.SetSubData(0, sizeof(SolidPolygonLayerUniforms), &uniforms);
+
+  if (regenerateModels) {
+    this->models.clear();
+  }
   // set state
   // invalidate all in attr manager
 
@@ -187,7 +198,15 @@ void SolidPolygonLayer::updateGeometry(const Layer::ChangeFlags& changeFlags, co
 
 void SolidPolygonLayer::finalizeState() {}
 
-void SolidPolygonLayer::drawState(wgpu::RenderPassEncoder pass) {}
+void SolidPolygonLayer::drawState(wgpu::RenderPassEncoder pass) {
+  this->updateState(Layer::ChangeFlags{}, nullptr);
+
+  for (auto const& model : this->getModels()) {
+    // Layer uniforms are currently bound to index 1
+    model->setUniformBuffer(1, this->_layerUniforms);
+    model->draw(pass);
+  }
+}
 
 auto SolidPolygonLayer::getPolygonData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array> {
   auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
@@ -223,4 +242,82 @@ auto SolidPolygonLayer::getLineColorData(const std::shared_ptr<arrow::Table>& ta
   }
 
   return ArrowMapper::mapVector4FloatColumn(table, props->getLineColor);
+}
+
+auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared_ptr<lumagl::Model>> {
+  // JS returns both models for the top and side if properties are set as such, so return a list
+  // of models with id = either 'id-top' or 'id-side'
+  auto id = this->props()->id;
+  auto filled = this->props()->filled;
+  auto extruded = this->props()->extruded;
+
+  std::list<std::shared_ptr<lumagl::Model>> modelsList;
+
+  if (filled) {
+    // make new model using vsTop
+    // TODO(randy@unfolded.ai): Remove instanced fields, add (wireframe, isSideVertex) uniforms to top
+    std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2),
+        std::make_shared<garrow::Field>("vertexValid", wgpu::VertexFormat::Float),
+        std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3),
+        std::make_shared<garrow::Field>("elevations", wgpu::VertexFormat::Float),
+        std::make_shared<garrow::Field>("fillColors", wgpu::VertexFormat::Float4),
+        std::make_shared<garrow::Field>("lineColors", wgpu::VertexFormat::Float4)};
+
+    auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
+
+    // TODO(randy@unfolded.ai): Although instanced fields don't seem to be used in the JS vertex-top shader,
+    //                          leaving as nullptr causes a segmentation fault. Using placeholder for now.
+    std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+        std::make_shared<garrow::Field>("placeholder", wgpu::VertexFormat::Float)};
+    auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
+
+    std::vector<UniformDescriptor> uniforms = {
+        UniformDescriptor{}, UniformDescriptor{wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
+
+    auto modelOptions = Model::Options{
+        vss, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::TriangleList};
+
+    auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+    std::vector<mathgl::Vector2<float>> positionData = {{0, 1}};
+    std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+        std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
+    model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+    modelsList.push_back(model);
+  }
+  if (extruded) {
+    // make new model using vsSide
+    std::vector<std::shared_ptr<garrow::Field>> attributeFields{
+        std::make_shared<garrow::Field>("vertexPositions", wgpu::VertexFormat::Float2),
+        std::make_shared<garrow::Field>("vertexValid", wgpu::VertexFormat::Float)};
+
+    auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
+
+    std::vector<std::shared_ptr<garrow::Field>> instancedFields{
+        std::make_shared<garrow::Field>("instancePositions", wgpu::VertexFormat::Float3),
+        std::make_shared<garrow::Field>("nextPositions", wgpu::VertexFormat::Float3),
+        std::make_shared<garrow::Field>("instanceElevations", wgpu::VertexFormat::Float),
+        std::make_shared<garrow::Field>("instanceFillColors", wgpu::VertexFormat::Float4),
+        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4)};
+    auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
+
+    std::vector<UniformDescriptor> uniforms = {
+        UniformDescriptor{}, UniformDescriptor{wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment}};
+
+    auto modelOptions =
+        Model::Options{vss, fs, attributeSchema, instancedAttributeSchema, uniforms, wgpu::PrimitiveTopology::LineList};
+
+    auto model = std::make_shared<lumagl::Model>(device, modelOptions);
+    std::vector<mathgl::Vector2<float>> positionData = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
+    std::vector<std::shared_ptr<garrow::Array>> attributeArrays{
+        std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
+    model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
+
+    auto instancedAttributes = this->attributeManager->update(this->props()->data);
+    model->setInstancedAttributes(instancedAttributes);
+
+    modelsList.push_back(model);
+  }
+  return modelsList;
 }
