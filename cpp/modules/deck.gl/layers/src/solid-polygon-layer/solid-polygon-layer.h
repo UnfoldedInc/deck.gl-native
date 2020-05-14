@@ -88,6 +88,9 @@ class SolidPolygonLayer::Props : public Layer::Props {
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
 };
 
+/// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
+/// bool has a 4-byte alignment in GLSL.
+/// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 struct SolidPolygonLayerUniforms {
   alignas(4) bool extruded;
   alignas(4) bool wireframe;

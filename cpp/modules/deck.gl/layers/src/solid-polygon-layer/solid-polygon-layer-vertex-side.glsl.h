@@ -37,7 +37,6 @@ static const std::string solidPolygonLayerVSS1 = R"GLSL(
   layout(location = 4) in float instanceElevations;
   layout(location = 5) in vec4 instanceFillColors;
   layout(location = 6) in vec4 instanceLineColors;
-  layout(location = 7) in vec3 instancePickingColors;
   vec3 instancePositions64Low = vec3(0.);
   vec3 nextPositions64Low = vec3(0.);
 
@@ -52,10 +51,8 @@ static const std::string solidPolygonLayerVSS2 = R"GLSL(
     props.elevations = instanceElevations;
     props.fillColors = instanceFillColors;
     props.lineColors = instanceLineColors;
-    props.pickingColors = instancePickingColors;
     props.nextPositions = nextPositions;
     props.nextPositions64Low = nextPositions64Low;
-
     calculatePosition(props);
   }
 )GLSL";

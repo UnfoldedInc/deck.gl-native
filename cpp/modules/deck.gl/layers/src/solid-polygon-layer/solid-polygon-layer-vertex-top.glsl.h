@@ -35,7 +35,6 @@ static const std::string solidPolygonLayerVST1 = R"GLSL(
   layout(location = 3) in float elevations;
   layout(location = 4) in vec4 fillColors;
   layout(location = 5) in vec4 lineColors;
-  layout(location = 6) in vec3 pickingColors;
   vec3 positions64Low = vec3(0.);
 
 )GLSL";
@@ -49,8 +48,6 @@ static const std::string solidPolygonLayerVST2 = R"GLSL(
     props.elevations = elevations;
     props.fillColors = fillColors;
     props.lineColors = lineColors;
-    props.pickingColors = pickingColors;
-
     calculatePosition(props);
   }
 )GLSL";

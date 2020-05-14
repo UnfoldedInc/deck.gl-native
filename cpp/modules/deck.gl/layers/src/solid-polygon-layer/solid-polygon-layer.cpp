@@ -247,11 +247,11 @@ auto SolidPolygonLayer::getLineColorData(const std::shared_ptr<arrow::Table>& ta
 auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared_ptr<lumagl::Model>> {
   // JS returns both models for the top and side if properties are set as such, so return a list
   // of models with id = either 'id-top' or 'id-side'
-  std::string id = this->props()->id;
-  bool filled = this->props()->filled;
-  bool extruded = this->props()->extruded;
+  auto id = this->props()->id;
+  auto filled = this->props()->filled;
+  auto extruded = this->props()->extruded;
 
-  std::list<std::shared_ptr<lumagl::Model>> models_list;
+  std::list<std::shared_ptr<lumagl::Model>> modelsList;
 
   if (filled) {
     // make new model using vsTop
@@ -262,8 +262,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
         std::make_shared<garrow::Field>("positions", wgpu::VertexFormat::Float3),
         std::make_shared<garrow::Field>("elevations", wgpu::VertexFormat::Float),
         std::make_shared<garrow::Field>("fillColors", wgpu::VertexFormat::Float4),
-        std::make_shared<garrow::Field>("lineColors", wgpu::VertexFormat::Float4),
-        std::make_shared<garrow::Field>("pickingColors", wgpu::VertexFormat::Float3)};
+        std::make_shared<garrow::Field>("lineColors", wgpu::VertexFormat::Float4)};
 
     auto attributeSchema = std::make_shared<lumagl::garrow::Schema>(attributeFields);
 
@@ -285,10 +284,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
         std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
     model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
 
-    // auto instancedAttributes = this->attributeManager->update(this->props()->data);
-    // model->setInstancedAttributes(instancedAttributes);
-
-    models_list.push_back(model);
+    modelsList.push_back(model);
   }
   if (extruded) {
     // make new model using vsSide
@@ -303,8 +299,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
         std::make_shared<garrow::Field>("nextPositions", wgpu::VertexFormat::Float3),
         std::make_shared<garrow::Field>("instanceElevations", wgpu::VertexFormat::Float),
         std::make_shared<garrow::Field>("instanceFillColors", wgpu::VertexFormat::Float4),
-        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4),
-        std::make_shared<garrow::Field>("instancePickingColors", wgpu::VertexFormat::Float3)};
+        std::make_shared<garrow::Field>("instanceLineColors", wgpu::VertexFormat::Float4)};
     auto instancedAttributeSchema = std::make_shared<lumagl::garrow::Schema>(instancedFields);
 
     std::vector<UniformDescriptor> uniforms = {
@@ -322,7 +317,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
     auto instancedAttributes = this->attributeManager->update(this->props()->data);
     model->setInstancedAttributes(instancedAttributes);
 
-    models_list.push_back(model);
+    modelsList.push_back(model);
   }
-  return models_list;
+  return modelsList;
 }

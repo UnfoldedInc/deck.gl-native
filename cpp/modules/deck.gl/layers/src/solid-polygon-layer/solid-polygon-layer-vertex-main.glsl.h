@@ -48,7 +48,6 @@ struct PolygonProps{
   vec4 lineColors;
   vec3 positions;
   vec3 nextPositions;
-  vec3 pickingColors;
   vec3 positions64Low;
   vec3 nextPositions64Low;
   float elevations;
@@ -71,8 +70,7 @@ void calculatePosition(PolygonProps props){
   
   geometry.worldPosition = props.positions;
   geometry.worldPositionAlt = props.nextPositions;
-  geometry.pickingColor = props.pickingColors;
-
+  
   #ifdef IS_SIDE_VERTEX
     pos = mix(props.positions, props.nextPositions, vertexPositions.x);
     pos64Low = mix(props.positions64Low, props.nextPositions64Low, vertexPositions.x);
