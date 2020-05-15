@@ -112,14 +112,15 @@ auto SolidPolygonLayer::getPickingInfo(params) {
 }
 */
 
-void SolidPolygonLayer::updateStateSPL(const Layer::ChangeFlags& changeFlags,
-                                       const SolidPolygonLayer::Props* oldProps) {
+void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+  super::updateState(changeFlags, oldProps);
   updateGeometry(changeFlags, oldProps);
 
   auto props = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->props());
+  const auto oldPropsSPL = dynamic_cast<const SolidPolygonLayer::Props*>(const_cast<Layer::Props*>(oldProps));
 
-  bool regenerateModels =
-      (changeFlags.extensionsChanged || (props->filled != oldProps->filled) || (props->extruded != oldProps->extruded));
+  bool regenerateModels = (changeFlags.extensionsChanged || (props->filled != oldPropsSPL->filled) ||
+                           (props->extruded != oldPropsSPL->extruded));
 
   SolidPolygonLayerUniforms uniforms;
   uniforms.elevationScale = props->elevationScale;
