@@ -198,6 +198,9 @@ install(TARGETS luma.gl
     LIBRARY
         DESTINATION lib
         COMPONENT Libraries
+    ARCHIVE
+        DESTINATION lib
+        COMPONENT Libraries
     )
 
 # In order to maintain the hierarchy within this module, we install the files
