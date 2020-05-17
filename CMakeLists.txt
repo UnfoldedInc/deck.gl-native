@@ -25,13 +25,22 @@
 
 # gtest_discover_tests requires v3.12
 # Currently the cmake version supported by Travis CI is 3.12.4
-cmake_minimum_required(VERSION 3.12)
+if (IOS)
+    # We use the most recent version of cmake for iOS builds as even the minor
+    # builds contain important patches
+    cmake_minimum_required(VERSION 3.17.2)
+else()
+    cmake_minimum_required(VERSION 3.12)
+endif()
 
+set(DECK_VERSION 0.0.1)
+set(DECK_SO_VERSION 1)
 project(
     deck.gl
     DESCRIPTION "C++ renderer for deck.gl"
     HOMEPAGE_URL "https://github.com/UnfoldedInc/deck.gl-native"
     LANGUAGES C CXX
+    VERSION ${DECK_VERSION}
     )
 
 # Global configuration
@@ -52,12 +61,19 @@ option(DECK_ENABLE_COVERAGE "Creates coverage reports if enabled" OFF)
 option(DECK_BUILD_EXAMPLES "Enables building examples" ON)
 option(DECK_BUILD_TESTS "Enables building tests" ON)
 option(DECK_ENABLE_GRAPHICS "When set to OFF, no graphics libraries will be included. Useful for running on CI" ON)
+option(DECK_USE_FRAMEWORKS "Whether or not to bundle libraries as frameworks on macOS and iOS" ON)
 
 # We're using clang-format-9 Linux package, which should have priority over any other version
 find_program(CLANG_FORMAT_PATH NAMES clang-format-9 clang-format)
 cmake_dependent_option(
     DECK_ENABLE_FORMAT "Enable running clang-format before compiling" ON
     "CLANG_FORMAT_PATH" OFF
+    )
+
+# If we're compiling for an Apple platform, use frameworks by default
+cmake_dependent_option(
+    DECK_USE_FRAMEWORKS "Whether or not to bundle libraries as frameworks on macOS and iOS" ON
+    APPLE OFF
     )
 
 # Default values for the backend-enabling options
@@ -96,7 +112,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(DECK_MODULES probe.gl math.gl loaders.gl luma.gl deck.gl)
 set(DECK_MODULE_PATH cpp/modules/)
 
-# Shared libraries
+# Configuration libraries
 set(DECK_CONFIG_LIBRARY deckgl-internal-config)
 
 # Global property that will be "topped-off" with example files
@@ -106,9 +122,11 @@ set_property(GLOBAL PROPERTY DECK_EXAMPLE_FILES "")
 # PLATFORM SETUP #
 ##################
 
-# TODO: This should be much more ellaborate if we want to get the actual CPU architecture
-# It's currently only used to determine appropriate include/linker paths
-if (APPLE)
+# Determine which architecture/OS we're building for
+# https://cmake.org/cmake/help/latest/variable/IOS.html
+if (IOS)
+    set(DECK_ARCH ${CMAKE_OSX_ARCHITECTURES}-ios)
+elseif (APPLE)
     set(DECK_ARCH x64-osx)
 elseif (UNIX)
     set(DECK_ARCH x64-linux)
@@ -141,9 +159,9 @@ if (NOT WIN32)
     endif()
 endif()
 
-####################
-# SHARED LIBRARIES #
-####################
+###########################
+# CONFIGURATION LIBRARIES #
+###########################
 
 add_library(${DECK_CONFIG_LIBRARY} INTERFACE)
 
@@ -191,10 +209,6 @@ endforeach()
 
 target_link_libraries(deckgl-bundle INTERFACE ${DECK_MODULES})
 
-if (DECK_BUILD_SHARED_LIBS)
-    set_target_properties(deckgl-bundle PROPERTIES SOVERSION 1)
-endif()
-
 ############
 # EXAMPLES #
 ############
@@ -226,7 +240,9 @@ if (DECK_BUILD_TESTS)
 
     target_sources(deckgl-bundle-tests PRIVATE cpp/tests/main.cpp)
     
-    find_library(gtest_LIB gtest PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+    # We're using pre-built dependencies from our dependency submodule
+    # NO_DEFAULT_PATH and NO_CMAKE_FIND_ROOT_PATH make it so other lookup paths are ignored
+    find_library(gtest_LIB gtest PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
     target_link_libraries(deckgl-bundle-tests PRIVATE ${gtest_LIB} deckgl-bundle)
 
     # Extract registered Google Tests from the executable and add them to ctest

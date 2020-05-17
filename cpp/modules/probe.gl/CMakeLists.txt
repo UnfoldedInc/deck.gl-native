@@ -19,6 +19,8 @@
 # THE SOFTWARE.
 
 add_library(probe.gl)
+set_target_properties(probe.gl PROPERTIES VERSION ${DECK_VERSION})
+set_target_properties(probe.gl PROPERTIES SOVERSION ${DECK_SO_VERSION})
 
 # File lists that are maintained manually
 set(HEADER_FILE_LIST
@@ -57,3 +59,40 @@ set_property(TARGET probe.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
 set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST})
 list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
 set_property(TARGET probe.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})
+
+# Installation
+install(TARGETS probe.gl
+    LIBRARY
+        DESTINATION lib
+        COMPONENT Libraries
+    )
+
+# In order to maintain the hierarchy within this module, we install the files
+# one by one into appropriate directories
+foreach (HEADER_FILE ${HEADER_FILE_LIST})
+    get_filename_component(HEADER_DIRECTORY ${HEADER_FILE} DIRECTORY)
+    # If we're using frameworks, there's no need for install directory as frameworks contain headers
+    if (NOT DECK_USE_FRAMEWORKS)
+        install(FILES ${HEADER_FILE} 
+            DESTINATION include/probe.gl/${HEADER_DIRECTORY}
+            COMPONENT Development
+            )
+    else()
+        # Provide a prefix directory so that headers are not flattened
+        set_source_files_properties(${HEADER_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Headers/${HEADER_DIRECTORY})
+    endif()
+endforeach()
+
+if (DECK_USE_FRAMEWORKS)
+    # Specyfing PUBLIC_HEADER in set_target_properties currently flattens the hierarchy which we do not want
+    # The workaround is to specify these as sources in combination with prefix addition above
+    # https://gitlab.kitware.com/cmake/cmake/issues/16739
+    target_sources(probe.gl PRIVATE ${HEADER_FILE_LIST})
+
+    set_target_properties(probe.gl PROPERTIES
+        FRAMEWORK ${DECK_USE_FRAMEWORKS}
+        FRAMEWORK_VERSION ${DECK_VERSION}
+        MACOSX_FRAMEWORK_IDENTIFIER ai.unfolded.probegl
+        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${DECK_VERSION}
+        )
+endif()

@@ -19,10 +19,14 @@
 # THE SOFTWARE.
 
 add_library(loaders.gl)
+set_target_properties(loaders.gl PROPERTIES VERSION ${DECK_VERSION})
+set_target_properties(loaders.gl PROPERTIES SOVERSION ${DECK_SO_VERSION})
 
 # File lists that are maintained manually
 set(HEADER_FILE_LIST
+    csv.h
     csv/src/csv-loader.h
+    json.h
     json/src/json-loader.h
     )
 set(SOURCE_FILE_LIST
@@ -34,7 +38,9 @@ set(TESTS_SOURCE_FILE_LIST
     json/test/json-loader-test.cpp
     )
 
-find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+# We're using pre-built dependencies from our dependency submodule
+# NO_DEFAULT_PATH and NO_CMAKE_FIND_ROOT_PATH make it so other lookup paths are ignored
+find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 
 target_link_libraries(loaders.gl PUBLIC ${DECK_LINK_FLAGS} ${arrow_LIB})
 target_link_libraries(loaders.gl PUBLIC ${DECK_CONFIG_LIBRARY})
@@ -54,3 +60,40 @@ set_property(TARGET loaders.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
 set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST})
 list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
 set_property(TARGET loaders.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})
+
+# Installation
+install(TARGETS loaders.gl
+    LIBRARY
+        DESTINATION lib
+        COMPONENT Libraries
+    )
+
+# In order to maintain the hierarchy within this module, we install the files
+# one by one into appropriate directories
+foreach (HEADER_FILE ${HEADER_FILE_LIST})
+    get_filename_component(HEADER_DIRECTORY ${HEADER_FILE} DIRECTORY)
+    # If we're using frameworks, there's no need for install directory as frameworks contain headers
+    if (NOT DECK_USE_FRAMEWORKS)
+        install(FILES ${HEADER_FILE} 
+            DESTINATION include/loaders.gl/${HEADER_DIRECTORY}
+            COMPONENT Development
+            )
+    else()
+        # Provide a prefix directory so that headers are not flattened
+        set_source_files_properties(${HEADER_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Headers/${HEADER_DIRECTORY})
+    endif()
+endforeach()
+
+if (DECK_USE_FRAMEWORKS)
+    # Specyfing PUBLIC_HEADER in set_target_properties currently flattens the hierarchy which we do not want
+    # The workaround is to specify these as sources in combination with prefix addition above
+    # https://gitlab.kitware.com/cmake/cmake/issues/16739
+    target_sources(loaders.gl PRIVATE ${HEADER_FILE_LIST})
+
+    set_target_properties(loaders.gl PROPERTIES
+        FRAMEWORK ${DECK_USE_FRAMEWORKS}
+        FRAMEWORK_VERSION ${DECK_VERSION}
+        MACOSX_FRAMEWORK_IDENTIFIER ai.unfolded.loadersgl
+        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${DECK_VERSION}
+        )
+endif()
