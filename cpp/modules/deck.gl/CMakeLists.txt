@@ -19,6 +19,8 @@
 # THE SOFTWARE.
 
 add_library(deck.gl)
+set_target_properties(deck.gl PROPERTIES VERSION ${DECK_VERSION})
+set_target_properties(deck.gl PROPERTIES SOVERSION ${DECK_SO_VERSION})
 
 # File lists that are maintained manually
 
@@ -137,9 +139,11 @@ set(TESTS_SOURCE_FILE_LIST
     ${LAYERS_TEST_SOURCE_FILES}
     )
 
-find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(jsoncpp_LIB jsoncpp PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
-find_library(fmt_LIB fmt PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
+# We're using pre-built dependencies from our dependency submodule
+# NO_DEFAULT_PATH and NO_CMAKE_FIND_ROOT_PATH make it so other lookup paths are ignored
+find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+find_library(jsoncpp_LIB jsoncpp PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+find_library(fmt_LIB fmt PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 
 target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB}
     probe.gl math.gl luma.gl ${arrow_LIB} ${jsoncpp_LIB} ${fmt_LIB})
@@ -160,3 +164,43 @@ set_property(TARGET deck.gl PROPERTY DECK_ALL_SOURCES ${MODULE_SOURCE_FILES})
 set(MODULE_TEST_FILES ${TESTS_SOURCE_FILE_LIST})
 list(TRANSFORM MODULE_TEST_FILES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
 set_property(TARGET deck.gl PROPERTY DECK_TEST_SOURCES ${MODULE_TEST_FILES})
+
+# Installation
+install(TARGETS deck.gl
+    LIBRARY
+        DESTINATION lib
+        COMPONENT Libraries
+    ARCHIVE
+        DESTINATION lib
+        COMPONENT Libraries
+    )
+
+# In order to maintain the hierarchy within this module, we install the files
+# one by one into appropriate directories
+foreach (HEADER_FILE ${HEADER_FILE_LIST})
+    get_filename_component(HEADER_DIRECTORY ${HEADER_FILE} DIRECTORY)
+    # If we're using frameworks, there's no need for install directory as frameworks contain headers
+    if (NOT DECK_USE_FRAMEWORKS)
+        install(FILES ${HEADER_FILE} 
+            DESTINATION include/deck.gl/${HEADER_DIRECTORY}
+            COMPONENT Development
+            )
+    else()
+        # Provide a prefix directory so that headers are not flattened
+        set_source_files_properties(${HEADER_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION Headers/${HEADER_DIRECTORY})
+    endif()
+endforeach()
+
+if (DECK_USE_FRAMEWORKS)
+    # Specyfing PUBLIC_HEADER in set_target_properties currently flattens the hierarchy which we do not want
+    # The workaround is to specify these as sources in combination with prefix addition above
+    # https://gitlab.kitware.com/cmake/cmake/issues/16739
+    target_sources(deck.gl PRIVATE ${HEADER_FILE_LIST})
+
+    set_target_properties(deck.gl PROPERTIES
+        FRAMEWORK ${DECK_USE_FRAMEWORKS}
+        FRAMEWORK_VERSION ${DECK_VERSION}
+        MACOSX_FRAMEWORK_IDENTIFIER ai.unfolded.deckgl
+        MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${DECK_VERSION}
+        )
+endif()
