@@ -2,6 +2,8 @@
 
 This is an open-source C++ implementation of deck.gl.
 
+![demo](https://i.imgur.com/qHcfFCn.gif)
+
 > Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, the initial `deck.gl-native` release is unlikely to meet the requirements of most applications. At this stage, asking for delivery dates and additional features without contributing to implementation or providing additional funding is unlikely to be helpful.
 
 ## Scope
