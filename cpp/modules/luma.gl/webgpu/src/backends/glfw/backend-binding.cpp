@@ -33,6 +33,7 @@
 
 namespace lumagl {
 namespace utils {
+namespace glfw {
 
 #if defined(LUMAGL_ENABLE_BACKEND_D3D12)
 BackendBinding* CreateD3D12Binding(GLFWwindow* window, WGPUDevice device);
@@ -100,5 +101,6 @@ BackendBinding* CreateBinding(wgpu::BackendType type, GLFWwindow* window, WGPUDe
   }
 }
 
+}  // namespace glfw
 }  // namespace utils
 }  // namespace lumagl

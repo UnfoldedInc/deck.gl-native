@@ -18,35 +18,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
-// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
+#ifndef LUMAGL_CORE_ANIMATION_LOOP_FACTORY_H
+#define LUMAGL_CORE_ANIMATION_LOOP_FACTORY_H
 
 #include <memory>
+#include <optional>
 
-#include "./backend-binding.h"
-#include "dawn_native/NullBackend.h"
-#include "probe.gl/core.h"
+#include "luma.gl/core.h"
 
 namespace lumagl {
-namespace utils {
 
-class NullBinding : public BackendBinding {
+struct AnimationLoopFactory {
  public:
-  NullBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
-
-  uint64_t GetSwapChainImplementation() override {
-    if (mSwapchainImpl.userData == nullptr) {
-      mSwapchainImpl = dawn_native::null::CreateNativeSwapChainImpl();
+  // TODO(ilija@unfolded.ai): Revisit
+  static auto createAnimationLoop(const std::optional<AnimationLoop::Options*>& options)
+      -> std::shared_ptr<AnimationLoop> {
+    // If no options are passed, try and initialize the only setup which requires no arguments, which is GLFW
+    if (!options) {
+#if defined(LUMAGL_USES_GLFW)
+      GLFWAnimationLoop::Options opts;
+      return std::make_shared<GLFWAnimationLoop>(opts);
+#else
+      return nullptr;
+#endif
     }
-    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
-  }
-  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override { return WGPUTextureFormat_RGBA8Unorm; }
 
- private:
-  DawnSwapChainImplementation mSwapchainImpl = {};
+    auto opts = options.value();
+#if defined(LUMAGL_USES_GLFW)
+    if (auto glfwOptions = dynamic_cast<GLFWAnimationLoop::Options*>(opts)) {
+      return std::make_shared<GLFWAnimationLoop>(*glfwOptions);
+    }
+#endif
+
+#if defined(LUMAGL_ENABLE_BACKEND_METAL)
+    if (auto metalOptions = dynamic_cast<MetalAnimationLoop::Options*>(opts)) {
+      return std::make_shared<MetalAnimationLoop>(*metalOptions);
+    }
+#endif
+
+    return std::make_shared<AnimationLoop>(*opts);
+  }
 };
 
-BackendBinding* CreateNullBinding(GLFWwindow* window, WGPUDevice device) { return new NullBinding(window, device); }
-
-}  // namespace utils
 }  // namespace lumagl
+
+#endif  // LUMAGL_CORE_ANIMATION_LOOP_FACTORY_H

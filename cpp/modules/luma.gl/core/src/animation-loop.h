@@ -21,7 +21,6 @@
 #ifndef LUMAGL_CORE_ANIMATION_LOOP_H
 #define LUMAGL_CORE_ANIMATION_LOOP_H
 
-#include <dawn/dawn_proc.h>
 #include <dawn/webgpu_cpp.h>
 
 #include <functional>
@@ -33,7 +32,9 @@ namespace lumagl {
 
 class AnimationLoop {
  public:
-  AnimationLoop(wgpu::Device device, wgpu::Queue queue = nullptr, const Size& size = Size{640, 480});
+  struct Options;
+
+  explicit AnimationLoop(const Options& options);
   virtual ~AnimationLoop();
 
   virtual void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {}
@@ -54,8 +55,6 @@ class AnimationLoop {
   auto queue() -> wgpu::Queue { return this->_queue; }
 
  protected:
-  // Used by GLFWAnimationLoop as passing a Device to the constructor is not very easy
-  explicit AnimationLoop(const Size& size = Size{640, 480}) : _size{size} {}
   void _initialize(wgpu::Device device, wgpu::Queue queue);
 
   Size _size;
@@ -63,6 +62,17 @@ class AnimationLoop {
 
  private:
   wgpu::Queue _queue;
+};
+
+struct AnimationLoop::Options {
+ public:
+  Options(const wgpu::Device& device, const wgpu::Queue& queue = nullptr, const Size& size = Size{640, 480})
+      : device{device}, queue{queue}, size{size} {}
+  virtual ~Options() = default;
+
+  wgpu::Device device;
+  wgpu::Queue queue;
+  Size size;
 };
 
 }  // namespace lumagl

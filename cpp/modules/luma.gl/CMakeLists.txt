@@ -70,6 +70,7 @@ set(CORE_HEADER_FILE_LIST
     core/src/model.h
     core/src/blit-model.h
     core/src/size.h
+    core/src/animation-loop-factory.h
     )
 set(CORE_SOURCE_FILE_LIST
     core/src/animation-loop.cpp
@@ -95,14 +96,9 @@ target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
     )
 target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} math.gl probe.gl)
 
-# All the supported platforms except iOS use GLFW
-if (NOT IOS)
-    set(LUMAGL_USES_GLFW TRUE)
-endif()
-
 if (LUMAGL_USES_GLFW)
-    list(APPEND WEBGPU_HEADER_FILE_LIST webgpu/src/backends/backend-binding.h)
-    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/backend-binding.cpp)
+    list(APPEND WEBGPU_HEADER_FILE_LIST webgpu/src/backends/glfw/backend-binding.h)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/backend-binding.cpp)
 
     list(APPEND CORE_HEADER_FILE_LIST core/src/glfw-animation-loop.h)
     list(APPEND CORE_SOURCE_FILE_LIST core/src/glfw-animation-loop.cpp)
@@ -134,23 +130,30 @@ endif()
 # Backend specific files and libraries
 if (DECK_ENABLE_D3D12)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/d3d12-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/d3d12-binding.cpp)
     endif()
 
     # TODO: Currently not supported. Should link against D3D12 libs
 endif()
 if (DECK_ENABLE_METAL)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/metal-binding.mm)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/metal-binding.mm)
     endif()
+
+    list(APPEND CORE_HEADER_FILE_LIST core/src/metal-animation-loop.h)
+    list(APPEND CORE_SOURCE_FILE_LIST core/src/metal-animation-loop.mm)
+    list(APPEND WEBGPU_HEADER_FILE_LIST webgpu/src/backends/metal-binding.h)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/metal-binding.mm)
 
     # Frameworks related to Metal
     find_library(Metal_LIB Metal)
+    find_library(MetalKit_LIB MetalKit)
     find_library(QuartzCore_LIB QuartzCore)
     find_library(IOKit_LIB IOKit)
     find_library(IOSurface_LIB IOSurface)
     target_link_libraries(luma.gl PUBLIC ${DECK_LINK_FLAGS}
         ${Metal_LIB}
+        ${MetalKit_LIB}
         ${QuartzCore_LIB}
         ${IOKit_LIB}
         ${IOSurface_LIB}
@@ -158,17 +161,17 @@ if (DECK_ENABLE_METAL)
 endif()
 if (DECK_ENABLE_NULL)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/null-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/null-binding.cpp)
     endif()
 endif()
 if (DECK_ENABLE_OPENGL)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/opengl-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/opengl-binding.cpp)
     endif()
 endif()
 if (DECK_ENABLE_VULKAN)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/vulkan-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/vulkan-binding.cpp)
     endif()
 endif()
 

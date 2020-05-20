@@ -21,43 +21,43 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include <dawn_native/VulkanBackend.h>
-// Include GLFW after VulkanBackend so that it declares the Vulkan-specific functions
 #include <GLFW/glfw3.h>
+#include <dawn_native/D3D12Backend.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 
 #include <memory>
 
 #include "./backend-binding.h"
+#include "probe.gl/core.h"
 
 namespace lumagl {
 namespace utils {
+namespace glfw {
 
-class VulkanBinding : public BackendBinding {
+class D3D12Binding : public BackendBinding {
  public:
-  VulkanBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
+  D3D12Binding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
   uint64_t GetSwapChainImplementation() override {
     if (mSwapchainImpl.userData == nullptr) {
-      VkSurfaceKHR surface = VK_NULL_HANDLE;
-      if (glfwCreateWindowSurface(dawn_native::vulkan::GetInstance(mDevice), mWindow, nullptr, &surface) !=
-          VK_SUCCESS) {
-        ASSERT(false);
-      }
-
-      mSwapchainImpl = dawn_native::vulkan::CreateNativeSwapChainImpl(mDevice, surface);
+      HWND win32Window = glfwGetWin32Window(mWindow);
+      mSwapchainImpl = dawn_native::d3d12::CreateNativeSwapChainImpl(mDevice, win32Window);
     }
     return reinterpret_cast<uint64_t>(&mSwapchainImpl);
   }
+
   WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
     ASSERT(mSwapchainImpl.userData != nullptr);
-    return dawn_native::vulkan::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
+    return dawn_native::d3d12::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
   }
 
  private:
   DawnSwapChainImplementation mSwapchainImpl = {};
 };
 
-BackendBinding* CreateVulkanBinding(GLFWwindow* window, WGPUDevice device) { return new VulkanBinding(window, device); }
+BackendBinding* CreateD3D12Binding(GLFWwindow* window, WGPUDevice device) { return new D3D12Binding(window, device); }
 
+}  // namespace glfw
 }  // namespace utils
 }  // namespace lumagl

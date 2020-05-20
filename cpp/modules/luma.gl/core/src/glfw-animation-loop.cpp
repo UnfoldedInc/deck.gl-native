@@ -24,9 +24,6 @@
 #include <GLFW/glfw3native.h>
 #include <dawn/dawn_wsi.h>
 #include <dawn/webgpu_cpp.h>
-#include <dawn_native/DawnNative.h>
-
-#include <iostream>
 
 #include "luma.gl/webgpu.h"
 #include "probe.gl/core.h"
@@ -40,31 +37,19 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-GLFWAnimationLoop::GLFWAnimationLoop(const Size& size, const std::string& windowTitle, const wgpu::Device& device,
-                                     const wgpu::Queue& queue, const wgpu::BackendType backendType)
-    : AnimationLoop{size} {
-  this->_window = this->_initializeGLFW(backendType, windowTitle);
-
-  // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
-  // TODO(ilija@unfolded.ai): Set this globally elsewhere
-  static bool procTableInitialized = false;
-  DawnProcTable procs = dawn_native::GetProcs();
-  if (!procTableInitialized) {
-    dawnProcSetProcs(&procs);
-    procTableInitialized = true;
-  }
+GLFWAnimationLoop::GLFWAnimationLoop(const Options& options) : AnimationLoop{options} {
+  this->_window = this->_initializeGLFW(options.backendType, options.windowTitle);
 
   // Create a device if none was provided
-  auto _device = device ? device : this->_createDevice(backendType);
-  auto _queue = queue ? queue : _device.CreateQueue();
+  auto _device = options.device ? options.device : this->_createDevice(options.backendType);
 
-  this->_binding = CreateBinding(backendType, this->_window, _device.Get());
+  this->_binding = glfw::CreateBinding(options.backendType, this->_window, _device.Get());
   if (!this->_binding) {
     throw new std::runtime_error("Failed to initialize GLFWAnimationLoop, no backends enable for luma.gl");
   }
 
   this->_swapchain = this->_createSwapchain(_device);
-  this->_initialize(_device, _queue);
+  this->_initialize(_device, options.queue);
 }
 
 GLFWAnimationLoop::~GLFWAnimationLoop() {
@@ -117,20 +102,18 @@ void GLFWAnimationLoop::setSize(const Size& size) {
 
 auto GLFWAnimationLoop::_createDevice(const wgpu::BackendType backendType) -> wgpu::Device {
   this->_instance = std::make_unique<dawn_native::Instance>();
-  DiscoverAdapter(this->_instance.get(), this->_window, backendType);
+  glfw::DiscoverAdapter(this->_instance.get(), this->_window, backendType);
 
   // Get an adapter for the backend to use, and create the device.
   dawn_native::Adapter backendAdapter;
-  {
-    std::vector<dawn_native::Adapter> adapters = this->_instance->GetAdapters();
-    auto adapterIt = std::find_if(adapters.begin(), adapters.end(), [=](const dawn_native::Adapter adapter) -> bool {
-      wgpu::AdapterProperties properties;
-      adapter.GetProperties(&properties);
-      return properties.backendType == backendType;
-    });
-    ASSERT(adapterIt != adapters.end());
-    backendAdapter = *adapterIt;
-  }
+  std::vector<dawn_native::Adapter> adapters = this->_instance->GetAdapters();
+  auto adapterIt = std::find_if(adapters.begin(), adapters.end(), [=](const dawn_native::Adapter adapter) -> bool {
+    wgpu::AdapterProperties properties;
+    adapter.GetProperties(&properties);
+    return properties.backendType == backendType;
+  });
+  ASSERT(adapterIt != adapters.end());
+  backendAdapter = *adapterIt;
 
   WGPUDevice cDevice = backendAdapter.CreateDevice();
   return wgpu::Device::Acquire(cDevice);

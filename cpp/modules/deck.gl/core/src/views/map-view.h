@@ -33,12 +33,12 @@ class MapView : public View {
  public:
   using super = View;
 
-  static constexpr const char *getTypeName() { return "MapView"; }
-  auto getProperties() const -> const Properties * override;
+  static constexpr const char* getTypeName() { return "MapView"; }
+  auto getProperties() const -> const Properties* override;
 
  protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect,
-                    std::shared_ptr<ViewState> viewState) const -> std::shared_ptr<Viewport> override;
+  auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
+      -> std::shared_ptr<Viewport> override;
 };
 
 }  // namespace deckgl

@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
-#define LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
+#ifndef LUMAGL_CORE_METAL_ANIMATION_LOOP_H
+#define LUMAGL_CORE_METAL_ANIMATION_LOOP_H
 
 #include <dawn_native/DawnNative.h>
 
@@ -27,58 +27,48 @@
 #include <string>
 
 #include "./animation-loop.h"
-#include "luma.gl/webgpu/src/backends/glfw/backend-binding.h"
-#include "luma.gl/webgpu/src/webgpu-utils.h"
-
-struct GLFWwindow;
+#include "luma.gl/webgpu/src/backends/metal-binding.h"
 
 namespace lumagl {
 
-class GLFWAnimationLoop : public AnimationLoop {
+class MetalAnimationLoop : public AnimationLoop {
  public:
   using super = AnimationLoop;
   struct Options;
 
-  explicit GLFWAnimationLoop(const Options& options);
-  ~GLFWAnimationLoop();
+  explicit MetalAnimationLoop(const Options& options);
+  ~MetalAnimationLoop();
 
   void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) override;
 
-  auto shouldQuit() -> bool override;
-  void flush() override;
   auto getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat override;
   auto devicePixelRatio() -> float override;
   void setSize(const Size& size) override;
 
  private:
-  auto _createDevice(const wgpu::BackendType backendType) -> wgpu::Device;
+  auto _createDevice() -> wgpu::Device;
   auto _createSwapchain(wgpu::Device device) -> wgpu::SwapChain;
-  auto _initializeGLFW(const wgpu::BackendType backendType, const std::string& windowTitle) -> GLFWwindow*;
 
   /// \brief Instance used for adapter discovery and device creation. It has to be kept around as Dawn objects'
   /// lifecycle seems to depend on it.
   /// \note From Dawn docs: This is an RAII class for Dawn instances and also controls the lifetime of all adapters
   /// for this instance.
   std::unique_ptr<dawn_native::Instance> _instance{nullptr};
-  utils::glfw::BackendBinding* _binding{nullptr};
+  std::unique_ptr<util::MetalBinding> _binding;
   wgpu::SwapChain _swapchain;
 
-  GLFWwindow* _window{nullptr};
+  MTKView* _view;
 };
 
-struct GLFWAnimationLoop::Options : public AnimationLoop::Options {
+struct MetalAnimationLoop::Options : public AnimationLoop::Options {
  public:
   using super = AnimationLoop::Options;
 
-  explicit Options(const Size& size = Size{640, 480}, const std::string& windowTitle = "luma.gl",
-                   const wgpu::Device& device = nullptr, const wgpu::Queue& queue = nullptr,
-                   const wgpu::BackendType backendType = utils::getDefaultWebGPUBackendType())
-      : super{device, queue, size}, windowTitle{windowTitle}, backendType{backendType} {}
+  explicit Options(MTKView* view, const wgpu::Device& device = nullptr, const wgpu::Queue& queue = nullptr);
 
-  std::string windowTitle;
-  wgpu::BackendType backendType;
+  MTKView* view;
 };
 
 }  // namespace lumagl
 
-#endif  // LUMAGL_CORE_GLFW_ANIMATION_LOOP_H
+#endif  // LUMAGL_CORE_METAL_ANIMATION_LOOP_H
