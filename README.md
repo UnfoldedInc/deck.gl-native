@@ -26,6 +26,21 @@ Many features normally considered fundamental by deck.gl applications are not ev
 - No Performance Optimizations
 - etc
 
+## Supported Platforms
+
+### iOS
+
+- iOS12+ is required when building for a device
+- iOS13+ is required when building for a simulator, as `Metal` is available on the simulator starting with iOS13
+- Currently has to be built with bitcode disabled (under investigation)
+
+### macOS
+
+- macOS10.14+
+
+#### Linux
+
+- Tested and runs on Ubuntu Bionic
 
 ## Software Architecture
 
@@ -89,7 +104,7 @@ Note that Dawn is still a work in progress (with different levels of support for
 
 ## Supporting this Effort
 
-This porting project is led by [Unfolded, Inc](www.unfolded.ai), and currently relies on initial funding provided by a customer as well as external contributions. At this stage, this is not an fully or independenly resourced project. It only targets a proof-of-concept prototype, it does not have a maintenance plan and is not set up to address feature requests etc. 
+This porting project is led by [Unfolded, Inc](https://www.unfolded.ai), and currently relies on initial funding provided by a customer as well as external contributions. At this stage, this is not an fully or independenly resourced project. It only targets a proof-of-concept prototype, it does not have a maintenance plan and is not set up to address feature requests etc. 
 
 Our hope is to see this project quickly grow into a living part of the core deck.gl project. If this project reaches a sufficient level of completeness / critical mass, the ambition is to make this project part of the main deck.gl project and transfer it to an open governance setup. 
 
@@ -157,5 +172,5 @@ To use different compilers, set the build options `CMAKE_C_COMPILER` and `CMAKE_
 
 ## Testing
 
-For Google Test formatted output, run `./tests`.
+For Google Test formatted output, run `./deckgl-bundle-tests`.
 For CTest formatted output, run `ctest`.
