@@ -76,7 +76,7 @@ auto createDeck(const char* argv[], const wgpu::Device& device, const lumagl::Si
   deckProps->width = size.width;
   deckProps->height = size.height;
 
-  deckProps->renderingOptions = Deck::RenderingOptions{device, device.CreateQueue(), false};
+  deckProps->drawingOptions = std::make_shared<lumagl::AnimationLoop::Options>(device, device.CreateQueue());
 
   return std::make_shared<Deck>(deckProps);
 }
@@ -95,8 +95,8 @@ auto createTextureView(const wgpu::Device& device, const lumagl::Size& size, con
 }
 
 int main(int argc, const char* argv[]) {
-  auto windowSize = lumagl::Size{640, 480};
-  GLFWAnimationLoop animationLoop{windowSize, "Texture Render"};
+  lumagl::Size windowSize{640, 480};
+  GLFWAnimationLoop animationLoop{GLFWAnimationLoop::Options{windowSize, "Texture Render"}};
   auto device = animationLoop.device();
 
   auto framebufferSize = windowSize * animationLoop.devicePixelRatio();

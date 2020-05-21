@@ -54,11 +54,13 @@ set(CORE_HEADER_FILES
     core/src/lib/deck.h
     core/src/lib/earcut.hpp
     core/src/lib/layer.h
+    core/src/lib/layer-context.h
     core/src/lib/layer-manager.h
     core/src/lib/layer-state.h
     core/src/lib/view-manager.h
     core/src/viewports/viewport.h
     core/src/viewports/web-mercator-viewport.h
+    core/src/views/map-view.h
     core/src/views/view.h
     core/src/views/view-state.h
     core/src/arrow/row.h

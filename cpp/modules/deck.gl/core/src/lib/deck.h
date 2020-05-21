@@ -83,16 +83,6 @@ class Deck : public Component {
   wgpu::Buffer _viewportUniformsBuffer;
 };
 
-struct Deck::RenderingOptions {
- public:
-  explicit RenderingOptions(wgpu::Device device, wgpu::Queue queue, bool usesWindow = true)
-      : device{device}, queue{queue}, usesWindow{usesWindow} {}
-
-  wgpu::Device device;
-  wgpu::Queue queue;
-  bool usesWindow;
-};
-
 class Deck::Props : public Component::Props {
  public:
   using super = Component::Props;
@@ -101,7 +91,7 @@ class Deck::Props : public Component::Props {
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  std::optional<Deck::RenderingOptions> renderingOptions;
+  std::shared_ptr<lumagl::AnimationLoop::Options> drawingOptions;
 
   // layer/view/controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;

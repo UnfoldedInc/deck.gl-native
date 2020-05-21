@@ -62,7 +62,7 @@ auto Deck::Props::getProperties() const -> const Properties* {
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
-  this->animationLoop = this->_createAnimationLoop(props);
+  this->animationLoop = lumagl::AnimationLoopFactory::createAnimationLoop(props->drawingOptions);
   this->context = std::make_shared<LayerContext>(this, this->animationLoop->device());
   this->layerManager = std::make_shared<LayerManager>(this->context);
 
@@ -211,20 +211,6 @@ pickObjects(opts) {
 */
 
 // Private Methods
-
-auto Deck::_createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop> {
-  auto size = lumagl::Size{props->width, props->height};
-  if (props->renderingOptions) {
-    auto options = props->renderingOptions.value();
-    if (options.usesWindow) {
-      return std::make_shared<lumagl::GLFWAnimationLoop>(size, props->id, options.device, options.queue);
-    } else {
-      return std::make_shared<lumagl::AnimationLoop>(options.device, options.queue, size);
-    }
-  } else {
-    return std::make_shared<lumagl::GLFWAnimationLoop>(size, props->id);
-  }
-}
 
 void Deck::_draw(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender) {
   this->props()->onBeforeRender(this);

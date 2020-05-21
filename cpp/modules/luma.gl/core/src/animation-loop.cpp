@@ -28,8 +28,15 @@
 using namespace lumagl;
 using namespace lumagl::utils;
 
-AnimationLoop::AnimationLoop(wgpu::Device device, wgpu::Queue queue, const Size& size) : _size{size} {
-  this->_initialize(device, queue);
+AnimationLoop::AnimationLoop(const Options& options) : _size{options.size} {
+  // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
+  initializeProcTable();
+
+  // Passing a valid device within options from subclasses is somewhat dificult, so the subclasses
+  // will call _initialize after constructor returns
+  if (options.device) {
+    this->_initialize(options.device, options.queue);
+  }
 }
 
 AnimationLoop::~AnimationLoop() {
@@ -89,5 +96,5 @@ void AnimationLoop::_initialize(wgpu::Device device, wgpu::Queue queue) {
       nullptr);
 
   this->_device = device;
-  this->_queue = queue ? queue : device.CreateQueue();
+  this->_queue = queue;
 }

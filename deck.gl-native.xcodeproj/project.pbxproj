@@ -26,6 +26,7 @@
 		CD33DF34242E2089003F3B96 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2D242E2072003F3B96 /* Cocoa.framework */; };
 		CD33DF3D242E2207003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
 		CD33DF3E242E220D003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
+		CD35949C2472C55900DC8289 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF24242E1F65003F3B96 /* CoreFoundation.framework */; };
 		CD452A462448421B00DD44A5 /* arrow-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A432448421B00DD44A5 /* arrow-utils.cc */; };
 		CD452A472448421B00DD44A5 /* arrow-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A442448421B00DD44A5 /* arrow-utils.h */; };
 		CD452A51244852DE00DD44A5 /* field.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A4E244852DE00DD44A5 /* field.h */; };
@@ -74,6 +75,10 @@
 		CD9DAD1F243F09ED00F69BFC /* libjsoncpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786D243C70F6000D8EC6 /* libjsoncpp.a */; };
 		CD9DAD22243F09ED00F69BFC /* libshaderc_combined.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2A8893243CD18A0059C3CF /* libshaderc_combined.a */; };
 		CD9DAD2B243F09ED00F69BFC /* webgpu_cpp.o in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786B243C70F6000D8EC6 /* webgpu_cpp.o */; };
+		CDAD573B247242CC002736A3 /* metal-animation-loop.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD64D44E24718F8C009A2A9C /* metal-animation-loop.mm */; };
+		CDAD574224724CD7002736A3 /* metal-binding.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAD574024724CD7002736A3 /* metal-binding.mm */; };
+		CDAD574324724CD7002736A3 /* metal-binding.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD574124724CD7002736A3 /* metal-binding.h */; };
+		CDAD5745247258BA002736A3 /* animation-loop-factory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD5744247258BA002736A3 /* animation-loop-factory.h */; };
 		CDC8E16E244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16F244D5B5B002A7E60 /* webgpu-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */; };
 		CDC8E173244D6420002A7E60 /* key-value-metadata.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E170244D6420002A7E60 /* key-value-metadata.cc */; };
@@ -421,6 +426,8 @@
 		CD5856D9246135540076227F /* flight-paths */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "flight-paths"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD5856F52461364B0076227F /* manhattan-population */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "manhattan-population"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD5EAD1B243227B700E7E354 /* libdawn_proc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdawn_proc.a; path = ../dawn/out/Debug/obj/src/dawn/libdawn_proc.a; sourceTree = "<group>"; };
+		CD64D44E24718F8C009A2A9C /* metal-animation-loop.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "metal-animation-loop.mm"; sourceTree = "<group>"; };
+		CD64D44F24718F8C009A2A9C /* metal-animation-loop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "metal-animation-loop.h"; sourceTree = "<group>"; };
 		CD6857BC241F654E001F4C59 /* libarrow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarrow.a; path = "../../../../../../usr/local/Cellar/apache-arrow/0.16.0/lib/libarrow.a"; sourceTree = "<group>"; };
 		CD74D74D245949EF00D62337 /* geometry.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = geometry.glsl.h; sourceTree = "<group>"; };
 		CD74D74E24594C5800D62337 /* project32.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = project32.glsl.h; sourceTree = "<group>"; };
@@ -436,6 +443,11 @@
 		CD9BE17E246061F00019835B /* manhattan-population.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "manhattan-population.cc"; sourceTree = "<group>"; };
 		CD9F3FC224178F270028047D /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = "../vcpkg/packages/gtest_x64-osx/lib/libgtest.a"; sourceTree = "<group>"; };
 		CD9F3FC424178FA40028047D /* libgtestd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtestd.a; path = "../vcpkg/packages/gtest_x64-osx/debug/lib/libgtestd.a"; sourceTree = "<group>"; };
+		CDAD574024724CD7002736A3 /* metal-binding.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "metal-binding.mm"; sourceTree = "<group>"; };
+		CDAD574124724CD7002736A3 /* metal-binding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "metal-binding.h"; sourceTree = "<group>"; };
+		CDAD5744247258BA002736A3 /* animation-loop-factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "animation-loop-factory.h"; sourceTree = "<group>"; };
+		CDAD574924726745002736A3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		CDAD5754247269BE002736A3 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "webgpu-utils.cc"; sourceTree = "<group>"; };
 		CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "webgpu-utils.h"; sourceTree = "<group>"; };
 		CDC8E170244D6420002A7E60 /* key-value-metadata.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "key-value-metadata.cc"; sourceTree = "<group>"; };
@@ -755,6 +767,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD35949C2472C55900DC8289 /* CoreFoundation.framework in Frameworks */,
 				CD33DF3E242E220D003F3B96 /* QuartzCore.framework in Frameworks */,
 				CD33DF30242E2077003F3B96 /* IOKit.framework in Frameworks */,
 				CD33DF2E242E2073003F3B96 /* Cocoa.framework in Frameworks */,
@@ -791,8 +804,8 @@
 				CD5856C62461323E0076227F /* Cocoa.framework in Frameworks */,
 				CD5856C5246132350076227F /* QuartzCore.framework in Frameworks */,
 				CD5856C4246132280076227F /* IOKit.framework in Frameworks */,
-				CD5856C72461326C0076227F /* libdawn_native.dylib in Frameworks */,
 				CD5856C3246132240076227F /* Metal.framework in Frameworks */,
+				CD5856C72461326C0076227F /* libdawn_native.dylib in Frameworks */,
 				CD5856C0246131740076227F /* libdeck.gl-native.a in Frameworks */,
 				CD5856C92461326C0076227F /* libdawn_proc.dylib in Frameworks */,
 			);
@@ -924,6 +937,8 @@
 		CD9F3FC124178F270028047D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CDAD5754247269BE002736A3 /* AppKit.framework */,
+				CDAD574924726745002736A3 /* Foundation.framework */,
 				CD517429243DC4A50051AB3F /* libshaderc_spvc.dylib */,
 				CD2A8896243CD18B0059C3CF /* libglslang.a */,
 				CD2A8898243CD18B0059C3CF /* libHLSL.a */,
@@ -981,6 +996,20 @@
 				CD9F3FC224178F270028047D /* libgtest.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CDAD573C247249AF002736A3 /* glfw */ = {
+			isa = PBXGroup;
+			children = (
+				CDE55B57243C6A10000D8EC6 /* backend-binding.h */,
+				CDE55B5A243C6A10000D8EC6 /* backend-binding.cpp */,
+				CDE55B56243C6A10000D8EC6 /* vulkan-binding.cpp */,
+				CDE55B58243C6A10000D8EC6 /* d3d12-binding.cpp */,
+				CDE55B59243C6A10000D8EC6 /* null-binding.cpp */,
+				CDE55B5B243C6A10000D8EC6 /* opengl-binding.cpp */,
+				CDE55B5C243C6A10000D8EC6 /* metal-binding.mm */,
+			);
+			path = glfw;
 			sourceTree = "<group>";
 		};
 		CDE53EA2243C69FB000D8EC6 /* cpp */ = {
@@ -1123,6 +1152,7 @@
 		CDE55B43243C6A10000D8EC6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CD57341124640E6200D22A70 /* size.h */,
 				CDE55B4A243C6A10000D8EC6 /* model.h */,
 				CDE55B4B243C6A10000D8EC6 /* model.cpp */,
 				CD57340E24640A3300D22A70 /* blit-model.h */,
@@ -1131,7 +1161,9 @@
 				CDE55B45243C6A10000D8EC6 /* animation-loop.cpp */,
 				CDE55B46243C6A10000D8EC6 /* glfw-animation-loop.h */,
 				CDE55B44243C6A10000D8EC6 /* glfw-animation-loop.cpp */,
-				CD57341124640E6200D22A70 /* size.h */,
+				CD64D44F24718F8C009A2A9C /* metal-animation-loop.h */,
+				CD64D44E24718F8C009A2A9C /* metal-animation-loop.mm */,
+				CDAD5744247258BA002736A3 /* animation-loop-factory.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1174,13 +1206,9 @@
 		CDE55B55243C6A10000D8EC6 /* backends */ = {
 			isa = PBXGroup;
 			children = (
-				CDE55B56243C6A10000D8EC6 /* vulkan-binding.cpp */,
-				CDE55B57243C6A10000D8EC6 /* backend-binding.h */,
-				CDE55B58243C6A10000D8EC6 /* d3d12-binding.cpp */,
-				CDE55B59243C6A10000D8EC6 /* null-binding.cpp */,
-				CDE55B5A243C6A10000D8EC6 /* backend-binding.cpp */,
-				CDE55B5B243C6A10000D8EC6 /* opengl-binding.cpp */,
-				CDE55B5C243C6A10000D8EC6 /* metal-binding.mm */,
+				CDAD574124724CD7002736A3 /* metal-binding.h */,
+				CDAD574024724CD7002736A3 /* metal-binding.mm */,
+				CDAD573C247249AF002736A3 /* glfw */,
 			);
 			path = backends;
 			sourceTree = "<group>";
@@ -1946,6 +1974,7 @@
 				CD57341224640E6200D22A70 /* size.h in Headers */,
 				CDE5785A243C6A1F000D8EC6 /* csv-loader.h in Headers */,
 				CDE5774E243C6A1F000D8EC6 /* compiler.h in Headers */,
+				CDAD574324724CD7002736A3 /* metal-binding.h in Headers */,
 				CD452A51244852DE00DD44A5 /* field.h in Headers */,
 				CDE5776F243C6A1F000D8EC6 /* array.h in Headers */,
 				CDE57805243C6A1F000D8EC6 /* layer-context.h in Headers */,
@@ -1988,6 +2017,7 @@
 				CDE57846243C6A1F000D8EC6 /* json-object.h in Headers */,
 				CD57341024640A3300D22A70 /* blit-model.h in Headers */,
 				CDE577EB243C6A1F000D8EC6 /* viewport.h in Headers */,
+				CDAD5745247258BA002736A3 /* animation-loop-factory.h in Headers */,
 				CDE577A9243C6A1F000D8EC6 /* sample-viewports.h in Headers */,
 				CDE57807243C6A1F000D8EC6 /* view-manager.h in Headers */,
 				CDE57804243C6A1F000D8EC6 /* constants.h in Headers */,
@@ -2277,6 +2307,7 @@
 				CDE57773243C6A1F000D8EC6 /* model.cpp in Sources */,
 				CDE577E1243C6A1F000D8EC6 /* row.cc in Sources */,
 				CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */,
+				CDAD574224724CD7002736A3 /* metal-binding.mm in Sources */,
 				CDC8E173244D6420002A7E60 /* key-value-metadata.cc in Sources */,
 				CDE57750243C6A1F000D8EC6 /* timer.cpp in Sources */,
 				CDE57776243C6A1F000D8EC6 /* table.cc in Sources */,
@@ -2293,6 +2324,7 @@
 				CDE577EE243C6A1F000D8EC6 /* viewport.cpp in Sources */,
 				CDE5785C243C6A1F000D8EC6 /* csv-loader.cpp in Sources */,
 				CDE5774C243C6A1F000D8EC6 /* log.cpp in Sources */,
+				CDAD573B247242CC002736A3 /* metal-animation-loop.mm in Sources */,
 				CDE57819243C6A1F000D8EC6 /* viewport-uniforms.cpp in Sources */,
 				CD452A462448421B00DD44A5 /* arrow-utils.cc in Sources */,
 				CDE57758243C6A1F000D8EC6 /* system-utils.cpp in Sources */,
@@ -2415,10 +2447,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2469,10 +2497,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2503,10 +2527,6 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2533,10 +2553,6 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2628,6 +2644,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DAWN_ENABLE_BACKEND_METAL=ON",
 					"LUMAGL_ENABLE_BACKEND_METAL=ON",
+					"LUMAGL_USES_GLFW=ON",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2671,6 +2688,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DAWN_ENABLE_BACKEND_METAL=ON",
 					"LUMAGL_ENABLE_BACKEND_METAL=ON",
+					"LUMAGL_USES_GLFW=ON",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2736,10 +2754,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -2793,10 +2807,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -2830,10 +2840,6 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2860,10 +2866,6 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

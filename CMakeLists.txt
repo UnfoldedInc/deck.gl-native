@@ -134,6 +134,11 @@ else()
     message(FATAL_ERROR "Operating system currently not supported. Please consult the development team")
 endif()
 
+# All the supported platforms except iOS use GLFW
+if (NOT IOS)
+    set(LUMAGL_USES_GLFW TRUE)
+endif()
+
 # Path to folder with 3rd party dependencies
 set(DECK_DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cpp/deps/${DECK_ARCH}/lib)
 # Path to supporting example data
@@ -193,6 +198,9 @@ endif()
 if (DECK_ENABLE_VULKAN)
     target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_ENABLE_BACKEND_VULKAN")
     target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "DAWN_ENABLE_BACKEND_VULKAN")
+endif()
+if (LUMAGL_USES_GLFW)
+    target_compile_definitions(${DECK_CONFIG_LIBRARY} INTERFACE "LUMAGL_USES_GLFW")
 endif()
 
 ##################

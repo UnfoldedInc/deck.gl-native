@@ -131,7 +131,8 @@ auto createAttributeTable(wgpu::Device device) -> std::shared_ptr<garrow::Table>
 }
 
 int main(int argc, const char* argv[]) {
-  GLFWAnimationLoop animationLoop;
+  GLFWAnimationLoop::Options options;
+  GLFWAnimationLoop animationLoop{options};
   auto device = animationLoop.device();
 
   auto attributes = createAttributeTable(device);

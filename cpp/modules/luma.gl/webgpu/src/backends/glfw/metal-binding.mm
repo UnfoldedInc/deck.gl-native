@@ -18,31 +18,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "metal-binding.h"
+// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
+// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#import <MetalKit/MTKView.h>
 #import <QuartzCore/CAMetalLayer.h>
+#include <dawn/dawn_wsi.h>
 #include <dawn_native/MetalBackend.h>
+
+#include "./backend-binding.h"
+
+#define GLFW_EXPOSE_NATIVE_COCOA
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
 #include "luma.gl/core.h"
 #include "probe.gl/core.h"
 
-using namespace lumagl::util;
-
 namespace lumagl {
-namespace util {
+namespace utils {
+namespace glfw {
 
 class SwapChainImplMTL {
  public:
   using WSIContext = DawnWSIContextMetal;
 
-  // Swapchain retains the view being passed
-  SwapChainImplMTL(MTKView* view) : _view{[view retain]} {}
+  SwapChainImplMTL(NSWindow* nsWindow) : mNsWindow(nsWindow) {}
 
   ~SwapChainImplMTL() {
     [mCurrentTexture release];
     [mCurrentDrawable release];
-    [_view release];
   }
 
   void Init(DawnWSIContextMetal* ctx) {
@@ -57,36 +61,38 @@ class SwapChainImplMTL {
     ASSERT(width > 0);
     ASSERT(height > 0);
 
-    // Make sure UI methods are called on the main thread
-    // No retain cycle here as there is no reference counting in C++
-    executeOnMainThread(^{
-      this->_view.device = mMtlDevice;
-      this->mLayer = (CAMetalLayer*)this->_view.layer;
+    NSView* contentView = [mNsWindow contentView];
+    [contentView setWantsLayer:YES];
 
-      constexpr uint32_t kFramebufferOnlyTextureUsages = WGPUTextureUsage_OutputAttachment | WGPUTextureUsage_Present;
-      bool hasOnlyFramebufferUsages = !(usage & (~kFramebufferOnlyTextureUsages));
-      if (hasOnlyFramebufferUsages) {
-        [this->mLayer setFramebufferOnly:YES];
-      }
-    });
+    // Make sure display scale factor is taken into account
+    CGSize drawableSize = CGSizeMake(width * mNsWindow.backingScaleFactor, height * mNsWindow.backingScaleFactor);
+
+    mLayer = [CAMetalLayer layer];
+    [mLayer setDevice:mMtlDevice];
+    [mLayer setPixelFormat:MTLPixelFormatBGRA8Unorm];
+    [mLayer setDrawableSize:drawableSize];
+
+    constexpr uint32_t kFramebufferOnlyTextureUsages = WGPUTextureUsage_OutputAttachment | WGPUTextureUsage_Present;
+    bool hasOnlyFramebufferUsages = !(usage & (~kFramebufferOnlyTextureUsages));
+    if (hasOnlyFramebufferUsages) {
+      [mLayer setFramebufferOnly:YES];
+    }
+
+    [contentView setLayer:mLayer];
 
     return DAWN_SWAP_CHAIN_NO_ERROR;
   }
 
   DawnSwapChainError GetNextTexture(DawnSwapChainNextTexture* nextTexture) {
-    // Make sure UI methods are called on the main thread
-    // No retain cycle here as there is no reference counting in C++
-    executeOnMainThread(^{
-      [mCurrentDrawable release];
-      mCurrentDrawable = [mLayer nextDrawable];
-      [mCurrentDrawable retain];
+    [mCurrentDrawable release];
+    mCurrentDrawable = [mLayer nextDrawable];
+    [mCurrentDrawable retain];
 
-      [mCurrentTexture release];
-      mCurrentTexture = mCurrentDrawable.texture;
-      [mCurrentTexture retain];
+    [mCurrentTexture release];
+    mCurrentTexture = mCurrentDrawable.texture;
+    [mCurrentTexture retain];
 
-      nextTexture->texture.ptr = reinterpret_cast<void*>(mCurrentTexture);
-    });
+    nextTexture->texture.ptr = reinterpret_cast<void*>(mCurrentTexture);
 
     return DAWN_SWAP_CHAIN_NO_ERROR;
   }
@@ -99,16 +105,8 @@ class SwapChainImplMTL {
     return DAWN_SWAP_CHAIN_NO_ERROR;
   }
 
-  void executeOnMainThread(void (^block)()) {
-    if ([NSThread mainThread]) {
-      block();
-    } else {
-      dispatch_sync(dispatch_get_main_queue(), block);
-    }
-  }
-
  private:
-  MTKView* _view;
+  NSWindow* mNsWindow = nullptr;
   id<MTLDevice> mMtlDevice = nil;
   id<MTLCommandQueue> mCommandQueue = nil;
 
@@ -117,13 +115,25 @@ class SwapChainImplMTL {
   id<MTLTexture> mCurrentTexture = nil;
 };
 
-}  // namespace util
-}  // namespace lumagl
+class MetalBinding : public BackendBinding {
+ public:
+  MetalBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
-auto MetalBinding::GetSwapChainImplementation() -> uint64_t {
-  if (this->_swapchainImpl.userData == nullptr) {
-    this->_swapchainImpl = CreateSwapChainImplementation(new SwapChainImplMTL{this->_view});
+  uint64_t GetSwapChainImplementation() override {
+    if (mSwapchainImpl.userData == nullptr) {
+      mSwapchainImpl = CreateSwapChainImplementation(new SwapChainImplMTL(glfwGetCocoaWindow(mWindow)));
+    }
+    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
   }
 
-  return reinterpret_cast<uint64_t>(&this->_swapchainImpl);
-}
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override { return WGPUTextureFormat_BGRA8Unorm; }
+
+ private:
+  DawnSwapChainImplementation mSwapchainImpl = {};
+};
+
+BackendBinding* CreateMetalBinding(GLFWwindow* window, WGPUDevice device) { return new MetalBinding(window, device); }
+
+}  // namespace glfw
+}  // namespace util
+}  // namespace lumagl

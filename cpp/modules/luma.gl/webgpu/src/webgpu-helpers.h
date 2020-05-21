@@ -120,6 +120,8 @@ auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layo
 auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layout,
                    std::vector<std::shared_ptr<BindingInitializationHelper>> bindingsInitializer) -> wgpu::BindGroup;
 
+void initializeProcTable();
+
 }  // namespace utils
 }  // namespace lumagl
 

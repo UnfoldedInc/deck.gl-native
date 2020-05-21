@@ -18,20 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_WEBGPU_H
-#define LUMAGL_WEBGPU_H
+#ifndef LUMAGL_WEBGPU_BACKENDS_METAL_BINDING_H
+#define LUMAGL_WEBGPU_BACKENDS_METAL_BINDING_H
 
+#include <dawn/dawn_wsi.h>
 #include <dawn/webgpu_cpp.h>
+#include <dawn_native/DawnNative.h>
 
-#include "./webgpu/src/combo-render-pipeline-descriptor.h"
-#include "./webgpu/src/shaderc-utils.h"
-#include "./webgpu/src/swap-chain-utils.h"
-#include "./webgpu/src/webgpu-constants.h"
-#include "./webgpu/src/webgpu-helpers.h"
-#include "./webgpu/src/webgpu-utils.h"
-
-#if defined(LUMAGL_USES_GLFW)
-#include "./webgpu/src/backends/glfw/backend-binding.h"
+#ifdef __OBJC__
+@class MTKView;
+#else
+using MTKView = void*;
 #endif
 
-#endif  // LUMAGL_WEBGPU_H
+namespace lumagl {
+namespace util {
+
+class MetalBinding {
+ public:
+  MetalBinding(MTKView* view, const wgpu::Device device) : _view{view}, _device{device} {}
+
+  auto GetSwapChainImplementation() -> uint64_t;
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() { return WGPUTextureFormat_BGRA8Unorm; }
+
+ private:
+  DawnSwapChainImplementation _swapchainImpl = {};
+
+  MTKView* _view;
+  wgpu::Device _device;
+};
+
+}  // namespace util
+}  // namespace lumagl
+
+#endif  // LUMAGL_WEBGPU_BACKENDS_METAL_BINDING_H

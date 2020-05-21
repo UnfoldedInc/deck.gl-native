@@ -21,41 +21,37 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#include <GLFW/glfw3.h>
-#include <dawn_native/D3D12Backend.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+#ifndef LUMAGL_WEBGPU_BACKENDS_GLFW_BACKEND_BINDING_H
+#define LUMAGL_WEBGPU_BACKENDS_GLFW_BACKEND_BINDING_H
 
-#include <memory>
+#include <dawn/webgpu_cpp.h>
+#include <dawn_native/DawnNative.h>
 
-#include "./backend-binding.h"
-#include "probe.gl/core.h"
+struct GLFWwindow;
 
 namespace lumagl {
 namespace utils {
+namespace glfw {
 
-class D3D12Binding : public BackendBinding {
+class BackendBinding {
  public:
-  D3D12Binding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
+  virtual ~BackendBinding() = default;
 
-  uint64_t GetSwapChainImplementation() override {
-    if (mSwapchainImpl.userData == nullptr) {
-      HWND win32Window = glfwGetWin32Window(mWindow);
-      mSwapchainImpl = dawn_native::d3d12::CreateNativeSwapChainImpl(mDevice, win32Window);
-    }
-    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
-  }
+  virtual uint64_t GetSwapChainImplementation() = 0;
+  virtual WGPUTextureFormat GetPreferredSwapChainTextureFormat() = 0;
 
-  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override {
-    ASSERT(mSwapchainImpl.userData != nullptr);
-    return dawn_native::d3d12::GetNativeSwapChainPreferredFormat(&mSwapchainImpl);
-  }
+ protected:
+  BackendBinding(GLFWwindow* window, WGPUDevice device);
 
- private:
-  DawnSwapChainImplementation mSwapchainImpl = {};
+  GLFWwindow* mWindow{nullptr};
+  WGPUDevice mDevice{nullptr};
 };
 
-BackendBinding* CreateD3D12Binding(GLFWwindow* window, WGPUDevice device) { return new D3D12Binding(window, device); }
+void DiscoverAdapter(dawn_native::Instance* instance, GLFWwindow* window, wgpu::BackendType type);
+BackendBinding* CreateBinding(wgpu::BackendType type, GLFWwindow* window, WGPUDevice device);
 
+}  // namespace glfw
 }  // namespace utils
 }  // namespace lumagl
+
+#endif  // LUMAGL_WEBGPU_BACKENDS_GLFW_BACKEND_BINDING_H

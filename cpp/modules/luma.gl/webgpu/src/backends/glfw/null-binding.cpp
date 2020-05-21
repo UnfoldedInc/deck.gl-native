@@ -21,35 +21,34 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#ifndef LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
-#define LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
+#include <memory>
 
-#include <dawn/webgpu_cpp.h>
-#include <dawn_native/DawnNative.h>
-
-struct GLFWwindow;
+#include "./backend-binding.h"
+#include "dawn_native/NullBackend.h"
+#include "probe.gl/core.h"
 
 namespace lumagl {
 namespace utils {
+namespace glfw {
 
-class BackendBinding {
+class NullBinding : public BackendBinding {
  public:
-  virtual ~BackendBinding() = default;
+  NullBinding(GLFWwindow* window, WGPUDevice device) : BackendBinding(window, device) {}
 
-  virtual uint64_t GetSwapChainImplementation() = 0;
-  virtual WGPUTextureFormat GetPreferredSwapChainTextureFormat() = 0;
+  uint64_t GetSwapChainImplementation() override {
+    if (mSwapchainImpl.userData == nullptr) {
+      mSwapchainImpl = dawn_native::null::CreateNativeSwapChainImpl();
+    }
+    return reinterpret_cast<uint64_t>(&mSwapchainImpl);
+  }
+  WGPUTextureFormat GetPreferredSwapChainTextureFormat() override { return WGPUTextureFormat_RGBA8Unorm; }
 
- protected:
-  BackendBinding(GLFWwindow* window, WGPUDevice device);
-
-  GLFWwindow* mWindow{nullptr};
-  WGPUDevice mDevice{nullptr};
+ private:
+  DawnSwapChainImplementation mSwapchainImpl = {};
 };
 
-void DiscoverAdapter(dawn_native::Instance* instance, GLFWwindow* window, wgpu::BackendType type);
-BackendBinding* CreateBinding(wgpu::BackendType type, GLFWwindow* window, WGPUDevice device);
+BackendBinding* CreateNullBinding(GLFWwindow* window, WGPUDevice device) { return new NullBinding(window, device); }
 
+}  // namespace glfw
 }  // namespace utils
 }  // namespace lumagl
-
-#endif  // LUMAGL_WEBGPU_BACKENDS_BACKEND_BINDING_H
