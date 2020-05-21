@@ -181,6 +181,10 @@ install(TARGETS deck.gl
 # one by one into appropriate directories
 foreach (HEADER_FILE ${HEADER_FILE_LIST})
     get_filename_component(HEADER_DIRECTORY ${HEADER_FILE} DIRECTORY)
+    # Get rid of src directory from include path
+    if (HEADER_DIRECTORY)
+        string(REPLACE "/src" "" HEADER_DIRECTORY ${HEADER_DIRECTORY})
+    endif()
     # If we're using frameworks, there's no need for install directory as frameworks contain headers
     if (NOT DECK_USE_FRAMEWORKS)
         install(FILES ${HEADER_FILE} 

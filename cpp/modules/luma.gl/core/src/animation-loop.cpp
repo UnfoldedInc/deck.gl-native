@@ -20,6 +20,8 @@
 
 #include "./animation-loop.h"  // NOLINT(build/include)
 
+#include <dawn_native/DawnNative.h>
+
 #include <functional>
 
 #include "luma.gl/webgpu.h"

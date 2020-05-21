@@ -2,9 +2,6 @@
 
 # Note when switching compiler: `rm -fr build`
 
-mkdir -p build/cpplint
-cd build/cpplint
-cmake "-DCMAKE_CXX_CPPLINT=cpplint" ../..
-make -j 16
-ctest --output-on-failure
-# make test #  same output as `ctest`?
+cmake -S . -B build/cpplint -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -DCMAKE_CXX_CPPLINT=cpplint
+cmake --build build/cpplint -j 16
+build/clang/deckgl-bundle-tests
