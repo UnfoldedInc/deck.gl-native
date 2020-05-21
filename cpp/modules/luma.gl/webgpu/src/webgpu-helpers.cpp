@@ -23,6 +23,9 @@
 
 #include "./webgpu-helpers.h"  // NOLINT(build/include)
 
+#include <dawn/dawn_proc.h>
+#include <dawn_native/DawnNative.h>
+
 #include <algorithm>
 #include <cstring>
 #include <iomanip>
@@ -262,6 +265,16 @@ auto makeBindGroup(const wgpu::Device& device, const wgpu::BindGroupLayout& layo
   descriptor.bindings = bindings.data();
 
   return device.CreateBindGroup(&descriptor);
+}
+
+void initializeProcTable() {
+  // TODO(ilija@unfolded.ai): Set this globally elsewhere
+  static bool procTableInitialized = false;
+  DawnProcTable procs = dawn_native::GetProcs();
+  if (!procTableInitialized) {
+    dawnProcSetProcs(&procs);
+    procTableInitialized = true;
+  }
 }
 
 }  // namespace utils

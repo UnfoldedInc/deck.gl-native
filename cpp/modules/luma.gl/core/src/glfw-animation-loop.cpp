@@ -40,8 +40,9 @@ using namespace lumagl::utils;
 GLFWAnimationLoop::GLFWAnimationLoop(const Options& options) : AnimationLoop{options} {
   this->_window = this->_initializeGLFW(options.backendType, options.windowTitle);
 
-  // Create a device if none was provided
+  // Create a device and queue if none were provided
   auto _device = options.device ? options.device : this->_createDevice(options.backendType);
+  auto _queue = options.queue ? options.queue : _device.CreateQueue();
 
   this->_binding = glfw::CreateBinding(options.backendType, this->_window, _device.Get());
   if (!this->_binding) {
@@ -49,7 +50,7 @@ GLFWAnimationLoop::GLFWAnimationLoop(const Options& options) : AnimationLoop{opt
   }
 
   this->_swapchain = this->_createSwapchain(_device);
-  this->_initialize(_device, options.queue);
+  this->_initialize(_device, _queue);
 }
 
 GLFWAnimationLoop::~GLFWAnimationLoop() {

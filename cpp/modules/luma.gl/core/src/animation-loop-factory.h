@@ -31,7 +31,7 @@ namespace lumagl {
 struct AnimationLoopFactory {
  public:
   // TODO(ilija@unfolded.ai): Revisit
-  static auto createAnimationLoop(const std::optional<AnimationLoop::Options*>& options)
+  static auto createAnimationLoop(const std::shared_ptr<AnimationLoop::Options>& options)
       -> std::shared_ptr<AnimationLoop> {
     // If no options are passed, try and initialize the only setup which requires no arguments, which is GLFW
     if (!options) {
@@ -43,20 +43,19 @@ struct AnimationLoopFactory {
 #endif
     }
 
-    auto opts = options.value();
 #if defined(LUMAGL_USES_GLFW)
-    if (auto glfwOptions = dynamic_cast<GLFWAnimationLoop::Options*>(opts)) {
-      return std::make_shared<GLFWAnimationLoop>(*glfwOptions);
+    if (auto glfwOptions = std::dynamic_pointer_cast<GLFWAnimationLoop::Options>(options)) {
+      return std::make_shared<GLFWAnimationLoop>(*glfwOptions.get());
     }
 #endif
 
 #if defined(LUMAGL_ENABLE_BACKEND_METAL)
-    if (auto metalOptions = dynamic_cast<MetalAnimationLoop::Options*>(opts)) {
-      return std::make_shared<MetalAnimationLoop>(*metalOptions);
+    if (auto metalOptions = std::dynamic_pointer_cast<MetalAnimationLoop::Options>(options)) {
+      return std::make_shared<MetalAnimationLoop>(*metalOptions.get());
     }
 #endif
 
-    return std::make_shared<AnimationLoop>(*opts);
+    return std::make_shared<AnimationLoop>(*options.get());
   }
 };
 

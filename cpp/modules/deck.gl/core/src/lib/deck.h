@@ -91,7 +91,7 @@ class Deck::Props : public Component::Props {
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  std::optional<lumagl::AnimationLoop::Options*> drawingOptions;
+  std::shared_ptr<lumagl::AnimationLoop::Options> drawingOptions;
 
   // layer/view/controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;

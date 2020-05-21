@@ -20,9 +20,6 @@
 
 #include "./animation-loop.h"  // NOLINT(build/include)
 
-#include <dawn/dawn_proc.h>
-#include <dawn_native/DawnNative.h>
-
 #include <functional>
 
 #include "luma.gl/webgpu.h"
@@ -33,13 +30,7 @@ using namespace lumagl::utils;
 
 AnimationLoop::AnimationLoop(const Options& options) : _size{options.size} {
   // NOTE: This **must** be done before any wgpu API calls as otherwise functions will be undefined
-  // TODO(ilija@unfolded.ai): Set this globally elsewhere
-  static bool procTableInitialized = false;
-  DawnProcTable procs = dawn_native::GetProcs();
-  if (!procTableInitialized) {
-    dawnProcSetProcs(&procs);
-    procTableInitialized = true;
-  }
+  initializeProcTable();
 
   // Passing a valid device within options from subclasses is somewhat dificult, so the subclasses
   // will call _initialize after constructor returns
@@ -105,5 +96,5 @@ void AnimationLoop::_initialize(wgpu::Device device, wgpu::Queue queue) {
       nullptr);
 
   this->_device = device;
-  this->_queue = queue ? queue : device.CreateQueue();
+  this->_queue = queue;
 }

@@ -28,17 +28,16 @@ using namespace lumagl;
 
 // Animation loop retains the view being passed
 MetalAnimationLoop::MetalAnimationLoop(const Options& options) : AnimationLoop{options}, _view{[options.view retain]} {
-  // Create a device if none was provided
+  // Create a device and queue if none were provided
   auto _device = options.device ? options.device : this->_createDevice();
+  auto _queue = options.queue ? options.queue : _device.CreateQueue();
 
   this->_binding = std::make_unique<util::MetalBinding>(this->_view, _device);
   this->_swapchain = this->_createSwapchain(_device);
-  this->_initialize(_device, options.queue);
+  this->_initialize(_device, _queue);
 }
 
-MetalAnimationLoop::~MetalAnimationLoop() {
-  [this->_view release];
-}
+MetalAnimationLoop::~MetalAnimationLoop() { [this->_view release]; }
 
 void MetalAnimationLoop::draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   wgpu::TextureView backbufferView = this->_swapchain.GetCurrentTextureView();
