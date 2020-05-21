@@ -36,10 +36,7 @@ set(EXAMPLE_DATA_FILES
 # Create an executable for each example from the list
 foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
     get_filename_component(TARGET_NAME ${EXAMPLE_SOURCE_FILE} NAME_WE)
-    # Specify MACOSX_BUNDLE in order to get a bundled executable that can be ran 
-    # straight from Finderwhen building for macOS/iOS
-    # https://cmake.org/cmake/help/latest/prop_tgt/MACOSX_BUNDLE.html
-    add_executable(${TARGET_NAME} MACOSX_BUNDLE ${EXAMPLE_SOURCE_FILE})
+    add_executable(${TARGET_NAME} ${EXAMPLE_SOURCE_FILE})
     
     target_link_libraries(${TARGET_NAME} PRIVATE ${DECK_LINK_FLAGS} deck.gl loaders.gl)
 
