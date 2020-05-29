@@ -76,6 +76,8 @@ void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attribu
   this->_instancedAttributeTable = attributes;
 }
 
+void Model::setIndices(const std::shared_ptr<garrow::Array>& indices) { this->_indices = indices; }
+
 void Model::setUniformBuffer(uint32_t binding, const wgpu::Buffer& buffer, uint64_t offset, uint64_t size) {
   this->_setBinding(binding, BindingInitializationHelper{binding, buffer, offset, size});
 }
@@ -98,7 +100,13 @@ void Model::draw(wgpu::RenderPassEncoder pass) {
   // Make sure at least one instance is being drawn in case no instanced attributes are present
   uint32_t minimumInstances = 1;
   auto instanceCount = std::max(static_cast<uint32_t>(this->_instancedAttributeTable->num_rows()), minimumInstances);
-  pass.Draw(vertexCount, instanceCount, 0, 0);
+
+  if (this->_indices) {
+    pass.SetIndexBuffer(this->_indices->buffer());
+    pass.DrawIndexed(static_cast<uint32_t>(this->_indices->length()), instanceCount);
+  } else {
+    pass.Draw(vertexCount, instanceCount);
+  }
 }
 
 void Model::_initializeVertexState(utils::ComboVertexStateDescriptor* descriptor,
