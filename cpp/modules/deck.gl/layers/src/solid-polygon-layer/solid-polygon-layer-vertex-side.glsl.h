@@ -20,23 +20,27 @@
 
 #ifndef DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_SIDE_H
 #define DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_SIDE_H
-#define IS_SIDE_VERTEX
 
 #include <string>
 
+#include "./solid-polygon-layer-vertex-main.glsl.h"
 #include "deck.gl/core/src/shaderlib/project/project32.glsl.h"
+#include "deck.gl/core/src/shaderlib/lighting/phong-lighting.glsl.h"
 #include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
-#include "deck.gl/layers/src/solid-polygon-layer/solid-polygon-layer-vertex-main.glsl.h"
 
 namespace {
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVSS1 = R"GLSL(
+  #define IS_SIDE_VERTEX
+
   layout(location = 2) in vec3 instancePositions;
   layout(location = 3) in vec3 nextPositions;
   layout(location = 4) in float instanceElevations;
   layout(location = 5) in vec4 instanceFillColors;
   layout(location = 6) in vec4 instanceLineColors;
+
+  // TODO(ilija@unfolded.ai): Revisit once double splitting is in place
   vec3 instancePositions64Low = vec3(0.);
   vec3 nextPositions64Low = vec3(0.);
 
@@ -44,7 +48,7 @@ static const std::string solidPolygonLayerVSS1 = R"GLSL(
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVSS2 = R"GLSL(
-  void main(void){
+  void main(void) {
     PolygonProps props;
     props.positions = instancePositions;
     props.positions64Low = instancePositions64Low;
@@ -60,7 +64,8 @@ static const std::string solidPolygonLayerVSS2 = R"GLSL(
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVSS = solidPolygonLayerVSS1 + solidPolygonLayerVSM + solidPolygonLayerVSS2;
 // NOLINTNEXTLINE(runtime/string)
-static const std::string vss = "#version 450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVSS;
+static const std::string vss =
+    "#version 450\n" + geometryVS + "\n" + project32VS + "\n" + phongLighting + "\n" + solidPolygonLayerVSS;
 
 }  // anonymous namespace
 

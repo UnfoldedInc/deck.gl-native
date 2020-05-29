@@ -20,6 +20,8 @@
 
 #include "./layer-manager.h"  // NOLINT(build/include)
 
+#include <probe.gl/core.h>
+
 #include "./layer.h"
 
 #undef PI
@@ -246,33 +248,32 @@ void LayerManager::updateLayers() {
 
 // Make a viewport "current" in layer context, updating viewportChanged flags.
 void LayerManager::activateViewport(const std::shared_ptr<Viewport> &viewport) {
-  this->context->viewport = viewport;
-
-  /*
-  const oldViewport = this->context.viewport;
-  const viewportChanged = !oldViewport || !viewport.equals(oldViewport);
+  auto oldViewport = this->context->viewport;
+  auto viewportChanged = !oldViewport || oldViewport != viewport;
 
   if (viewportChanged) {
-    debug(TRACE_ACTIVATE_VIEWPORT, this, viewport);
-
-    this->context.viewport = viewport;
-    const changeFlags = {viewportChanged : true};
+    this->context->viewport = viewport;
 
     // Update layers states
     // Let screen space layers update their state based on viewport
-    for (auto layer : this->layers) {
-      layer->setChangeFlags(changeFlags);
+    for (const auto &layer : this->layers) {
+      layer->setViewportChangedFlag("Viewport Activated");
       this->_updateLayer(layer);
     }
   }
-
-  return this;
-  */
 }
 
 //
 // PRIVATE METHODS
 //
+
+void LayerManager::_updateLayer(const std::shared_ptr<Layer> &layer) {
+  try {
+    layer->update();
+  } catch (const std::exception &ex) {
+    probegl::ErrorLog() << "Layer update failed with: " << ex.what();
+  }
+}
 
 // void LayerManager::_handleError(stage, error, layer) {
 //   if (this->_onError) {

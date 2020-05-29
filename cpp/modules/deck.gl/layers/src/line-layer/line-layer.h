@@ -51,7 +51,7 @@ class LineLayer : public Layer {
 
  protected:
   void initializeState() override;
-  void updateState(const Layer::ChangeFlags&, const Layer::Props* oldProps) override;
+  void updateState(const Layer::ChangeFlags&, const std::shared_ptr<Layer::Props>& oldProps) override;
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
 

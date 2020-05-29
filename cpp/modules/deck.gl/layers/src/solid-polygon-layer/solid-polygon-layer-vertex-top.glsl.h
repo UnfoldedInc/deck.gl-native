@@ -23,9 +23,10 @@
 
 #include <string>
 
+#include "./solid-polygon-layer-vertex-main.glsl.h"
 #include "deck.gl/core/src/shaderlib/project/project32.glsl.h"
+#include "deck.gl/core/src/shaderlib/lighting/phong-lighting.glsl.h"
 #include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
-#include "deck.gl/layers/src/solid-polygon-layer/solid-polygon-layer-vertex-main.glsl.h"
 
 namespace {
 
@@ -35,13 +36,15 @@ static const std::string solidPolygonLayerVST1 = R"GLSL(
   layout(location = 3) in float elevations;
   layout(location = 4) in vec4 fillColors;
   layout(location = 5) in vec4 lineColors;
+
+  // TODO(ilija@unfolded.ai): Revisit once double splitting is in place
   vec3 positions64Low = vec3(0.);
 
 )GLSL";
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVST2 = R"GLSL(
-  void main(void){
+  void main(void) {
     PolygonProps props;
     props.positions = positions;
     props.positions64Low = positions64Low;
@@ -55,7 +58,8 @@ static const std::string solidPolygonLayerVST2 = R"GLSL(
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVST = solidPolygonLayerVST1 + solidPolygonLayerVSM + solidPolygonLayerVST2;
 // NOLINTNEXTLINE(runtime/string
-static const std::string vst = "#version450\n" + geometryVS + "\n" + project32VS + "\n" + solidPolygonLayerVST;
+static const std::string vst =
+    "#version 450\n" + geometryVS + "\n" + project32VS + "\n" + phongLighting + "\n" + solidPolygonLayerVST;
 
 }  // anonymous namespace
 

@@ -73,7 +73,7 @@ class Layer : public Component {
 
   const auto props() const { return std::dynamic_pointer_cast<const Layer::Props>(this->_props); }
 
-  const Layer::Props* oldProps;
+  const std::shared_ptr<Layer::Props> oldProps;
   std::shared_ptr<LayerContext> context;
 
   std::string needsRedraw;
@@ -156,10 +156,11 @@ class Layer : public Component {
   virtual void initializeState();
 
   // Check if update cycle should run. Default returns changeFlags.propsOrDataChanged.
-  virtual auto shouldUpdateState(const ChangeFlags&, const Layer::Props* oldProps) -> const std::optional<std::string>&;
+  virtual auto shouldUpdateState(const ChangeFlags& changeFlags, const std::shared_ptr<Layer::Props>& oldProps)
+      -> const std::optional<std::string>&;
 
   // Default implementation: all attributes will be invalidated and updated when data changes
-  virtual void updateState(const ChangeFlags&, const Layer::Props* oldProps);
+  virtual void updateState(const ChangeFlags& changeFlags, const std::shared_ptr<Layer::Props>& oldProps);
 
   // Called once when layer is no longer matched and state will be discarded: App can destroy WebGL resources here
   virtual void finalizeState();

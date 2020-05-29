@@ -56,7 +56,6 @@ auto LineLayer::Props::getProperties() const -> const Properties* {
 void LineLayer::initializeState() {
   // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
-  // Using lambdas over std::bind - potential C++ retain cycle issue
   auto sourcePosition =
       std::make_shared<arrow::Field>("instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3));
   auto getSourcePosition = [this](const std::shared_ptr<arrow::Table>& table) {
@@ -85,28 +84,23 @@ void LineLayer::initializeState() {
       utils::createBuffer(this->context->device, sizeof(LineLayerUniforms), wgpu::BufferUsage::Uniform);
 }
 
-void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const std::shared_ptr<Layer::Props>& oldProps) {
   super::updateState(changeFlags, oldProps);
 
-  auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
-  float widthMultiplier = props->widthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
-  LineLayerUniforms layerUniforms;
-  layerUniforms.opacity = props->opacity;
-  layerUniforms.widthScale = props->widthScale * widthMultiplier;
-  layerUniforms.widthMinPixels = props->widthMinPixels;
-  layerUniforms.widthMaxPixels = props->widthMaxPixels;
+  if (changeFlags.propsChanged || changeFlags.viewportChanged) {
+    auto props = std::dynamic_pointer_cast<LineLayer::Props>(this->props());
+    float widthMultiplier = props->widthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
+    LineLayerUniforms layerUniforms;
+    layerUniforms.opacity = props->opacity;
+    layerUniforms.widthScale = props->widthScale * widthMultiplier;
+    layerUniforms.widthMinPixels = props->widthMinPixels;
+    layerUniforms.widthMaxPixels = props->widthMaxPixels;
 
-  this->_layerUniforms.SetSubData(0, sizeof(LineLayerUniforms), &layerUniforms);
+    this->_layerUniforms.SetSubData(0, sizeof(LineLayerUniforms), &layerUniforms);
+  }
 
   /*
-  super::updateState(props, oldProps, changeFlags);
-
   if (changeFlags.extensionsChanged) {
-    const {gl} = this->context;
-    if (this->state->model) {
-      this->state->model;
-    }
-    this->setState({model: this->_getModel(gl)});
     this->getAttributeManager().invalidateAll();
   }
   */
@@ -115,9 +109,6 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::
 void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {
-  // TODO(ilija@unfolded.ai): Remove. updateState currently doesn't seem to be called when viewport changes
-  this->updateState(Layer::ChangeFlags{}, nullptr);
-
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
     model->setUniformBuffer(1, this->_layerUniforms);

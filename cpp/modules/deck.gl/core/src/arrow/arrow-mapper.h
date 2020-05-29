@@ -25,6 +25,7 @@
 #include <arrow/table.h>
 
 #include <memory>
+#include <vector>
 
 #include "./row.h"
 #include "math.gl/core.h"
@@ -34,17 +35,36 @@ namespace deckgl {
 /// \brief Utility class that provides a way to easily map Arrow tables.
 class ArrowMapper {
  public:
+  // TODO(ilija@unfolded.ai): Consolidate using template specializations
+  using BoolAccessor = auto(const Row &) -> bool;
   using FloatAccessor = auto(const Row &) -> float;
+  using Vector2FloatAccessor = auto(const Row &) -> mathgl::Vector2<float>;
   using Vector3FloatAccessor = auto(const Row &) -> mathgl::Vector3<float>;
   using Vector3DoubleAccessor = auto(const Row &) -> mathgl::Vector3<double>;
   using Vector4FloatAccessor = auto(const Row &) -> mathgl::Vector4<float>;
   using Vector4DoubleAccessor = auto(const Row &) -> mathgl::Vector4<double>;
+  using ListVector3FloatAccessor = auto(const Row &) -> std::vector<mathgl::Vector3<float>>;
+
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
+  /// \param table Table to extract the data from.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
+  /// \return Resulting array data.
+  static auto mapBoolColumn(const std::shared_ptr<arrow::Table> &table, std::function<BoolAccessor> getValueFromRow)
+      -> std::shared_ptr<arrow::Array>;
 
   /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
   /// \param table Table to extract the data from.
   /// \param getValueFromRow Function that does the mapping on per-row basis.
   /// \return Resulting array data.
   static auto mapFloatColumn(const std::shared_ptr<arrow::Table> &table, std::function<FloatAccessor> getValueFromRow)
+      -> std::shared_ptr<arrow::Array>;
+
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
+  /// \param table Table to extract the data from.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
+  /// \return Resulting array data.
+  static auto mapVector2FloatColumn(const std::shared_ptr<arrow::Table> &table,
+                                    std::function<Vector2FloatAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 
   /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
@@ -77,6 +97,14 @@ class ArrowMapper {
   /// \return Resulting array data.
   static auto mapVector4DoubleColumn(const std::shared_ptr<arrow::Table> &table,
                                      std::function<Vector4DoubleAccessor> getValueFromRow)
+      -> std::shared_ptr<arrow::Array>;
+
+  /// \brief Maps table data using accessor function, returning a new array containing the mapped data.
+  /// \param table Table to extract the data from.
+  /// \param getValueFromRow Function that does the mapping on per-row basis.
+  /// \return Resulting array data.
+  static auto mapListVector3FloatColumn(const std::shared_ptr<arrow::Table> &table,
+                                        std::function<ListVector3FloatAccessor> getValueFromRow)
       -> std::shared_ptr<arrow::Array>;
 };
 

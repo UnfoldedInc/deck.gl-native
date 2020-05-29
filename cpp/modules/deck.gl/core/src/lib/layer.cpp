@@ -296,14 +296,14 @@ decodePickingColor(color) {
 void Layer::initializeState() {}
 
 // Let"s layer control if updateState should be called
-auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps)
+auto Layer::shouldUpdateState(const Layer::ChangeFlags& changeFlags, const std::shared_ptr<Layer::Props>& oldProps)
     -> const std::optional<std::string>& {
   return changeFlags.propsOrDataChanged;
 }
 
 // Default implementation, all attributes will be invalidated and updated
 // when data changes
-void Layer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+void Layer::updateState(const Layer::ChangeFlags& changeFlags, const std::shared_ptr<Layer::Props>& oldProps) {
   /*
   const auto attributeManager = this->getAttributeManager();
   if (changeFlags.dataChanged && attributeManager) {
@@ -457,16 +457,16 @@ void Layer::setDataChangedFlag(const std::string& reason) {
 
 // Dirty some change flags, will be handled by updateLayer
 void Layer::setPropsChangedFlag(const std::string& reason) {
-  if (!this->_changeFlags.dataChanged) {
-    this->_changeFlags.dataChanged = reason;
+  if (!this->_changeFlags.propsChanged) {
+    this->_changeFlags.propsChanged = reason;
   }
   this->_updateChangeFlags();
 }
 
 // Dirty some change flags, will be handled by updateLayer
 void Layer::setViewportChangedFlag(const std::string& reason) {
-  if (!this->_changeFlags.dataChanged) {
-    this->_changeFlags.dataChanged = reason;
+  if (!this->_changeFlags.viewportChanged) {
+    this->_changeFlags.viewportChanged = reason;
   }
   this->_updateChangeFlags();
 }
@@ -498,11 +498,11 @@ void Layer::_updateChangeFlags() {
     // changeFlags.extensionsChanged;
   }
 
-  if (!this->_changeFlags.propsOrDataChanged) {
+  if (!this->_changeFlags.somethingChanged) {
     if (this->_changeFlags.propsOrDataChanged) {
-      this->_changeFlags.propsOrDataChanged = this->_changeFlags.dataChanged;
+      this->_changeFlags.somethingChanged = this->_changeFlags.propsOrDataChanged;
     } else if (this->_changeFlags.viewportChanged) {
-      this->_changeFlags.propsOrDataChanged = this->_changeFlags.viewportChanged;
+      this->_changeFlags.somethingChanged = this->_changeFlags.viewportChanged;
     }
     // flags.stateChanged
   }

@@ -24,6 +24,29 @@
 
 using namespace deckgl;
 
+auto ArrowMapper::mapBoolColumn(const std::shared_ptr<arrow::Table>& table, std::function<BoolAccessor> getValueFromRow)
+    -> std::shared_ptr<arrow::Array> {
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
+  arrow::BooleanBuilder builder{pool};
+
+  for (auto i = 0; i < table->num_rows(); ++i) {
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
+    auto value = getValueFromRow(row);
+
+    if (!builder.Append(value).ok()) {
+      throw std::runtime_error("Unable to append vector data");
+    }
+  }
+
+  std::shared_ptr<arrow::Array> resultArray;
+  if (!builder.Finish(&resultArray).ok()) {
+    throw std::runtime_error("Unable to append vector data");
+  }
+
+  return resultArray;
+}
+
 auto ArrowMapper::mapFloatColumn(const std::shared_ptr<arrow::Table>& table,
                                  std::function<FloatAccessor> getValueFromRow) -> std::shared_ptr<arrow::Array> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
@@ -47,6 +70,35 @@ auto ArrowMapper::mapFloatColumn(const std::shared_ptr<arrow::Table>& table,
   return resultArray;
 }
 
+auto ArrowMapper::mapVector2FloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                        std::function<Vector2FloatAccessor> getValueFromRow)
+    -> std::shared_ptr<arrow::Array> {
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
+  arrow::FixedSizeListBuilder listBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool), 2};
+  arrow::FloatBuilder& valueBuilder = *(static_cast<arrow::FloatBuilder*>(listBuilder.value_builder()));
+
+  for (auto i = 0; i < table->num_rows(); ++i) {
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
+    auto vector = getValueFromRow(row);
+
+    if (!listBuilder.Append().ok()) {
+      throw std::runtime_error("Unable to append vector data");
+    }
+
+    if (!valueBuilder.AppendValues(&vector.x, 2).ok()) {
+      throw std::runtime_error("Unable to append vector data");
+    }
+  }
+
+  std::shared_ptr<arrow::Array> resultArray;
+  if (!listBuilder.Finish(&resultArray).ok()) {
+    throw std::runtime_error("Unable to append vector data");
+  }
+
+  return resultArray;
+}
+
 auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& table,
                                         std::function<Vector3FloatAccessor> getValueFromRow)
     -> std::shared_ptr<arrow::Array> {
@@ -63,9 +115,7 @@ auto ArrowMapper::mapVector3FloatColumn(const std::shared_ptr<arrow::Table>& tab
       throw std::runtime_error("Unable to append vector data");
     }
 
-    // TODO(ilija@unfolded.ai): Just use the vector pointer
-    std::vector<float> rawVector{vector.x, vector.y, vector.z};
-    if (!valueBuilder.AppendValues(rawVector.data(), rawVector.size()).ok()) {
+    if (!valueBuilder.AppendValues(&vector.x, 3).ok()) {
       throw std::runtime_error("Unable to append vector data");
     }
   }
@@ -94,8 +144,7 @@ auto ArrowMapper::mapVector3DoubleColumn(const std::shared_ptr<arrow::Table>& ta
       throw std::runtime_error("Unable to append vector data");
     }
 
-    std::vector<double> rawVector{vector.x, vector.y, vector.z};
-    if (!valueBuilder.AppendValues(rawVector.data(), rawVector.size()).ok()) {
+    if (!valueBuilder.AppendValues(&vector.x, 3).ok()) {
       throw std::runtime_error("Unable to append vector data");
     }
   }
@@ -124,8 +173,7 @@ auto ArrowMapper::mapVector4FloatColumn(const std::shared_ptr<arrow::Table>& tab
       throw std::runtime_error("Unable to append vector data");
     }
 
-    std::vector<float> rawVector{vector.x, vector.y, vector.z, vector.w};
-    if (!valueBuilder.AppendValues(rawVector.data(), rawVector.size()).ok()) {
+    if (!valueBuilder.AppendValues(&vector.x, 4).ok()) {
       throw std::runtime_error("Unable to append vector data");
     }
   }
@@ -154,14 +202,50 @@ auto ArrowMapper::mapVector4DoubleColumn(const std::shared_ptr<arrow::Table>& ta
       throw std::runtime_error("Unable to append vector data");
     }
 
-    std::vector<double> rawVector{vector.x, vector.y, vector.z, vector.w};
-    if (!valueBuilder.AppendValues(rawVector.data(), rawVector.size()).ok()) {
+    if (!valueBuilder.AppendValues(&vector.x, 4).ok()) {
       throw std::runtime_error("Unable to append vector data");
     }
   }
 
   std::shared_ptr<arrow::Array> resultArray;
   if (!listBuilder.Finish(&resultArray).ok()) {
+    throw std::runtime_error("Unable to append vector data");
+  }
+
+  return resultArray;
+}
+
+auto ArrowMapper::mapListVector3FloatColumn(const std::shared_ptr<arrow::Table>& table,
+                                            std::function<ListVector3FloatAccessor> getValueFromRow)
+    -> std::shared_ptr<arrow::Array> {
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
+
+  auto valueBuilder = std::make_shared<arrow::FloatBuilder>(pool);
+  auto vectorBuilder = std::make_shared<arrow::FixedSizeListBuilder>(pool, valueBuilder, 3);
+  auto listBuilder = std::make_shared<arrow::ListBuilder>(pool, vectorBuilder);
+
+  for (auto i = 0; i < table->num_rows(); ++i) {
+    // TODO(ilija@unfolded.ai): Move row object creation out of the loop
+    auto row = Row{table, i};
+    auto listData = getValueFromRow(row);
+
+    if (!listBuilder->Append().ok()) {
+      throw std::runtime_error("Unable to append vector data");
+    }
+
+    for (const auto& vectorData : listData) {
+      if (!vectorBuilder->Append().ok()) {
+        throw std::runtime_error("Unable to append vector data");
+      }
+
+      if (!valueBuilder->AppendValues(&vectorData.x, 3).ok()) {
+        throw std::runtime_error("Unable to append vector data");
+      }
+    }
+  }
+
+  std::shared_ptr<arrow::Array> resultArray;
+  if (!listBuilder->Finish(&resultArray).ok()) {
     throw std::runtime_error("Unable to append vector data");
   }
 

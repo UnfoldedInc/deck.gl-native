@@ -120,33 +120,30 @@ void ScatterplotLayer::initializeState() {
       utils::createBuffer(this->context->device, sizeof(ScatterplotLayerUniforms), wgpu::BufferUsage::Uniform);
 }
 
-void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const Layer::Props* oldProps) {
+void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags,
+                                   const std::shared_ptr<Layer::Props>& oldProps) {
   super::updateState(changeFlags, oldProps);
 
-  auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
-  float widthMultiplier = props->lineWidthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
+  if (changeFlags.propsChanged || changeFlags.viewportChanged) {
+    auto props = std::dynamic_pointer_cast<ScatterplotLayer::Props>(this->props());
+    float widthMultiplier = props->lineWidthUnits == "pixels" ? this->context->viewport->metersPerPixel() : 1.0;
 
-  ScatterplotLayerUniforms uniforms;
-  uniforms.opacity = props->opacity;
-  uniforms.radiusScale = props->radiusScale;
-  uniforms.radiusMinPixels = props->radiusMinPixels;
-  uniforms.radiusMaxPixels = props->radiusMaxPixels;
-  uniforms.lineWidthScale = props->lineWidthScale * widthMultiplier;
-  uniforms.lineWidthMinPixels = props->lineWidthMinPixels;
-  uniforms.lineWidthMaxPixels = props->lineWidthMaxPixels;
-  uniforms.stroked = props->stroked ? 1.0f : 0.0f;
-  uniforms.filled = props->filled;
+    ScatterplotLayerUniforms uniforms;
+    uniforms.opacity = props->opacity;
+    uniforms.radiusScale = props->radiusScale;
+    uniforms.radiusMinPixels = props->radiusMinPixels;
+    uniforms.radiusMaxPixels = props->radiusMaxPixels;
+    uniforms.lineWidthScale = props->lineWidthScale * widthMultiplier;
+    uniforms.lineWidthMinPixels = props->lineWidthMinPixels;
+    uniforms.lineWidthMaxPixels = props->lineWidthMaxPixels;
+    uniforms.stroked = props->stroked ? 1.0f : 0.0f;
+    uniforms.filled = props->filled;
 
-  this->_layerUniforms.SetSubData(0, sizeof(ScatterplotLayerUniforms), &uniforms);
+    this->_layerUniforms.SetSubData(0, sizeof(ScatterplotLayerUniforms), &uniforms);
+  }
 
   /*
-  super.updateState({props, oldProps, changeFlags});
   if (changeFlags.extensionsChanged) {
-    const {gl} = this->context;
-    if (this->state.model) {
-      this->state.model.delete();
-    }
-    this->setState({model: this->_getModel(gl)});
     this->getAttributeManager().invalidateAll();
   }
   */
@@ -155,9 +152,6 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags, const 
 void ScatterplotLayer::finalizeState() {}
 
 void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {
-  // TODO(ilija@unfolded.ai): Remove. updateState currently doesn't seem to be called when viewport changes
-  this->updateState(Layer::ChangeFlags{}, nullptr);
-
   for (auto const& model : this->getModels()) {
     // Layer uniforms are currently bound to index 1
     model->setUniformBuffer(1, this->_layerUniforms);

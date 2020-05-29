@@ -8,6 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD1CCD8B24446C6600C96D72 /* array.cc */; };
+		CD227D4E24779BE500B6083B /* solid-polygon-layer-vertex-side.glsl.h in Headers */ = {isa = PBXBuildFile; fileRef = CD227D4824779BE400B6083B /* solid-polygon-layer-vertex-side.glsl.h */; };
+		CD227D4F24779BE500B6083B /* solid-polygon-layer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD227D4924779BE400B6083B /* solid-polygon-layer.h */; };
+		CD227D5024779BE500B6083B /* solid-polygon-layer-fragment.glsl.h in Headers */ = {isa = PBXBuildFile; fileRef = CD227D4A24779BE400B6083B /* solid-polygon-layer-fragment.glsl.h */; };
+		CD227D5124779BE500B6083B /* solid-polygon-layer-vertex-top.glsl.h in Headers */ = {isa = PBXBuildFile; fileRef = CD227D4B24779BE400B6083B /* solid-polygon-layer-vertex-top.glsl.h */; };
+		CD227D5224779BE500B6083B /* solid-polygon-layer-vertex-main.glsl.h in Headers */ = {isa = PBXBuildFile; fileRef = CD227D4C24779BE400B6083B /* solid-polygon-layer-vertex-main.glsl.h */; };
+		CD227D5324779BE500B6083B /* solid-polygon-layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD227D4D24779BE400B6083B /* solid-polygon-layer.cpp */; };
+		CD227D622477DAF000B6083B /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
+		CD227D632477DAF700B6083B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2D242E2072003F3B96 /* Cocoa.framework */; };
+		CD227D642477DAFA00B6083B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2F242E2076003F3B96 /* IOKit.framework */; };
+		CD227D652477DAFF00B6083B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
+		CD227D682477DB1E00B6083B /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
+		CD227D692477DB1E00B6083B /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CD227D6A2477DB1E00B6083B /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
+		CD227D6B2477DB1E00B6083B /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CD227D6D2477DB2300B6083B /* libdeck.gl-native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD903E9E241A0DB50047F954 /* libdeck.gl-native.a */; };
+		CD227D712477DB4300B6083B /* vancouver-blocks.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD227D702477DB4300B6083B /* vancouver-blocks.cc */; };
 		CD235261246256F400E3F139 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF2D242E2072003F3B96 /* Cocoa.framework */; };
 		CD23526224627CBE00E3F139 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF1E242E1EB4003F3B96 /* Metal.framework */; };
 		CD23526324627CC300E3F139 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
@@ -65,6 +81,8 @@
 		CD5857062461367E0076227F /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
 		CD5857072461367E0076227F /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CD58570C246136B60076227F /* manhattan-population.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD9BE17E246061F00019835B /* manhattan-population.cc */; };
+		CD6EC075247CFB2B009D6C00 /* earcut.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CD6EC074247CFB2B009D6C00 /* earcut.hpp */; };
+		CD6EC077247CFB40009D6C00 /* earcut-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6EC076247CFB40009D6C00 /* earcut-test.cpp */; };
 		CD98D2BF2449AB5D00E42B4F /* arrow-utils-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD98D2BE2449AB5D00E42B4F /* arrow-utils-test.cc */; };
 		CD98D2C52449AEAB00E42B4F /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
 		CD98D2C62449AEAB00E42B4F /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -93,6 +111,7 @@
 		CDCD8F2C24614F73009604C5 /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CDCD8F2E24614F74009604C5 /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CDCD8F3D2461841D009604C5 /* texture-render.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDCD8F2F246183FC009604C5 /* texture-render.cc */; };
+		CDD4A9BA2481158900CA5E4C /* vancouver-blocks-simplified.ndjson in CopyFiles */ = {isa = PBXBuildFile; fileRef = CDD4A9B92481157C00CA5E4C /* vancouver-blocks-simplified.ndjson */; };
 		CDE55C6A243C6A11000D8EC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE53EA4243C69FB000D8EC6 /* main.cpp */; };
 		CDE57747243C6A1E000D8EC6 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE55B2B243C6A10000D8EC6 /* core.h */; };
 		CDE57748243C6A1E000D8EC6 /* timer-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55B2F243C6A10000D8EC6 /* timer-test.cpp */; };
@@ -229,6 +248,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CD227D662477DB0900B6083B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD759CDF2417625E0001C15C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD903E9D241A0DB50047F954;
+			remoteInfo = "deck.gl-native";
+		};
 		CD23526624627CD000E3F139 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD759CDF2417625E0001C15C /* Project object */;
@@ -267,6 +293,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		CD227D592477DAE200B6083B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = data;
+			dstSubfolderSpec = 16;
+			files = (
+				CDD4A9BA2481158900CA5E4C /* vancouver-blocks-simplified.ndjson in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD227D6C2477DB1E00B6083B /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CD227D6B2477DB1E00B6083B /* libdawn_proc.dylib in Embed Libraries */,
+				CD227D692477DB1E00B6083B /* libdawn_native.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD23526C24627CD500E3F139 /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -383,6 +431,16 @@
 		CD0F092B245BE3060029A096 /* heathrow-flights.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = "heathrow-flights.ndjson"; sourceTree = "<group>"; };
 		CD0F092C245BE3060029A096 /* airports.ndjson */ = {isa = PBXFileReference; lastKnownFileType = text; path = airports.ndjson; sourceTree = "<group>"; };
 		CD1CCD8B24446C6600C96D72 /* array.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = array.cc; sourceTree = "<group>"; };
+		CD227D4824779BE400B6083B /* solid-polygon-layer-vertex-side.glsl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "solid-polygon-layer-vertex-side.glsl.h"; sourceTree = "<group>"; };
+		CD227D4924779BE400B6083B /* solid-polygon-layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "solid-polygon-layer.h"; sourceTree = "<group>"; };
+		CD227D4A24779BE400B6083B /* solid-polygon-layer-fragment.glsl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "solid-polygon-layer-fragment.glsl.h"; sourceTree = "<group>"; };
+		CD227D4B24779BE400B6083B /* solid-polygon-layer-vertex-top.glsl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "solid-polygon-layer-vertex-top.glsl.h"; sourceTree = "<group>"; };
+		CD227D4C24779BE400B6083B /* solid-polygon-layer-vertex-main.glsl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "solid-polygon-layer-vertex-main.glsl.h"; sourceTree = "<group>"; };
+		CD227D4D24779BE400B6083B /* solid-polygon-layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "solid-polygon-layer.cpp"; sourceTree = "<group>"; };
+		CD227D552477D0AA00B6083B /* phong-lighting.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "phong-lighting.glsl.h"; sourceTree = "<group>"; };
+		CD227D562477D4FF00B6083B /* lighting.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lighting.glsl.h; sourceTree = "<group>"; };
+		CD227D5B2477DAE200B6083B /* vancouver-blocks */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "vancouver-blocks"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD227D702477DB4300B6083B /* vancouver-blocks.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "vancouver-blocks.cc"; sourceTree = "<group>"; };
 		CD2A888E243CD18A0059C3CF /* libSPIRV.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPIRV.a; path = "cpp/deps/x64-osx/lib/libSPIRV.a"; sourceTree = "<group>"; };
 		CD2A888F243CD18A0059C3CF /* libOGLCompiler.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOGLCompiler.a; path = "cpp/deps/x64-osx/lib/libOGLCompiler.a"; sourceTree = "<group>"; };
 		CD2A8890243CD18A0059C3CF /* libSPVRemapper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSPVRemapper.a; path = "cpp/deps/x64-osx/lib/libSPVRemapper.a"; sourceTree = "<group>"; };
@@ -429,6 +487,8 @@
 		CD64D44E24718F8C009A2A9C /* metal-animation-loop.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "metal-animation-loop.mm"; sourceTree = "<group>"; };
 		CD64D44F24718F8C009A2A9C /* metal-animation-loop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "metal-animation-loop.h"; sourceTree = "<group>"; };
 		CD6857BC241F654E001F4C59 /* libarrow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarrow.a; path = "../../../../../../usr/local/Cellar/apache-arrow/0.16.0/lib/libarrow.a"; sourceTree = "<group>"; };
+		CD6EC074247CFB2B009D6C00 /* earcut.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = earcut.hpp; sourceTree = "<group>"; };
+		CD6EC076247CFB40009D6C00 /* earcut-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "earcut-test.cpp"; sourceTree = "<group>"; };
 		CD74D74D245949EF00D62337 /* geometry.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = geometry.glsl.h; sourceTree = "<group>"; };
 		CD74D74E24594C5800D62337 /* project32.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = project32.glsl.h; sourceTree = "<group>"; };
 		CD76A0D52450A87000E5D2CF /* project.glsl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = project.glsl.h; sourceTree = "<group>"; };
@@ -454,6 +514,7 @@
 		CDC8E171244D6420002A7E60 /* key-value-metadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "key-value-metadata.h"; sourceTree = "<group>"; };
 		CDCD8F2F246183FC009604C5 /* texture-render.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "texture-render.cc"; sourceTree = "<group>"; };
 		CDCD8F3624618413009604C5 /* texture-render */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "texture-render"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDD4A9B92481157C00CA5E4C /* vancouver-blocks-simplified.ndjson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "vancouver-blocks-simplified.ndjson"; sourceTree = "<group>"; };
 		CDE53E9B243C69A4000D8EC6 /* animometer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = animometer; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDE53EA4243C69FB000D8EC6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CDE53EA7243C69FB000D8EC6 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -719,6 +780,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		CD227D582477DAE200B6083B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD227D652477DAFF00B6083B /* QuartzCore.framework in Frameworks */,
+				CD227D632477DAF700B6083B /* Cocoa.framework in Frameworks */,
+				CD227D622477DAF000B6083B /* Metal.framework in Frameworks */,
+				CD227D682477DB1E00B6083B /* libdawn_native.dylib in Frameworks */,
+				CD227D6A2477DB1E00B6083B /* libdawn_proc.dylib in Frameworks */,
+				CD227D6D2477DB2300B6083B /* libdeck.gl-native.a in Frameworks */,
+				CD227D642477DAFA00B6083B /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD48E80D24178A1E00D3C13C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -828,6 +903,7 @@
 			children = (
 				CD0F092A245BE3060029A096 /* flight-paths */,
 				CD58569C24612E200076227F /* manhattan-population */,
+				CD227D722477DB6A00B6083B /* vancouver-blocks */,
 			);
 			path = examples;
 			sourceTree = "<group>";
@@ -841,6 +917,36 @@
 			path = "flight-paths";
 			sourceTree = "<group>";
 		};
+		CD227D4724779BE400B6083B /* solid-polygon-layer */ = {
+			isa = PBXGroup;
+			children = (
+				CD227D4924779BE400B6083B /* solid-polygon-layer.h */,
+				CD227D4D24779BE400B6083B /* solid-polygon-layer.cpp */,
+				CD227D4824779BE400B6083B /* solid-polygon-layer-vertex-side.glsl.h */,
+				CD227D4A24779BE400B6083B /* solid-polygon-layer-fragment.glsl.h */,
+				CD227D4B24779BE400B6083B /* solid-polygon-layer-vertex-top.glsl.h */,
+				CD227D4C24779BE400B6083B /* solid-polygon-layer-vertex-main.glsl.h */,
+			);
+			path = "solid-polygon-layer";
+			sourceTree = "<group>";
+		};
+		CD227D542477D08100B6083B /* lighting */ = {
+			isa = PBXGroup;
+			children = (
+				CD227D562477D4FF00B6083B /* lighting.glsl.h */,
+				CD227D552477D0AA00B6083B /* phong-lighting.glsl.h */,
+			);
+			path = lighting;
+			sourceTree = "<group>";
+		};
+		CD227D722477DB6A00B6083B /* vancouver-blocks */ = {
+			isa = PBXGroup;
+			children = (
+				CDD4A9B92481157C00CA5E4C /* vancouver-blocks-simplified.ndjson */,
+			);
+			path = "vancouver-blocks";
+			sourceTree = "<group>";
+		};
 		CD48E81124178A1E00D3C13C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -850,6 +956,7 @@
 				CD5856D9246135540076227F /* flight-paths */,
 				CD5856F52461364B0076227F /* manhattan-population */,
 				CDCD8F3624618413009604C5 /* texture-render */,
+				CD227D5B2477DAE200B6083B /* vancouver-blocks */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1056,6 +1163,7 @@
 				CDE74992244EF71A00FB84CC /* flight-paths.cc */,
 				CD9BE17E246061F00019835B /* manhattan-population.cc */,
 				CDCD8F2F246183FC009604C5 /* texture-render.cc */,
+				CD227D702477DB4300B6083B /* vancouver-blocks.cc */,
 			);
 			path = deck.gl;
 			sourceTree = "<group>";
@@ -1339,6 +1447,7 @@
 				CDE55B84243C6A10000D8EC6 /* attribute */,
 				CDE55B86243C6A10000D8EC6 /* layer-test.cpp */,
 				CDE55B87243C6A10000D8EC6 /* view-manager-test.cpp */,
+				CD6EC076247CFB40009D6C00 /* earcut-test.cpp */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -1724,6 +1833,7 @@
 				CDE55C24243C6A10000D8EC6 /* view-manager.h */,
 				CDE55C25243C6A10000D8EC6 /* layer-manager.h */,
 				CDE55C26243C6A10000D8EC6 /* view-manager.cpp */,
+				CD6EC074247CFB2B009D6C00 /* earcut.hpp */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -1753,6 +1863,7 @@
 		CDE55C2E243C6A10000D8EC6 /* shaderlib */ = {
 			isa = PBXGroup;
 			children = (
+				CD227D542477D08100B6083B /* lighting */,
 				CD74D74C245949DB00D62337 /* misc */,
 				CDE55C2F243C6A10000D8EC6 /* project */,
 			);
@@ -1793,10 +1904,11 @@
 		CDE55C38243C6A10000D8EC6 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CDE55C44243C6A10000D8EC6 /* layers.h */,
+				CDE55C43243C6A10000D8EC6 /* layers.cpp */,
 				CDE55C39243C6A10000D8EC6 /* line-layer */,
 				CDE55C3E243C6A10000D8EC6 /* scatterplot-layer */,
-				CDE55C43243C6A10000D8EC6 /* layers.cpp */,
-				CDE55C44243C6A10000D8EC6 /* layers.h */,
+				CD227D4724779BE400B6083B /* solid-polygon-layer */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1804,9 +1916,9 @@
 		CDE55C39243C6A10000D8EC6 /* line-layer */ = {
 			isa = PBXGroup;
 			children = (
-				CDE55C3A243C6A10000D8EC6 /* line-layer-vertex.glsl.h */,
-				CDE55C3B243C6A10000D8EC6 /* line-layer.cpp */,
 				CDE55C3C243C6A10000D8EC6 /* line-layer.h */,
+				CDE55C3B243C6A10000D8EC6 /* line-layer.cpp */,
+				CDE55C3A243C6A10000D8EC6 /* line-layer-vertex.glsl.h */,
 				CDE55C3D243C6A10000D8EC6 /* line-layer-fragment.glsl.h */,
 			);
 			path = "line-layer";
@@ -1816,9 +1928,9 @@
 			isa = PBXGroup;
 			children = (
 				CDE55C3F243C6A10000D8EC6 /* scatterplot-layer.h */,
+				CDE55C42243C6A10000D8EC6 /* scatterplot-layer.cpp */,
 				CDE55C40243C6A10000D8EC6 /* scatterplot-layer-fragment.glsl.h */,
 				CDE55C41243C6A10000D8EC6 /* scatterplot-layer-vertex.glsl.h */,
-				CDE55C42243C6A10000D8EC6 /* scatterplot-layer.cpp */,
 			);
 			path = "scatterplot-layer";
 			sourceTree = "<group>";
@@ -1960,6 +2072,7 @@
 				CDE5781B243C6A1F000D8EC6 /* viewport-uniforms.h in Headers */,
 				CDE57842243C6A1F000D8EC6 /* json-converter.h in Headers */,
 				CDE577F2243C6A1F000D8EC6 /* attribute-manager.h in Headers */,
+				CD227D5024779BE500B6083B /* solid-polygon-layer-fragment.glsl.h in Headers */,
 				CDE57796243C6A1F000D8EC6 /* swap-chain-utils.h in Headers */,
 				CDE57786243C6A1F000D8EC6 /* backend-binding.h in Headers */,
 				CDE5784D243C6A1F000D8EC6 /* json-loader-data.h in Headers */,
@@ -1969,12 +2082,14 @@
 				CDE57843243C6A1F000D8EC6 /* json-types.h in Headers */,
 				CDE577D1243C6A1F000D8EC6 /* view-json-data.h in Headers */,
 				CDE577F0243C6A1F000D8EC6 /* deck.h in Headers */,
+				CD6EC075247CFB2B009D6C00 /* earcut.hpp in Headers */,
 				CDE577B4243C6A1F000D8EC6 /* web-mercator.h in Headers */,
 				CDE57855243C6A1F000D8EC6 /* json.h in Headers */,
 				CD57341224640E6200D22A70 /* size.h in Headers */,
 				CDE5785A243C6A1F000D8EC6 /* csv-loader.h in Headers */,
 				CDE5774E243C6A1F000D8EC6 /* compiler.h in Headers */,
 				CDAD574324724CD7002736A3 /* metal-binding.h in Headers */,
+				CD227D5124779BE500B6083B /* solid-polygon-layer-vertex-top.glsl.h in Headers */,
 				CD452A51244852DE00DD44A5 /* field.h in Headers */,
 				CDE5776F243C6A1F000D8EC6 /* array.h in Headers */,
 				CDE57805243C6A1F000D8EC6 /* layer-context.h in Headers */,
@@ -1983,6 +2098,7 @@
 				CDE57755243C6A1F000D8EC6 /* timer.h in Headers */,
 				CDE57806243C6A1F000D8EC6 /* component.h in Headers */,
 				CDE57747243C6A1E000D8EC6 /* core.h in Headers */,
+				CD227D4E24779BE500B6083B /* solid-polygon-layer-vertex-side.glsl.h in Headers */,
 				CDE5777C243C6A1F000D8EC6 /* webgpu-helpers.h in Headers */,
 				CDE577B2243C6A1F000D8EC6 /* core.h in Headers */,
 				CDE577B5243C6A1F000D8EC6 /* core.h in Headers */,
@@ -2014,9 +2130,11 @@
 				CDE577F1243C6A1F000D8EC6 /* layer-state.h in Headers */,
 				CDE57845243C6A1F000D8EC6 /* json.h in Headers */,
 				CDE5780D243C6A1F000D8EC6 /* view-state.h in Headers */,
+				CD227D5224779BE500B6083B /* solid-polygon-layer-vertex-main.glsl.h in Headers */,
 				CDE57846243C6A1F000D8EC6 /* json-object.h in Headers */,
 				CD57341024640A3300D22A70 /* blit-model.h in Headers */,
 				CDE577EB243C6A1F000D8EC6 /* viewport.h in Headers */,
+				CD227D4F24779BE500B6083B /* solid-polygon-layer.h in Headers */,
 				CDAD5745247258BA002736A3 /* animation-loop-factory.h in Headers */,
 				CDE577A9243C6A1F000D8EC6 /* sample-viewports.h in Headers */,
 				CDE57807243C6A1F000D8EC6 /* view-manager.h in Headers */,
@@ -2056,6 +2174,25 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
+		CD227D5A2477DAE200B6083B /* vancouver-blocks */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD227D5F2477DAE200B6083B /* Build configuration list for PBXNativeTarget "vancouver-blocks" */;
+			buildPhases = (
+				CD227D572477DAE200B6083B /* Sources */,
+				CD227D582477DAE200B6083B /* Frameworks */,
+				CD227D592477DAE200B6083B /* CopyFiles */,
+				CD227D6C2477DB1E00B6083B /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CD227D672477DB0900B6083B /* PBXTargetDependency */,
+			);
+			name = "vancouver-blocks";
+			productName = "vancouver-blocks";
+			productReference = CD227D5B2477DAE200B6083B /* vancouver-blocks */;
+			productType = "com.apple.product-type.tool";
+		};
 		CD48E80F24178A1E00D3C13C /* deck.gl-native-tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD48E81724178A1E00D3C13C /* Build configuration list for PBXNativeTarget "deck.gl-native-tests" */;
@@ -2176,8 +2313,11 @@
 			isa = PBXProject;
 			attributes = {
 				DefaultBuildSystemTypeForWorkspace = Original;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1150;
 				TargetAttributes = {
+					CD227D5A2477DAE200B6083B = {
+						CreatedOnToolsVersion = 11.5;
+					};
 					CD48E80F24178A1E00D3C13C = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
@@ -2221,6 +2361,7 @@
 				CD5856D8246135540076227F /* flight-paths */,
 				CD5856F42461364B0076227F /* manhattan-population */,
 				CDCD8F3524618413009604C5 /* texture-render */,
+				CD227D5A2477DAE200B6083B /* vancouver-blocks */,
 			);
 		};
 /* End PBXProject section */
@@ -2247,11 +2388,20 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		CD227D572477DAE200B6083B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD227D712477DB4300B6083B /* vancouver-blocks.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD48E80C24178A1E00D3C13C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				CDE55C6A243C6A11000D8EC6 /* main.cpp in Sources */,
+				CD6EC077247CFB40009D6C00 /* earcut-test.cpp in Sources */,
 				CDE57836243C6A1F000D8EC6 /* json-object-test.cpp in Sources */,
 				CDE57764243C6A1F000D8EC6 /* animation-loop-test.cpp in Sources */,
 				CDE577C5243C6A1F000D8EC6 /* layer-test.cpp in Sources */,
@@ -2319,6 +2469,7 @@
 				CD57340F24640A3300D22A70 /* blit-model.cc in Sources */,
 				CDE577FC243C6A1F000D8EC6 /* deck.cpp in Sources */,
 				CDE57781243C6A1F000D8EC6 /* webgpu-helpers.cpp in Sources */,
+				CD227D5324779BE500B6083B /* solid-polygon-layer.cpp in Sources */,
 				CD452A552448565000DD44A5 /* schema.cc in Sources */,
 				CDE577FF243C6A1F000D8EC6 /* constants.cpp in Sources */,
 				CDE577EE243C6A1F000D8EC6 /* viewport.cpp in Sources */,
@@ -2370,6 +2521,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		CD227D672477DB0900B6083B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
+			targetProxy = CD227D662477DB0900B6083B /* PBXContainerItemProxy */;
+		};
 		CD23526724627CD000E3F139 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CD903E9D241A0DB50047F954 /* deck.gl-native */;
@@ -2398,6 +2554,75 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		CD227D602477DAE200B6083B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = L8QVXGSNT3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		CD227D612477DAE200B6083B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = L8QVXGSNT3;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/cpp/deps/x64-osx/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		CD48E81524178A1E00D3C13C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2516,6 +2741,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -2547,6 +2773,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2573,6 +2800,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -2604,6 +2832,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2829,6 +3058,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -2860,6 +3090,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -3094,6 +3325,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CD227D5F2477DAE200B6083B /* Build configuration list for PBXNativeTarget "vancouver-blocks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD227D602477DAE200B6083B /* Debug */,
+				CD227D612477DAE200B6083B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CD48E81724178A1E00D3C13C /* Build configuration list for PBXNativeTarget "deck.gl-native-tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
