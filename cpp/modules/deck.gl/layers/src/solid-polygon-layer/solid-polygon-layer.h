@@ -62,6 +62,7 @@ class SolidPolygonLayer : public Layer {
 
   std::shared_ptr<arrow::Schema> _attributeSchema;
   std::shared_ptr<arrow::Table> _processedData;
+  std::vector<uint32_t> _tesselatedIndices;
 };
 
 class SolidPolygonLayer::Props : public Layer::Props {

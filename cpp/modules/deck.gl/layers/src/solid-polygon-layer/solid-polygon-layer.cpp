@@ -232,6 +232,8 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
     // Make sure we've processed raw data before setting attributes
     if (this->_processedData) {
       model->setAttributes(this->attributeManager->update(this->_processedData));
+      model->setIndices(
+          std::make_shared<garrow::Array>(this->context->device, this->_tesselatedIndices, wgpu::BufferUsage::Index));
     }
 
     modelsList.push_back(model);
@@ -308,6 +310,10 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
 
   using Point = std::array<float, 3>;
 
+  uint32_t pointOffset = 0;
+  std::vector<uint32_t> tesselatedIndices;
+  tesselatedIndices.reserve(data->num_rows() * 6);  // Approximate 'minimum' index count
+
   // Iterate over the original data set
   for (auto i = 0; i < data->num_rows(); i++) {
     // Extract row data for this polygon
@@ -316,6 +322,20 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
     auto elevation = this->props()->getElevation(row);
     auto fillColor = this->props()->getFillColor(row);
     auto lineColor = this->props()->getLineColor(row);
+
+    // Create a new row in the resulting table for each point in the polygon
+    // We copy over the data for each point from the polygon row in the original data set it belongs to
+    for (const auto& point : polygon) {
+      if (!positionListBuilder.Append().ok() || !fillColorListBuilder.Append().ok() ||
+          !lineColorListBuilder.Append().ok()) {
+        throw std::runtime_error("Unable to append list data");
+      }
+      if (!positionBuilder.AppendValues(&point.x, 3).ok() || !elevationBuilder.Append(elevation).ok() ||
+          !fillColorBuilder.AppendValues(&fillColor.x, 4).ok() ||
+          !lineColorBuilder.AppendValues(&lineColor.x, 4).ok()) {
+        throw std::runtime_error("Unable to append data");
+      }
+    }
 
     // Convert polygon points to a format needed by the tessellator
     // TODO(ilija@unfolded.ai): Avoid copying the data by either conforming Vector3 (or its subclass) so that it can be
@@ -328,24 +348,14 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
 
     // Tessellate the polygon
     auto indices = mapbox::earcut(std::vector<std::vector<Point>>{points});
-    // Create a new row in the resulting table for each point of the tessellated data set
-    // We copy over the data for each point from the polygon row in the original data set is belongs to
     for (const auto& index : indices) {
-      auto point = polygon[index];
-
-      if (!positionListBuilder.Append().ok() || !fillColorListBuilder.Append().ok() ||
-          !lineColorListBuilder.Append().ok()) {
-        probegl::WarningLog() << "Unable to append polygon list data";
-        return nullptr;
-      }
-      if (!positionBuilder.AppendValues(&point.x, 3).ok() || !elevationBuilder.Append(elevation).ok() ||
-          !fillColorBuilder.AppendValues(&fillColor.x, 4).ok() ||
-          !lineColorBuilder.AppendValues(&lineColor.x, 4).ok()) {
-        probegl::WarningLog() << "Unable to append polygon data";
-        return nullptr;
-      }
+      tesselatedIndices.push_back(pointOffset + index);
     }
+
+    pointOffset += polygon.size();
   }
+
+  this->_tesselatedIndices = tesselatedIndices;
 
   std::shared_ptr<arrow::Array> positionArray;
   std::shared_ptr<arrow::Array> elevationArray;
