@@ -292,6 +292,20 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
   arrow::FixedSizeListBuilder lineColorListBuilder{pool, std::make_shared<arrow::FloatBuilder>(pool), 4};
   arrow::FloatBuilder& lineColorBuilder = *(static_cast<arrow::FloatBuilder*>(lineColorListBuilder.value_builder()));
 
+  // Approximate the amount of space we'll need in these buffers, as we don't know the total polygon count without
+  // inspecting the entire table. Assuming 4 pointers per polygon
+  auto approximateElementCount = data->num_rows() * 4;
+  if (!positionListBuilder.Reserve(approximateElementCount).ok() ||
+      !elevationBuilder.Reserve(approximateElementCount).ok() ||
+      !fillColorListBuilder.Reserve(approximateElementCount).ok() ||
+      !lineColorListBuilder.Reserve(approximateElementCount).ok() ||
+      !positionBuilder.Reserve(approximateElementCount * 3).ok() ||
+      !fillColorBuilder.Reserve(approximateElementCount * 4).ok() ||
+      !lineColorBuilder.Reserve(approximateElementCount * 4).ok()) {
+    probegl::WarningLog() << "Unable to reserve sufficient space for processing polygon data";
+    return nullptr;
+  }
+
   using Point = std::array<float, 3>;
 
   // Iterate over the original data set
@@ -321,12 +335,14 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
 
       if (!positionListBuilder.Append().ok() || !fillColorListBuilder.Append().ok() ||
           !lineColorListBuilder.Append().ok()) {
-        throw std::runtime_error("Unable to append list data");
+        probegl::WarningLog() << "Unable to append polygon list data";
+        return nullptr;
       }
       if (!positionBuilder.AppendValues(&point.x, 3).ok() || !elevationBuilder.Append(elevation).ok() ||
           !fillColorBuilder.AppendValues(&fillColor.x, 4).ok() ||
           !lineColorBuilder.AppendValues(&lineColor.x, 4).ok()) {
-        throw std::runtime_error("Unable to append data");
+        probegl::WarningLog() << "Unable to append polygon data";
+        return nullptr;
       }
     }
   }
@@ -337,7 +353,8 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
   std::shared_ptr<arrow::Array> lineColorArray;
   if (!positionListBuilder.Finish(&positionArray).ok() || !elevationBuilder.Finish(&elevationArray).ok() ||
       !fillColorListBuilder.Finish(&fillColorArray).ok() || !lineColorListBuilder.Finish(&lineColorArray).ok()) {
-    throw std::runtime_error("Unable to extract processed data");
+    probegl::WarningLog() << "Unable to extract processed polygon data";
+    return nullptr;
   }
 
   return arrow::Table::Make(this->_attributeSchema, {positionArray, elevationArray, fillColorArray, lineColorArray});
