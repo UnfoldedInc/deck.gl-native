@@ -24,9 +24,8 @@
 #include <string>
 
 #include "deck.gl/core/src/shaderlib/project/project32.glsl.h"
+#include "deck.gl/core/src/shaderlib/lighting/phong-lighting.glsl.h"
 #include "deck.gl/core/src/shaderlib/misc/geometry.glsl.h"
-
-namespace {
 
 // NOLINTNEXTLINE(runtime/string)
 static const std::string solidPolygonLayerVSM = R"GLSL(
@@ -43,7 +42,7 @@ layout(location = 1) in float vertexValid;
 layout(location = 0) out vec4 vColor;
 layout(location = 1) out float isValid;
 
-struct PolygonProps{
+struct PolygonProps {
   vec4 fillColors;
   vec4 lineColors;
   vec3 positions;
@@ -62,7 +61,7 @@ vec3 project_offset_normal(vec3 vector) {
   return project_normal(vector);
 }
 
-void calculatePosition(PolygonProps props){
+void calculatePosition(PolygonProps props) {
   vec3 pos;
   vec3 pos64Low;
   vec3 normal;
@@ -95,12 +94,7 @@ void calculatePosition(PolygonProps props){
   gl_Position = project_position_to_clipspace(pos, pos64Low, vec3(0.), geometry.position);
 
   if (layerOptions.extruded) {
-    // TODO(randy@unfolded.ai) - Bypassing actual lightColor calculation for now, figure out why this is happening:
-    // libc++abi.dylib: terminating with uncaught exception of type std::runtime_error: Shader compilation failed with error: myshader?:281: error: 'lighting_getLightColor' : no matching overloaded function found
-    // myshader?:281: error: '=' :  cannot convert from ' const float' to ' temp highp 3-component vector of float'
-
-    // vec3 lightColor = lighting_getLightColor(colors.rgb, project.uCameraPosition, geometry.position.xyz, normal);
-    vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    vec3 lightColor = lighting_getLightColor(colors.rgb, project.uCameraPosition, geometry.position.xyz, normal);
     vec3 normalizedLightColor = clamp(lightColor, 0, 255) / 255.0;
     vec4 normalizedColors = clamp(colors, 0, 255) / 255.0;
     vColor = vec4(normalizedLightColor.rgb, normalizedColors.a * layerOptions.opacity);
@@ -110,7 +104,5 @@ void calculatePosition(PolygonProps props){
   }
 }
 )GLSL";
-
-}  // anonymous namespace
 
 #endif  // DECKGL_LAYERS_SOLID_POLYGON_LAYER_VERTEX_MAIN_H

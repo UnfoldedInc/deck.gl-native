@@ -50,7 +50,7 @@ class ScatterplotLayer : public Layer {
 
  protected:
   void initializeState() override;
-  void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
+  void updateState(const ChangeFlags&, const std::shared_ptr<Layer::Props>& oldProps) override;
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
 

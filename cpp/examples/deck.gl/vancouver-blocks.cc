@@ -17,8 +17,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-// partial port of https://github.com/visgl/deck.gl/blob/master/examples/website/geojson
+
+// Partial port of https://github.com/visgl/deck.gl/blob/master/examples/website/geojson
 
 #include <arrow/filesystem/localfs.h>
 
@@ -33,10 +33,10 @@ auto fileSystem = std::make_shared<arrow::fs::LocalFileSystem>();
 
 auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
   auto viewState = std::make_shared<ViewState>();
-  viewState->latitude = 49.254;
-  viewState->longitude = -123.13;
-  viewState->zoom = 11.0;
-  viewState->pitch = 45.0;
+  viewState->latitude = 49.24;
+  viewState->longitude = -123.1;
+  viewState->zoom = 10.6;
+  viewState->pitch = 30.0;
   viewState->bearing = bearing;
 
   return viewState;
@@ -44,11 +44,12 @@ auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
 
 auto createSolidPolygonLayer(const std::string &dataPath) -> std::shared_ptr<SolidPolygonLayer::Props> {
   auto props = std::make_shared<SolidPolygonLayer::Props>();
-  props->id = "ground";
+  props->id = "blocks";
   props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
-  props->getFillColor = [](const Row &row) { return mathgl::Vector4<float>{0.0f, 0.0f, 0.0f, 0.0f}; };
-  props->stroked = false;
-  props->getPolygon = [](const Row &row) { return row.getVector3<float>("coordinates"); };
+  props->getPolygon = [](const Row &row) { return row.getVector3List<float>("coordinates"); };
+  props->getFillColor = [](const Row &row) {
+    return mathgl::Vector4<float>{255.0f, 0.0f, 0.0f, (row.getFloat("value") / 20000.0f) * 255.0f};
+  };
 
   return props;
 }
@@ -57,12 +58,11 @@ int main(int argc, const char *argv[]) {
   // Get data file paths relative to working directory
   auto programPath = std::string{argv[0]};
   auto programDirectory = programPath.erase(programPath.find_last_of("/"));
-  auto vancouverDataPath = programDirectory + "/data/vancouver-blocks.ndjson";
-  auto landDataPath = programDirectory + "/data/land-cover.ndjson";
+  auto vancouverDataPath = programDirectory + "/data/vancouver-blocks-simplified.ndjson";
 
   auto deckProps = std::make_shared<Deck::Props>();
-  deckProps->id = "Land Cover";
-  deckProps->layers = {createSolidPolygonLayer(landDataPath)};
+  deckProps->id = "Vancouver Blocks";
+  deckProps->layers = {createSolidPolygonLayer(vancouverDataPath)};
   deckProps->initialViewState = createViewState(0.0);
   deckProps->views = {std::make_shared<MapView>()};
   deckProps->width = 640;

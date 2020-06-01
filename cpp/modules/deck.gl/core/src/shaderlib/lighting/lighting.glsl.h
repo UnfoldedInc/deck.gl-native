@@ -18,40 +18,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_LAYERS_SOLID_POLYGON_LAYER_FRAGMENT_H
-#define DECKGL_LAYERS_SOLID_POLYGON_LAYER_FRAGMENT_H
+#ifndef DECKGL_CORE_SHADERLIB_LIGHTING_LIGHTING_GLSL_H
+#define DECKGL_CORE_SHADERLIB_LIGHTING_LIGHTING_GLSL_H
 
 #include <string>
 
-namespace {
-
 // NOLINTNEXTLINE(runtime/string)
-static const std::string solidPolygonLayerFS = R"GLSL(
-layout(std140, set = 0, binding = 1) uniform SolidPolygonLayerOptions {
-  bool extruded;
-  bool wireframe;
-  float elevationScale;
-  float opacity;
-} layerOptions;
+static const std::string lighting = R"GLSL(
+//#if (defined(SHADER_TYPE_FRAGMENT) && defined(LIGHTING_FRAGMENT)) || (defined(SHADER_TYPE_VERTEX) && defined(LIGHTING_VERTEX))
 
-layout(location = 0) in vec4 vColor;
-layout(location = 1) in float isValid;
+#define MAX_LIGHTS 3
 
-layout(location = 0) out vec4 fragColor;
+struct AmbientLight {
+ vec3 color;
+};
 
-void main(void) {
-  if (isValid < 0.5) {
-    discard;
-  }
-  fragColor = vColor;
+struct PointLight {
+ vec3 color;
+ vec3 position;
+ // Constant-Linear-Exponential
+ vec3 attenuation;
+};
+
+struct DirectionalLight {
+  vec3 color;
+  vec3 direction;
+};
+
+// TODO(ilija@unfolded.ai): These should be uniforms
+AmbientLight lighting_uAmbientLight;
+PointLight lighting_uPointLight[MAX_LIGHTS];
+DirectionalLight lighting_uDirectionalLight[MAX_LIGHTS];
+int lighting_uPointLightCount;
+int lighting_uDirectionalLightCount;
+
+bool lighting_uEnabled;
+
+float getPointLightAttenuation(PointLight pointLight, float distance) {
+  return pointLight.attenuation.x
+       + pointLight.attenuation.y * distance
+       + pointLight.attenuation.z * distance * distance;
 }
 
+//#endif
 )GLSL";
 
-// NOLINTNEXTLINE(runtime/string)
-static const std::string fs = "#version 450\n" + solidPolygonLayerFS;
-
-}  // anonymous namespace
-
-#endif
-
+#endif  // DECKGL_CORE_SHADERLIB_LIGHTING_LIGHTING_GLSL_H

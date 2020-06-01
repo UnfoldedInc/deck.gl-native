@@ -104,7 +104,7 @@ class LayerManager {
   // void _transferLayerState(Layer *oldLayer, Layer *newLayer);
 
   // Updates a single layer, cleaning all flags
-  void _updateLayer(Layer *);
+  void _updateLayer(const std::shared_ptr<Layer> &layer);
 
   // Finalizes a single layer
   void _finalizeLayer(Layer *);

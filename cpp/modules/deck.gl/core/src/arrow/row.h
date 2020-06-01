@@ -58,40 +58,91 @@ class Row {
   template <typename T>
   auto getVector2(const std::string& columnName, const mathgl::Vector2<T>& defaultValue = {}) const
       -> mathgl::Vector2<T> {
-    auto optionalData = this->_getVectorData<T>(columnName);
-    if (!optionalData) {
-      probegl::WarningLog() << "Unsupported vector data type, returning default value";
-      return defaultValue;
-    }
-
-    auto data = optionalData.value();
+    auto data = this->getListData<T>(columnName, {defaultValue.x, defaultValue.y});
     return mathgl::Vector2<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0};
   }
   template <typename T>
   auto getVector3(const std::string& columnName, const mathgl::Vector3<T>& defaultValue = {}) const
       -> mathgl::Vector3<T> {
-    auto optionalData = this->_getVectorData<T>(columnName);
-    if (!optionalData) {
-      probegl::WarningLog() << "Unsupported vector data type, returning default value";
-      return defaultValue;
-    }
-
-    auto data = optionalData.value();
+    auto data = this->getListData<T>(columnName, {defaultValue.x, defaultValue.y, defaultValue.z});
     return mathgl::Vector3<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
                               data.size() > 2 ? data.at(2) : 0};
   }
   template <typename T>
   auto getVector4(const std::string& columnName, const mathgl::Vector4<T>& defaultValue = {}) const
       -> mathgl::Vector4<T> {
-    auto optionalData = this->_getVectorData<T>(columnName);
-    if (!optionalData) {
-      probegl::WarningLog() << "Unsupported vector data type, returning default value";
+    auto data = this->getListData<T>(columnName, {defaultValue.x, defaultValue.y, defaultValue.z, defaultValue.w});
+    return mathgl::Vector4<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
+                              data.size() > 2 ? data.at(2) : 0, data.size() > 3 ? data.at(3) : 0};
+  }
+  template <typename T>
+  auto getVector2List(const std::string& columnName, const std::vector<mathgl::Vector2<T>>& defaultValue = {}) const
+      -> std::vector<mathgl::Vector2<T>> {
+    auto listData = this->getNestedListData<T>(columnName, {});
+    std::vector<mathgl::Vector2<T>> vectorData;
+    vectorData.reserve(listData.size());
+    for (const auto& data : listData) {
+      vectorData.push_back(mathgl::Vector2<T>{data.size() > 0 ? data[0] : 0, data.size() > 1 ? data[1] : 0});
+    }
+
+    return vectorData;
+  }
+  template <typename T>
+  auto getVector3List(const std::string& columnName, const std::vector<mathgl::Vector3<T>>& defaultValue = {}) const
+      -> std::vector<mathgl::Vector3<T>> {
+    auto listData = this->getNestedListData<T>(columnName, {});
+    std::vector<mathgl::Vector3<T>> vectorData;
+    vectorData.reserve(listData.size());
+    for (const auto& data : listData) {
+      vectorData.push_back(mathgl::Vector3<T>{data.size() > 0 ? data[0] : 0, data.size() > 1 ? data[1] : 0,
+                                              data.size() > 2 ? data[2] : 0});
+    }
+
+    return vectorData;
+  }
+  template <typename T>
+  auto getVector4List(const std::string& columnName, const std::vector<mathgl::Vector4<T>>& defaultValue = {}) const
+      -> std::vector<mathgl::Vector4<T>> {
+    auto listData = this->getNestedListData<T>(columnName, {});
+    std::vector<mathgl::Vector4<T>> vectorData;
+    vectorData.reserve(listData.size());
+    for (const auto& data : listData) {
+      vectorData.push_back(mathgl::Vector4<T>{data.size() > 0 ? data[0] : 0, data.size() > 1 ? data[1] : 0,
+                                              data.size() > 2 ? data[2] : 0, data.size() > 3 ? data[3] : 0});
+    }
+
+    return vectorData;
+  }
+  template <typename T>
+  auto getListData(const std::string& columnName, const std::vector<T>& defaultValue = {}) const -> std::vector<T> {
+    if (!this->isValid(columnName)) {
+      probegl::WarningLog() << "Requested column data not valid, returning default value";
       return defaultValue;
     }
 
-    auto data = optionalData.value();
-    return mathgl::Vector4<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
-                              data.size() > 2 ? data.at(2) : 0, data.size() > 3 ? data.at(3) : 0};
+    auto optionalMetadata = this->_getListArrayMetadata(this->_getChunk(columnName), this->_chunkRowIndex);
+    if (!optionalMetadata) {
+      probegl::WarningLog() << "Requested list type not supported, returning default value";
+      return defaultValue;
+    }
+
+    return this->_getListData(optionalMetadata.value(), defaultValue);
+  }
+  template <typename T>
+  auto getNestedListData(const std::string& columnName, const std::vector<std::vector<T>>& defaultValue = {}) const
+      -> std::vector<std::vector<T>> {
+    if (!this->isValid(columnName)) {
+      probegl::WarningLog() << "Requested column data not valid, returning default value";
+      return defaultValue;
+    }
+
+    auto optionalMetadata = this->_getListArrayMetadata(this->_getChunk(columnName), this->_chunkRowIndex);
+    if (!optionalMetadata) {
+      probegl::WarningLog() << "Requested list type not supported, returning default value";
+      return defaultValue;
+    }
+
+    return this->_getNestedListData(optionalMetadata.value(), defaultValue);
   }
 
   /// \brief Checks whether value at this row, for columnName is valid and not null.
@@ -121,17 +172,8 @@ class Row {
       -> std::optional<ListArrayMetadata>;
 
   template <typename T>
-  auto _getVectorData(const std::string& columnName) const -> std::optional<std::vector<T>> {
-    if (!this->isValid(columnName)) {
-      return std::nullopt;
-    }
-
-    auto optionalMetadata = this->_getListArrayMetadata(this->_getChunk(columnName), this->_chunkRowIndex);
-    if (!optionalMetadata) {
-      return std::nullopt;
-    }
-
-    auto metadata = optionalMetadata.value();
+  auto _getListData(const ListArrayMetadata& metadata, const std::vector<T>& defaultValue = {}) const
+      -> std::vector<T> {
     std::vector<T> data;
     switch (metadata.values->type_id()) {
       case arrow::Type::type::DOUBLE: {
@@ -163,7 +205,34 @@ class Row {
         break;
       }
       default:
-        return std::nullopt;
+        probegl::WarningLog() << "Unsupported list value type, returning default value";
+        return defaultValue;
+    }
+
+    return data;
+  }
+
+  template <typename T>
+  auto _getNestedListData(const ListArrayMetadata& metadata, const std::vector<std::vector<T>>& defaultValue = {}) const
+      -> std::vector<std::vector<T>> {
+    std::vector<std::vector<T>> data;
+    switch (metadata.values->type_id()) {
+      case arrow::Type::type::LIST:
+      case arrow::Type::type::FIXED_SIZE_LIST: {
+        for (int32_t i = 0; i < metadata.length; i++) {
+          auto optionalMetadata = this->_getListArrayMetadata(metadata.values, metadata.offset + i);
+          if (!optionalMetadata) {
+            probegl::WarningLog() << "List type for nested array not supported, returning default value";
+            return defaultValue;
+          }
+
+          data.push_back(this->_getListData(optionalMetadata.value(), std::vector<T>{}));
+        }
+        break;
+      }
+      default:
+        probegl::WarningLog() << "Unsupported list value type, returning default value";
+        return defaultValue;
     }
 
     return data;

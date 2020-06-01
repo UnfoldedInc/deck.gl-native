@@ -24,6 +24,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "deck.gl/core.h"
 
@@ -38,7 +39,9 @@ class SolidPolygonLayer : public Layer {
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->_props); }
 
-  auto getPolygonData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getVertexPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getVertexValidData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
+  auto getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getElevationData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getFillColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getLineColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -46,15 +49,19 @@ class SolidPolygonLayer : public Layer {
  protected:
   void initializeState() override;
   // auto getPickingInfo() override;
-  void updateState(const ChangeFlags&, const Layer::Props* oldProps) override;
-  void updateGeometry(const ChangeFlags&, const Layer::Props* oldProps);
+  void updateState(const ChangeFlags&, const std::shared_ptr<Layer::Props>& oldProps) override;
+  void updateGeometry(const ChangeFlags&, const std::shared_ptr<Layer::Props>& oldProps);
   void finalizeState() override;
   void drawState(wgpu::RenderPassEncoder pass) override;
 
  private:
   auto _getModels(wgpu::Device device) -> std::list<std::shared_ptr<lumagl::Model>>;
+  auto _processData(const std::shared_ptr<arrow::Table>& data) -> std::shared_ptr<arrow::Table>;
 
   wgpu::Buffer _layerUniforms;
+
+  std::shared_ptr<arrow::Schema> _attributeSchema;
+  std::shared_ptr<arrow::Table> _processedData;
 };
 
 class SolidPolygonLayer::Props : public Layer::Props {
@@ -69,18 +76,15 @@ class SolidPolygonLayer::Props : public Layer::Props {
   }
 
   bool filled{true};
-  bool extruded{true};
-  bool wireframe{false};
-  bool material{true};
-  bool stroked{false};
-
-  // _normalize in JS, intended to be private?
-  bool normalize{true};
+  // TODO(ilija@unfolded.ai): Extrusion currently not supported
+  const bool extruded{false};
+  // TODO(ilija@unfolded.ai): Wireframe currently not supported
+  const bool wireframe{false};
 
   float elevationScale{1.0};
 
-  std::function<ArrowMapper::Vector3FloatAccessor> getPolygon{
-      [](const Row& row) { return row.getVector3<float>("polygon"); }};
+  std::function<ArrowMapper::ListVector3FloatAccessor> getPolygon{
+      [](const Row& row) { return row.getVector3List<float>("polygon"); }};
   std::function<ArrowMapper::FloatAccessor> getElevation{[](const Row& row) { return 1000.0; }};
   std::function<ArrowMapper::Vector4FloatAccessor> getFillColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
