@@ -56,8 +56,6 @@ GLFWAnimationLoop::GLFWAnimationLoop(const Options& options) : AnimationLoop{opt
 GLFWAnimationLoop::~GLFWAnimationLoop() {
   glfwDestroyWindow(this->_window);
   glfwTerminate();
-
-  // TODO(ilija@unfolded.ai): Additional cleanup?
 }
 
 void GLFWAnimationLoop::draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {
@@ -76,8 +74,6 @@ bool GLFWAnimationLoop::shouldQuit() { return glfwWindowShouldClose(this->_windo
 void GLFWAnimationLoop::flush() { glfwPollEvents(); }
 
 auto GLFWAnimationLoop::getPreferredSwapChainTextureFormat() -> wgpu::TextureFormat {
-  // TODO(ilija@unfolded.ai): Why do we flush here?
-  this->flush();
   return static_cast<wgpu::TextureFormat>(this->_binding->GetPreferredSwapChainTextureFormat());
 }
 

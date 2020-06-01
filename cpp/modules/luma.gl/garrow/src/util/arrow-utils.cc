@@ -28,8 +28,6 @@ namespace garrow {
 auto vertexFormatFromArrowListType(const std::shared_ptr<arrow::FixedSizeListType>& type)
     -> std::optional<wgpu::VertexFormat>;
 
-// TODO(ilija@unfolded.ai): Revisit and use maps instead
-
 auto arrowTypeFromVertexFormat(wgpu::VertexFormat format) -> std::shared_ptr<arrow::DataType> {
   // Based on https://gpuweb.github.io/gpuweb/#vertex-formats
   // uchar = unsigned 8-bit value

@@ -33,6 +33,8 @@ using namespace lumagl::utils;
 Model::Model(wgpu::Device device, const Model::Options& options) {
   this->_device = device;
   this->_uniformDescriptors = options.uniforms;
+  this->_attributeSchema = options.attributeSchema;
+  this->_instancedAttributeSchema = options.instancedAttributeSchema;
 
   this->vsModule = createShaderModule(device, SingleShaderStage::Vertex, options.vs.c_str());
   this->fsModule = createShaderModule(device, SingleShaderStage::Fragment, options.fs.c_str());
@@ -66,13 +68,9 @@ Model::Model(wgpu::Device device, const Model::Options& options) {
       std::make_shared<garrow::Table>(schema, std::vector<std::shared_ptr<garrow::Array>>{});
 }
 
-void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) {
-  // TODO(ilija@unfolded.ai): Compare to schema provided in the constructor?
-  this->_attributeTable = attributes;
-}
+void Model::setAttributes(const std::shared_ptr<garrow::Table>& attributes) { this->_attributeTable = attributes; }
 
 void Model::setInstancedAttributes(const std::shared_ptr<garrow::Table>& attributes) {
-  // TODO(ilija@unfolded.ai): Compare to schema provided in the constructor?
   this->_instancedAttributeTable = attributes;
 }
 

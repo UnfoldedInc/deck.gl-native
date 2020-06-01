@@ -60,6 +60,15 @@ class Field {
   /// \brief Return whether the field has non-empty metadata.
   auto HasMetadata() const -> bool { return this->_metadata != nullptr && this->_metadata->size() > 0; };
 
+  /// \brief Indicate if fields are equals.
+  ///
+  /// \param[in] other field to check equality with.
+  /// \param[in] check_metadata controls if it should check for metadata equality.
+  ///
+  /// \return true if fields are equal, false otherwise.
+  auto Equals(const Field& other, bool check_metadata = true) const -> bool;
+  auto Equals(const std::shared_ptr<Field>& other, bool check_metadata = true) const -> bool;
+
  private:
   std::string _name;
   wgpu::VertexFormat _type;

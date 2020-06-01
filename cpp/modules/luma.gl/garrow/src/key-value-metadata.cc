@@ -20,6 +20,8 @@
 
 #include "./key-value-metadata.h"  // NOLINT(build/include)
 
+#include <algorithm>
+
 using namespace lumagl::garrow;
 
 KeyValueMetadata::KeyValueMetadata() {}
@@ -62,4 +64,13 @@ auto KeyValueMetadata::FindKey(const std::string& key) const -> int {
   }
 
   return -1;
+}
+
+auto KeyValueMetadata::Equals(const KeyValueMetadata& other) const -> bool {
+  if (size() != other.size()) {
+    return false;
+  }
+
+  // TODO(ilija@unfolded.ai): Sort these before comparing
+  return this->_keys == other._keys && this->_values == other._values;
 }

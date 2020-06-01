@@ -46,7 +46,7 @@ enum class COORDINATE_SYSTEM {
 
 auto operator<<(std::ostream& os, COORDINATE_SYSTEM cs) -> std::ostream&;
 
-// TODO(ib) - decide how to deserialize enum constants
+// TODO(ib@unfolded.ai): Decide how to deserialize enum constants
 template <>
 inline auto fromJson<COORDINATE_SYSTEM>(const Json::Value& jsonValue) -> COORDINATE_SYSTEM {
   return static_cast<COORDINATE_SYSTEM>(fromJson<int>(jsonValue));

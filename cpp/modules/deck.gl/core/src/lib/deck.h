@@ -51,11 +51,10 @@ class Deck : public Component {
       wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender = [](Deck*) {});
   void stop();
 
-  // Check if a redraw is needed
-  // Returns an optional string summarizing the redraw reason
-  // - clearRedrawFlags (Boolean) - clear the redraw flag.
+  /// \brief Check if a redraw is needed.
+  /// \param clearRedrawFlags Whether needsRedraw flag should be cleared or not.
+  /// \returns Returns an optional string summarizing the redraw reason.
   auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
-  void redraw(bool force = false);
 
   auto getViews() -> std::list<std::shared_ptr<View>> { return this->viewManager->getViews(); }
 
@@ -67,17 +66,13 @@ class Deck : public Component {
   std::shared_ptr<ViewState> viewState;
 
  private:
-  // Get the most relevant view state: props.viewState, if supplied, shadows internal viewState
-  auto _getViewState() -> ViewState*;  // { return this->props->viewState || this->viewState; }
+  /// \brief Get the most relevant view state: props.viewState, if supplied, shadows internal viewState.
+  auto _getViewState() -> std::shared_ptr<ViewState>;
 
   auto _createAnimationLoop(const std::shared_ptr<Deck::Props>& props) -> std::shared_ptr<lumagl::AnimationLoop>;
-  // Get the view descriptor list
-  void _getViews();
-  void _draw(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender);
-  void _drawLayers(const std::string& redrawReason);
-  void _onRendererInitialized(void* gl);
-  void _onRenderFrame();
-  void _onViewStateChange();
+  void _redraw(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender, bool force = false);
+  void _drawLayers(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender,
+                   const std::string& redrawReason);
 
   std::optional<std::string> _needsRedraw;
   wgpu::Buffer _viewportUniformsBuffer;
@@ -93,7 +88,7 @@ class Deck::Props : public Component::Props {
 
   std::shared_ptr<lumagl::AnimationLoop::Options> drawingOptions;
 
-  // layer/view/controller settings
+  // Layer/View/Controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;
   std::list<std::shared_ptr<View>> views;
   std::shared_ptr<ViewState> initialViewState;
@@ -106,17 +101,11 @@ class Deck::Props : public Component::Props {
   std::function<void(Deck*)> onBeforeRender{[](Deck*) {}};
   std::function<void(Deck*)> onAfterRender{[](Deck*) {}};
 
-  //  std::function<void(Deck*, void* gl)> onWebGLInitialized{[](Deck*, void* gl) {}};
-  //  std::function<void(Deck*, int width, int height)> onResize{[](Deck*, int width, int height) {}};
-  //  std::function<auto(Deck*, ViewState*) -> ViewState*> onViewStateChange{[](Deck*, ViewState* vs) { return vs; }};
-  //  std::function<void(Deck*)> onLoad{[](Deck*) {}};
-  //  std::function<void(Deck*, const std::exception &)> onError{[](Deck*, const std::exception &) {}};
-
   // Prop Type Machinery
   static constexpr const char* getTypeName() { return "Deck"; }
   auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> Deck* override {
-    return new Deck{std::dynamic_pointer_cast<Deck::Props>(props)};
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<Deck>(std::dynamic_pointer_cast<Deck::Props>(props));
   }
 };
 

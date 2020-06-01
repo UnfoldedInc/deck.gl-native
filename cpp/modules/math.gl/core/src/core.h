@@ -232,7 +232,6 @@ class Vector4 {
 
   auto transform(const Matrix4<coord> &m) const -> Vector4<coord>;
 
-  // TODO(ilija@unfolded.ai): These are not implemented?
   coord length() const;
   coord length2() const;
   auto toVector3() const -> Vector3<coord>;

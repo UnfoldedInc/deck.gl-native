@@ -72,8 +72,8 @@ class SolidPolygonLayer::Props : public Layer::Props {
 
   // Property Type Machinery
   auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> SolidPolygonLayer* override {
-    return new SolidPolygonLayer{std::dynamic_pointer_cast<SolidPolygonLayer::Props>(props)};
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<SolidPolygonLayer>(std::dynamic_pointer_cast<SolidPolygonLayer::Props>(props));
   }
 
   bool filled{true};

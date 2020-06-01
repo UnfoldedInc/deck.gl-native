@@ -41,12 +41,7 @@ AnimationLoop::AnimationLoop(const Options& options) : _size{options.size} {
   }
 }
 
-AnimationLoop::~AnimationLoop() {
-  // TODO(ilija@unfolded.ai): Cleanup?
-}
-
 void AnimationLoop::draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender) {
-  // TODO(ilija@unfolded.ai): There seems to be a memory leak, what do we need to free?
   utils::ComboRenderPassDescriptor passDescriptor({textureView});
   wgpu::CommandEncoder encoder = this->_device.CreateCommandEncoder();
   wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&passDescriptor);
@@ -70,7 +65,6 @@ void AnimationLoop::draw(wgpu::TextureView textureView, std::function<void(wgpu:
 
 void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
   this->running = true;
-  // TODO(ilija@unfolded.ai): Add needsRedraw and check it
   while (this->running && !this->shouldQuit()) {
     this->draw(onRender);
     // TODO(ib@unfolded.ai): We should not wait 16ms, we should wait **max** 16ms.

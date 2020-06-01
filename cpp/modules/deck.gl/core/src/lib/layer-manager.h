@@ -38,76 +38,42 @@ class LayerManager {
 
   std::list<std::shared_ptr<Layer>> layers;
 
-  std::optional<std::string> _needsRedraw;
-  std::optional<std::string> _needsUpdate;
-  bool _debug;
-
   explicit LayerManager(std::shared_ptr<LayerContext> context);
   virtual ~LayerManager();
 
-  // Check if a redraw is needed
+  /// \brief Check if a redraw is needed.
   auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
-  // Check if a deep update of layers is needed
-  auto needsUpdate() -> std::optional<std::string>;
-  // Ensures that layers will be redrawn (during next render)
-  void setNeedsRedraw(const std::string &reason);
-  // Ensiure that layers will be updated deeply (during next render), including sublayer generation
-  void setNeedsUpdate(const std::string &reason);
+  /// \brief Check if a deep update of layers is needed.
+  auto needsUpdate() -> std::optional<std::string> { return this->_needsUpdate; };
+  /// \brief Ensures that layers will be redrawn (during next render).
+  void setNeedsRedraw(const std::string& reason);
+  /// \brief Ensure that layers will be updated deeply (during next render), including sublayer generation.
+  void setNeedsUpdate(const std::string& reason);
 
-  // Props
+  void setDebug(bool debug) { this->_debug = debug; }
 
-  void setDebug(bool debug);
-  void setUserData(void *userData);
-  void setOnError();
+  /* Layer API */
 
-  // Layer API
-
-  // For JSON: Supply a new layer prop list
-  void setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &newLayers);
+  /// \brief For JSON: Supply a new layer prop list.
+  void setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>>& newLayers);
 
   void addLayer(std::shared_ptr<Layer>);
   void removeLayer(std::shared_ptr<Layer>);
-  void removeLayer(const std::string &id);
+  void removeLayer(const std::string& id);
 
-  // Gets an (optionally) filtered list of layers
-  // auto getLayers(const std::list<std::string> &layerIds = std::list<std::string>{})
-  //     -> std::list<std::shared_ptr<Layer>>;
-  // auto findLayerById(const std::string &id) -> std::shared_ptr<Layer>;
-  // void removeAllLayers();
-  // void removeLayerById(const std::string &id);
-
-  // Update layers from last cycle if `setNeedsUpdate()` has been called
+  /// \brief Update layers from last cycle if `setNeedsUpdate()` has been called.
   void updateLayers();
 
-  // Make a viewport "current" in layer context, updating viewportChanged flags
-  void activateViewport(const std::shared_ptr<Viewport> &viewport);
+  /// \brief Make a viewport "current" in layer context, updating viewportChanged flags.
+  void activateViewport(const std::shared_ptr<Viewport>& viewport);
 
-  //
-  // PRIVATE METHODS
-  //
+ private:
+  /// \brief Updates a single layer, cleaning all flags.
+  void _updateLayer(const std::shared_ptr<Layer>& layer);
 
-  // void _handleError(stage, error, layer);
-
-  // Match all layers, checking for caught errors
-  // To avoid having an exception in one layer disrupt other layers
-  // TODO(ib) - mark layers with exceptions as bad and remove from rendering cycle?
-  void _updateLayers(const std::list<Layer> &oldLayers, const std::list<Layer::Props> &newLayers);
-
-  // Finalize any old layers that were not matched
-  void _finalizeOldLayers(const std::map<std::string, Layer *> &oldLayerMap);
-
-  // EXCEPTION SAFE LAYER ACCESS
-
-  // Initializes a single layer, calling layer methods
-  void _initializeLayer(Layer *);
-
-  // void _transferLayerState(Layer *oldLayer, Layer *newLayer);
-
-  // Updates a single layer, cleaning all flags
-  void _updateLayer(const std::shared_ptr<Layer> &layer);
-
-  // Finalizes a single layer
-  void _finalizeLayer(Layer *);
+  std::optional<std::string> _needsRedraw;
+  std::optional<std::string> _needsUpdate;
+  bool _debug;
 };
 
 }  // namespace deckgl

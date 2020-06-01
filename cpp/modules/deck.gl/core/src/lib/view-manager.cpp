@@ -32,43 +32,21 @@ ViewManager::ViewManager() {}
 
 ViewManager::~ViewManager() {}
 
-// Check if a redraw is needed
 auto ViewManager::getNeedsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
   auto redraw = this->_needsRedraw;
   if (clearRedrawFlags) {
     this->_needsRedraw = std::nullopt;
   }
+
   return redraw;
 }
 
-// Layers will be updated deeply (in next animation frame)
-// Potentially regenerating attributes and sub layers
 void ViewManager::setNeedsUpdate(const std::string &reason) {
   this->_needsUpdate = this->_needsUpdate.value_or(reason);
   this->_needsRedraw = this->_needsRedraw.value_or(reason);
 }
 
-// Checks each viewport for transition updates
-// void ViewManager::updateViewStates() {
-//   for (const viewId in this->controllers) {
-//     const controller = this->controllers[viewId];
-//     if (controller) {
-//       controller.updateTransition();
-//     }
-//   }
-// }
-
-/** Get a set of viewports for a given width and height
- * TODO - Intention is for deck.gl to autodeduce width and height and drop
- * the need for props
- */
-auto ViewManager::getViewports() -> std::list<std::shared_ptr<Viewport>> {  // {rect) {
-  // if (rect) {
-  //   return this->_viewports.filter(viewport = > viewport.containsPixel(rect));
-  // }
-
-  // TODO(ilija@unfolded.ai): _update isn't being called anywhere, comment for setViews says this:
-  // Does not actually rebuild the `Viewport`s until `getViewports` is called
+auto ViewManager::getViewports() -> std::list<std::shared_ptr<Viewport>> {
   if (this->_needsUpdate) {
     this->_update();
   }
@@ -76,51 +54,23 @@ auto ViewManager::getViewports() -> std::list<std::shared_ptr<Viewport>> {  // {
   return this->_viewports;
 }
 
-auto ViewManager::getViews() -> std::list<std::shared_ptr<View>> {
-  // const viewMap = {};
-  // this->views.forEach(view = > { viewMap[view.id] = view; });
-  // return viewMap;
-  return this->views;
-}
-
-// Resolves a viewId string to a View, if already a View returns it.
 auto ViewManager::getView(const std::string &viewId) -> std::shared_ptr<View> {
-  // TODO(ib@unfolded.ai): implement a lookup
-  for (auto view : this->views) {
+  // TODO(ib@unfolded.ai): Implement a lookup
+  for (auto view : this->_views) {
     if (view->id == viewId) {
       return view;
     }
   }
+
   return nullptr;
 }
 
-// Returns the viewState for a specific viewId. Matches the viewState by
-// 1. view.viewStateId
-// 2. view.id
-// 3. root viewState
-// then applies the view's filter if any
-auto ViewManager::getViewState(const std::string &viewId) -> std::shared_ptr<ViewState> {
-  return this->viewState;
-
-  //  const view = this->getView(viewId);
-  //  // Backward compatibility: view state for single view
-  //  const viewState = (view && this->viewState[view.getViewStateId()]) || this->viewState;
-  //  return view ? view.filterViewState(viewState) : viewState;
-}
+auto ViewManager::getViewState(const std::string &viewId) -> std::shared_ptr<ViewState> { return this->_viewState; }
 
 auto ViewManager::getViewport(const std::string &viewId) -> std::shared_ptr<Viewport> {
-  return nullptr;  // return this->_viewportMap[viewId];
+  return this->_viewportMap[viewId];
 }
 
-/**
- * Unproject pixel coordinates on screen onto world coordinates,
- * (possibly [lon, lat]) on map.
- * - [x, y] => [lng, lat]
- * - [x, y, z] => [lng, lat, Z]
- * @param xyz -
- * @param topLeft - Whether origin is top left
- * @return {Array|null} - [lng, lat, Z] or [X, Y, Z]
- */
 auto ViewManager::unproject(const mathgl::Vector3<double> xyz, bool topLeft) -> std::optional<mathgl::Vector3<double>> {
   auto viewports = this->getViewports();
   for (auto i = viewports.rbegin(); i != viewports.rend(); i++) {
@@ -132,6 +82,7 @@ auto ViewManager::unproject(const mathgl::Vector3<double> xyz, bool topLeft) -> 
       return viewport->unproject(p, topLeft);
     }
   }
+
   return std::nullopt;
 }
 
@@ -146,6 +97,7 @@ auto ViewManager::unproject(const mathgl::Vector2<double> xy, bool topLeft) -> s
       return viewport->unproject(p, topLeft);
     }
   }
+
   return std::nullopt;
 }
 
@@ -163,8 +115,9 @@ void ViewManager::setWidth(int width) {
     width = 0;
   }
 
-  if (width != this->width) {
-    this->width = width;
+  // Only trigger an update if width actually changed
+  if (width != this->_width) {
+    this->_width = width;
     this->setNeedsUpdate("Window width changed");
   }
 }
@@ -175,57 +128,30 @@ void ViewManager::setHeight(int height) {
   }
 
   // Only trigger an update if height actually changed
-  if (height != this->height) {
-    this->height = height;
+  if (height != this->_height) {
+    this->_height = height;
     this->setNeedsUpdate("Window height changed");
   }
 }
 
-// Update the view descriptor list and set change flag if needed
-// Does not actually rebuild the `Viewport`s until `getViewports` is called
 void ViewManager::setViews(const std::list<std::shared_ptr<View>> &views) {
-  auto viewsChanged = this->_diffViews(views, this->views);
+  auto viewsChanged = this->_diffViews(views, this->_views);
   if (viewsChanged) {
-    this->views = views;
+    this->_views = views;
     this->setNeedsUpdate("Views changed");
   }
 }
 
 void ViewManager::setViewState(std::shared_ptr<ViewState> viewState) {
-  auto viewStateChanged = viewState && !viewState->equals(this->viewState);
+  auto viewStateChanged = viewState && !viewState->equals(this->_viewState);
 
   if (viewStateChanged) {
-    this->viewState = viewState;
+    this->_viewState = viewState;
     this->setNeedsUpdate("viewState changed");
   }
 }
 
-// void ViewManager::setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates) {
-//   if (viewState) {
-//     auto viewStateChanged = !viewState->equals(this->viewState);
-
-//     if (viewStateChanged) {
-//       this->setNeedsUpdate("viewState changed");
-//     }
-
-//     this->viewState = viewStates;
-//   } else {
-//     // log.warn('missing `viewState` or `initialViewState`')();
-//   }
-// }
-
-//
-// PRIVATE METHODS
-//
-
 void ViewManager::_update() {
-  // Important: avoid invoking _update() inside itself
-  // Nested updates result in unexpected side effects inside
-  // _rebuildViewports() when using auto control in pure-js
-  // if (!this->_isUpdating) {
-  //   this->_update();
-  // }
-
   this->_isUpdating = true;
 
   // Only rebuild viewports if the update flag is set
@@ -248,7 +174,7 @@ void ViewManager::_update() {
 // Rebuilds viewports from descriptors towards a certain window size
 void ViewManager::_rebuildViewports() {
   std::list<std::shared_ptr<Viewport>> viewports;
-  auto rectangle = mathgl::Rectangle<int>{0, 0, this->width, this->height};
+  auto rectangle = mathgl::Rectangle<int>{0, 0, this->_width, this->_height};
 
   for (auto const &view : this->getViews()) {
     auto viewState = this->getViewState(view->id);
@@ -259,19 +185,17 @@ void ViewManager::_rebuildViewports() {
 
   this->_viewports = viewports;
 
-  //   this->_buildViewportMap();
+  this->_buildViewportMap();
 }
 
-// ViewManager::_buildViewportMap() {
-//   // Build a view id to view index
-//   this->_viewportMap = {};
-//   this->_viewports.forEach(viewport = > {
-//     if (viewport.id) {
-//       // TODO - issue warning if multiple viewports use same id
-//       this->_viewportMap[viewport.id] = this->_viewportMap[viewport.id] || viewport;
-//     }
-//   });
-// }
+void ViewManager::_buildViewportMap() {
+  // Build a view id to view index
+  this->_viewportMap = std::unordered_map<std::string, std::shared_ptr<Viewport>>{};
+  for (const auto &viewport : this->_viewports) {
+    // TODO(ib@unfolded.ai): Issue warning if multiple viewports use same id
+    this->_viewportMap[viewport->id] = viewport;
+  }
+}
 
 // Check if viewport array has changed, returns true if any change
 // Note that descriptors can be the same

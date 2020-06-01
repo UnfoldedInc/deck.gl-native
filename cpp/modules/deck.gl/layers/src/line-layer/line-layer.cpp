@@ -61,7 +61,7 @@ void LineLayer::initializeState() {
   auto getSourcePosition = [this](const std::shared_ptr<arrow::Table>& table) {
     return this->getSourcePositionData(table);
   };
-  this->attributeManager->add(garrow::ColumnBuilder{sourcePosition, getSourcePosition});
+  this->_attributeManager->add(garrow::ColumnBuilder{sourcePosition, getSourcePosition});
 
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto targetPosition =
@@ -69,17 +69,17 @@ void LineLayer::initializeState() {
   auto getTargetPosition = [this](const std::shared_ptr<arrow::Table>& table) {
     return this->getTargetPositionData(table);
   };
-  this->attributeManager->add(garrow::ColumnBuilder{targetPosition, getTargetPosition});
+  this->_attributeManager->add(garrow::ColumnBuilder{targetPosition, getTargetPosition});
 
   auto color = std::make_shared<arrow::Field>("instanceColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getColorData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{color, getColor});
+  this->_attributeManager->add(garrow::ColumnBuilder{color, getColor});
 
   auto width = std::make_shared<arrow::Field>("instanceWidths", arrow::float32());
   auto getWidth = [this](const std::shared_ptr<arrow::Table>& table) { return this->getWidthData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{width, getWidth});
+  this->_attributeManager->add(garrow::ColumnBuilder{width, getWidth});
 
-  this->models = {this->_getModel(this->context->device)};
+  this->_models = {this->_getModel(this->context->device)};
   this->_layerUniforms =
       utils::createBuffer(this->context->device, sizeof(LineLayerUniforms), wgpu::BufferUsage::Uniform);
 }
@@ -109,7 +109,7 @@ void LineLayer::updateState(const Layer::ChangeFlags& changeFlags, const std::sh
 void LineLayer::finalizeState() {}
 
 void LineLayer::drawState(wgpu::RenderPassEncoder pass) {
-  for (auto const& model : this->getModels()) {
+  for (auto const& model : this->models()) {
     // Layer uniforms are currently bound to index 1
     model->setUniformBuffer(1, this->_layerUniforms);
     model->draw(pass);
@@ -149,7 +149,7 @@ auto LineLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl::Model>
       std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
   model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
 
-  auto instancedAttributes = this->attributeManager->update(this->props()->data);
+  auto instancedAttributes = this->_attributeManager->update(this->props()->data);
   model->setInstancedAttributes(instancedAttributes);
 
   return model;

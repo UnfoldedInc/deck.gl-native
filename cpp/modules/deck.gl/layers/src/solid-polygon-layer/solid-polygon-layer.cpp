@@ -54,32 +54,32 @@ void SolidPolygonLayer::initializeState() {
   auto getVertexPositions = [this](const std::shared_ptr<arrow::Table>& table) {
     return this->getVertexPositionData(table);
   };
-  this->attributeManager->add(garrow::ColumnBuilder{vertexPositions, getVertexPositions});
+  this->_attributeManager->add(garrow::ColumnBuilder{vertexPositions, getVertexPositions});
 
   auto vertexValid = std::make_shared<arrow::Field>("vertexValid", arrow::float32());
   auto getVertexValid = [this](const std::shared_ptr<arrow::Table>& table) { return this->getVertexValidData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{vertexValid, getVertexValid});
+  this->_attributeManager->add(garrow::ColumnBuilder{vertexValid, getVertexValid});
 
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto positions = std::make_shared<arrow::Field>("positions", arrow::fixed_size_list(arrow::float32(), 3));
   auto getPosition = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPositionData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{positions, getPosition});
+  this->_attributeManager->add(garrow::ColumnBuilder{positions, getPosition});
 
   auto elevation = std::make_shared<arrow::Field>("elevations", arrow::float32());
   auto getElevation = [this](const std::shared_ptr<arrow::Table>& table) { return this->getElevationData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{elevation, getElevation});
+  this->_attributeManager->add(garrow::ColumnBuilder{elevation, getElevation});
 
   auto fillColor = std::make_shared<arrow::Field>("fillColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getFillColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getFillColorData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
+  this->_attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
 
   auto lineColor = std::make_shared<arrow::Field>("lineColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getLineColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineColorData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
+  this->_attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 
   this->_attributeSchema = std::make_shared<arrow::Schema>(std::vector{positions, elevation, fillColor, lineColor});
 
-  this->models = {this->_getModels(this->context->device)};
+  this->_models = {this->_getModels(this->context->device)};
   this->_layerUniforms =
       utils::createBuffer(this->context->device, sizeof(SolidPolygonLayerUniforms), wgpu::BufferUsage::Uniform);
 }
@@ -98,7 +98,7 @@ void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags,
   //                          (props->filled != oldPropsSPL->filled) || (props->extruded != oldPropsSPL->extruded);
 
   if (regenerateModels) {
-    this->models = {this->_getModels(this->context->device)};
+    this->_models = {this->_getModels(this->context->device)};
   }
 
   if (changeFlags.propsChanged) {
@@ -135,7 +135,7 @@ void SolidPolygonLayer::updateGeometry(const Layer::ChangeFlags& changeFlags,
 void SolidPolygonLayer::finalizeState() {}
 
 void SolidPolygonLayer::drawState(wgpu::RenderPassEncoder pass) {
-  for (auto const& model : this->getModels()) {
+  for (auto const& model : this->models()) {
     // Layer uniforms are currently bound to index 1
     model->setUniformBuffer(1, this->_layerUniforms);
     model->draw(pass);
@@ -231,7 +231,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
     auto model = std::make_shared<lumagl::Model>(device, modelOptions);
     // Make sure we've processed raw data before setting attributes
     if (this->_processedData) {
-      model->setAttributes(this->attributeManager->update(this->_processedData));
+      model->setAttributes(this->_attributeManager->update(this->_processedData));
       model->setIndices(
           std::make_shared<garrow::Array>(this->context->device, this->_tesselatedIndices, wgpu::BufferUsage::Index));
     }
@@ -268,7 +268,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
         std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
     model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
 
-    auto instancedAttributes = this->attributeManager->update(this->props()->data);
+    auto instancedAttributes = this->_attributeManager->update(this->props()->data);
     model->setInstancedAttributes(instancedAttributes);
 
     modelsList.push_back(model);

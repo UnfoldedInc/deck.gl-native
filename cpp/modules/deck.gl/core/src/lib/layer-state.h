@@ -21,6 +21,8 @@
 #ifndef DECKGL_CORE_LAYER_STATE_H
 #define DECKGL_CORE_LAYER_STATE_H
 
+#include <memory>
+
 namespace deckgl {
 
 class Layer;
@@ -28,22 +30,12 @@ class AttributeManager;
 
 class LayerState {  // }: public ComponentState {
  public:
-  Layer* layer;
-  AttributeManager* attributeManager;
+  LayerState(const std::shared_ptr<Layer>& layer, const std::shared_ptr<AttributeManager>& attributeManager)
+      : layer{layer}, attributeManager{attributeManager}, needsRedraw{true} {}
+
+  std::shared_ptr<Layer> layer;
+  std::shared_ptr<AttributeManager> attributeManager;
   bool needsRedraw;
-
-  LayerState(Layer* layer_, AttributeManager* attributeManager_) {
-    this->layer = layer_;
-    this->attributeManager = attributeManager_;
-    this->needsRedraw = true;
-    // this->model = null;
-    // this->subLayers = null; // reference to sublayers rendered in a
-    // previous cycle
-  }
-
-  get layer() { return this->layer; }
-
-  set layer(layer) { this->layer = layer; }
 }
 
 }  // namespace deckgl

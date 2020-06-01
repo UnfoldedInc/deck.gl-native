@@ -97,25 +97,25 @@ void ScatterplotLayer::initializeState() {
   // Using lambdas over std::bind - potential C++ retain cycle issue
   auto position = std::make_shared<arrow::Field>("instancePositions", arrow::fixed_size_list(arrow::float32(), 3));
   auto getPosition = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPositionData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{position, getPosition});
+  this->_attributeManager->add(garrow::ColumnBuilder{position, getPosition});
 
   auto radius = std::make_shared<arrow::Field>("instanceRadius", arrow::float32());
   auto getRadius = [this](const std::shared_ptr<arrow::Table>& table) { return this->getRadiusData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{radius, getRadius});
+  this->_attributeManager->add(garrow::ColumnBuilder{radius, getRadius});
 
   auto fillColor = std::make_shared<arrow::Field>("instanceFillColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getFillColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getFillColorData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
+  this->_attributeManager->add(garrow::ColumnBuilder{fillColor, getFillColor});
 
   auto lineColor = std::make_shared<arrow::Field>("instanceLineColors", arrow::fixed_size_list(arrow::float32(), 4));
   auto getLineColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineColorData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
+  this->_attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 
   auto lineWidth = std::make_shared<arrow::Field>("instanceLineWidths", arrow::float32());
   auto getLineWidth = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineWidthData(table); };
-  this->attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
+  this->_attributeManager->add(garrow::ColumnBuilder{lineWidth, getLineWidth});
 
-  this->models = {this->_getModel(this->context->device)};
+  this->_models = {this->_getModel(this->context->device)};
   this->_layerUniforms =
       utils::createBuffer(this->context->device, sizeof(ScatterplotLayerUniforms), wgpu::BufferUsage::Uniform);
 }
@@ -152,7 +152,7 @@ void ScatterplotLayer::updateState(const Layer::ChangeFlags& changeFlags,
 void ScatterplotLayer::finalizeState() {}
 
 void ScatterplotLayer::drawState(wgpu::RenderPassEncoder pass) {
-  for (auto const& model : this->getModels()) {
+  for (auto const& model : this->models()) {
     // Layer uniforms are currently bound to index 1
     model->setUniformBuffer(1, this->_layerUniforms);
     model->draw(pass);
@@ -240,7 +240,7 @@ auto ScatterplotLayer::_getModel(wgpu::Device device) -> std::shared_ptr<lumagl:
       std::make_shared<garrow::Array>(this->context->device, positionData, wgpu::BufferUsage::Vertex)};
   model->setAttributes(std::make_shared<garrow::Table>(attributeSchema, attributeArrays));
 
-  auto instancedAttributes = this->attributeManager->update(this->props()->data);
+  auto instancedAttributes = this->_attributeManager->update(this->props()->data);
   model->setInstancedAttributes(instancedAttributes);
 
   return model;

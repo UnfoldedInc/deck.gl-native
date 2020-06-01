@@ -48,6 +48,7 @@
 		CD452A51244852DE00DD44A5 /* field.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A4E244852DE00DD44A5 /* field.h */; };
 		CD452A552448565000DD44A5 /* schema.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A522448565000DD44A5 /* schema.cc */; };
 		CD452A562448565000DD44A5 /* schema.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A532448565000DD44A5 /* schema.h */; };
+		CD4B3B16248508B8007756A6 /* field.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4B3B15248508B8007756A6 /* field.cc */; };
 		CD57340F24640A3300D22A70 /* blit-model.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD57340D24640A3300D22A70 /* blit-model.cc */; };
 		CD57341024640A3300D22A70 /* blit-model.h in Headers */ = {isa = PBXBuildFile; fileRef = CD57340E24640A3300D22A70 /* blit-model.h */; };
 		CD57341224640E6200D22A70 /* size.h in Headers */ = {isa = PBXBuildFile; fileRef = CD57341124640E6200D22A70 /* size.h */; };
@@ -476,6 +477,7 @@
 		CD452A522448565000DD44A5 /* schema.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = schema.cc; sourceTree = "<group>"; };
 		CD452A532448565000DD44A5 /* schema.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schema.h; sourceTree = "<group>"; };
 		CD48E81024178A1E00D3C13C /* deck.gl-native-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "deck.gl-native-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD4B3B15248508B8007756A6 /* field.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = field.cc; sourceTree = "<group>"; };
 		CD517429243DC4A50051AB3F /* libshaderc_spvc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libshaderc_spvc.dylib; path = "cpp/deps/x64-osx/lib/libshaderc_spvc.dylib"; sourceTree = "<group>"; };
 		CD57340D24640A3300D22A70 /* blit-model.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "blit-model.cc"; sourceTree = "<group>"; };
 		CD57340E24640A3300D22A70 /* blit-model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "blit-model.h"; sourceTree = "<group>"; };
@@ -1003,6 +1005,7 @@
 				CDC8E170244D6420002A7E60 /* key-value-metadata.cc */,
 				CDC8E171244D6420002A7E60 /* key-value-metadata.h */,
 				CD452A4E244852DE00DD44A5 /* field.h */,
+				CD4B3B15248508B8007756A6 /* field.cc */,
 				CD452A532448565000DD44A5 /* schema.h */,
 				CD452A522448565000DD44A5 /* schema.cc */,
 				CDE55B48243C6A10000D8EC6 /* array.h */,
@@ -2454,6 +2457,7 @@
 				CDE577A3243C6A1F000D8EC6 /* webgpu-utils.cpp in Sources */,
 				CDE5776B243C6A1F000D8EC6 /* animation-loop.cpp in Sources */,
 				CDE57848243C6A1F000D8EC6 /* json-object.cpp in Sources */,
+				CD4B3B16248508B8007756A6 /* field.cc in Sources */,
 				CDE57773243C6A1F000D8EC6 /* model.cpp in Sources */,
 				CDE577E1243C6A1F000D8EC6 /* row.cc in Sources */,
 				CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */,

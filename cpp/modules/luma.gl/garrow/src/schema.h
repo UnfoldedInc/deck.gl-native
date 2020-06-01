@@ -31,10 +31,14 @@
 namespace lumagl {
 namespace garrow {
 
-/// \brief Sequence of WebGPUField objects describing the columns of a table data structure.
+/// \brief Sequence of Field objects describing the columns of a table data structure.
 class Schema {
  public:
   explicit Schema(const std::vector<std::shared_ptr<Field>>& fields) : _fields{fields} {}
+
+  /// \brief Returns true if all of the schema fields are equal.
+  auto Equals(const Schema& other, bool check_metadata = true) const -> bool;
+  auto Equals(const std::shared_ptr<Schema>& other, bool check_metadata = true) const -> bool;
 
   /// \brief Returns number of fields that this schema contains.
   auto num_fields() const -> int { return static_cast<int>(this->_fields.size()); }
@@ -52,6 +56,7 @@ class Schema {
   auto GetFieldByName(const std::string& name) const -> std::shared_ptr<Field>;
 
  private:
+  // TODO(ilija@unfolded.ai): Use a map if field_names/GetFieldByName are used commonly
   std::vector<std::shared_ptr<Field>> _fields;
 };
 
