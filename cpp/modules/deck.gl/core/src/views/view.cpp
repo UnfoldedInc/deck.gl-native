@@ -26,7 +26,7 @@ using namespace std;
 using namespace deckgl;
 using namespace mathgl;
 
-const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<string>>(
         "id", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->id; },
         [](JSONObject* props, string value) { return dynamic_cast<View*>(props)->id = value; }, ""),

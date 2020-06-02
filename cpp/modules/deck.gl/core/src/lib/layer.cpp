@@ -27,7 +27,7 @@ using namespace deckgl;
 
 // Setters and getters for properties
 // TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
-static const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+static const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<bool>>(
         "visible", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
         [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true),

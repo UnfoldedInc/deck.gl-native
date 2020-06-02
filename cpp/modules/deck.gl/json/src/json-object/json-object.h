@@ -279,7 +279,7 @@ class Properties {
  public:
   // static methods
   template <typename JSONObjectT>
-  static auto from(const std::string& className, const std::vector<const std::shared_ptr<Property>>& properties = {})
+  static auto from(const std::string& className, const std::vector<std::shared_ptr<Property>>& properties = {})
       -> std::shared_ptr<deckgl::Properties> {
     typename JSONObjectT::super parentProps;
     // Can't use make_shared here as constructor is private
@@ -299,8 +299,8 @@ class Properties {
     }
     return searchIterator->second;
   }
-  auto allProperties() const -> std::vector<const std::shared_ptr<Property>> {
-    std::vector<const std::shared_ptr<Property>> properties;
+  auto allProperties() const -> std::vector<std::shared_ptr<Property>> {
+    std::vector<std::shared_ptr<Property>> properties;
     properties.reserve(this->_propTypeMap.size());
     for (auto prop : _propTypeMap) {
       properties.push_back(prop.second);
@@ -310,7 +310,7 @@ class Properties {
 
  private:
   Properties(const std::string& className, const std::shared_ptr<Properties>& parentProps,
-             const std::vector<const std::shared_ptr<Property>>& ownPropertyDefs);
+             const std::vector<std::shared_ptr<Property>>& ownPropertyDefs);
 
   std::map<const std::string, const std::shared_ptr<Property>> _propTypeMap;
 };

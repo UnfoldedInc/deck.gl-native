@@ -25,7 +25,7 @@ using namespace deckgl;
 // Setters and getters for properties
 // TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
 // TODO(ilija@unfolded.ai): Generate a unique id instead of an empty string for default value?
-static const std::vector<const std::shared_ptr<Property>> propTypeDefs = {std::make_shared<PropertyT<std::string>>(
+static const std::vector<std::shared_ptr<Property>> propTypeDefs = {std::make_shared<PropertyT<std::string>>(
     "id", [](const JSONObject* props) { return dynamic_cast<const Component::Props*>(props)->id; },
     [](JSONObject* props, std::string value) { return dynamic_cast<Component::Props*>(props)->id = value; }, "")};
 

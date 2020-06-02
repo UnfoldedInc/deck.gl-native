@@ -30,7 +30,7 @@
 using namespace deckgl;
 using namespace lumagl;
 
-const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<bool>>(
         "filled", [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->filled; },
         [](JSONObject* props, bool value) { return dynamic_cast<SolidPolygonLayer::Props*>(props)->filled = value; },

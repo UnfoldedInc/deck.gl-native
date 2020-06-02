@@ -29,7 +29,7 @@
 using namespace deckgl;
 using namespace lumagl;
 
-const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<std::string>>(
         "widthUnits", [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthUnits; },
         [](JSONObject* props, std::string value) { return dynamic_cast<LineLayer::Props*>(props)->widthUnits = value; },

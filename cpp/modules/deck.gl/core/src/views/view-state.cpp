@@ -22,7 +22,7 @@
 
 using namespace deckgl;
 
-const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<std::optional<double>>>(
         "longitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->longitude; },
         [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->longitude = value; }, 0.0),

@@ -53,7 +53,7 @@ auto Property::_getPropListFromJson(JSONObject* props, const Json::Value& jsonVa
 // Properties
 
 Properties::Properties(const std::string& className, const std::shared_ptr<Properties>& parentProps,
-                       const std::vector<const std::shared_ptr<Property>>& ownPropertyDefs)
+                       const std::vector<std::shared_ptr<Property>>& ownPropertyDefs)
     : className{className}, parent{parentProps} {
   // insert our prop types
   for (auto element : ownPropertyDefs) {
