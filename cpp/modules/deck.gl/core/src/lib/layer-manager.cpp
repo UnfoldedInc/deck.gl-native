@@ -24,9 +24,6 @@
 
 #include "./layer.h"
 
-#undef PI
-#include "range/v3/all.hpp"
-
 using namespace deckgl;
 
 LayerManager::LayerManager(std::shared_ptr<LayerContext> _context) : context{_context} {
@@ -83,7 +80,6 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
 
   // Update old layers or add new layers if not matched
   for (auto layerProps : layerPropsList) {
-    // ranges::find(oldLayerMap, layerProps->id);
     auto matchedLayerIterator = oldLayerMap.find(layerProps->id);
     if (matchedLayerIterator != oldLayerMap.end()) {
       // If a layer with this id is present, set the props
@@ -98,15 +94,20 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
   }
 
   // Remove any unmatched layers
-  for (const auto &unmatchedLayerId : oldLayerMap | ranges::views::keys) {
+  for (const auto &unmatchedLayer : oldLayerMap) {
     // TODO(ib@unfolded.ai): Handle exceptions
-    this->removeLayer(unmatchedLayerId);
+    this->removeLayer(unmatchedLayer.first);
   }
 }
 
 void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
-  auto id = layer->props()->id;
-  bool idExists = ranges::any_of(this->layers, [id](auto layer) { return layer->props()->id == id; });
+  bool idExists = false;
+  for (const auto &currentLayer : this->layers) {
+    if (currentLayer->props()->id == layer->props()->id) {
+      idExists = true;
+      break;
+    }
+  }
   if (idExists) {
     throw std::runtime_error("Layer with id already exists");
   }

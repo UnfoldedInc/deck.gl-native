@@ -35,7 +35,7 @@ class AnimationLoop {
   struct Options;
 
   explicit AnimationLoop(const Options& options);
-  virtual ~AnimationLoop(){};
+  virtual ~AnimationLoop() {}
 
   virtual void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {}
   virtual void draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender);
@@ -49,10 +49,10 @@ class AnimationLoop {
   virtual void setSize(const Size& size);
 
   auto size() const -> Size { return this->_size; };
-
-  bool running{false};
   auto device() -> wgpu::Device { return this->_device; }
   auto queue() -> wgpu::Queue { return this->_queue; }
+
+  bool running{false};
 
  protected:
   void _initialize(wgpu::Device device, wgpu::Queue queue);

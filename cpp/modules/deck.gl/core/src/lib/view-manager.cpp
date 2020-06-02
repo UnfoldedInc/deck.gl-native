@@ -23,9 +23,6 @@
 #include <array>
 #include <iostream>
 
-#undef PI
-#include "range/v3/all.hpp"
-
 using namespace deckgl;
 
 ViewManager::ViewManager() {}

@@ -20,8 +20,6 @@
 
 #include "./blit-model.h"  // NOLINT(build/include)
 
-#include <fmt/core.h>
-
 #include <memory>
 #include <vector>
 
