@@ -93,7 +93,7 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
       oldLayerMap.erase(matchedLayerIterator);
     } else {
       // TODO(ib@unfolded.ai): Handle exceptions
-      this->addLayer(std::static_pointer_cast<Layer>(layerProps->makeComponent(layerProps)));
+      this->addLayer(std::dynamic_pointer_cast<Layer>(layerProps->makeComponent(layerProps)));
     }
   }
 

@@ -28,7 +28,7 @@ namespace deckgl {
 class Layer;
 class AttributeManager;
 
-class LayerState {  // }: public ComponentState {
+class LayerState {
  public:
   LayerState(const std::shared_ptr<Layer>& layer, const std::shared_ptr<AttributeManager>& attributeManager)
       : layer{layer}, attributeManager{attributeManager}, needsRedraw{true} {}
