@@ -145,10 +145,9 @@ set(TESTS_SOURCE_FILE_LIST
 # NO_DEFAULT_PATH and NO_CMAKE_FIND_ROOT_PATH make it so other lookup paths are ignored
 find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 find_library(jsoncpp_LIB jsoncpp PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
-find_library(fmt_LIB fmt PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 
 target_link_libraries(deck.gl PUBLIC ${DECK_LINK_FLAGS} ${DECK_SHARED_LIB}
-    probe.gl math.gl luma.gl ${arrow_LIB} ${jsoncpp_LIB} ${fmt_LIB})
+    probe.gl math.gl luma.gl ${arrow_LIB} ${jsoncpp_LIB})
 
 target_compile_options(deck.gl PUBLIC ${DECKGL_COMPILE_FLAGS})
 # Specify sources that'll be compiled
