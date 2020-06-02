@@ -68,8 +68,8 @@ class LineLayer::Props : public Layer::Props {
 
   // Property Type Machinery
   auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> LineLayer* override {
-    return new LineLayer{std::dynamic_pointer_cast<LineLayer::Props>(props)};
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<LineLayer>(std::dynamic_pointer_cast<LineLayer::Props>(props));
   }
 
   std::string widthUnits{"pixels"};

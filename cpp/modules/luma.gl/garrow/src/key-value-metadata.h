@@ -58,6 +58,10 @@ class KeyValueMetadata {
   /// \param key Key to search for.
   int FindKey(const std::string& key) const;
 
+  /// \brief Compares this metadata container with *other* argument.
+  /// \param other Metadata object to compare against.
+  auto Equals(const KeyValueMetadata& other) const -> bool;
+
  private:
   std::vector<std::string> _keys;
   std::vector<std::string> _values;

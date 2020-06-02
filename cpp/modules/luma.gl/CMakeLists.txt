@@ -54,6 +54,7 @@ set(GARROW_HEADER_FILE_LIST
     )
 set(GARROW_SOURCE_FILE_LIST
     garrow/src/key-value-metadata.cc
+    garrow/src/field.cc
     garrow/src/schema.cc
     garrow/src/array.cc
     garrow/src/table.cc
@@ -133,7 +134,7 @@ if (DECK_ENABLE_D3D12)
         list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/d3d12-binding.cpp)
     endif()
 
-    # TODO: Currently not supported. Should link against D3D12 libs
+    # TODO(ilija@unfolded.ai): Currently not supported. Should link against D3D12 libs
 endif()
 if (DECK_ENABLE_METAL)
     if (LUMAGL_USES_GLFW)

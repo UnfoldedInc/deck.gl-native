@@ -67,8 +67,8 @@ class ScatterplotLayer::Props : public Layer::Props {
 
   // Property Type Machinery
   auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> ScatterplotLayer* override {
-    return new ScatterplotLayer{std::dynamic_pointer_cast<ScatterplotLayer::Props>(props)};
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<ScatterplotLayer>(std::dynamic_pointer_cast<ScatterplotLayer::Props>(props));
   }
 
   bool filled{true};

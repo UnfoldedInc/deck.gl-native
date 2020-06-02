@@ -53,7 +53,6 @@ class Array {
 
   /* Arrow non-compliant API */
 
-  // TODO(ilija@unfolded.ai): Arrays are not mutable in Arrow. Revisit once ArrayData is in place
   void setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage usage);
   template <typename T>
   void setData(const T* data, size_t length, wgpu::BufferUsage usage) {

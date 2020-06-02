@@ -22,45 +22,26 @@
 
 using namespace lumagl::garrow;
 
-// TODO(ilija@unfolded.ai): Metadata and fingerprinting not implemented
-auto Schema::Equals(const Schema& other, bool check_metadata) const -> bool {
+auto Field::Equals(const Field& other, bool check_metadata) const -> bool {
   if (this == &other) {
     return true;
   }
 
-  if (num_fields() != other.num_fields()) {
-    return false;
-  }
-
-  for (int i = 0; i < num_fields(); ++i) {
-    if (!field(i)->Equals(*other.field(i).get(), check_metadata)) {
+  if (this->_name == other._name && this->_nullable == other._nullable && this->_type == other._type) {
+    if (!check_metadata) {
+      return true;
+    } else if (this->HasMetadata() && other.HasMetadata()) {
+      return this->_metadata->Equals(*other._metadata);
+    } else if (!this->HasMetadata() && !other.HasMetadata()) {
+      return true;
+    } else {
       return false;
     }
   }
 
-  return true;
+  return false;
 }
 
-auto Schema::Equals(const std::shared_ptr<Schema>& other, bool check_metadata) const -> bool {
-  if (other == nullptr) {
-    return false;
-  }
-
-  return this->Equals(*other, check_metadata);
-}
-
-auto Schema::field_names() const -> std::vector<std::string> {
-  std::vector<std::string> names;
-  std::transform(this->_fields.begin(), this->_fields.end(), std::back_inserter(names),
-                 [](std::shared_ptr<Field> field) { return field->name(); });
-  return names;
-};
-
-auto Schema::GetFieldByName(const std::string& name) const -> std::shared_ptr<Field> {
-  for (auto const& field : this->_fields) {
-    if (field->name() == name) {
-      return field;
-    }
-  }
-  return nullptr;
+auto Field::Equals(const std::shared_ptr<Field>& other, bool check_metadata) const -> bool {
+  return Equals(*other.get(), check_metadata);
 }

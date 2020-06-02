@@ -29,15 +29,17 @@ using namespace deckgl;
 
 namespace {
 
-TEST(ViewManager, Construct) {
-  auto viewManager = make_shared<ViewManager>();
+/// \brief The fixture for testing ViewManager class.
+class ViewManagerTest : public ::testing::Test {
+ protected:
+  ViewManagerTest() { this->viewManager = std::make_shared<ViewManager>(); }
 
-  EXPECT_TRUE(viewManager != nullptr);
-}
+  std::shared_ptr<ViewManager> viewManager;
+};
 
-TEST(ViewManager, RedrawFlag) {
-  auto viewManager = make_shared<ViewManager>();
+TEST_F(ViewManagerTest, Construct) { EXPECT_TRUE(viewManager != nullptr); }
 
+TEST_F(ViewManagerTest, RedrawFlag) {
   // Initialized needing redraw
   EXPECT_TRUE(viewManager->getNeedsRedraw());
   // Didn't clear redraw
@@ -47,8 +49,8 @@ TEST(ViewManager, RedrawFlag) {
 
   // Changing geometry causes redraw
   viewManager->setSize(10, 20);
-  EXPECT_EQ(viewManager->width, 10);
-  EXPECT_EQ(viewManager->height, 20);
+  EXPECT_EQ(viewManager->width(), 10);
+  EXPECT_EQ(viewManager->height(), 20);
   EXPECT_TRUE(viewManager->getNeedsRedraw(true));
 
   // No-op geometry change does not cause redraw
@@ -60,8 +62,7 @@ TEST(ViewManager, RedrawFlag) {
   EXPECT_TRUE(viewManager->getNeedsRedraw(true));
 }
 
-TEST(ViewManager, SetViews) {
-  auto viewManager = make_shared<ViewManager>();
+TEST_F(ViewManagerTest, SetViews) {
   // Clear redraw flag
   viewManager->getNeedsRedraw(true);
 

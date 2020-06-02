@@ -25,6 +25,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 #include "../viewports/viewport.h"
 #include "../views/view-state.h"
@@ -37,19 +38,16 @@ class ViewManager {
   ViewManager();
   virtual ~ViewManager();
 
-  /// \brief Check if a redraw is needed
+  /// \brief Check if a redraw is needed.
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
-  /// \brief Views will be updated deeply (in next animation frame)
+  /// \brief Views will be updated deeply (in next animation frame).
   void setNeedsUpdate(const std::string &reason);
 
-  /// \brief Checks each viewport for transition updates
-  void updateViewStates();
+  /// \brief Get a set of viewports for a given width and height.
+  auto getViewports() -> std::list<std::shared_ptr<Viewport>>;
 
-  /// \brief Get a set of viewports for a given width and height
-  auto getViewports() -> std::list<std::shared_ptr<Viewport>>;  // (rect)
-
-  auto getViews() -> std::list<std::shared_ptr<View>>;
+  auto getViews() -> std::list<std::shared_ptr<View>> { return this->_views; };
 
   /// \brief Resolves a viewId string to a View, if already a View returns it.
   auto getView(const std::string &viewOrViewId) -> std::shared_ptr<View>;
@@ -77,47 +75,42 @@ class ViewManager {
   // MODIFIERS
   //
 
-  /// \brief Set the size of the window
+  /// \brief Set the size of the window.
   void setSize(int width, int height);
+
+  auto width() -> int { return this->_width; }
   void setWidth(int width);
+
+  auto height() -> int { return this->_height; }
   void setHeight(int height);
 
-  /// \brief Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called)
+  /// \brief Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called).
   void setViews(const std::list<std::shared_ptr<View>> &views);
 
-  /// \brief Update the view state
+  /// \brief Update the view state.
   void setViewState(std::shared_ptr<ViewState> viewStates);
-  void setViewStates(const std::list<std::shared_ptr<ViewState>> &viewStates);
-
-  std::list<std::shared_ptr<View>> views;
-  int width{100};
-  int height{100};
-  std::shared_ptr<ViewState> viewState{new ViewState()};
 
  private:
   void _update();
 
-  // Rebuilds viewports from descriptors towards a certain window size
+  /// \brief Rebuilds viewports from descriptors towards a certain window size.
   void _rebuildViewports();
-
-  /*
-  void _onViewStateChange(viewId, event);
-
-  void _createController(props);
-
-  void _updateController(view, viewState, viewport, controller);
-
   void _buildViewportMap();
-  */
 
   // Check if viewport array has changed, returns true if any change
   // Note that descriptors can be the same
   auto _diffViews(const std::list<std::shared_ptr<View>> &newViews,
                   const std::list<std::shared_ptr<View>> &oldViews) const -> bool;
 
+  std::list<std::shared_ptr<View>> _views;
+  int _width{100};
+  int _height{100};
+  std::shared_ptr<ViewState> _viewState{new ViewState()};
+
   std::optional<std::string> _needsRedraw{"Initial render"};
   std::optional<std::string> _needsUpdate{"Initial render"};
-  std::list<std::shared_ptr<Viewport>> _viewports;  // Generated viewports
+  std::list<std::shared_ptr<Viewport>> _viewports;
+  std::unordered_map<std::string, std::shared_ptr<Viewport>> _viewportMap;
   bool _isUpdating{false};
 };
 

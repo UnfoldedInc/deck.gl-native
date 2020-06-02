@@ -21,12 +21,7 @@
 #ifndef DECKGL_CORE_LIB_COMPONENT_H
 #define DECKGL_CORE_LIB_COMPONENT_H
 
-#include <functional>
-#include <iostream>
-#include <list>
-#include <map>
 #include <memory>
-#include <string>
 
 #include "deck.gl/json.h"  // {JSONObject}
 
@@ -45,8 +40,8 @@ class Component {
 class Component::Props : public JSONObject {
  public:
   using super = JSONObject;
-  virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> Component* {
-    return new Component{std::dynamic_pointer_cast<Component::Props>(props)};
+  virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> {
+    return std::make_shared<Component>(std::dynamic_pointer_cast<Component::Props>(props));
   }
 };
 
