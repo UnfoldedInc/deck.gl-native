@@ -92,9 +92,7 @@ auto ScatterplotLayer::Props::getProperties() const -> const Properties* {
 }
 
 void ScatterplotLayer::initializeState() {
-  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
-  // Using lambdas over std::bind - potential C++ retain cycle issue
   auto position = std::make_shared<arrow::Field>("instancePositions", arrow::fixed_size_list(arrow::float32(), 3));
   auto getPosition = [this](const std::shared_ptr<arrow::Table>& table) { return this->getPositionData(table); };
   this->_attributeManager->add(garrow::ColumnBuilder{position, getPosition});

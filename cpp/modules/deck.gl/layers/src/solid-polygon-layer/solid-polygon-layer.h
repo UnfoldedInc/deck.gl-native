@@ -39,6 +39,8 @@ class SolidPolygonLayer : public Layer {
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<SolidPolygonLayer::Props>(this->_props); }
 
+  auto processData(const std::shared_ptr<arrow::Table>& data) -> std::shared_ptr<arrow::Table>;
+
   auto getVertexPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getVertexValidData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -56,11 +58,9 @@ class SolidPolygonLayer : public Layer {
 
  private:
   auto _getModels(wgpu::Device device) -> std::list<std::shared_ptr<lumagl::Model>>;
-  auto _processData(const std::shared_ptr<arrow::Table>& data) -> std::shared_ptr<arrow::Table>;
 
   wgpu::Buffer _layerUniforms;
 
-  std::shared_ptr<arrow::Schema> _attributeSchema;
   std::shared_ptr<arrow::Table> _processedData;
   std::vector<uint32_t> _tesselatedIndices;
 };

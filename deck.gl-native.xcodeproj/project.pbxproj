@@ -43,6 +43,7 @@
 		CD33DF3D242E2207003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
 		CD33DF3E242E220D003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
 		CD35949C2472C55900DC8289 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF24242E1F65003F3B96 /* CoreFoundation.framework */; };
+		CD378923248634EC00418C4B /* solid-polygon-layer-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD378922248634EC00418C4B /* solid-polygon-layer-test.cpp */; };
 		CD452A462448421B00DD44A5 /* arrow-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A432448421B00DD44A5 /* arrow-utils.cc */; };
 		CD452A472448421B00DD44A5 /* arrow-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A442448421B00DD44A5 /* arrow-utils.h */; };
 		CD452A51244852DE00DD44A5 /* field.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A4E244852DE00DD44A5 /* field.h */; };
@@ -471,6 +472,7 @@
 		CD33DF3C242E2207003F3B96 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		CD33DF41242E2285003F3B96 /* libdawn_utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdawn_utils.a; path = ../dawn/out/Debug/obj/libdawn_utils.a; sourceTree = "<group>"; };
 		CD33DF42242E2285003F3B96 /* libdawn_sample_utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdawn_sample_utils.a; path = ../dawn/out/Debug/obj/libdawn_sample_utils.a; sourceTree = "<group>"; };
+		CD378922248634EC00418C4B /* solid-polygon-layer-test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "solid-polygon-layer-test.cpp"; sourceTree = "<group>"; };
 		CD452A432448421B00DD44A5 /* arrow-utils.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "arrow-utils.cc"; sourceTree = "<group>"; };
 		CD452A442448421B00DD44A5 /* arrow-utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "arrow-utils.h"; sourceTree = "<group>"; };
 		CD452A4E244852DE00DD44A5 /* field.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = field.h; sourceTree = "<group>"; };
@@ -1900,6 +1902,7 @@
 			children = (
 				CDE55C34243C6A10000D8EC6 /* scatterplot-layer-test.cpp */,
 				CDE55C35243C6A10000D8EC6 /* line-layer-test.cpp */,
+				CD378922248634EC00418C4B /* solid-polygon-layer-test.cpp */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -2409,6 +2412,7 @@
 				CDE57764243C6A1F000D8EC6 /* animation-loop-test.cpp in Sources */,
 				CDE577C5243C6A1F000D8EC6 /* layer-test.cpp in Sources */,
 				CDE577D3243C6A1F000D8EC6 /* map-view-test.cpp in Sources */,
+				CD378923248634EC00418C4B /* solid-polygon-layer-test.cpp in Sources */,
 				CDE5784E243C6A1F000D8EC6 /* json-loader-test.cpp in Sources */,
 				CDE577CB243C6A1F000D8EC6 /* view-test.cpp in Sources */,
 				CDE577AF243C6A1F000D8EC6 /* core-test.cpp in Sources */,

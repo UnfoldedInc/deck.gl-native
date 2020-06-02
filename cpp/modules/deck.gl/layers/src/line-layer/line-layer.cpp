@@ -54,7 +54,6 @@ auto LineLayer::Props::getProperties() const -> const Properties* {
 }
 
 void LineLayer::initializeState() {
-  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   // TODO(ilija@unfolded.ai): Revisit type once double precision is in place
   auto sourcePosition =
       std::make_shared<arrow::Field>("instanceSourcePositions", arrow::fixed_size_list(arrow::float32(), 3));
