@@ -21,28 +21,9 @@
 #ifndef DECKGL_LAYERS_LAYERS_H
 #define DECKGL_LAYERS_LAYERS_H
 
-// To be included in prototype
-#include "./line-layer/line-layer.h"                    // {LineLayer}
-#include "./scatterplot-layer/scatterplot-layer.h"      // {ScatterplotLayer}
-#include "./solid-polygon-layer/solid-polygon-layer.h"  // {SolidPolygonLayer}
-
-// Not to be included prototype
-/*
-#include './arc-layer/arc-layer'; // ArcLayer
-#include './bitmap-layer/bitmap-layer'; // BitmapLayer
-#include './icon-layer/icon-layer'; // IconLayer
-#include './line-layer/line-layer'; // LineLayer
-#include './point-cloud-layer/point-cloud-layer'; // PointCloudLayer
-#include './scatterplot-layer/scatterplot-layer'; // ScatterplotLayer
-#include './column-layer/column-layer'; // ColumnLayer
-#include './column-layer/grid-cell-layer'; // GridCellLayer
-#include './path-layer/path-layer'; // PathLayer
-#include './polygon-layer/polygon-layer'; // PolygonLayer
-#include './geojson-layer/geojson-layer'; // GeoJsonLayer
-#include './text-layer/text-layer'; // TextLayer
-#include './solid-polygon-layer/solid-polygon-layer'; // SolidPolygonLayer
-#include './base-tile-layer/base-tile-layer'; // BaseTileLayer
-*/
+#include "./line-layer/line-layer.h"
+#include "./scatterplot-layer/scatterplot-layer.h"
+#include "./solid-polygon-layer/solid-polygon-layer.h"
 
 namespace deckgl {
 

@@ -49,7 +49,6 @@ auto SolidPolygonLayer::Props::getProperties() const -> const Properties* {
 }
 
 void SolidPolygonLayer::initializeState() {
-  // TODO(ilija@unfolded.ai): Guaranteed to crash when this layer goes out of scope, revisit
   auto vertexPositions = std::make_shared<arrow::Field>("vertexPositions", arrow::fixed_size_list(arrow::float32(), 2));
   auto getVertexPositions = [this](const std::shared_ptr<arrow::Table>& table) {
     return this->getVertexPositionData(table);
@@ -77,9 +76,7 @@ void SolidPolygonLayer::initializeState() {
   auto getLineColor = [this](const std::shared_ptr<arrow::Table>& table) { return this->getLineColorData(table); };
   this->_attributeManager->add(garrow::ColumnBuilder{lineColor, getLineColor});
 
-  this->_attributeSchema = std::make_shared<arrow::Schema>(std::vector{positions, elevation, fillColor, lineColor});
-
-  this->_models = {this->_getModels(this->context->device)};
+  this->_models = this->_getModels(this->context->device);
   this->_layerUniforms =
       utils::createBuffer(this->context->device, sizeof(SolidPolygonLayerUniforms), wgpu::BufferUsage::Uniform);
 }
@@ -98,7 +95,7 @@ void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags,
   //                          (props->filled != oldPropsSPL->filled) || (props->extruded != oldPropsSPL->extruded);
 
   if (regenerateModels) {
-    this->_models = {this->_getModels(this->context->device)};
+    this->_models = this->_getModels(this->context->device);
   }
 
   if (changeFlags.propsChanged) {
@@ -128,7 +125,7 @@ void SolidPolygonLayer::updateGeometry(const Layer::ChangeFlags& changeFlags,
   */
 
   if (changeFlags.dataChanged) {
-    this->_processedData = this->_processData(this->props()->data);
+    this->_processedData = this->processData(this->props()->data);
   }
 }
 
@@ -277,7 +274,7 @@ auto SolidPolygonLayer::_getModels(wgpu::Device device) -> std::list<std::shared
   return modelsList;
 }
 
-auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) -> std::shared_ptr<arrow::Table> {
+auto SolidPolygonLayer::processData(const std::shared_ptr<arrow::Table>& data) -> std::shared_ptr<arrow::Table> {
   // We build the geometry based on input polygon data
   // Polygon data has to be tessallated, and the data table has to be rebuilt so that it contains tessellated points
   // that can be used to draw polygon triangles
@@ -295,7 +292,7 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
   arrow::FloatBuilder& lineColorBuilder = *(static_cast<arrow::FloatBuilder*>(lineColorListBuilder.value_builder()));
 
   // Approximate the amount of space we'll need in these buffers, as we don't know the total polygon count without
-  // inspecting the entire table. Assuming 4 pointers per polygon
+  // inspecting the entire table. Assuming 4 points per polygon
   auto approximateElementCount = data->num_rows() * 4;
   if (!positionListBuilder.Reserve(approximateElementCount).ok() ||
       !elevationBuilder.Reserve(approximateElementCount).ok() ||
@@ -323,6 +320,12 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
     auto fillColor = this->props()->getFillColor(row);
     auto lineColor = this->props()->getLineColor(row);
 
+    // Convert polygon points to a format needed by the tessellator
+    // TODO(ilija@unfolded.ai): Avoid copying the data by either conforming Vector3 (or its subclass) so that it can be
+    // passed to earcut, or having getPolygon accessor return a vector of arrays
+    std::vector<Point> points;
+    points.reserve(polygon.size());
+
     // Create a new row in the resulting table for each point in the polygon
     // We copy over the data for each point from the polygon row in the original data set it belongs to
     for (const auto& point : polygon) {
@@ -335,14 +338,7 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
           !lineColorBuilder.AppendValues(&lineColor.x, 4).ok()) {
         throw std::runtime_error("Unable to append data");
       }
-    }
 
-    // Convert polygon points to a format needed by the tessellator
-    // TODO(ilija@unfolded.ai): Avoid copying the data by either conforming Vector3 (or its subclass) so that it can be
-    // passed to earcut, or having getPolygon accessor return a vector of arrays
-    std::vector<Point> points;
-    points.reserve(polygon.size());
-    for (const auto& point : polygon) {
       points.push_back({point.x, point.y, point.z});
     }
 
@@ -367,5 +363,11 @@ auto SolidPolygonLayer::_processData(const std::shared_ptr<arrow::Table>& data) 
     return nullptr;
   }
 
-  return arrow::Table::Make(this->_attributeSchema, {positionArray, elevationArray, fillColorArray, lineColorArray});
+  // TODO(ilija@unfolded.ai): Consolidate with attributes in initializeState
+  auto positions = std::make_shared<arrow::Field>("positions", arrow::fixed_size_list(arrow::float32(), 3));
+  auto elevation = std::make_shared<arrow::Field>("elevations", arrow::float32());
+  auto fillColor = std::make_shared<arrow::Field>("fillColors", arrow::fixed_size_list(arrow::float32(), 4));
+  auto lineColor = std::make_shared<arrow::Field>("lineColors", arrow::fixed_size_list(arrow::float32(), 4));
+  auto attributeSchema = std::make_shared<arrow::Schema>(std::vector{positions, elevation, fillColor, lineColor});
+  return arrow::Table::Make(attributeSchema, {positionArray, elevationArray, fillColorArray, lineColorArray});
 }

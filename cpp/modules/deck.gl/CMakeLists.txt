@@ -120,6 +120,7 @@ set(LAYERS_SOURCE_FILES
 set(LAYERS_TEST_SOURCE_FILES
     layers/test/line-layer-test.cpp
     layers/test/scatterplot-layer-test.cpp
+    layers/test/solid-polygon-layer-test.cpp
     )
 
 set(HEADER_FILE_LIST
