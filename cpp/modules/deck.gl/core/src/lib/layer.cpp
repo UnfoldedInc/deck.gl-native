@@ -27,42 +27,50 @@ using namespace deckgl;
 
 // Setters and getters for properties
 // TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
-static const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<bool>{
+static const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+    std::make_shared<PropertyT<bool>>(
         "visible", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
-        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true},
-    new PropertyT<float>{
+        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->visible = value; }, true),
+    std::make_shared<PropertyT<float>>(
         "opacity", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->opacity; },
-        [](JSONObject* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; }, 1.0},
-    new PropertyT<COORDINATE_SYSTEM>{
+        [](JSONObject* props, float value) { return dynamic_cast<Layer::Props*>(props)->opacity = value; }, 1.0),
+    std::make_shared<PropertyT<COORDINATE_SYSTEM>>(
         "coordinateSystem",
         [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateSystem; },
         [](JSONObject* props, COORDINATE_SYSTEM value) {
           return dynamic_cast<Layer::Props*>(props)->coordinateSystem = value;
         },
-        COORDINATE_SYSTEM::DEFAULT},
-    new PropertyT<Vector3<double>>{
+        COORDINATE_SYSTEM::DEFAULT),
+    std::make_shared<PropertyT<Vector3<double>>>(
         "coordinateOrigin",
         [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->coordinateOrigin; },
         [](JSONObject* props, Vector3<double> value) {
           return dynamic_cast<Layer::Props*>(props)->coordinateOrigin = value;
         },
-        Vector3<double>()},
-    new PropertyT<Matrix4<double>>{
+        Vector3<double>()),
+    std::make_shared<PropertyT<Matrix4<double>>>(
         "modelMatrix", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->modelMatrix; },
         [](JSONObject* props, Matrix4<double> value) {
           return dynamic_cast<Layer::Props*>(props)->modelMatrix = value;
         },
-        Matrix4<double>()},
-    new PropertyT<bool>{
+        Matrix4<double>()),
+    std::make_shared<PropertyT<bool>>(
         "wrapLongitude",
         [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->wrapLongitude; },
-        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; },
-        false}};
+        [](JSONObject* props, bool value) { return dynamic_cast<Layer::Props*>(props)->wrapLongitude = value; }, false),
+    std::make_shared<PropertyT<std::string>>(
+        "positionFormat",
+        [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->positionFormat; },
+        [](JSONObject* props, std::string value) { return dynamic_cast<Layer::Props*>(props)->positionFormat = value; },
+        "XYZ"),
+    std::make_shared<PropertyT<std::string>>(
+        "colorFormat", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->colorFormat; },
+        [](JSONObject* props, std::string value) { return dynamic_cast<Layer::Props*>(props)->colorFormat = value; },
+        "RGBA")};
 
-auto Layer::Props::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<Layer::Props>("Layer", propTypeDefs)};
-  return &properties;
+auto Layer::Props::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<Layer::Props>("Layer", propTypeDefs);
+  return properties;
 }
 
 void Layer::setProps(std::shared_ptr<Layer::Props> newProps) {

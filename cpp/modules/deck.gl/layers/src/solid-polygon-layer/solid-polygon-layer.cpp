@@ -30,22 +30,22 @@
 using namespace deckgl;
 using namespace lumagl;
 
-const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<bool>{
+const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+    std::make_shared<PropertyT<bool>>(
         "filled", [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->filled; },
         [](JSONObject* props, bool value) { return dynamic_cast<SolidPolygonLayer::Props*>(props)->filled = value; },
-        true},
-    new PropertyT<float>{
+        true),
+    std::make_shared<PropertyT<float>>(
         "elevationScale",
         [](const JSONObject* props) { return dynamic_cast<const SolidPolygonLayer::Props*>(props)->elevationScale; },
-        [](JSONObject* props, bool value) {
+        [](JSONObject* props, float value) {
           return dynamic_cast<SolidPolygonLayer::Props*>(props)->elevationScale = value;
         },
-        1.0}};
+        1.0)};
 
-auto SolidPolygonLayer::Props::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<SolidPolygonLayer::Props>("SolidPolygonLayer", propTypeDefs)};
-  return &properties;
+auto SolidPolygonLayer::Props::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<SolidPolygonLayer::Props>("SolidPolygonLayer", propTypeDefs);
+  return properties;
 }
 
 void SolidPolygonLayer::initializeState() {

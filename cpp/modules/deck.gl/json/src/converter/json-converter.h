@@ -21,43 +21,57 @@
 #ifndef DECKGL_JSON_JSON_CONVERTER_H
 #define DECKGL_JSON_JSON_CONVERTER_H
 
-#include <functional>  // {std::function}
+#include <json/json.h>
+
+#include <functional>
 #include <map>
-#include <memory>  // {std::shared_ptr}
+#include <memory>
 #include <string>
 
-#include "../json-object/json-object.h"  // {JSONObject}
-#include "json/json.h"                   // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
+#include "../json-object/json-object.h"
 
 namespace deckgl {
 
+/// \brief JSONConverter enables parsing raw JSON payloads into a hierarchy of JSONObject instances.
 class JSONConverter {
  public:
-  using JsonValueToComponentConverter = std::function<auto(const Json::Value &)->std::shared_ptr<JSONObject>>;
+  using JsonValueToComponentConverter = std::function<auto(const Json::Value& value)->std::shared_ptr<JSONObject>>;
 
-  // public members
-  std::map<std::string, JsonValueToComponentConverter> classes;
-
-  // methods
   JSONConverter() {}
-  explicit JSONConverter(const std::map<std::string, JsonValueToComponentConverter> &classes_) : classes{classes_} {}
+  explicit JSONConverter(const std::map<std::string, JsonValueToComponentConverter>& classes) : classes{classes} {}
 
-  // parse JSON into registered class
-  auto convertJson(const std::string &rawJson, const std::string &typeHint = "") const -> std::shared_ptr<JSONObject>;
+  /// \brief Parses rawJson into one of the registered classes, which are infered either by root property "@@type",
+  /// or the given typeHint.
+  /// \param rawJson JSON payload to parse.
+  /// \param typeHint Name of the type under which the class was registered, if one wasn't provided in the payload.
+  /// \returns JSONObject instance that represents the root object.
+  auto convertJson(const std::string& rawJson, const std::string& typeHint = "") const -> std::shared_ptr<JSONObject>;
 
   // parse JSON string using jsoncpp
-  auto parseJson(const std::string &rawJson) const -> Json::Value;
+
+  /// \brief Parses rawJson into a value object.
+  /// \param rawJson JSON payload to parse.
+  /// \returns jsoncpp Value that represents the root object.
+  auto parseJson(const std::string& rawJson) const -> Json::Value;
 
   // Convert parsed JSON into registered classes
-  auto convertClass(const Json::Value &, const std::string &typeHint) const -> std::shared_ptr<JSONObject>;
+
+  /// \brief Converts a parsed jsoncpp Value into a JSONObject, using typeHint to determine the underlying class.
+  /// \param value Value to convert.
+  /// \param typeHint Class that the value represents.
+  /// \returns JSONObject instance that represents the root object.
+  auto convertClass(const Json::Value& value, const std::string& typeHint) const -> std::shared_ptr<JSONObject>;
+
+  /// \brief A map of registered classes that the converter uses when parsing.
+  std::map<std::string, JsonValueToComponentConverter> classes;
 
  private:
-  using Visitor = auto(const std::string &key, const Json::Value) -> std::shared_ptr<JSONObject>;
+  using Visitor = auto(const std::string& key, const Json::Value value) -> std::shared_ptr<JSONObject>;
 
-  auto _traverseJson(const Json::Value &, std::function<Visitor>, const std::string &key = "", int level = 0) const
-      -> std::shared_ptr<JSONObject>;
-  auto _convertClassProps(const Json::Value &, const std::string &typeHint, std::function<Visitor>, int level) const
-      -> std::shared_ptr<JSONObject>;
+  auto _traverseJson(const Json::Value& value, std::function<Visitor> visitor, const std::string& key = "",
+                     int level = 0) const -> std::shared_ptr<JSONObject>;
+  auto _convertClassProps(const Json::Value& value, const std::string& typeHint, std::function<Visitor>,
+                          int level) const -> std::shared_ptr<JSONObject>;
 };
 
 extern JSONConverter jsonConverter;

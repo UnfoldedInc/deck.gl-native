@@ -29,28 +29,28 @@
 using namespace deckgl;
 using namespace lumagl;
 
-const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<std::string>{
+const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+    std::make_shared<PropertyT<std::string>>(
         "widthUnits", [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthUnits; },
         [](JSONObject* props, std::string value) { return dynamic_cast<LineLayer::Props*>(props)->widthUnits = value; },
-        "pixels"},
-    new PropertyT<float>{
+        "pixels"),
+    std::make_shared<PropertyT<float>>(
         "widthScale", [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthScale; },
-        [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthScale = value; }, 1.0},
-    new PropertyT<float>{
+        [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthScale = value; }, 1.0),
+    std::make_shared<PropertyT<float>>(
         "widthMinPixels",
         [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMinPixels; },
         [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMinPixels = value; },
-        0.0},
-    new PropertyT<float>{
+        0.0),
+    std::make_shared<PropertyT<float>>(
         "widthMaxPixels",
         [](const JSONObject* props) { return dynamic_cast<const LineLayer::Props*>(props)->widthMaxPixels; },
         [](JSONObject* props, float value) { return dynamic_cast<LineLayer::Props*>(props)->widthMaxPixels = value; },
-        std::numeric_limits<float>::max()}};
+        std::numeric_limits<float>::max())};
 
-auto LineLayer::Props::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<LineLayer::Props>("LineLayer", propTypeDefs)};
-  return &properties;
+auto LineLayer::Props::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<LineLayer::Props>("LineLayer", propTypeDefs);
+  return properties;
 }
 
 void LineLayer::initializeState() {

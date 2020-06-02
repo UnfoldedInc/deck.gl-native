@@ -25,14 +25,13 @@
 
 using namespace deckgl;
 
-auto JSONConverter::convertJson(const std::string &rawJson, const std::string &typeHint) const
+auto JSONConverter::convertJson(const std::string& rawJson, const std::string& typeHint) const
     -> std::shared_ptr<JSONObject> {
   auto parsed = this->parseJson(rawJson);
-  auto converted = this->convertClass(parsed, typeHint);
-  return converted;
+  return this->convertClass(parsed, typeHint);
 }
 
-auto JSONConverter::parseJson(const std::string &rawJson) const -> Json::Value {
+auto JSONConverter::parseJson(const std::string& rawJson) const -> Json::Value {
   Json::CharReaderBuilder builder;
   const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
@@ -45,16 +44,16 @@ auto JSONConverter::parseJson(const std::string &rawJson) const -> Json::Value {
   return rootValue;
 }
 
-auto JSONConverter::convertClass(const Json::Value &value, const std::string &typeHint) const
+auto JSONConverter::convertClass(const Json::Value& value, const std::string& typeHint) const
     -> std::shared_ptr<JSONObject> {
   if (value.type() != Json::ValueType::objectValue) {
     throw std::runtime_error("JSON expect object to convert into class " + typeHint);
   }
-  auto visitor = [=](const std::string &key, const Json::Value) -> std::shared_ptr<JSONObject> { return nullptr; };
+  auto visitor = [=](const std::string& key, const Json::Value) -> std::shared_ptr<JSONObject> { return nullptr; };
   return this->_convertClassProps(value, typeHint, visitor, 0);
 }
 
-auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visitor> visitor, const std::string &key,
+auto JSONConverter::_traverseJson(const Json::Value& value, std::function<Visitor> visitor, const std::string& key,
                                   int level) const -> std::shared_ptr<JSONObject> {
   switch (value.type()) {
     case Json::ValueType::objectValue:
@@ -90,7 +89,7 @@ auto JSONConverter::_traverseJson(const Json::Value &value, std::function<Visito
   }
 }
 
-auto JSONConverter::_convertClassProps(const Json::Value &object, const std::string &typeHint, std::function<Visitor>,
+auto JSONConverter::_convertClassProps(const Json::Value& object, const std::string& typeHint, std::function<Visitor>,
                                        int level) const -> std::shared_ptr<JSONObject> {
   auto className = object["@@type"].asString();
   if (className.empty()) {
@@ -113,7 +112,6 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, const std::str
 
   auto classConverter = findIterator->second;
   auto props = classConverter(object);
-  // std::cout << "Created object " << props->getProperties()->className << std::endl;
 
   if (!props) {
     throw std::runtime_error("JSON class conversion failed for @@type: \"" + className + "\"");
@@ -121,17 +119,13 @@ auto JSONConverter::_convertClassProps(const Json::Value &object, const std::str
 
   for (auto it = object.begin(); it != object.end(); ++it) {
     auto key = it.key();
-    auto value = *it;  // Json::Value
+    auto value = *it;
     if (key != "@@type") {
       if (props->hasProperty(key.asString())) {
-        // std::cout << "converting prop " << key << std::endl;
         props->setPropertyFromJson(key.asString(), value, this);
-      } else {
-        // std::cout << "ignoring prop " << key << std::endl;
       }
     }
   }
 
-  // std::cout << "Finalized object " << props->getProperties()->className << std::endl;
   return props;
 }

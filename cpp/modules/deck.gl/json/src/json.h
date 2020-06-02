@@ -23,6 +23,6 @@
 
 #include "./converter/json-converter.h"
 #include "./converter/json-types-mathgl.h"
-#include "./converter/json-types.h"  // {fromJson}
+#include "./converter/json-types.h"
 
 #endif  // DECKGL_JSON_JSON_H

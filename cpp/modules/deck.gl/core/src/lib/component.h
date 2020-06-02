@@ -22,8 +22,9 @@
 #define DECKGL_CORE_LIB_COMPONENT_H
 
 #include <memory>
+#include <string>
 
-#include "deck.gl/json.h"  // {JSONObject}
+#include "deck.gl/json.h"
 
 namespace deckgl {
 
@@ -40,9 +41,13 @@ class Component {
 class Component::Props : public JSONObject {
  public:
   using super = JSONObject;
+
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
   virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> {
     return std::make_shared<Component>(std::dynamic_pointer_cast<Component::Props>(props));
   }
+
+  std::string id;
 };
 
 }  // namespace deckgl

@@ -29,32 +29,32 @@ using namespace deckgl;
 
 // Setters and getters for properties
 // TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
-static const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<std::list<std::shared_ptr<Layer::Props>>>{
+static const std::vector<const std::shared_ptr<Property>> propTypeDefs = {
+    std::make_shared<PropertyT<std::list<std::shared_ptr<Layer::Props>>>>(
         "layers", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
         [](JSONObject* props, std::list<std::shared_ptr<Layer::Props>> value) {
           return dynamic_cast<Deck::Props*>(props)->layers = value;
-        }},
-    new PropertyT<std::list<std::shared_ptr<View>>>{
+        }),
+    std::make_shared<PropertyT<std::list<std::shared_ptr<View>>>>(
         "views", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->views; },
         [](JSONObject* props, std::list<std::shared_ptr<View>> value) {
           return dynamic_cast<Deck::Props*>(props)->views = value;
-        }},
-    new PropertyT<std::shared_ptr<ViewState>>{
+        }),
+    std::make_shared<PropertyT<std::shared_ptr<ViewState>>>(
         "viewState", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->viewState; },
         [](JSONObject* props, std::shared_ptr<ViewState> value) {
           return dynamic_cast<Deck::Props*>(props)->viewState = value;
-        }},
-    new PropertyT<std::shared_ptr<ViewState>>{
+        }),
+    std::make_shared<PropertyT<std::shared_ptr<ViewState>>>(
         "initialViewState",
         [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->initialViewState; },
         [](JSONObject* props, std::shared_ptr<ViewState> value) {
           return dynamic_cast<Deck::Props*>(props)->initialViewState = value;
-        }}};
+        })};
 
-auto Deck::Props::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<Deck::Props>("Deck", propTypeDefs)};
-  return &properties;
+auto Deck::Props::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<Deck::Props>("Deck", propTypeDefs);
+  return properties;
 }
 
 Deck::Deck(std::shared_ptr<Deck::Props> props)
