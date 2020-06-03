@@ -30,6 +30,6 @@ static const std::vector<std::shared_ptr<Property>> propTypeDefs = {std::make_sh
     [](JSONObject* props, std::string value) { return dynamic_cast<Component::Props*>(props)->id = value; }, "")};
 
 auto Component::Props::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<Component::Props>("Component", propTypeDefs);
+  static auto properties = Properties::from<Component::Props>(propTypeDefs);
   return properties;
 }

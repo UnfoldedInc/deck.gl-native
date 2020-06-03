@@ -49,7 +49,7 @@ const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         std::numeric_limits<float>::max())};
 
 auto LineLayer::Props::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<LineLayer::Props>("LineLayer", propTypeDefs);
+  static auto properties = Properties::from<LineLayer::Props>(propTypeDefs);
   return properties;
 }
 

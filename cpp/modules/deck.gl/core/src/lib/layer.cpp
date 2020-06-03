@@ -69,7 +69,7 @@ static const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         "RGBA")};
 
 auto Layer::Props::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<Layer::Props>("Layer", propTypeDefs);
+  static auto properties = Properties::from<Layer::Props>(propTypeDefs);
   return properties;
 }
 

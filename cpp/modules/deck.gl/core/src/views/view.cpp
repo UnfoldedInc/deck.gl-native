@@ -55,7 +55,7 @@ const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         std::numeric_limits<double>::max())};
 
 auto View::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<View>("View", propTypeDefs);
+  static auto properties = Properties::from<View>(propTypeDefs);
   return properties;
 }
 

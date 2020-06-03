@@ -40,6 +40,6 @@ const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->pitch = value; }, 0.0)};
 
 auto ViewState::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<ViewState>("ViewState", propTypeDefs);
+  static auto properties = Properties::from<ViewState>(propTypeDefs);
   return properties;
 }

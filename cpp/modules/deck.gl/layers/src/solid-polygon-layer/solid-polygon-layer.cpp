@@ -44,7 +44,7 @@ const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         1.0)};
 
 auto SolidPolygonLayer::Props::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<SolidPolygonLayer::Props>("SolidPolygonLayer", propTypeDefs);
+  static auto properties = Properties::from<SolidPolygonLayer::Props>(propTypeDefs);
   return properties;
 }
 

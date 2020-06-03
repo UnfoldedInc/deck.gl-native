@@ -53,7 +53,7 @@ static const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         })};
 
 auto Deck::Props::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<Deck::Props>("Deck", propTypeDefs);
+  static auto properties = Properties::from<Deck::Props>(propTypeDefs);
   return properties;
 }
 

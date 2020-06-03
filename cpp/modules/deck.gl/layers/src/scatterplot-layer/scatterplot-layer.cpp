@@ -87,7 +87,7 @@ const std::vector<std::shared_ptr<Property>> propTypeDefs = {
         std::numeric_limits<float>::max())};
 
 auto ScatterplotLayer::Props::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<ScatterplotLayer::Props>("ScatterplotLayer", propTypeDefs);
+  static auto properties = Properties::from<ScatterplotLayer::Props>(propTypeDefs);
   return properties;
 }
 

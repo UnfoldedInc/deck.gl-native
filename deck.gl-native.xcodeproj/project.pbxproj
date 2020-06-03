@@ -2189,8 +2189,8 @@
 			buildPhases = (
 				CD227D572477DAE200B6083B /* Sources */,
 				CD227D582477DAE200B6083B /* Frameworks */,
-				CD227D592477DAE200B6083B /* CopyFiles */,
 				CD227D6C2477DB1E00B6083B /* Embed Libraries */,
+				CD227D592477DAE200B6083B /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2208,8 +2208,8 @@
 			buildPhases = (
 				CD48E80C24178A1E00D3C13C /* Sources */,
 				CD48E80D24178A1E00D3C13C /* Frameworks */,
-				CD48E80E24178A1E00D3C13C /* CopyFiles */,
 				CD98D2DD2449AEB100E42B4F /* Embed Libraries */,
+				CD48E80E24178A1E00D3C13C /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2225,10 +2225,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD5856DD246135540076227F /* Build configuration list for PBXNativeTarget "flight-paths" */;
 			buildPhases = (
-				CD5856D7246135540076227F /* CopyFiles */,
 				CD5856D5246135540076227F /* Sources */,
 				CD5856D6246135540076227F /* Frameworks */,
 				CDCD8F2D24614F73009604C5 /* Embed Libraries */,
+				CD5856D7246135540076227F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2244,10 +2244,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD5856F92461364B0076227F /* Build configuration list for PBXNativeTarget "manhattan-population" */;
 			buildPhases = (
-				CD5856F32461364B0076227F /* CopyFiles */,
 				CD5856F12461364B0076227F /* Sources */,
 				CD5856F22461364B0076227F /* Frameworks */,
 				CD58570A2461367E0076227F /* Embed Libraries */,
+				CD5856F32461364B0076227F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2283,8 +2283,8 @@
 			buildPhases = (
 				CDCD8F3224618413009604C5 /* Sources */,
 				CDCD8F3324618413009604C5 /* Frameworks */,
-				CDCD8F3424618413009604C5 /* CopyFiles */,
 				CD23526C24627CD500E3F139 /* Embed Libraries */,
+				CDCD8F3424618413009604C5 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2300,10 +2300,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CDE53E9F243C69A4000D8EC6 /* Build configuration list for PBXNativeTarget "animometer" */;
 			buildPhases = (
-				CDE53E99243C69A4000D8EC6 /* CopyFiles */,
 				CDE53E97243C69A4000D8EC6 /* Sources */,
 				CDE53E98243C69A4000D8EC6 /* Frameworks */,
 				CD5856CD2461326C0076227F /* Embed Libraries */,
+				CDE53E99243C69A4000D8EC6 /* CopyFiles */,
 			);
 			buildRules = (
 			);

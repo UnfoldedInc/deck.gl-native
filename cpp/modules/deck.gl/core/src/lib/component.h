@@ -42,6 +42,7 @@ class Component::Props : public JSONObject {
  public:
   using super = JSONObject;
 
+  static constexpr const char* getTypeName() { return "Component"; }
   auto getProperties() const -> const std::shared_ptr<Properties> override;
   virtual auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> {
     return std::make_shared<Component>(std::dynamic_pointer_cast<Component::Props>(props));

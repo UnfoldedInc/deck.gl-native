@@ -29,7 +29,7 @@ using namespace deckgl;
 using namespace mathgl;
 
 auto MapView::getProperties() const -> const std::shared_ptr<Properties> {
-  static auto properties = Properties::from<MapView>("MapView");
+  static auto properties = Properties::from<MapView>();
   return properties;
 }
 
