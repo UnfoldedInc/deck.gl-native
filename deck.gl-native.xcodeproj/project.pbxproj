@@ -91,6 +91,8 @@
 		CDC5AB5C2487AD8E008D76B9 /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CDC5AB5D2487AE6A008D76B9 /* libdawn_native.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; };
 		CDC5AB5E2487AE6A008D76B9 /* libdawn_proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; };
+		CDC5AB602487B403008D76B9 /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC5AB5F2487B403008D76B9 /* error.h */; };
+		CDC5AB622487C092008D76B9 /* error.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC5AB612487C092008D76B9 /* error.cc */; };
 		CDC8E16E244D5B5B002A7E60 /* webgpu-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */; };
 		CDC8E16F244D5B5B002A7E60 /* webgpu-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */; };
 		CDC8E173244D6420002A7E60 /* key-value-metadata.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDC8E170244D6420002A7E60 /* key-value-metadata.cc */; };
@@ -403,6 +405,8 @@
 		CDAD574924726745002736A3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CDC5AB5724879D2E008D76B9 /* libarrow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarrow.a; path = "cpp/deps/x64-osx/lib/libarrow.a"; sourceTree = "<group>"; };
 		CDC5AB5824879FE5008D76B9 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		CDC5AB5F2487B403008D76B9 /* error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
+		CDC5AB612487C092008D76B9 /* error.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = error.cc; sourceTree = "<group>"; };
 		CDC8E16B244D5B5B002A7E60 /* webgpu-utils.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "webgpu-utils.cc"; sourceTree = "<group>"; };
 		CDC8E16C244D5B5B002A7E60 /* webgpu-utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "webgpu-utils.h"; sourceTree = "<group>"; };
 		CDC8E170244D6420002A7E60 /* key-value-metadata.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "key-value-metadata.cc"; sourceTree = "<group>"; };
@@ -967,6 +971,8 @@
 			children = (
 				CDE55B32243C6A10000D8EC6 /* compiler.h */,
 				CDE55B3A243C6A10000D8EC6 /* platform.h */,
+				CDC5AB5F2487B403008D76B9 /* error.h */,
+				CDC5AB612487C092008D76B9 /* error.cc */,
 				CDE55B36243C6A10000D8EC6 /* log.h */,
 				CDE55B31243C6A10000D8EC6 /* log.cc */,
 				CDE55B35243C6A10000D8EC6 /* timer.h */,
@@ -1577,6 +1583,7 @@
 				CDE577AA243C6A1F000D8EC6 /* web-mercator-utils.h in Headers */,
 				CDE577F7243C6A1F000D8EC6 /* layer.h in Headers */,
 				CDE57799243C6A1F000D8EC6 /* combo-render-pipeline-descriptor.h in Headers */,
+				CDC5AB602487B403008D76B9 /* error.h in Headers */,
 				CDE577DC243C6A1F000D8EC6 /* core.h in Headers */,
 				CDE57778243C6A1F000D8EC6 /* animation-loop.h in Headers */,
 				CD452A472448421B00DD44A5 /* arrow-utils.h in Headers */,
@@ -1919,6 +1926,7 @@
 				CDE5776B243C6A1F000D8EC6 /* animation-loop.cc in Sources */,
 				CDE57848243C6A1F000D8EC6 /* json-object.cc in Sources */,
 				CD4B3B16248508B8007756A6 /* field.cc in Sources */,
+				CDC5AB622487C092008D76B9 /* error.cc in Sources */,
 				CDE57773243C6A1F000D8EC6 /* model.cc in Sources */,
 				CDE577E1243C6A1F000D8EC6 /* row.cc in Sources */,
 				CD1CCD8E24446CEB00C96D72 /* array.cc in Sources */,

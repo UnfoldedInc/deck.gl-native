@@ -21,13 +21,20 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#ifndef PROBEGL_CORE_SYSTEMUTILS_H
-#define PROBEGL_CORE_SYSTEMUTILS_H
+#include "./error.h"  // NOLINT(build/include)
 
 namespace probegl {
 
-void uSleep(unsigned int usecs);
+void executeThrowable(std::function<void()> expression, Error* error) {
+  error->reset();
+
+  try {
+    expression();
+  } catch (const std::exception& ex) {
+    *error = ex.what();
+  } catch (...) {
+    *error = "Operation failed with unknown error";
+  }
+}
 
 }  // namespace probegl
-
-#endif  // PROBEGL_CORE_SYSTEMUTILS_H

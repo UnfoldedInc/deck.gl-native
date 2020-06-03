@@ -23,6 +23,7 @@
 
 #include "./core/src/assert.h"
 #include "./core/src/compiler.h"
+#include "./core/src/error.h"
 #include "./core/src/log.h"
 #include "./core/src/platform.h"
 #include "./core/src/system-utils.h"

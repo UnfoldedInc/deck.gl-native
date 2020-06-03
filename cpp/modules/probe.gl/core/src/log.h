@@ -21,8 +21,8 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#ifndef PROBEGL_LOG_H_
-#define PROBEGL_LOG_H_
+#ifndef PROBEGL_CORE_LOG_H
+#define PROBEGL_CORE_LOG_H
 
 // Don't use iostream or printf directly for several reasons:
 //  - iostream adds static initializers which we want to avoid.
@@ -100,4 +100,4 @@ auto DebugLog(const char* file, const char* function, int line) -> LogMessage;
 
 }  // namespace probegl
 
-#endif  // PROBEGL_LOG_H_
+#endif  // PROBEGL_CORE_LOG_H

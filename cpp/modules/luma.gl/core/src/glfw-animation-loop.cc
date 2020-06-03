@@ -50,7 +50,7 @@ GLFWAnimationLoop::GLFWAnimationLoop(const Options& options) : AnimationLoop{opt
 
   this->_binding = glfw::CreateBinding(options.backendType, this->_window, _device.Get());
   if (!this->_binding) {
-    throw new std::runtime_error("Failed to initialize GLFWAnimationLoop, no backends enable for luma.gl");
+    throw std::runtime_error("Failed to initialize GLFWAnimationLoop, no backends enable for luma.gl");
   }
 
   this->_swapchain = this->_createSwapchain(_device);
@@ -138,7 +138,7 @@ auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType, con
 
   // Init the library
   if (!glfwInit()) {
-    throw new std::runtime_error("Failed to initialize GLFW");
+    throw std::runtime_error("Failed to initialize GLFW");
   }
 
   // Configure graphics context creation
@@ -158,7 +158,7 @@ auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType, con
 
   auto window = glfwCreateWindow(this->_size.width, this->_size.height, windowTitle.c_str(), nullptr, nullptr);
   if (!window) {
-    throw new std::runtime_error("Failed to create GLFW window");
+    throw std::runtime_error("Failed to create GLFW window");
   }
   // TODO(ilija@unfolded.ai): Handle window resizing
   //  glfwSetFramebufferSizeCallback(window, [this](GLFWwindow* window, int width, int height) {

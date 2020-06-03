@@ -18,16 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
-// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
+#ifndef PROBEGL_CORE_ERROR_H
+#define PROBEGL_CORE_ERROR_H
 
-#ifndef PROBEGL_CORE_SYSTEMUTILS_H
-#define PROBEGL_CORE_SYSTEMUTILS_H
+#include <optional>
+#include <string>
 
 namespace probegl {
 
-void uSleep(unsigned int usecs);
+using Error = std::optional<std::string>;
+
+template <typename T>
+auto executeThrowable(std::function<T()> expression, Error* error) -> std::optional<T> {
+  error->reset();
+
+  try {
+    return expression();
+  } catch (const std::exception& ex) {
+    *error = ex.what();
+    return std::nullopt;
+  } catch (...) {
+    *error = "Operation failed with unknown error";
+    return std::nullopt;
+  }
+}
+
+void executeThrowable(std::function<void()> expression, Error* error);
 
 }  // namespace probegl
 
-#endif  // PROBEGL_CORE_SYSTEMUTILS_H
+#endif  // PROBEGL_CORE_ERROR_H

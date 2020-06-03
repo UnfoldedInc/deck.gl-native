@@ -119,7 +119,7 @@ auto WebMercatorViewport::fitBounds(mathgl::Vector2<double> topLeft, mathgl::Vec
                                      this->height - 2 * padding - abs(offset.y) * 2);
 
   if (targetSize.x <= 0 || targetSize.y <= 0) {
-    throw new std::logic_error("Invalid targetSize");
+    throw std::logic_error("Invalid targetSize");
   }
 
   const double scaleX = targetSize.x / size.x;

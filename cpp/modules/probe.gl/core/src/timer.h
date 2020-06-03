@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef PROBEGL_TIMER_H
-#define PROBEGL_TIMER_H
+#ifndef PROBEGL_CORE_TIMER_H
+#define PROBEGL_CORE_TIMER_H
 
 #include "./platform.h"
 
@@ -77,4 +77,4 @@ class Timer {
 
 }  // namespace probegl
 
-#endif  // PROBEGL_TIMER_H_
+#endif  // PROBEGL_CORE_TIMER_H

@@ -21,8 +21,8 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#ifndef COMMON_ASSERT_H_
-#define COMMON_ASSERT_H_
+#ifndef PROBEGL_CORE_ASSERT_H
+#define PROBEGL_CORE_ASSERT_H
 
 #include "./compiler.h"
 
@@ -83,4 +83,4 @@
 
 void HandleAssertionFailure(const char* file, const char* function, int line, const char* condition);
 
-#endif  // COMMON_ASSERT_H_
+#endif  // COMMON_CORE_ASSERT_H

@@ -72,6 +72,10 @@ Deck::Deck(std::shared_ptr<Deck::Props> props)
       lumagl::utils::createBuffer(this->animationLoop->device(), sizeof(ViewportUniforms), wgpu::BufferUsage::Uniform);
 }
 
+auto Deck::make(probegl::Error* error, std::shared_ptr<Deck::Props> props) -> std::optional<Deck> {
+  return probegl::executeThrowable<Deck>([&]() { return Deck{props}; }, error);
+}
+
 Deck::~Deck() { this->animationLoop->stop(); }
 
 void Deck::setProps(std::shared_ptr<Deck::Props> props) {
@@ -102,6 +106,10 @@ void Deck::setProps(std::shared_ptr<Deck::Props> props) {
   this->viewManager->setViews(props->views);
   this->viewManager->setViewState(this->viewState);
   this->animationLoop->setSize({props->width, props->height});
+}
+
+void Deck::setProps(std::shared_ptr<Deck::Props> props, probegl::Error* error) {
+  probegl::executeThrowable([&]() { this->setProps(props); }, error);
 }
 
 void Deck::run(std::function<void(Deck*)> onAfterRender) {
