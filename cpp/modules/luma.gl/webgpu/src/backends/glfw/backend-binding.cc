@@ -23,7 +23,11 @@
 
 #include "./backend-binding.h"  // NOLINT(build/include)
 
+// Ignore documentation warnings coming from glfw3.h
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
 #include <GLFW/glfw3.h>
+#pragma clang diagnostic pop
 #if defined(LUMAGL_ENABLE_BACKEND_OPENGL)
 #include <dawn_native/OpenGLBackend.h>
 #endif  // defined(LUMAGL_ENABLE_BACKEND_OPENGL)

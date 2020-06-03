@@ -20,7 +20,11 @@
 
 #include "./glfw-animation-loop.h"  // NOLINT(build/include)
 
+// Ignore documentation warnings coming from glfw3.h
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
 #include <GLFW/glfw3.h>
+#pragma clang diagnostic pop
 #include <GLFW/glfw3native.h>
 #include <dawn/dawn_wsi.h>
 #include <dawn/webgpu_cpp.h>

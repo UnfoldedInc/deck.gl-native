@@ -21,7 +21,11 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
+// Ignore documentation warnings coming from glfw3.h
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
 #include <GLFW/glfw3.h>
+#pragma clang diagnostic pop
 #include <dawn/dawn_wsi.h>
 #include <dawn_native/OpenGLBackend.h>
 

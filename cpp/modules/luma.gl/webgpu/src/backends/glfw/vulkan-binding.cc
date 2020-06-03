@@ -23,7 +23,11 @@
 
 #include <dawn_native/VulkanBackend.h>
 // Include GLFW after VulkanBackend so that it declares the Vulkan-specific functions
+// Ignore documentation warnings coming from glfw3.h
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
 #include <GLFW/glfw3.h>
+#pragma clang diagnostic pop
 
 #include <memory>
 

@@ -28,7 +28,11 @@
 #include "./backend-binding.h"
 
 #define GLFW_EXPOSE_NATIVE_COCOA
+// Ignore documentation warnings coming from glfw3.h
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
 #include <GLFW/glfw3.h>
+#pragma clang diagnostic pop
 #include <GLFW/glfw3native.h>
 
 #include "luma.gl/core.h"
