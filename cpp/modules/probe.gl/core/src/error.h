@@ -21,6 +21,7 @@
 #ifndef PROBEGL_CORE_ERROR_H
 #define PROBEGL_CORE_ERROR_H
 
+#include <functional>
 #include <optional>
 #include <string>
 
