@@ -44,6 +44,7 @@
 		CD33DF3E242E220D003F3B96 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF3C242E2207003F3B96 /* QuartzCore.framework */; };
 		CD35949C2472C55900DC8289 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD33DF24242E1F65003F3B96 /* CoreFoundation.framework */; };
 		CD378923248634EC00418C4B /* solid-polygon-layer-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD378922248634EC00418C4B /* solid-polygon-layer-test.cpp */; };
+		CD378925248689DE00418C4B /* component.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD378924248689DE00418C4B /* component.cc */; };
 		CD452A462448421B00DD44A5 /* arrow-utils.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD452A432448421B00DD44A5 /* arrow-utils.cc */; };
 		CD452A472448421B00DD44A5 /* arrow-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A442448421B00DD44A5 /* arrow-utils.h */; };
 		CD452A51244852DE00DD44A5 /* field.h in Headers */ = {isa = PBXBuildFile; fileRef = CD452A4E244852DE00DD44A5 /* field.h */; };
@@ -473,6 +474,7 @@
 		CD33DF41242E2285003F3B96 /* libdawn_utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdawn_utils.a; path = ../dawn/out/Debug/obj/libdawn_utils.a; sourceTree = "<group>"; };
 		CD33DF42242E2285003F3B96 /* libdawn_sample_utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdawn_sample_utils.a; path = ../dawn/out/Debug/obj/libdawn_sample_utils.a; sourceTree = "<group>"; };
 		CD378922248634EC00418C4B /* solid-polygon-layer-test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "solid-polygon-layer-test.cpp"; sourceTree = "<group>"; };
+		CD378924248689DE00418C4B /* component.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = component.cc; sourceTree = "<group>"; };
 		CD452A432448421B00DD44A5 /* arrow-utils.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "arrow-utils.cc"; sourceTree = "<group>"; };
 		CD452A442448421B00DD44A5 /* arrow-utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "arrow-utils.h"; sourceTree = "<group>"; };
 		CD452A4E244852DE00DD44A5 /* field.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = field.h; sourceTree = "<group>"; };
@@ -1839,6 +1841,7 @@
 				CDE55C25243C6A10000D8EC6 /* layer-manager.h */,
 				CDE55C26243C6A10000D8EC6 /* view-manager.cpp */,
 				CD6EC074247CFB2B009D6C00 /* earcut.hpp */,
+				CD378924248689DE00418C4B /* component.cc */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -2186,8 +2189,8 @@
 			buildPhases = (
 				CD227D572477DAE200B6083B /* Sources */,
 				CD227D582477DAE200B6083B /* Frameworks */,
-				CD227D592477DAE200B6083B /* CopyFiles */,
 				CD227D6C2477DB1E00B6083B /* Embed Libraries */,
+				CD227D592477DAE200B6083B /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2205,8 +2208,8 @@
 			buildPhases = (
 				CD48E80C24178A1E00D3C13C /* Sources */,
 				CD48E80D24178A1E00D3C13C /* Frameworks */,
-				CD48E80E24178A1E00D3C13C /* CopyFiles */,
 				CD98D2DD2449AEB100E42B4F /* Embed Libraries */,
+				CD48E80E24178A1E00D3C13C /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2222,10 +2225,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD5856DD246135540076227F /* Build configuration list for PBXNativeTarget "flight-paths" */;
 			buildPhases = (
-				CD5856D7246135540076227F /* CopyFiles */,
 				CD5856D5246135540076227F /* Sources */,
 				CD5856D6246135540076227F /* Frameworks */,
 				CDCD8F2D24614F73009604C5 /* Embed Libraries */,
+				CD5856D7246135540076227F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2241,10 +2244,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD5856F92461364B0076227F /* Build configuration list for PBXNativeTarget "manhattan-population" */;
 			buildPhases = (
-				CD5856F32461364B0076227F /* CopyFiles */,
 				CD5856F12461364B0076227F /* Sources */,
 				CD5856F22461364B0076227F /* Frameworks */,
 				CD58570A2461367E0076227F /* Embed Libraries */,
+				CD5856F32461364B0076227F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2280,8 +2283,8 @@
 			buildPhases = (
 				CDCD8F3224618413009604C5 /* Sources */,
 				CDCD8F3324618413009604C5 /* Frameworks */,
-				CDCD8F3424618413009604C5 /* CopyFiles */,
 				CD23526C24627CD500E3F139 /* Embed Libraries */,
+				CDCD8F3424618413009604C5 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2297,10 +2300,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CDE53E9F243C69A4000D8EC6 /* Build configuration list for PBXNativeTarget "animometer" */;
 			buildPhases = (
-				CDE53E99243C69A4000D8EC6 /* CopyFiles */,
 				CDE53E97243C69A4000D8EC6 /* Sources */,
 				CDE53E98243C69A4000D8EC6 /* Frameworks */,
 				CD5856CD2461326C0076227F /* Embed Libraries */,
+				CDE53E99243C69A4000D8EC6 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2483,6 +2486,7 @@
 				CDE577EE243C6A1F000D8EC6 /* viewport.cpp in Sources */,
 				CDE5785C243C6A1F000D8EC6 /* csv-loader.cpp in Sources */,
 				CDE5774C243C6A1F000D8EC6 /* log.cpp in Sources */,
+				CD378925248689DE00418C4B /* component.cc in Sources */,
 				CDAD573B247242CC002736A3 /* metal-animation-loop.mm in Sources */,
 				CDE57819243C6A1F000D8EC6 /* viewport-uniforms.cpp in Sources */,
 				CD452A462448421B00DD44A5 /* arrow-utils.cc in Sources */,

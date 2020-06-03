@@ -21,6 +21,7 @@
 #ifndef DECKGL_CORE_VIEWS_VIEW_STATE_H
 #define DECKGL_CORE_VIEWS_VIEW_STATE_H
 
+#include <memory>
 #include <optional>
 
 #include "deck.gl/json.h"
@@ -30,8 +31,7 @@ namespace deckgl {
 class ViewState : public JSONObject {
  public:
   using super = JSONObject;
-  static constexpr const char* getTypeName() { return "ViewState"; }
-  auto getProperties() const -> const Properties* override;
+
   virtual ~ViewState() {}
 
   // Map view states
@@ -40,6 +40,10 @@ class ViewState : public JSONObject {
   std::optional<double> zoom;
   std::optional<double> bearing;
   std::optional<double> pitch;
+
+  // Property Type Machinery
+  static constexpr const char* getTypeName() { return "ViewState"; }
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
 };
 
 }  // namespace deckgl

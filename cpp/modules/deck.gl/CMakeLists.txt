@@ -70,6 +70,7 @@ set(CORE_HEADER_FILES
 set(CORE_SOURCE_FILES
     core/src/core.cpp
     core/src/lib/attribute/attribute-manager.cc
+    core/src/lib/component.cc
     core/src/lib/constants.cpp
     core/src/lib/deck.cpp
     core/src/lib/layer.cpp

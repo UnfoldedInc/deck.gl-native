@@ -33,8 +33,9 @@ class MapView : public View {
  public:
   using super = View;
 
+  // Property Type Machinery
   static constexpr const char* getTypeName() { return "MapView"; }
-  auto getProperties() const -> const Properties* override;
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
 
  protected:
   auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const

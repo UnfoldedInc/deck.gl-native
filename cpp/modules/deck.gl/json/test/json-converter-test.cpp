@@ -29,20 +29,15 @@
 #include "deck.gl/json.h"
 #include "deck.gl/layers.h"
 
-using deckgl::Deck;
-using deckgl::JSONConverter;
-using deckgl::LineLayer;
-using deckgl::ScatterplotLayer;
+using namespace deckgl;
 
 namespace {
 
-/**
- * The fixture for testing class JSONConverter.
- */
+/// \brief Fixture for testing class JSONConverter.
 class JSONConverterTest : public ::testing::Test {
  protected:
   JSONConverterTest() {
-    jsonConverter = std::unique_ptr<JSONConverter>(new JSONConverter());
+    jsonConverter = std::make_unique<JSONConverter>();
 
     registerJSONConvertersForDeckCore(jsonConverter.get());
     registerJSONConvertersForDeckLayers(jsonConverter.get());
@@ -62,16 +57,11 @@ TEST_F(JSONConverterTest, JSONConfig) {
     Json::Value rootValue = jsonConverter->parseJson(jsonDataSimple);
     auto classConverter = jsonConverter->classes["LineLayer"];
 
-    // TODO(ib@unfolded.ai): bizarre test that parses a Deck as a LineLayer...
+    // TODO(ib@unfolded.ai): Bizarre test that parses a Deck as a LineLayer...
     auto lineLayerProps = classConverter(rootValue);
     EXPECT_TRUE(lineLayerProps);
     EXPECT_TRUE(std::dynamic_pointer_cast<LineLayer::Props>(lineLayerProps));
   });
-}
-
-TEST_F(JSONConverterTest, JSONConverter) {
-  auto result = jsonConverter->convertJson(jsonDataSimple);
-  // EXPECT_TRUE(result);
 }
 
 TEST_F(JSONConverterTest, JSONConverterDeck) {
@@ -95,4 +85,128 @@ TEST_F(JSONConverterTest, JSONConverterDeck) {
   EXPECT_NEAR(*deckProps->initialViewState->longitude, -122.45, 0.0001);
 }
 
-}  // namespace
+TEST_F(JSONConverterTest, JSONConverterDeckParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  // Deck props
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+  EXPECT_EQ(deckProps->id, "TestDeck");
+}
+
+TEST_F(JSONConverterTest, JSONConverterViewParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+
+  auto views = deckProps->views;
+  EXPECT_EQ(views.size(), size_t{2});
+
+  auto view = views.front();
+  EXPECT_EQ(view->id, "FirstView");
+  EXPECT_EQ(view->x, 5);
+  EXPECT_EQ(view->y, 10);
+  EXPECT_EQ(view->width, 400);
+  EXPECT_EQ(view->height, 300);
+  EXPECT_DOUBLE_EQ(view->fovy, 70.0);
+  EXPECT_DOUBLE_EQ(view->near, 1.0);
+  EXPECT_DOUBLE_EQ(view->far, 500.0);
+}
+
+TEST_F(JSONConverterTest, JSONConverterViewStateParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+
+  auto initialViewState = deckProps->initialViewState;
+  EXPECT_DOUBLE_EQ(initialViewState->longitude.value(), -122.45);
+  EXPECT_DOUBLE_EQ(initialViewState->latitude.value(), 37.8);
+  EXPECT_DOUBLE_EQ(initialViewState->zoom.value(), 12.0);
+  EXPECT_DOUBLE_EQ(initialViewState->bearing.value(), 20.0);
+  EXPECT_DOUBLE_EQ(initialViewState->pitch.value(), 30.0);
+
+  EXPECT_FALSE(deckProps->viewState);
+}
+
+TEST_F(JSONConverterTest, JSONConverterLayerParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+
+  auto layer = std::dynamic_pointer_cast<Layer::Props>(deckProps->layers.front());
+  EXPECT_TRUE(layer);
+
+  EXPECT_EQ(layer->id, "LineLayer");
+  EXPECT_EQ(layer->visible, false);
+  EXPECT_FLOAT_EQ(layer->opacity, 0.5);
+  mathgl::Vector3<double> coordinateOrigin{5.0, 3.0, 2.0};
+  EXPECT_EQ(layer->coordinateOrigin, coordinateOrigin);
+  EXPECT_EQ(layer->coordinateSystem, COORDINATE_SYSTEM::LNGLAT);
+  EXPECT_EQ(layer->wrapLongitude, true);
+  EXPECT_EQ(layer->positionFormat, "YZX");
+  EXPECT_EQ(layer->colorFormat, "BGRA");
+}
+
+TEST_F(JSONConverterTest, JSONConverterLineLayerParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+
+  auto lineLayer = std::dynamic_pointer_cast<LineLayer::Props>(deckProps->layers.front());
+  EXPECT_TRUE(lineLayer);
+
+  EXPECT_EQ(lineLayer->widthUnits, "meters");
+  EXPECT_FLOAT_EQ(lineLayer->widthScale, 2.0);
+  EXPECT_FLOAT_EQ(lineLayer->widthMinPixels, 1.0);
+  EXPECT_FLOAT_EQ(lineLayer->widthMaxPixels, 100.0);
+}
+
+TEST_F(JSONConverterTest, JSONConverterScatterplotLayerParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+
+  auto layerIterator = deckProps->layers.begin();
+  std::advance(layerIterator, 1);
+  auto scatterplotLayer = std::dynamic_pointer_cast<ScatterplotLayer::Props>(*layerIterator);
+  EXPECT_TRUE(scatterplotLayer);
+
+  EXPECT_EQ(scatterplotLayer->filled, false);
+  EXPECT_EQ(scatterplotLayer->stroked, true);
+  EXPECT_EQ(scatterplotLayer->lineWidthUnits, "pixels");
+  EXPECT_FLOAT_EQ(scatterplotLayer->lineWidthScale, 2);
+  EXPECT_FLOAT_EQ(scatterplotLayer->lineWidthMinPixels, 1);
+  EXPECT_FLOAT_EQ(scatterplotLayer->lineWidthMaxPixels, 5.2);
+  EXPECT_FLOAT_EQ(scatterplotLayer->radiusScale, 3);
+  EXPECT_FLOAT_EQ(scatterplotLayer->radiusMinPixels, 1);
+  EXPECT_FLOAT_EQ(scatterplotLayer->radiusMaxPixels, 10);
+}
+
+TEST_F(JSONConverterTest, JSONConverterSolidPolygonLayerParsing) {
+  auto result = jsonConverter->convertJson(jsonDataFull);
+  EXPECT_TRUE(result);
+
+  auto deckProps = std::dynamic_pointer_cast<Deck::Props>(result);
+  EXPECT_TRUE(deckProps);
+
+  auto layerIterator = deckProps->layers.begin();
+  std::advance(layerIterator, 2);
+  auto solidPolygonLayer = std::dynamic_pointer_cast<SolidPolygonLayer::Props>(*layerIterator);
+  EXPECT_TRUE(solidPolygonLayer);
+
+  EXPECT_EQ(solidPolygonLayer->filled, false);
+  EXPECT_FLOAT_EQ(solidPolygonLayer->elevationScale, 2);
+}
+
+}  // anonymous namespace

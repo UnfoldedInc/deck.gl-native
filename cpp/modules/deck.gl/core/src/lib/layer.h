@@ -171,9 +171,6 @@ class Layer : public Component {
 class Layer::Props : public Component::Props {
  public:
   using super = Component::Props;
-  static constexpr const char* getTypeName() { return "Layer"; }
-
-  std::string id;
 
   std::shared_ptr<arrow::Table> data;
 
@@ -189,7 +186,8 @@ class Layer::Props : public Component::Props {
   std::string colorFormat{"RGBA"};
 
   // Property Type Machinery
-  auto getProperties() const -> const Properties* override;
+  static constexpr const char* getTypeName() { return "Layer"; }
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
   auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
     return std::make_shared<Layer>(std::dynamic_pointer_cast<Layer::Props>(props));
   }

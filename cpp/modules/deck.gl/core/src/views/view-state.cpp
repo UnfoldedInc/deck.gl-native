@@ -22,24 +22,24 @@
 
 using namespace deckgl;
 
-const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<std::optional<double>>{
+const std::vector<std::shared_ptr<Property>> propTypeDefs = {
+    std::make_shared<PropertyT<std::optional<double>>>(
         "longitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->longitude; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->longitude = value; }, 0.0},
-    new PropertyT<std::optional<double>>{
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->longitude = value; }, 0.0),
+    std::make_shared<PropertyT<std::optional<double>>>(
         "latitude", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->latitude; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->latitude = value; }, 0.0},
-    new PropertyT<std::optional<double>>{
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->latitude = value; }, 0.0),
+    std::make_shared<PropertyT<std::optional<double>>>(
         "zoom", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->zoom; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->zoom = value; }, 10},
-    new PropertyT<std::optional<double>>{
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->zoom = value; }, 10),
+    std::make_shared<PropertyT<std::optional<double>>>(
         "bearing", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->bearing; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->bearing = value; }, 0.0},
-    new PropertyT<std::optional<double>>{
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->bearing = value; }, 0.0),
+    std::make_shared<PropertyT<std::optional<double>>>(
         "pitch", [](const JSONObject* props) { return dynamic_cast<const ViewState*>(props)->pitch; },
-        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->pitch = value; }, 0.0}};
+        [](JSONObject* props, const double& value) { return dynamic_cast<ViewState*>(props)->pitch = value; }, 0.0)};
 
-auto ViewState::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<ViewState>("ViewState", propTypeDefs)};
-  return &properties;
+auto ViewState::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<ViewState>(propTypeDefs);
+  return properties;
 }

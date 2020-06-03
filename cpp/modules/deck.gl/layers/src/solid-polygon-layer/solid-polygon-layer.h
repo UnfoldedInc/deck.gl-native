@@ -68,13 +68,6 @@ class SolidPolygonLayer : public Layer {
 class SolidPolygonLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
-  static constexpr const char* getTypeName() { return "SolidPolygonLayer"; }
-
-  // Property Type Machinery
-  auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
-    return std::make_shared<SolidPolygonLayer>(std::dynamic_pointer_cast<SolidPolygonLayer::Props>(props));
-  }
 
   bool filled{true};
   // TODO(ilija@unfolded.ai): Extrusion currently not supported
@@ -91,6 +84,13 @@ class SolidPolygonLayer::Props : public Layer::Props {
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
+
+  // Property Type Machinery
+  static constexpr const char* getTypeName() { return "SolidPolygonLayer"; }
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<SolidPolygonLayer>(std::dynamic_pointer_cast<SolidPolygonLayer::Props>(props));
+  }
 };
 
 /// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.

@@ -63,13 +63,6 @@ class ScatterplotLayer : public Layer {
 class ScatterplotLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
-  static constexpr const char* getTypeName() { return "ScatterplotLayer"; }
-
-  // Property Type Machinery
-  auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
-    return std::make_shared<ScatterplotLayer>(std::dynamic_pointer_cast<ScatterplotLayer::Props>(props));
-  }
 
   bool filled{true};
   bool stroked{false};
@@ -92,6 +85,13 @@ class ScatterplotLayer::Props : public Layer::Props {
   std::function<ArrowMapper::Vector4FloatAccessor> getLineColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getLineWidth{[](auto row) { return 1.0; }};
+
+  // Property Type Machinery
+  static constexpr const char* getTypeName() { return "ScatterplotLayer"; }
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<ScatterplotLayer>(std::dynamic_pointer_cast<ScatterplotLayer::Props>(props));
+  }
 };
 
 /// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.

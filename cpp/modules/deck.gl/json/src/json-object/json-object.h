@@ -21,6 +21,8 @@
 #ifndef DECKGL_JSON_JSON_OBJECT_H
 #define DECKGL_JSON_JSON_OBJECT_H
 
+#include <json/json.h>
+
 #include <functional>
 #include <iostream>
 #include <list>
@@ -29,9 +31,8 @@
 #include <string>
 #include <vector>
 
-#include "../converter/json-types-mathgl.h"  // {fromJson<T>(math.gl types)}
-#include "../converter/json-types.h"         // {fromJson<T>(std types)}
-#include "json/json.h"                       // {Json::Value}
+#include "../converter/json-types-mathgl.h"
+#include "../converter/json-types.h"
 
 namespace deckgl {
 // Forward declarations for operators
@@ -45,7 +46,7 @@ auto operator!=(const deckgl::JSONObject& lhs, const deckgl::JSONObject& rhs) ->
 namespace deckgl {
 
 // Forward declarations from other files
-class JSONConverter;  // #include "../converter/json-converter.h"
+class JSONConverter;
 
 class Properties;
 class Property;
@@ -60,7 +61,7 @@ class JSONObject {
   virtual ~JSONObject();
 
   // Returns the shared static Properties for this Prop object.
-  virtual auto getProperties() const -> const Properties*;
+  virtual auto getProperties() const -> const std::shared_ptr<Properties>;
 
   // Compares the contents of this prop object against another prop object
   auto equals(const JSONObject* other) const -> bool;
@@ -80,7 +81,7 @@ class JSONObject {
   void setPropertyFromJson(const std::string& key, const Json::Value& jsonValue, const JSONConverter*);
 
   // Gets the general property type object for a key
-  auto getProperty(const std::string& key) const -> const Property*;
+  auto getProperty(const std::string& key) const -> const std::shared_ptr<Property>;
 
   // Get the typed property type object for a key
   template <class T>
@@ -220,7 +221,7 @@ template <class T>
 struct PropertyT<std::list<std::shared_ptr<T>>> : public Property {
  public:
   // TODO(isaac@unfolded.ai): Possibly incorrect passing of references here
-  std::function<auto(JSONObject const*)->const std::list<std::shared_ptr<T>>&>
+  std::function<auto(const JSONObject*)->const std::list<std::shared_ptr<T>>&>
       get;  // TODO(ib@unfolded.ai): return const T& ?
   std::function<void(JSONObject*, const std::list<std::shared_ptr<T>>&)> set;
   std::list<std::shared_ptr<T>> defaultValue;
@@ -276,29 +277,25 @@ class Properties {
   friend class JSONObject;
 
  public:
-  // static methods
   template <typename JSONObjectT>
-  static auto from(const std::string& className, const std::vector<const Property*>& properties = {})
-      -> deckgl::Properties {
+  static auto from(const std::vector<std::shared_ptr<Property>>& properties = {})
+      -> std::shared_ptr<deckgl::Properties> {
+    auto className = JSONObjectT::getTypeName();
     typename JSONObjectT::super parentProps;
-    return Properties{className, parentProps.getProperties(), properties};
+    // Can't use make_shared here as constructor is private
+    return std::shared_ptr<deckgl::Properties>(new Properties{className, parentProps.getProperties(), properties});
   }
 
-  // public members
-  const std::string className;
-  const Properties* parent;
-
-  // methods
   bool hasProp(const std::string& key) const { return this->_propTypeMap.count(key) == 1; }
-  auto getProperty(const std::string& key) const -> const Property* {
+  auto getProperty(const std::string& key) const -> const std::shared_ptr<Property> {
     auto searchIterator = this->_propTypeMap.find(key);
     if (searchIterator == this->_propTypeMap.end()) {
       throw std::runtime_error("No such property: " + className + "." + key);
     }
     return searchIterator->second;
   }
-  auto allProperties() const -> std::vector<const Property*> {
-    std::vector<const Property*> properties;
+  auto allProperties() const -> std::vector<std::shared_ptr<Property>> {
+    std::vector<std::shared_ptr<Property>> properties;
     properties.reserve(this->_propTypeMap.size());
     for (auto prop : _propTypeMap) {
       properties.push_back(prop.second);
@@ -306,10 +303,14 @@ class Properties {
     return properties;
   }
 
- private:
-  Properties(const std::string& className, const Properties* parentProps, const std::vector<const Property*>&);
+  const std::string className;
+  const std::shared_ptr<Properties> parent;
 
-  std::map<const std::string, const Property*> _propTypeMap;
+ private:
+  Properties(const std::string& className, const std::shared_ptr<Properties>& parentProps,
+             const std::vector<std::shared_ptr<Property>>& ownPropertyDefs);
+
+  std::map<const std::string, const std::shared_ptr<Property>> _propTypeMap;
 };
 
 // JSONObject inline members
@@ -323,7 +324,7 @@ void JSONObject::setProperty(const std::string& key, const T& value) {
     throw std::logic_error("Props: No prop types found");
   }
   if (auto propType = this->getProperties()->getProperty(key)) {
-    if (auto propTypeT = dynamic_cast<const PropertyT<T>*>(propType)) {
+    if (auto propTypeT = std::dynamic_pointer_cast<const PropertyT<T>>(propType)) {
       propTypeT->set(this, value);
     }
   }

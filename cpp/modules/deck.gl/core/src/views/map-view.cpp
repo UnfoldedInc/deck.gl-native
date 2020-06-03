@@ -28,9 +28,9 @@ using namespace std;
 using namespace deckgl;
 using namespace mathgl;
 
-auto MapView::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<MapView>("MapView")};
-  return &properties;
+auto MapView::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<MapView>();
+  return properties;
 }
 
 auto MapView::_getViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) const -> shared_ptr<Viewport> {

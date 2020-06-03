@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#include "../converter/json-converter.h"  // {JSONConverter}
+#include "../converter/json-converter.h"
 
 using namespace deckgl;
 
@@ -52,17 +52,17 @@ auto Property::_getPropListFromJson(JSONObject* props, const Json::Value& jsonVa
 
 // Properties
 
-Properties::Properties(const std::string& className_, const Properties* parentProperties,
-                       const std::vector<const Property*>& ownPropertyDefs)
-    : className{className_}, parent{parentProperties} {
+Properties::Properties(const std::string& className, const std::shared_ptr<Properties>& parentProps,
+                       const std::vector<std::shared_ptr<Property>>& ownPropertyDefs)
+    : className{className}, parent{parentProps} {
   // insert our prop types
   for (auto element : ownPropertyDefs) {
     this->_propTypeMap.insert({element->name, element});
   }
 
   // Insert parent's prop types
-  if (parentProperties) {
-    const auto& parentPropertyMap = parentProperties->_propTypeMap;
+  if (parentProps) {
+    const auto& parentPropertyMap = parentProps->_propTypeMap;
     this->_propTypeMap.insert(parentPropertyMap.begin(), parentPropertyMap.end());
   }
 }
@@ -73,9 +73,9 @@ JSONObject::JSONObject() {}
 
 JSONObject::~JSONObject() {}
 
-auto JSONObject::getProperties() const -> const Properties* {
-  static Properties properties{"Component", nullptr, std::vector<const Property*>{}};
-  return &properties;
+auto JSONObject::getProperties() const -> const std::shared_ptr<Properties> {
+  // Can't use make_shared here as constructor is private
+  return std::shared_ptr<deckgl::Properties>(new Properties{"Component", nullptr, {}});
 }
 
 void JSONObject::setPropertyFromJson(const std::string& key, const Json::Value& jsonValue,
@@ -84,14 +84,12 @@ void JSONObject::setPropertyFromJson(const std::string& key, const Json::Value& 
   propertyType->setPropertyFromJson(this, jsonValue, jsonConverter);
 }
 
-auto JSONObject::getProperty(const std::string& key) const -> const Property* {
-  // std::cout << "getProperties" << std::endl;
+auto JSONObject::getProperty(const std::string& key) const -> const std::shared_ptr<Property> {
   auto properties = this->getProperties();
   if (!properties) {
     throw std::logic_error("Component does not have property types");
   }
 
-  // std::cout << "getProperty" << std::endl;
   auto propertyType = this->getProperties()->getProperty(key);
   if (!propertyType) {
     throw std::runtime_error("Prop type not found for property " + key);
@@ -117,7 +115,7 @@ auto JSONObject::equals(const JSONObject* other) const -> bool {
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.
-    const Property* propType = element.second;
+    const auto propType = element.second;
     if (!propType->equals(this, other)) {
       return false;
     }
@@ -143,7 +141,7 @@ auto JSONObject::compare(const JSONObject* other) const -> std::optional<std::st
     // Accessing KEY from element
     std::string name = element.first;
     // Accessing VALUE from element.
-    const Property* propType = element.second;
+    const auto propType = element.second;
     if (!propType->equals(this, other)) {
       return properties->className + "." + propType->name + " changed";
     }

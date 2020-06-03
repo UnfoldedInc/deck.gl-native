@@ -64,14 +64,8 @@ class LineLayer : public Layer {
 class LineLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
-  static constexpr const char* getTypeName() { return "LineLayer"; }
 
-  // Property Type Machinery
-  auto getProperties() const -> const Properties* override;
-  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
-    return std::make_shared<LineLayer>(std::dynamic_pointer_cast<LineLayer::Props>(props));
-  }
-
+  // TODO(ilija@unfolded.ai): Should be an enum
   std::string widthUnits{"pixels"};
   float widthScale{1};
   float widthMinPixels{0};
@@ -85,6 +79,13 @@ class LineLayer::Props : public Layer::Props {
   std::function<ArrowMapper::Vector4FloatAccessor> getColor{
       [](const Row&) { return mathgl::Vector4<float>(0.0, 0.0, 0.0, 255.0); }};
   std::function<ArrowMapper::FloatAccessor> getWidth{[](const Row&) { return 1.0; }};
+
+  // Property Type Machinery
+  static constexpr const char* getTypeName() { return "LineLayer"; }
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
+  auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
+    return std::make_shared<LineLayer>(std::dynamic_pointer_cast<LineLayer::Props>(props));
+  }
 };
 
 /// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.

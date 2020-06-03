@@ -93,8 +93,6 @@ TEST_F(WebMercatorViewportTest, projectFlat) {
 //       auto xyz3 = viewport.project(lnglatIn3);
 //       auto lnglat3 = viewport.unproject(xyz3);
 
-//       std::cout << lnglatIn3 << xyz3 << lnglat3 << std::endl;
-
 //       EXPECT_NEAR(lnglatIn3.x, lnglat3.x, LNGLAT_TOLERANCE);
 //       EXPECT_NEAR(lnglatIn3.y, lnglat3.y, LNGLAT_TOLERANCE);
 //       EXPECT_NEAR(lnglatIn3.z, lnglat3.z, ALT_TOLERANCE);
@@ -110,8 +108,6 @@ TEST_F(WebMercatorViewportTest, projectFlat) {
 //       auto lnglatIn = Vector2<double>(viewport.longitude + offset, viewport.latitude + offset);
 //       auto xy = viewport.project(lnglatIn);
 //       auto lnglat = viewport.unproject(xy);
-
-//       std::cout << lnglatIn3 << xyz3 << lnglat3 << std::endl;
 
 //       EXPECT_NEAR(lnglatIn.x, lnglat.x, LNGLAT_TOLERANCE);
 //       EXPECT_NEAR(lnglatIn.y, lnglat.y, LNGLAT_TOLERANCE);

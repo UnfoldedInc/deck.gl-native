@@ -34,13 +34,19 @@ namespace deckgl {
 
 class ViewManager;
 
-class View : public JSONObject {
+class View : public Component::Props {
   friend class ViewManager;
 
  public:
-  using super = JSONObject;
+  using super = Component::Props;
 
-  std::string id;
+  virtual ~View();
+
+  auto getViewStateId() const -> std::string;
+
+  // Build a `Viewport` from a view descriptor
+  auto makeViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState)
+      -> std::shared_ptr<Viewport>;
 
   // width/height of view
   int x{0};
@@ -59,15 +65,7 @@ class View : public JSONObject {
 
   // Property type machinery
   static constexpr const char *getTypeName() { return "View"; }
-  auto getProperties() const -> const Properties * override;
-
-  virtual ~View();
-
-  auto getViewStateId() const -> std::string;
-
-  // Build a `Viewport` from a view descriptor
-  auto makeViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState)
-      -> std::shared_ptr<Viewport>;
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
 
  protected:
   // Create actual viewport

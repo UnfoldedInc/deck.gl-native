@@ -21,90 +21,65 @@
 static auto jsonDataFull = R"JSON(
 {
   "@@type": "Deck",
-  "description": "Test",
+  "id": "TestDeck",
+  "width": 640,
+  "height": 480,
   "initialViewState": {
     "longitude": -122.45,
     "latitude": 37.8,
-    "zoom": 12
+    "zoom": 12,
+    "bearing": 20,
+    "pitch": 30
   },
+  "views": [
+    {
+      "@@type": "MapView",
+      "id": "FirstView",
+      "x": 5,
+      "y": 10,
+      "width": 400,
+      "height": 300,
+      "fovy": 70.0,
+      "near": 1.0,
+      "far": 500.0
+    },
+    {
+      "@@type": "View"
+    }
+  ],
   "layers": [
     {
+      "@@type": "LineLayer",
+      "id": "LineLayer",
+      "data": [],
+      "visible": false,
+      "opacity": 0.5,
+      "coordinateOrigin": [5.0, 3.0, 2.0],
+      "coordinateSystem": 1,
+      "wrapLongitude": true,
+      "positionFormat": "YZX",
+      "colorFormat": "BGRA",
+      "widthUnits": "meters",
+      "widthScale": 2.0,
+      "widthMinPixels": 1.0,
+      "widthMaxPixels": 100.0
+    },
+    {
       "@@type": "ScatterplotLayer",
-      "data": [
-        {
-          "position": [
-            -122.45,
-            37.8
-          ]
-        }
-      ],
-      "getFillColor": [
-        255,
-        0,
-        0,
-        255
-      ],
-      "getRadius": 1000
-    },
-    {
-      "@@type": "TextLayer",
-      "data": [
-        {
-          "position": [
-            -122.45,
-            37.8
-          ],
-          "text": "Hello World"
-        }
-      ],
-      "getTextAnchor": "end"
-    },
-    {
-      "@@type": "GeoJsonLayer",
-      "data": {
-        "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                -122.42923736572264,
-                37.80544394934271
-              ]
-            }
-          }
-        ]
-      },
+      "filled": false,
       "stroked": true,
-      "filled": true,
-      "lineWidthMinPixels": 2,
-      "opacity": 0.4,
-      "getLineColor": [
-        255,
-        100,
-        100
-      ],
-      "getFillColor": [
-        200,
-        160,
-        0,
-        180
-      ]
+      "lineWidthUnits": "pixels",
+      "lineWidthScale": 2,
+      "lineWidthMinPixels": 1,
+      "lineWidthMaxPixels": 5.2,
+      "radiusScale": 3,
+      "radiusMinPixels": 1,
+      "radiusMaxPixels": 10
     },
     {
-      "@@type": "PointCloudLayer",
-      "data": [
-        {
-	  "position": [-122.4, 37.7, 12],
-	  "normal": [-1, 0, 0],
-	  "color": [255, 255, 0]
-	}
-      ],
-      "pointSize": 10,
-      "coordinateSystem": "@@#COORDINATE_SYSTEM.METER_OFFSETS",
-      "coordinateOrigin": [-122.4, 37.74]
+      "@@type": "SolidPolygonLayer",
+      "filled": false,
+      "elevationScale": 2
     }
   ]
 }
@@ -113,7 +88,7 @@ static auto jsonDataFull = R"JSON(
 static auto jsonDataSimple = R"JSON(
 {
   "@@type": "Deck",
-  "description": "Test",
+  "id": "TestDeck",
   "initialViewState": {
     "longitude": -122.45,
     "latitude": 37.8,

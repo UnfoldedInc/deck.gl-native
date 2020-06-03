@@ -130,7 +130,6 @@ TEST_F(SolidPolygonLayerTest, Create) {
 }
 
 TEST_F(SolidPolygonLayerTest, GetPolygonData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<SolidPolygonLayer::Props>();
   layerProps->data = propData;
 
@@ -155,7 +154,6 @@ TEST_F(SolidPolygonLayerTest, GetPolygonData) {
 }
 
 TEST_F(SolidPolygonLayerTest, GetElevationData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<SolidPolygonLayer::Props>();
   layerProps->data = propData;
 
@@ -171,7 +169,6 @@ TEST_F(SolidPolygonLayerTest, GetElevationData) {
 }
 
 TEST_F(SolidPolygonLayerTest, GetFillColorData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<SolidPolygonLayer::Props>();
   layerProps->data = propData;
 
@@ -196,7 +193,6 @@ TEST_F(SolidPolygonLayerTest, GetFillColorData) {
 }
 
 TEST_F(SolidPolygonLayerTest, GetLineColorData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<SolidPolygonLayer::Props>();
   layerProps->data = propData;
 

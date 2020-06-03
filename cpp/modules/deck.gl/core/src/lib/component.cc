@@ -18,26 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef DECKGL_CORE_CORE_H
-#define DECKGL_CORE_CORE_H
+#include "./component.h"  // NOLINT(build/include)
 
-#include "./arrow/arrow-mapper.h"
-#include "./arrow/row.h"
-#include "./lib/attribute/attribute-manager.h"
-#include "./lib/constants.h"
-#include "./lib/deck.h"
-#include "./lib/layer.h"
-#include "./shaderlib/project/viewport-uniforms.h"
-#include "./viewports/viewport.h"
-#include "./viewports/web-mercator-viewport.h"
-#include "./views/map-view.h"
-#include "./views/view-state.h"
-#include "./views/view.h"
+using namespace deckgl;
 
-namespace deckgl {
+// Setters and getters for properties
+// TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
+// TODO(ilija@unfolded.ai): Generate a unique id instead of an empty string for default value?
+static const std::vector<std::shared_ptr<Property>> propTypeDefs = {std::make_shared<PropertyT<std::string>>(
+    "id", [](const JSONObject* props) { return dynamic_cast<const Component::Props*>(props)->id; },
+    [](JSONObject* props, std::string value) { return dynamic_cast<Component::Props*>(props)->id = value; }, "")};
 
-void registerJSONConvertersForDeckCore(JSONConverter *);
-
-}  // namespace deckgl
-
-#endif  // DECKGL_CORE_CORE_H
+auto Component::Props::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<Component::Props>(propTypeDefs);
+  return properties;
+}

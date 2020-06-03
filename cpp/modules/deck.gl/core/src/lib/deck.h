@@ -82,7 +82,6 @@ class Deck::Props : public Component::Props {
  public:
   using super = Component::Props;
 
-  std::string id{"deckgl"};
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
@@ -103,7 +102,7 @@ class Deck::Props : public Component::Props {
 
   // Prop Type Machinery
   static constexpr const char* getTypeName() { return "Deck"; }
-  auto getProperties() const -> const Properties* override;
+  auto getProperties() const -> const std::shared_ptr<Properties> override;
   auto makeComponent(std::shared_ptr<Component::Props> props) const -> std::shared_ptr<Component> override {
     return std::make_shared<Deck>(std::dynamic_pointer_cast<Deck::Props>(props));
   }

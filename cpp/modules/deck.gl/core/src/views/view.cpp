@@ -26,31 +26,37 @@ using namespace std;
 using namespace deckgl;
 using namespace mathgl;
 
-const std::vector<const Property*> propTypeDefs = {
-    new PropertyT<string>{"id", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->id; },
-                          [](JSONObject* props, string value) { return dynamic_cast<View*>(props)->id = value; }, ""},
-    new PropertyT<int>{"x", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->x; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->x = value; }, 0},
-    new PropertyT<int>{"y", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->y; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->y = value; }, 0},
-    new PropertyT<int>{"width", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->width; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->width = value; }, 100},
-    new PropertyT<int>{"height", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->height; },
-                       [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->height = value; }, 100},
+const std::vector<std::shared_ptr<Property>> propTypeDefs = {
+    std::make_shared<PropertyT<string>>(
+        "id", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->id; },
+        [](JSONObject* props, string value) { return dynamic_cast<View*>(props)->id = value; }, ""),
+    std::make_shared<PropertyT<int>>(
+        "x", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->x; },
+        [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->x = value; }, 0),
+    std::make_shared<PropertyT<int>>(
+        "y", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->y; },
+        [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->y = value; }, 0),
+    std::make_shared<PropertyT<int>>(
+        "width", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->width; },
+        [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->width = value; }, 100),
+    std::make_shared<PropertyT<int>>(
+        "height", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->height; },
+        [](JSONObject* props, int value) { return dynamic_cast<View*>(props)->height = value; }, 100),
 
-    new PropertyT<double>{"fovy", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->fovy; },
-                          [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->fovy = value; },
-                          1.0},
-    new PropertyT<double>{"near", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->near; },
-                          [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->near = value; },
-                          0.0},
-    new PropertyT<double>{"far", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->far; },
-                          [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->far = value; },
-                          std::numeric_limits<double>::max()}};
+    std::make_shared<PropertyT<double>>(
+        "fovy", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->fovy; },
+        [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->fovy = value; }, 1.0),
+    std::make_shared<PropertyT<double>>(
+        "near", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->near; },
+        [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->near = value; }, 0.0),
+    std::make_shared<PropertyT<double>>(
+        "far", [](const JSONObject* props) { return dynamic_cast<const View*>(props)->far; },
+        [](JSONObject* props, double value) { return dynamic_cast<View*>(props)->far = value; },
+        std::numeric_limits<double>::max())};
 
-auto View::getProperties() const -> const Properties* {
-  static Properties properties{Properties::from<View>("View", propTypeDefs)};
-  return &properties;
+auto View::getProperties() const -> const std::shared_ptr<Properties> {
+  static auto properties = Properties::from<View>(propTypeDefs);
+  return properties;
 }
 
 View::~View() {}

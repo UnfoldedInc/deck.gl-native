@@ -70,7 +70,6 @@ TEST_F(ScatterplotLayerTest, Props) {
 }
 
 TEST_F(ScatterplotLayerTest, GetPositionData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<ScatterplotLayer::Props>();
   layerProps->data = propData;
 
@@ -93,7 +92,6 @@ TEST_F(ScatterplotLayerTest, GetPositionData) {
 }
 
 TEST_F(ScatterplotLayerTest, GetRadiusData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<ScatterplotLayer::Props>();
   layerProps->data = propData;
 
@@ -108,7 +106,6 @@ TEST_F(ScatterplotLayerTest, GetRadiusData) {
 }
 
 TEST_F(ScatterplotLayerTest, GetFillColorData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<ScatterplotLayer::Props>();
   layerProps->data = propData;
 
@@ -132,7 +129,6 @@ TEST_F(ScatterplotLayerTest, GetFillColorData) {
 }
 
 TEST_F(ScatterplotLayerTest, GetLineColorData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<ScatterplotLayer::Props>();
   layerProps->data = propData;
 
@@ -156,7 +152,6 @@ TEST_F(ScatterplotLayerTest, GetLineColorData) {
 }
 
 TEST_F(ScatterplotLayerTest, GetLineWidthData) {
-  // TODO(ilija@unfolded.ai): Props should be mocked in order to completely decouple this test from props implementation
   auto layerProps = std::make_shared<ScatterplotLayer::Props>();
   layerProps->data = propData;
 
