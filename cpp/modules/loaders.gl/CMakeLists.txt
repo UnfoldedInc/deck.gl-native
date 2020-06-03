@@ -30,12 +30,12 @@ set(HEADER_FILE_LIST
     json/src/json-loader.h
     )
 set(SOURCE_FILE_LIST
-    csv/src/csv-loader.cpp
-    json/src/json-loader.cpp
+    csv/src/csv-loader.cc
+    json/src/json-loader.cc
     )
 set(TESTS_SOURCE_FILE_LIST
-    csv/test/csv-loader-test.cpp
-    json/test/json-loader-test.cpp
+    csv/test/csv-loader-test.cc
+    json/test/json-loader-test.cc
     )
 
 # We're using pre-built dependencies from our dependency submodule

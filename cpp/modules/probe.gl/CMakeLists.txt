@@ -33,13 +33,13 @@ set(HEADER_FILE_LIST
     core/src/timer.h
     )
 set(SOURCE_FILE_LIST
-    core/src/assert.cpp
-    core/src/log.cpp
-    core/src/system-utils.cpp
-    core/src/timer.cpp
+    core/src/assert.cc
+    core/src/log.cc
+    core/src/system-utils.cc
+    core/src/timer.cc
     )
 set(TESTS_SOURCE_FILE_LIST
-    core/test/timer-test.cpp
+    core/test/timer-test.cc
     )
 
 target_link_libraries(probe.gl PUBLIC ${DECK_CONFIG_LIBRARY})

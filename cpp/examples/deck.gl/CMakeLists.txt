@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 set(EXAMPLE_SOURCE_FILES
-    stdinout.cpp
+    stdinout.cc
     flight-paths.cc
     manhattan-population.cc
     texture-render.cc
