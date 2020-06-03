@@ -34,14 +34,14 @@ set(JSON_HEADER_FILES
     json/src/json-object/json-object.h
     )
 set(JSON_SOURCE_FILES
-    json/src/converter/json-types.cpp
-    json/src/converter/json-converter.cpp
-    json/src/json-object/json-object.cpp
+    json/src/converter/json-types.cc
+    json/src/converter/json-converter.cc
+    json/src/json-object/json-object.cc
     )
 set(JSON_TEST_SOURCE_FILES
-    json/test/json-object-test.cpp
-    json/test/json-converter-test.cpp
-    json/test/json-types-test.cpp
+    json/test/json-object-test.cc
+    json/test/json-converter-test.cc
+    json/test/json-types-test.cc
     )
 
 ## deck.gl/core
@@ -68,20 +68,20 @@ set(CORE_HEADER_FILES
     core/src/shaderlib/project/viewport-uniforms.h
     )
 set(CORE_SOURCE_FILES
-    core/src/core.cpp
+    core/src/core.cc
     core/src/lib/attribute/attribute-manager.cc
     core/src/lib/component.cc
-    core/src/lib/constants.cpp
-    core/src/lib/deck.cpp
-    core/src/lib/layer.cpp
-    core/src/lib/layer-manager.cpp
-    core/src/lib/view-manager.cpp
-    core/src/shaderlib/project/viewport-uniforms.cpp
-    core/src/viewports/viewport.cpp
-    core/src/viewports/web-mercator-viewport.cpp
-    core/src/views/map-view.cpp
-    core/src/views/view.cpp
-    core/src/views/view-state.cpp
+    core/src/lib/constants.cc
+    core/src/lib/deck.cc
+    core/src/lib/layer.cc
+    core/src/lib/layer-manager.cc
+    core/src/lib/view-manager.cc
+    core/src/shaderlib/project/viewport-uniforms.cc
+    core/src/viewports/viewport.cc
+    core/src/viewports/web-mercator-viewport.cc
+    core/src/views/map-view.cc
+    core/src/views/view.cc
+    core/src/views/view-state.cc
     core/src/arrow/row.cc
     core/src/arrow/arrow-mapper.cc
     )
@@ -91,16 +91,16 @@ set(CORE_TEST_HEADER_FILES
     )
 set(CORE_TEST_SOURCE_FILES
     core/test/lib/attribute/attribute-manager-test.cc
-    core/test/lib/layer-test.cpp
-    core/test/lib/layer-manager-test.cpp
-    core/test/lib/view-manager-test.cpp
-    core/test/lib/earcut-test.cpp
-    core/test/shaderlib/project/viewport-uniforms-test.cpp
-    core/test/viewports/viewport-test.cpp
-    core/test/viewports/web-mercator-viewport-test.cpp
-    core/test/views/map-view-test.cpp
-    core/test/views/view-state-test.cpp
-    core/test/views/view-test.cpp
+    core/test/lib/layer-test.cc
+    core/test/lib/layer-manager-test.cc
+    core/test/lib/view-manager-test.cc
+    core/test/lib/earcut-test.cc
+    core/test/shaderlib/project/viewport-uniforms-test.cc
+    core/test/viewports/viewport-test.cc
+    core/test/viewports/web-mercator-viewport-test.cc
+    core/test/views/map-view-test.cc
+    core/test/views/view-state-test.cc
+    core/test/views/view-test.cc
     core/test/arrow/row-test.cc
     )
 
@@ -113,15 +113,15 @@ set(LAYERS_HEADER_FILES
     layers/src/solid-polygon-layer/solid-polygon-layer.h
     )
 set(LAYERS_SOURCE_FILES
-    layers/src/layers.cpp
-    layers/src/line-layer/line-layer.cpp
-    layers/src/scatterplot-layer/scatterplot-layer.cpp
-    layers/src/solid-polygon-layer/solid-polygon-layer.cpp
+    layers/src/layers.cc
+    layers/src/line-layer/line-layer.cc
+    layers/src/scatterplot-layer/scatterplot-layer.cc
+    layers/src/solid-polygon-layer/solid-polygon-layer.cc
     )
 set(LAYERS_TEST_SOURCE_FILES
-    layers/test/line-layer-test.cpp
-    layers/test/scatterplot-layer-test.cpp
-    layers/test/solid-polygon-layer-test.cpp
+    layers/test/line-layer-test.cc
+    layers/test/scatterplot-layer-test.cc
+    layers/test/solid-polygon-layer-test.cc
     )
 
 set(HEADER_FILE_LIST

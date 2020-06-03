@@ -21,7 +21,7 @@
 #include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
-  // Runs all the tests specified in *-test.cpp files that have been registered using TEST or TEST_F macros
+  // Runs all the tests specified in *-test.cc files that have been registered using TEST or TEST_F macros
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

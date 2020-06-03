@@ -21,7 +21,7 @@
 #ifndef DECKGL_JSON_JSON_TYPES_H
 #define DECKGL_JSON_JSON_TYPES_H
 
-#include <json/json.h>  // {Json::Value} (https://github.com/open-source-parsers/jsoncpp)
+#include <json/json.h>
 
 #include <string>
 

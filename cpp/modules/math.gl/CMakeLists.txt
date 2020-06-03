@@ -31,14 +31,14 @@ set(HEADER_FILE_LIST
     web-mercator/src/web-mercator-utils.h
     )
 set(SOURCE_FILE_LIST
-    web-mercator/src/web-mercator-utils.cpp
+    web-mercator/src/web-mercator-utils.cc
     )
 set(TESTS_HEADER_FILE_LIST
     web-mercator/test/sample-viewports.h
     )
 set(TESTS_SOURCE_FILE_LIST
-    core/test/core-test.cpp
-    web-mercator/test/web-mercator-utils-test.cpp
+    core/test/core-test.cc
+    web-mercator/test/web-mercator-utils-test.cc
     )
 
 target_link_libraries(math.gl PUBLIC ${DECK_CONFIG_LIBRARY})

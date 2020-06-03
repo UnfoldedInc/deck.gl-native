@@ -33,13 +33,13 @@ set(WEBGPU_HEADER_FILE_LIST
     webgpu/src/webgpu-helpers.h
     )
 set(WEBGPU_SOURCE_FILE_LIST
-    webgpu/src/combo-render-pipeline-descriptor.cpp
-    webgpu/src/shaderc-utils.cpp
-    webgpu/src/webgpu-utils.cpp
-    webgpu/src/webgpu-helpers.cpp
+    webgpu/src/combo-render-pipeline-descriptor.cc
+    webgpu/src/shaderc-utils.cc
+    webgpu/src/webgpu-utils.cc
+    webgpu/src/webgpu-helpers.cc
     )
 set(WEBGPU_TESTS_SOURCE_FILE_LIST
-    webgpu/test/webgpu-test.cpp
+    webgpu/test/webgpu-test.cc
     )
 
 set(GARROW_HEADER_FILE_LIST
@@ -74,8 +74,8 @@ set(CORE_HEADER_FILE_LIST
     core/src/animation-loop-factory.h
     )
 set(CORE_SOURCE_FILE_LIST
-    core/src/animation-loop.cpp
-    core/src/model.cpp
+    core/src/animation-loop.cc
+    core/src/model.cc
     core/src/blit-model.cc
     )
 set(CORE_TESTS_SOURCE_FILE_LIST
@@ -99,10 +99,10 @@ target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} math.gl probe.gl)
 
 if (LUMAGL_USES_GLFW)
     list(APPEND WEBGPU_HEADER_FILE_LIST webgpu/src/backends/glfw/backend-binding.h)
-    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/backend-binding.cpp)
+    list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/backend-binding.cc)
 
     list(APPEND CORE_HEADER_FILE_LIST core/src/glfw-animation-loop.h)
-    list(APPEND CORE_SOURCE_FILE_LIST core/src/glfw-animation-loop.cpp)
+    list(APPEND CORE_SOURCE_FILE_LIST core/src/glfw-animation-loop.cc)
 
     find_library(glfw_LIB glfw PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
     target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} ${glfw_LIB})
@@ -131,7 +131,7 @@ endif()
 # Backend specific files and libraries
 if (DECK_ENABLE_D3D12)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/d3d12-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/d3d12-binding.cc)
     endif()
 
     # TODO(ilija@unfolded.ai): Currently not supported. Should link against D3D12 libs
@@ -162,17 +162,17 @@ if (DECK_ENABLE_METAL)
 endif()
 if (DECK_ENABLE_NULL)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/null-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/null-binding.cc)
     endif()
 endif()
 if (DECK_ENABLE_OPENGL)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/opengl-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/opengl-binding.cc)
     endif()
 endif()
 if (DECK_ENABLE_VULKAN)
     if (LUMAGL_USES_GLFW)
-        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/vulkan-binding.cpp)
+        list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/vulkan-binding.cc)
     endif()
 endif()
 

@@ -246,7 +246,7 @@ if (DECK_BUILD_TESTS)
         target_sources(deckgl-bundle-tests PRIVATE ${DECK_MODULE_TESTS})
     endforeach()
 
-    target_sources(deckgl-bundle-tests PRIVATE cpp/tests/main.cpp)
+    target_sources(deckgl-bundle-tests PRIVATE cpp/tests/main.cc)
     
     # We're using pre-built dependencies from our dependency submodule
     # NO_DEFAULT_PATH and NO_CMAKE_FIND_ROOT_PATH make it so other lookup paths are ignored
