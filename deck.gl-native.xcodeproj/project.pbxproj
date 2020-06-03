@@ -178,7 +178,6 @@
 		CDE577D2243C6A1F000D8EC6 /* map-view-json-data.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE55BE1243C6A10000D8EC6 /* map-view-json-data.h */; };
 		CDE577D3243C6A1F000D8EC6 /* map-view-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55BE2243C6A10000D8EC6 /* map-view-test.cpp */; };
 		CDE577D6243C6A1F000D8EC6 /* viewport-uniforms-test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55BE5243C6A10000D8EC6 /* viewport-uniforms-test.cpp */; };
-		CDE577DA243C6A1F000D8EC6 /* diff-props.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55BEE243C6A10000D8EC6 /* diff-props.cpp */; };
 		CDE577DC243C6A1F000D8EC6 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE55C07243C6A10000D8EC6 /* core.h */; };
 		CDE577DE243C6A1F000D8EC6 /* core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE55C08243C6A10000D8EC6 /* core.cpp */; };
 		CDE577E1243C6A1F000D8EC6 /* row.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDE55C0A243C6A10000D8EC6 /* row.cc */; };
@@ -592,105 +591,12 @@
 		CDE55B85243C6A10000D8EC6 /* attribute-manager-test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "attribute-manager-test.cc"; sourceTree = "<group>"; };
 		CDE55B86243C6A10000D8EC6 /* layer-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "layer-test.cpp"; sourceTree = "<group>"; };
 		CDE55B87243C6A10000D8EC6 /* view-manager-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "view-manager-test.cpp"; sourceTree = "<group>"; };
-		CDE55B8A243C6A10000D8EC6 /* viewport.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = viewport.spec.js; sourceTree = "<group>"; };
-		CDE55B8B243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55B8C243C6A10000D8EC6 /* web-mercator-project-unproject.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "web-mercator-project-unproject.spec.js"; sourceTree = "<group>"; };
-		CDE55B8D243C6A10000D8EC6 /* web-mercator-viewport.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "web-mercator-viewport.spec.js"; sourceTree = "<group>"; };
-		CDE55B8F243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55B90243C6A10000D8EC6 /* shadow-pass.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "shadow-pass.spec.js"; sourceTree = "<group>"; };
-		CDE55B91243C6A10000D8EC6 /* pick-layers-pass.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "pick-layers-pass.spec.js"; sourceTree = "<group>"; };
-		CDE55B93243C6A10000D8EC6 /* component-state.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "component-state.spec.js"; sourceTree = "<group>"; };
-		CDE55B94243C6A10000D8EC6 /* prop-types.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "prop-types.spec.js"; sourceTree = "<group>"; };
-		CDE55B95243C6A10000D8EC6 /* component.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = component.spec.js; sourceTree = "<group>"; };
-		CDE55B96243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55B97243C6A10000D8EC6 /* props.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = props.spec.js; sourceTree = "<group>"; };
-		CDE55B99243C6A10000D8EC6 /* deep-equal.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "deep-equal.spec.js"; sourceTree = "<group>"; };
-		CDE55B9A243C6A10000D8EC6 /* iterable-utils.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "iterable-utils.spec.js"; sourceTree = "<group>"; };
-		CDE55B9B243C6A10000D8EC6 /* math-utils.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "math-utils.spec.js"; sourceTree = "<group>"; };
-		CDE55B9C243C6A10000D8EC6 /* memoize.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = memoize.spec.js; sourceTree = "<group>"; };
-		CDE55B9D243C6A10000D8EC6 /* array-utils.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "array-utils.spec.js"; sourceTree = "<group>"; };
-		CDE55B9E243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55B9F243C6A10000D8EC6 /* typed-array-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "typed-array-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BA0243C6A10000D8EC6 /* positions.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = positions.spec.js; sourceTree = "<group>"; };
-		CDE55BA1243C6A10000D8EC6 /* range.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = range.spec.js; sourceTree = "<group>"; };
-		CDE55BA2243C6A10000D8EC6 /* shader.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = shader.spec.js; sourceTree = "<group>"; };
-		CDE55BA3243C6A10000D8EC6 /* flatten.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = flatten.spec.js; sourceTree = "<group>"; };
-		CDE55BA4243C6A10000D8EC6 /* color.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = color.spec.js; sourceTree = "<group>"; };
-		CDE55BA6243C6A10000D8EC6 /* tooltip.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = tooltip.spec.js; sourceTree = "<group>"; };
-		CDE55BA7243C6A10000D8EC6 /* transition-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "transition-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BA8243C6A10000D8EC6 /* effect.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = effect.spec.js; sourceTree = "<group>"; };
-		CDE55BA9243C6A10000D8EC6 /* effect-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "effect-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BAA243C6A10000D8EC6 /* layer-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "layer-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BAB243C6A10000D8EC6 /* uniform-transition-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "uniform-transition-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BAC243C6A10000D8EC6 /* deck-picker.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "deck-picker.spec.js"; sourceTree = "<group>"; };
-		CDE55BAE243C6A10000D8EC6 /* attribute.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = attribute.spec.js; sourceTree = "<group>"; };
-		CDE55BAF243C6A10000D8EC6 /* attribute-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "attribute-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BB0243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BB1243C6A10000D8EC6 /* shader-attribute.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "shader-attribute.spec.js"; sourceTree = "<group>"; };
-		CDE55BB2243C6A10000D8EC6 /* attribute-transition-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "attribute-transition-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BB3243C6A10000D8EC6 /* layer-extension.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "layer-extension.spec.js"; sourceTree = "<group>"; };
-		CDE55BB4243C6A10000D8EC6 /* layer.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = layer.spec.js; sourceTree = "<group>"; };
-		CDE55BB5243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BB6243C6A10000D8EC6 /* deck.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = deck.spec.js; sourceTree = "<group>"; };
-		CDE55BB7243C6A10000D8EC6 /* picking.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = picking.spec.js; sourceTree = "<group>"; };
-		CDE55BB8243C6A10000D8EC6 /* composite-layer.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "composite-layer.spec.js"; sourceTree = "<group>"; };
-		CDE55BB9243C6A10000D8EC6 /* async-iterator-test-utils.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "async-iterator-test-utils.js"; sourceTree = "<group>"; };
-		CDE55BBA243C6A10000D8EC6 /* view-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "view-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BBB243C6A10000D8EC6 /* pick-layers.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "pick-layers.spec.js"; sourceTree = "<group>"; };
-		CDE55BBD243C6A10000D8EC6 /* viewport-fly-to-interpolator.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "viewport-fly-to-interpolator.spec.js"; sourceTree = "<group>"; };
-		CDE55BBE243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BBF243C6A10000D8EC6 /* linear-interpolator.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "linear-interpolator.spec.js"; sourceTree = "<group>"; };
-		CDE55BC0243C6A10000D8EC6 /* transition-interpolator.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "transition-interpolator.spec.js"; sourceTree = "<group>"; };
-		CDE55BC1243C6A10000D8EC6 /* transition.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = transition.spec.js; sourceTree = "<group>"; };
-		CDE55BC3243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BC4243C6A10000D8EC6 /* lighting-effect.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "lighting-effect.spec.js"; sourceTree = "<group>"; };
-		CDE55BC5243C6A10000D8EC6 /* post-process-effect.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "post-process-effect.spec.js"; sourceTree = "<group>"; };
-		CDE55BC7243C6A10000D8EC6 /* sunlight.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = sunlight.spec.js; sourceTree = "<group>"; };
-		CDE55BC9243C6A10000D8EC6 /* controllers.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = controllers.spec.js; sourceTree = "<group>"; };
-		CDE55BCA243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BCB243C6A10000D8EC6 /* custom-controller.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "custom-controller.spec.js"; sourceTree = "<group>"; };
-		CDE55BCC243C6A10000D8EC6 /* view-states.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "view-states.spec.js"; sourceTree = "<group>"; };
-		CDE55BCD243C6A10000D8EC6 /* test-controller.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "test-controller.js"; sourceTree = "<group>"; };
-		CDE55BCF243C6A10000D8EC6 /* view.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = view.spec.js; sourceTree = "<group>"; };
-		CDE55BD0243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BD1243C6A10000D8EC6 /* view-manager.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "view-manager.spec.js"; sourceTree = "<group>"; };
-		CDE55BD4243C6A10000D8EC6 /* shadow.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = shadow.spec.js; sourceTree = "<group>"; };
-		CDE55BD5243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BD7243C6A10000D8EC6 /* project-functions.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "project-functions.spec.js"; sourceTree = "<group>"; };
-		CDE55BD8243C6A10000D8EC6 /* project-glsl-test-utils.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "project-glsl-test-utils.js"; sourceTree = "<group>"; };
-		CDE55BD9243C6A10000D8EC6 /* project-glsl.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "project-glsl.spec.js"; sourceTree = "<group>"; };
-		CDE55BDA243C6A10000D8EC6 /* viewport-uniforms.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "viewport-uniforms.spec.js"; sourceTree = "<group>"; };
-		CDE55BDB243C6A10000D8EC6 /* project-32-64-glsl.spec.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "project-32-64-glsl.spec.js"; sourceTree = "<group>"; };
-		CDE55BDC243C6A10000D8EC6 /* shaderlib-test-utils.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "shaderlib-test-utils.js"; sourceTree = "<group>"; };
 		CDE55BDE243C6A10000D8EC6 /* view-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "view-test.cpp"; sourceTree = "<group>"; };
 		CDE55BDF243C6A10000D8EC6 /* view-state-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "view-state-test.cpp"; sourceTree = "<group>"; };
 		CDE55BE0243C6A10000D8EC6 /* view-json-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "view-json-data.h"; sourceTree = "<group>"; };
 		CDE55BE1243C6A10000D8EC6 /* map-view-json-data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "map-view-json-data.h"; sourceTree = "<group>"; };
 		CDE55BE2243C6A10000D8EC6 /* map-view-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "map-view-test.cpp"; sourceTree = "<group>"; };
 		CDE55BE5243C6A10000D8EC6 /* viewport-uniforms-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "viewport-uniforms-test.cpp"; sourceTree = "<group>"; };
-		CDE55BE8243C6A10000D8EC6 /* constants.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = constants.js; sourceTree = "<group>"; };
-		CDE55BE9243C6A10000D8EC6 /* component-state.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "component-state.js"; sourceTree = "<group>"; };
-		CDE55BEA243C6A10000D8EC6 /* prop-types.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "prop-types.js"; sourceTree = "<group>"; };
-		CDE55BEB243C6A10000D8EC6 /* create-props.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "create-props.js"; sourceTree = "<group>"; };
-		CDE55BEC243C6A10000D8EC6 /* component.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = component.js; sourceTree = "<group>"; };
-		CDE55BED243C6A10000D8EC6 /* props.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = props.js; sourceTree = "<group>"; };
-		CDE55BEE243C6A10000D8EC6 /* diff-props.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "diff-props.cpp"; sourceTree = "<group>"; };
-		CDE55BF1243C6A10000D8EC6 /* attribute-transition-manager.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "attribute-transition-manager.js"; sourceTree = "<group>"; };
-		CDE55BF2243C6A10000D8EC6 /* gl-utils.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "gl-utils.js"; sourceTree = "<group>"; };
-		CDE55BF3243C6A10000D8EC6 /* shader-attribute.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "shader-attribute.js"; sourceTree = "<group>"; };
-		CDE55BF4243C6A10000D8EC6 /* attribute-manager.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "attribute-manager.js"; sourceTree = "<group>"; };
-		CDE55BF5243C6A10000D8EC6 /* data-column.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "data-column.js"; sourceTree = "<group>"; };
-		CDE55BF6243C6A10000D8EC6 /* attribute.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = attribute.js; sourceTree = "<group>"; };
-		CDE55BF7243C6A10000D8EC6 /* attribute-transition-utils.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "attribute-transition-utils.js"; sourceTree = "<group>"; };
-		CDE55BF8243C6A10000D8EC6 /* deck-renderer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "deck-renderer.js"; sourceTree = "<group>"; };
-		CDE55BFB243C6A10000D8EC6 /* shadow.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = shadow.js; sourceTree = "<group>"; };
-		CDE55BFC243C6A10000D8EC6 /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
-		CDE55BFE243C6A10000D8EC6 /* picking.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = picking.js; sourceTree = "<group>"; };
-		CDE55C00243C6A10000D8EC6 /* viewport-uniforms.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "viewport-uniforms.js"; sourceTree = "<group>"; };
-		CDE55C01243C6A10000D8EC6 /* project.glsl.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = project.glsl.js; sourceTree = "<group>"; };
-		CDE55C02243C6A10000D8EC6 /* project.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = project.js; sourceTree = "<group>"; };
-		CDE55C03243C6A10000D8EC6 /* project-functions.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "project-functions.js"; sourceTree = "<group>"; };
-		CDE55C05243C6A10000D8EC6 /* project32.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = project32.js; sourceTree = "<group>"; };
 		CDE55C07243C6A10000D8EC6 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 		CDE55C08243C6A10000D8EC6 /* core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core.cpp; sourceTree = "<group>"; };
 		CDE55C0A243C6A10000D8EC6 /* row.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = row.cc; sourceTree = "<group>"; };
@@ -728,7 +634,6 @@
 		CDE55C34243C6A10000D8EC6 /* scatterplot-layer-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "scatterplot-layer-test.cpp"; sourceTree = "<group>"; };
 		CDE55C35243C6A10000D8EC6 /* line-layer-test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "line-layer-test.cpp"; sourceTree = "<group>"; };
 		CDE55C36243C6A10000D8EC6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		CDE55C37243C6A10000D8EC6 /* utils.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = utils.js; sourceTree = "<group>"; };
 		CDE55C3A243C6A10000D8EC6 /* line-layer-vertex.glsl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "line-layer-vertex.glsl.h"; sourceTree = "<group>"; };
 		CDE55C3B243C6A10000D8EC6 /* line-layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "line-layer.cpp"; sourceTree = "<group>"; };
 		CDE55C3C243C6A10000D8EC6 /* line-layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "line-layer.h"; sourceTree = "<group>"; };
@@ -1411,7 +1316,6 @@
 			isa = PBXGroup;
 			children = (
 				CDE55B7C243C6A10000D8EC6 /* test */,
-				CDE55BE6243C6A10000D8EC6 /* wip */,
 				CDE55C06243C6A10000D8EC6 /* src */,
 			);
 			path = core;
@@ -1423,7 +1327,6 @@
 				CDE55B7D243C6A10000D8EC6 /* arrow */,
 				CDE55B7F243C6A10000D8EC6 /* viewports */,
 				CDE55B82243C6A10000D8EC6 /* lib */,
-				CDE55B88243C6A10000D8EC6 /* wip */,
 				CDE55BDD243C6A10000D8EC6 /* views */,
 				CDE55BE3243C6A10000D8EC6 /* shaderlib */,
 			);
@@ -1467,195 +1370,6 @@
 			path = attribute;
 			sourceTree = "<group>";
 		};
-		CDE55B88243C6A10000D8EC6 /* wip */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55B89243C6A10000D8EC6 /* viewports */,
-				CDE55B8E243C6A10000D8EC6 /* passes */,
-				CDE55B92243C6A10000D8EC6 /* lifecycle */,
-				CDE55B98243C6A10000D8EC6 /* utils */,
-				CDE55BA5243C6A10000D8EC6 /* lib */,
-				CDE55BBC243C6A10000D8EC6 /* transitions */,
-				CDE55BC2243C6A10000D8EC6 /* effects */,
-				CDE55BC8243C6A10000D8EC6 /* controllers */,
-				CDE55BCE243C6A10000D8EC6 /* views */,
-				CDE55BD2243C6A10000D8EC6 /* shaderlib */,
-			);
-			path = wip;
-			sourceTree = "<group>";
-		};
-		CDE55B89243C6A10000D8EC6 /* viewports */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55B8A243C6A10000D8EC6 /* viewport.spec.js */,
-				CDE55B8B243C6A10000D8EC6 /* index.js */,
-				CDE55B8C243C6A10000D8EC6 /* web-mercator-project-unproject.spec.js */,
-				CDE55B8D243C6A10000D8EC6 /* web-mercator-viewport.spec.js */,
-			);
-			path = viewports;
-			sourceTree = "<group>";
-		};
-		CDE55B8E243C6A10000D8EC6 /* passes */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55B8F243C6A10000D8EC6 /* index.js */,
-				CDE55B90243C6A10000D8EC6 /* shadow-pass.spec.js */,
-				CDE55B91243C6A10000D8EC6 /* pick-layers-pass.spec.js */,
-			);
-			path = passes;
-			sourceTree = "<group>";
-		};
-		CDE55B92243C6A10000D8EC6 /* lifecycle */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55B93243C6A10000D8EC6 /* component-state.spec.js */,
-				CDE55B94243C6A10000D8EC6 /* prop-types.spec.js */,
-				CDE55B95243C6A10000D8EC6 /* component.spec.js */,
-				CDE55B96243C6A10000D8EC6 /* index.js */,
-				CDE55B97243C6A10000D8EC6 /* props.spec.js */,
-			);
-			path = lifecycle;
-			sourceTree = "<group>";
-		};
-		CDE55B98243C6A10000D8EC6 /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55B99243C6A10000D8EC6 /* deep-equal.spec.js */,
-				CDE55B9A243C6A10000D8EC6 /* iterable-utils.spec.js */,
-				CDE55B9B243C6A10000D8EC6 /* math-utils.spec.js */,
-				CDE55B9C243C6A10000D8EC6 /* memoize.spec.js */,
-				CDE55B9D243C6A10000D8EC6 /* array-utils.spec.js */,
-				CDE55B9E243C6A10000D8EC6 /* index.js */,
-				CDE55B9F243C6A10000D8EC6 /* typed-array-manager.spec.js */,
-				CDE55BA0243C6A10000D8EC6 /* positions.spec.js */,
-				CDE55BA1243C6A10000D8EC6 /* range.spec.js */,
-				CDE55BA2243C6A10000D8EC6 /* shader.spec.js */,
-				CDE55BA3243C6A10000D8EC6 /* flatten.spec.js */,
-				CDE55BA4243C6A10000D8EC6 /* color.spec.js */,
-			);
-			path = utils;
-			sourceTree = "<group>";
-		};
-		CDE55BA5243C6A10000D8EC6 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BA6243C6A10000D8EC6 /* tooltip.spec.js */,
-				CDE55BA7243C6A10000D8EC6 /* transition-manager.spec.js */,
-				CDE55BA8243C6A10000D8EC6 /* effect.spec.js */,
-				CDE55BA9243C6A10000D8EC6 /* effect-manager.spec.js */,
-				CDE55BAA243C6A10000D8EC6 /* layer-manager.spec.js */,
-				CDE55BAB243C6A10000D8EC6 /* uniform-transition-manager.spec.js */,
-				CDE55BAC243C6A10000D8EC6 /* deck-picker.spec.js */,
-				CDE55BAD243C6A10000D8EC6 /* attribute */,
-				CDE55BB3243C6A10000D8EC6 /* layer-extension.spec.js */,
-				CDE55BB4243C6A10000D8EC6 /* layer.spec.js */,
-				CDE55BB5243C6A10000D8EC6 /* index.js */,
-				CDE55BB6243C6A10000D8EC6 /* deck.spec.js */,
-				CDE55BB7243C6A10000D8EC6 /* picking.spec.js */,
-				CDE55BB8243C6A10000D8EC6 /* composite-layer.spec.js */,
-				CDE55BB9243C6A10000D8EC6 /* async-iterator-test-utils.js */,
-				CDE55BBA243C6A10000D8EC6 /* view-manager.spec.js */,
-				CDE55BBB243C6A10000D8EC6 /* pick-layers.spec.js */,
-			);
-			path = lib;
-			sourceTree = "<group>";
-		};
-		CDE55BAD243C6A10000D8EC6 /* attribute */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BAE243C6A10000D8EC6 /* attribute.spec.js */,
-				CDE55BAF243C6A10000D8EC6 /* attribute-manager.spec.js */,
-				CDE55BB0243C6A10000D8EC6 /* index.js */,
-				CDE55BB1243C6A10000D8EC6 /* shader-attribute.spec.js */,
-				CDE55BB2243C6A10000D8EC6 /* attribute-transition-manager.spec.js */,
-			);
-			path = attribute;
-			sourceTree = "<group>";
-		};
-		CDE55BBC243C6A10000D8EC6 /* transitions */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BBD243C6A10000D8EC6 /* viewport-fly-to-interpolator.spec.js */,
-				CDE55BBE243C6A10000D8EC6 /* index.js */,
-				CDE55BBF243C6A10000D8EC6 /* linear-interpolator.spec.js */,
-				CDE55BC0243C6A10000D8EC6 /* transition-interpolator.spec.js */,
-				CDE55BC1243C6A10000D8EC6 /* transition.spec.js */,
-			);
-			path = transitions;
-			sourceTree = "<group>";
-		};
-		CDE55BC2243C6A10000D8EC6 /* effects */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BC3243C6A10000D8EC6 /* index.js */,
-				CDE55BC4243C6A10000D8EC6 /* lighting-effect.spec.js */,
-				CDE55BC5243C6A10000D8EC6 /* post-process-effect.spec.js */,
-				CDE55BC6243C6A10000D8EC6 /* lighting */,
-			);
-			path = effects;
-			sourceTree = "<group>";
-		};
-		CDE55BC6243C6A10000D8EC6 /* lighting */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BC7243C6A10000D8EC6 /* sunlight.spec.js */,
-			);
-			path = lighting;
-			sourceTree = "<group>";
-		};
-		CDE55BC8243C6A10000D8EC6 /* controllers */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BC9243C6A10000D8EC6 /* controllers.spec.js */,
-				CDE55BCA243C6A10000D8EC6 /* index.js */,
-				CDE55BCB243C6A10000D8EC6 /* custom-controller.spec.js */,
-				CDE55BCC243C6A10000D8EC6 /* view-states.spec.js */,
-				CDE55BCD243C6A10000D8EC6 /* test-controller.js */,
-			);
-			path = controllers;
-			sourceTree = "<group>";
-		};
-		CDE55BCE243C6A10000D8EC6 /* views */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BCF243C6A10000D8EC6 /* view.spec.js */,
-				CDE55BD0243C6A10000D8EC6 /* index.js */,
-				CDE55BD1243C6A10000D8EC6 /* view-manager.spec.js */,
-			);
-			path = views;
-			sourceTree = "<group>";
-		};
-		CDE55BD2243C6A10000D8EC6 /* shaderlib */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BD3243C6A10000D8EC6 /* shadow */,
-				CDE55BD5243C6A10000D8EC6 /* index.js */,
-				CDE55BD6243C6A10000D8EC6 /* project */,
-				CDE55BDC243C6A10000D8EC6 /* shaderlib-test-utils.js */,
-			);
-			path = shaderlib;
-			sourceTree = "<group>";
-		};
-		CDE55BD3243C6A10000D8EC6 /* shadow */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BD4243C6A10000D8EC6 /* shadow.spec.js */,
-			);
-			path = shadow;
-			sourceTree = "<group>";
-		};
-		CDE55BD6243C6A10000D8EC6 /* project */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BD7243C6A10000D8EC6 /* project-functions.spec.js */,
-				CDE55BD8243C6A10000D8EC6 /* project-glsl-test-utils.js */,
-				CDE55BD9243C6A10000D8EC6 /* project-glsl.spec.js */,
-				CDE55BDA243C6A10000D8EC6 /* viewport-uniforms.spec.js */,
-				CDE55BDB243C6A10000D8EC6 /* project-32-64-glsl.spec.js */,
-			);
-			path = project;
-			sourceTree = "<group>";
-		};
 		CDE55BDD243C6A10000D8EC6 /* views */ = {
 			isa = PBXGroup;
 			children = (
@@ -1682,100 +1396,6 @@
 				CDE55BE5243C6A10000D8EC6 /* viewport-uniforms-test.cpp */,
 			);
 			path = project;
-			sourceTree = "<group>";
-		};
-		CDE55BE6243C6A10000D8EC6 /* wip */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BE7243C6A10000D8EC6 /* lifecycle */,
-				CDE55BEE243C6A10000D8EC6 /* diff-props.cpp */,
-				CDE55BEF243C6A10000D8EC6 /* lib */,
-				CDE55BF9243C6A10000D8EC6 /* shaderlib */,
-			);
-			path = wip;
-			sourceTree = "<group>";
-		};
-		CDE55BE7243C6A10000D8EC6 /* lifecycle */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BE8243C6A10000D8EC6 /* constants.js */,
-				CDE55BE9243C6A10000D8EC6 /* component-state.js */,
-				CDE55BEA243C6A10000D8EC6 /* prop-types.js */,
-				CDE55BEB243C6A10000D8EC6 /* create-props.js */,
-				CDE55BEC243C6A10000D8EC6 /* component.js */,
-				CDE55BED243C6A10000D8EC6 /* props.js */,
-			);
-			path = lifecycle;
-			sourceTree = "<group>";
-		};
-		CDE55BEF243C6A10000D8EC6 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BF0243C6A10000D8EC6 /* attribute */,
-				CDE55BF8243C6A10000D8EC6 /* deck-renderer.js */,
-			);
-			path = lib;
-			sourceTree = "<group>";
-		};
-		CDE55BF0243C6A10000D8EC6 /* attribute */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BF1243C6A10000D8EC6 /* attribute-transition-manager.js */,
-				CDE55BF2243C6A10000D8EC6 /* gl-utils.js */,
-				CDE55BF3243C6A10000D8EC6 /* shader-attribute.js */,
-				CDE55BF4243C6A10000D8EC6 /* attribute-manager.js */,
-				CDE55BF5243C6A10000D8EC6 /* data-column.js */,
-				CDE55BF6243C6A10000D8EC6 /* attribute.js */,
-				CDE55BF7243C6A10000D8EC6 /* attribute-transition-utils.js */,
-			);
-			path = attribute;
-			sourceTree = "<group>";
-		};
-		CDE55BF9243C6A10000D8EC6 /* shaderlib */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BFA243C6A10000D8EC6 /* shadow */,
-				CDE55BFC243C6A10000D8EC6 /* index.js */,
-				CDE55BFD243C6A10000D8EC6 /* picking */,
-				CDE55BFF243C6A10000D8EC6 /* project */,
-				CDE55C04243C6A10000D8EC6 /* project32 */,
-			);
-			path = shaderlib;
-			sourceTree = "<group>";
-		};
-		CDE55BFA243C6A10000D8EC6 /* shadow */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BFB243C6A10000D8EC6 /* shadow.js */,
-			);
-			path = shadow;
-			sourceTree = "<group>";
-		};
-		CDE55BFD243C6A10000D8EC6 /* picking */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55BFE243C6A10000D8EC6 /* picking.js */,
-			);
-			path = picking;
-			sourceTree = "<group>";
-		};
-		CDE55BFF243C6A10000D8EC6 /* project */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55C00243C6A10000D8EC6 /* viewport-uniforms.js */,
-				CDE55C01243C6A10000D8EC6 /* project.glsl.js */,
-				CDE55C02243C6A10000D8EC6 /* project.js */,
-				CDE55C03243C6A10000D8EC6 /* project-functions.js */,
-			);
-			path = project;
-			sourceTree = "<group>";
-		};
-		CDE55C04243C6A10000D8EC6 /* project32 */ = {
-			isa = PBXGroup;
-			children = (
-				CDE55C05243C6A10000D8EC6 /* project32.js */,
-			);
-			path = project32;
 			sourceTree = "<group>";
 		};
 		CDE55C06243C6A10000D8EC6 /* src */ = {
@@ -1894,7 +1514,6 @@
 			children = (
 				CDE55C33243C6A10000D8EC6 /* test */,
 				CDE55C36243C6A10000D8EC6 /* README.md */,
-				CDE55C37243C6A10000D8EC6 /* utils.js */,
 				CDE55C38243C6A10000D8EC6 /* src */,
 			);
 			path = layers;
@@ -2508,7 +2127,6 @@
 				CDE57813243C6A1F000D8EC6 /* view-state.cpp in Sources */,
 				CDE5777E243C6A1F000D8EC6 /* shaderc-utils.cpp in Sources */,
 				CDE5783D243C6A1F000D8EC6 /* json-converter.cpp in Sources */,
-				CDE577DA243C6A1F000D8EC6 /* diff-props.cpp in Sources */,
 				CDE577E9243C6A1F000D8EC6 /* web-mercator-viewport.cpp in Sources */,
 				CDE781EA245058F1001192F7 /* line-layer.cpp in Sources */,
 			);
