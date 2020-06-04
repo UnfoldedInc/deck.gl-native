@@ -94,11 +94,11 @@ class SolidPolygonLayer::Props : public Layer::Props {
 };
 
 /// The order of fields in this structure is crucial for it to be mapped to its GLSL counterpart properly.
-/// bool has a 4-byte alignment in GLSL.
+/// Using uint32_t in place of bool in order to avoid packing issues, even when specifying 4-byte alignment.
 /// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 struct SolidPolygonLayerUniforms {
-  alignas(4) bool extruded;
-  alignas(4) bool wireframe;
+  uint32_t extruded;
+  uint32_t wireframe;
   float elevationScale;
   float opacity;
 };

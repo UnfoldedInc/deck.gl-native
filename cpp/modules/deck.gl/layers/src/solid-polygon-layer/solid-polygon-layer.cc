@@ -100,9 +100,9 @@ void SolidPolygonLayer::updateState(const Layer::ChangeFlags& changeFlags,
 
   if (changeFlags.propsChanged) {
     SolidPolygonLayerUniforms uniforms;
+    uniforms.extruded = props->extruded ? 1 : 0;
+    uniforms.wireframe = props->wireframe ? 1 : 0;
     uniforms.elevationScale = props->elevationScale;
-    uniforms.extruded = props->extruded;
-    uniforms.wireframe = props->wireframe;
     uniforms.opacity = props->opacity;
     this->_layerUniforms.SetSubData(0, sizeof(SolidPolygonLayerUniforms), &uniforms);
   }
