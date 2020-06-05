@@ -25,6 +25,11 @@
 
 using namespace loadersgl;
 
+auto CSVLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input, probegl::Error& error) noexcept
+    -> std::shared_ptr<arrow::Table> {
+  return probegl::catchError<arrow::Table>([&]() { return this->loadTable(input); }, error);
+}
+
 auto CSVLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table> {
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 

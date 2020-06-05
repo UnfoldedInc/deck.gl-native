@@ -26,11 +26,18 @@
 
 #include <memory>
 
+#include "probe.gl/core.h"
+
 namespace loadersgl {
 
 class CSVLoader {
  public:
-  CSVLoader() {}
+#pragma mark - Exception-free API
+
+  auto loadTable(const std::shared_ptr<arrow::io::InputStream> input, probegl::Error& error) noexcept
+      -> std::shared_ptr<arrow::Table>;
+
+#pragma mark -
 
   auto loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table>;
 };

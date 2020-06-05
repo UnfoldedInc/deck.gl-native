@@ -10,10 +10,10 @@ declare -a deployment_targets=("12.0" "12.0" "13.0")
 install_dir="`pwd`/install"
 
 # Build for each architecture individually
-for i in $(seq 0 $((${#archs[@]}-1))) # {0..${#archs[@]}}
+for i in $(seq 0 $((${#archs[@]}-1)))
 do
   cmake -S . -B build/${archs[$i]} -GXcode -DCMAKE_INSTALL_PREFIX=$install_dir/${archs[$i]} -DDECK_BUILD_EXAMPLES=OFF -DDECK_BUILD_TESTS=OFF -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_ARCHITECTURES=${archs[$i]} -DCMAKE_OSX_SYSROOT=${sysroots[$i]} -DCMAKE_OSX_DEPLOYMENT_TARGET=${deployment_targets[$i]} -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO -DCMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE=NO
-  cmake --build build/${archs[$i]} --config Debug --target install -j 16
+  cmake --build build/${archs[$i]} --config Release --target install -j 16
 done
 
 # Copy over a set of frameworks we'll use as a base

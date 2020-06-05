@@ -114,7 +114,7 @@ auto Viewport::getCameraUp() -> mathgl::Vector3<double> { return this->cameraUp;
 auto Viewport::_createProjectionMatrix(bool orthographic, double fovyRadians, double aspect, double focalDistance,
                                        double near, double far) -> mathgl::Matrix4<double> {
   // TODO(isaac@unfolded.ai): support orthographic
-  return orthographic ? throw new std::logic_error("orthographic not supported")
+  return orthographic ? throw std::logic_error("orthographic not supported")
                       : Matrix4<double>::makePerspective(fovyRadians, aspect, near, far);
 }
 

@@ -28,9 +28,14 @@
 
 using namespace loadersgl;
 
+auto JSONLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input, probegl::Error& error) noexcept
+    -> std::shared_ptr<arrow::Table> {
+  return probegl::catchError<arrow::Table>([&]() { return this->loadTable(input); }, error);
+}
+
 auto JSONLoader::loadTable(const std::shared_ptr<arrow::io::InputStream> input) -> std::shared_ptr<arrow::Table> {
   arrow::Status status;
-  arrow::MemoryPool *pool = arrow::default_memory_pool();
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
 
   auto readOptions = arrow::json::ReadOptions::Defaults();
   auto parseOptions = arrow::json::ParseOptions::Defaults();

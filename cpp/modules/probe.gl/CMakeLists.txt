@@ -31,12 +31,14 @@ set(HEADER_FILE_LIST
     core/src/log.h
     core/src/system-utils.h
     core/src/timer.h
+    core/src/error.h
     )
 set(SOURCE_FILE_LIST
     core/src/assert.cc
     core/src/log.cc
     core/src/system-utils.cc
     core/src/timer.cc
+    core/src/error.cc
     )
 set(TESTS_SOURCE_FILE_LIST
     core/test/timer-test.cc

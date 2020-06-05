@@ -27,6 +27,7 @@
 #include <memory>
 
 #include "./size.h"
+#include "probe.gl/core.h"
 
 namespace lumagl {
 
@@ -36,6 +37,14 @@ class AnimationLoop {
 
   explicit AnimationLoop(const Options& options);
   virtual ~AnimationLoop() {}
+
+#pragma mark - Exception-free API
+
+  void draw(std::function<void(wgpu::RenderPassEncoder)> onRender, probegl::Error& error) noexcept;
+  void draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender,
+            probegl::Error& error) noexcept;
+
+#pragma mark -
 
   virtual void draw(std::function<void(wgpu::RenderPassEncoder)> onRender) {}
   virtual void draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender);

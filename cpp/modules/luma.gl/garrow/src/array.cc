@@ -50,7 +50,7 @@ void Array::setData(const std::shared_ptr<arrow::Array>& data, wgpu::BufferUsage
 
   // TODO(ilija@unfolded.ai): Handle arrays with null values correctly
   if (data->null_count() > 0) {
-    throw new std::runtime_error("Data with null values is currently not supported");
+    throw std::runtime_error("Data with null values is currently not supported");
   }
 
   // If child_data isn't empty, data is a list array

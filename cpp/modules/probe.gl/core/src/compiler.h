@@ -21,8 +21,8 @@
 // Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
 // Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
 
-#ifndef PROBEGL_COMPILER_H_
-#define PROBEGL_COMPILER_H_
+#ifndef PROBEGL_CORE_COMPILER_H
+#define PROBEGL_CORE_COMPILER_H
 
 // Input Macros
 //  - PROBEGL_CPP_VERSION
@@ -118,4 +118,4 @@ extern void __cdecl __debugbreak(void);
 #define PROBEGL_FORCE_INLINE inline
 #endif
 
-#endif  // PROBEGL_COMPILER_H_
+#endif  // PROBEGL_CORE_COMPILER_H
