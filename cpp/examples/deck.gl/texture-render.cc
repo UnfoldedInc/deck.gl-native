@@ -25,6 +25,7 @@
 #include "deck.gl/core.h"
 #include "deck.gl/layers.h"
 #include "loaders.gl/json.h"
+#include "luma.gl/core.h"
 
 using namespace deckgl;
 using namespace lumagl;
@@ -36,6 +37,12 @@ auto fileSystem = std::make_shared<arrow::fs::LocalFileSystem>();
 
 const mathgl::Vector4<float> maleColor{0.0f, 128.0f, 255.0f, 255.0f};
 const mathgl::Vector4<float> femaleColor{255.0f, 0.0f, 128.0f, 255.0f};
+
+void noErrorOrTerminate(probegl::Error& error) {
+  if (error) {
+    throw std::runtime_error("Execution failed with: " + error.value());
+  }
+}
 
 auto createViewState(double bearing) -> std::shared_ptr<ViewState> {
   auto viewState = std::make_shared<ViewState>();
@@ -57,7 +64,9 @@ auto createScatterplotLayer(const std::string& dataPath) -> std::shared_ptr<Scat
   props->getRadius = [](const Row& row) { return 1.0f; };
   props->getFillColor = [](const Row& row) { return row.getInt("gender") == 1 ? maleColor : femaleColor; };
 
-  props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie());
+  probegl::Error error;
+  props->data = jsonLoader.loadTable(fileSystem->OpenInputStream(dataPath).ValueOrDie(), error);
+  noErrorOrTerminate(error);
 
   return props;
 }
@@ -78,7 +87,11 @@ auto createDeck(const char* argv[], const wgpu::Device& device, const lumagl::Si
 
   deckProps->drawingOptions = std::make_shared<lumagl::AnimationLoop::Options>(device, device.CreateQueue());
 
-  return std::make_shared<Deck>(deckProps);
+  probegl::Error error;
+  auto deck = Deck::make(error, deckProps);
+  noErrorOrTerminate(error);
+
+  return deck;
 }
 
 auto createTextureView(const wgpu::Device& device, const lumagl::Size& size, const wgpu::TextureFormat textureFormat)
@@ -96,21 +109,28 @@ auto createTextureView(const wgpu::Device& device, const lumagl::Size& size, con
 
 int main(int argc, const char* argv[]) {
   lumagl::Size windowSize{640, 480};
-  GLFWAnimationLoop animationLoop{GLFWAnimationLoop::Options{windowSize, "Texture Render"}};
-  auto device = animationLoop.device();
+  auto options = std::make_shared<GLFWAnimationLoop::Options>(windowSize, "Texture Render");
+  probegl::Error error;
+  auto animationLoop = AnimationLoopFactory::createAnimationLoop(error, options);
+  auto device = animationLoop->device();
 
-  auto framebufferSize = windowSize * animationLoop.devicePixelRatio();
+  auto framebufferSize = windowSize * animationLoop->devicePixelRatio();
 
   auto deck = createDeck(argv, device, windowSize);
-  auto textureView = createTextureView(device, framebufferSize, animationLoop.getPreferredSwapChainTextureFormat());
+  auto textureView = createTextureView(device, framebufferSize, animationLoop->getPreferredSwapChainTextureFormat());
 
   BlitModel blitModel{device, textureView, framebufferSize};
-  animationLoop.run([&](wgpu::RenderPassEncoder pass) {
+  animationLoop->run([&](wgpu::RenderPassEncoder pass) {
     static double bearing = 0.0;
     deck->props()->viewState = createViewState(bearing -= 0.3);
-    deck->setProps(deck->props());
+    deck->setProps(deck->props(), error);
+    noErrorOrTerminate(error);
 
-    deck->draw(textureView);
+    deck->draw(textureView, error);
+    noErrorOrTerminate(error);
+
     blitModel.draw(pass);
   });
+
+  return 0;
 }

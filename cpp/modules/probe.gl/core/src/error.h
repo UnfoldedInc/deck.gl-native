@@ -22,6 +22,7 @@
 #define PROBEGL_CORE_ERROR_H
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -30,21 +31,26 @@ namespace probegl {
 using Error = std::optional<std::string>;
 
 template <typename T>
-auto executeThrowable(std::function<T()> expression, Error* error) -> std::optional<T> {
-  error->reset();
+auto catchError(std::function<std::shared_ptr<T>()> expression, Error& error) noexcept -> std::shared_ptr<T> {
+  error.reset();
 
   try {
     return expression();
   } catch (const std::exception& ex) {
-    *error = ex.what();
-    return std::nullopt;
+    error = ex.what();
+    return nullptr;
   } catch (...) {
-    *error = "Operation failed with unknown error";
-    return std::nullopt;
+    error = "Operation failed with unknown error";
+    return nullptr;
   }
 }
 
-void executeThrowable(std::function<void()> expression, Error* error);
+template <typename T>
+auto catchError(std::function<T()> expression, Error& error) noexcept -> std::shared_ptr<T> {
+  return catchError<T>([expression]() { return std::make_shared<T>(expression()); }, error);
+}
+
+void catchError(std::function<void()> expression, Error& error) noexcept;
 
 }  // namespace probegl
 

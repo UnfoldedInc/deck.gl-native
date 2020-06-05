@@ -2,7 +2,31 @@
 
 This is an open-source C++ implementation of deck.gl.
 
-![demo](https://i.imgur.com/qHcfFCn.gif)
+<table style="border: 0;" align="center">
+  <thead>
+    <tr>
+      <th colspan="3" style="text-align: center;">
+        Layer examples running on an iOS device
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <img style="max-height:200px" src="https://raw.githubusercontent.com/UnfoldedInc/deck.gl-data/master/images/line-scatterplot-demo.gif" />
+        <p><i>LineLayer + ScatterplotLayer</i></p>
+      </td>
+      <td>
+        <img style="max-height:200px" src="https://raw.githubusercontent.com/UnfoldedInc/deck.gl-data/master/images/polygon-demo.gif" />
+        <p><i>SolidPolygonLayer</i></p>
+      </td>
+      <td>
+        <img style="max-height:200px" src="https://raw.githubusercontent.com/UnfoldedInc/deck.gl-data/master/images/scatterplot-demo.gif" />
+        <p><i>ScatterplotLayer</i></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 > Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, the initial `deck.gl-native` release is unlikely to meet the requirements of most applications. At this stage, asking for delivery dates and additional features without contributing to implementation or providing additional funding is unlikely to be helpful.
 
@@ -61,11 +85,13 @@ Currently the two main guidelines are:
 
 Beyond the above rules, it is certainly acceptable C++ and JavaScript APIs to diverge, as long as it makes sense, to ensure they are both natural to use for programmers with backgrounds in the respective programming language. (E.g. functional style UI programming is common in the JS community while C++ programmers on the balance are likely favor a more imperative API style).
 
+Top-level API also includes exception-less counterparts for core functionality across the modules.
+
 ### C++ Module Structure
 
 The deck.gl-native code bases exposes a set of C++ "module header files" following a `<framework>/<module>.h` structure. 
 
-| Module            |.Description |
+| Module            | Description |
 | --- | --- |
 | `probe.gl/core.h` | Platform/Compiler detection, assertions, logging and timers |
 | `math.gl/core.h`  | Vectors and Matrices |
@@ -74,13 +100,14 @@ The deck.gl-native code bases exposes a set of C++ "module header files" followi
 | `loaders.gl/json.h`. | A JSON table loader |
 | `luma.gl/core.h` | `Model`, `AnimationLoop` etc implemented on dawn API |
 | `luma.gl/webgpu.h` | Internal utilities for working with the WebGPU API (adaptions from the dawn repo) |
+| `luma.gl/garrow.h` | GPU-based implementation of Arrow-like API |
 | `deck.gl/core.h` | The core deck.gl classes:\ `Deck`, `Layer`, `View`, etc. |
 | `deck.gl/layers.h` | The initial layer catalog |
 | `deck.gl/json.h` | Classes for parsing (deck.gl) JSON into C++ objects |
 
 Remarks:
 - The `framework` part of the C++ module header file name corresponds on the JavaScript side to a framework from the [vis.gl](https://vis.gl/) framework suite, and the `module` part corresponds to a submodule in that framework monorepo.
-- At the moment, this module structure only affects how the source code is organized. Only a single `libdeckgl.a` library is provided, that contains the object files from all these modules. (In the future this may change and a library for each framework might be provided.)
+- Each of the modules is built as a separate library, in a format suitable for consumption on the OS it's being built for
 
 ### Apache Arrow
 
@@ -123,9 +150,9 @@ Development can be done on macOS which is the primary environment, or Linux, whi
 
 If you haven't already configured Xcode: 
 - Install Xcode
-- launch it
+- Launch it
 - accept the license agreement
-- run `sudo xcode-select -s /Applications/Xcode.app` (Subsitute with path to your Xcode app if different).
+- Run `sudo xcode-select -s /Applications/Xcode.app` (Subsitute with path to your Xcode app if different).
 
 ### clang
 
@@ -154,8 +181,6 @@ All the dependencies for macOS and Linux are bundled in a dependency repository 
 |-----------------------------------------------------------	|-------------------------------------------------------------------------------------	|
 | [Google Test](https://github.com/google/googletest)       	| Testing framework                                                                   	|
 | [jsoncpp](https://github.com/open-source-parsers/jsoncpp) 	| JSON parser                                                                         	|
-| [Range v3](https://github.com/ericniebler/range-v3)       	| C++20 ranges for C++17 compilers                                                    	|
-| [fmt](https://fmt.dev/latest/index.html)                  	| C++20 string formatting for C++17 compilers                                         	|
 | [arrow](https://github.com/apache/arrow)                  	| Columnar in-memory storage                                                          	|
 | [dawn](https://dawn.googlesource.com/dawn)                	| C++ WebGPU implementation with a maturing list of backends for most platforms       	|
 | [shaderc](https://github.com/google/shaderc)              	| GLSL shader compilation                                                             	|

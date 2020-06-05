@@ -43,7 +43,7 @@ set(TESTS_SOURCE_FILE_LIST
 find_library(arrow_LIB arrow PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 
 target_link_libraries(loaders.gl PUBLIC ${DECK_LINK_FLAGS} ${arrow_LIB})
-target_link_libraries(loaders.gl PUBLIC ${DECK_CONFIG_LIBRARY})
+target_link_libraries(loaders.gl PUBLIC ${DECK_CONFIG_LIBRARY} probe.gl)
 
 # Specify sources that'll be compiled
 target_sources(loaders.gl PRIVATE ${SOURCE_FILE_LIST})

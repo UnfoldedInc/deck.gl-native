@@ -57,6 +57,23 @@ auto Deck::Props::getProperties() const -> const std::shared_ptr<Properties> {
   return properties;
 }
 
+auto Deck::make(probegl::Error& error, std::shared_ptr<Deck::Props> props) noexcept -> std::shared_ptr<Deck> {
+  return probegl::catchError<Deck>([&]() { return Deck{props}; }, error);
+}
+
+void Deck::setProps(std::shared_ptr<Deck::Props> props, probegl::Error& error) noexcept {
+  probegl::catchError([&]() { this->setProps(props); }, error);
+}
+
+void Deck::run(probegl::Error& error, std::function<void(Deck*)> onAfterRender) noexcept {
+  probegl::catchError([&]() { this->run(onAfterRender); }, error);
+}
+
+void Deck::draw(wgpu::TextureView textureView, probegl::Error& error,
+                std::function<void(Deck*)> onAfterRender) noexcept {
+  probegl::catchError([&]() { this->draw(textureView, onAfterRender); }, error);
+}
+
 Deck::Deck(std::shared_ptr<Deck::Props> props)
     : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
   this->animationLoop = lumagl::AnimationLoopFactory::createAnimationLoop(props->drawingOptions);
@@ -70,10 +87,6 @@ Deck::Deck(std::shared_ptr<Deck::Props> props)
   // TODO(ilija@unfolded.ai): Delegate to project shader module
   this->_viewportUniformsBuffer =
       lumagl::utils::createBuffer(this->animationLoop->device(), sizeof(ViewportUniforms), wgpu::BufferUsage::Uniform);
-}
-
-auto Deck::make(probegl::Error* error, std::shared_ptr<Deck::Props> props) -> std::optional<Deck> {
-  return probegl::executeThrowable<Deck>([&]() { return Deck{props}; }, error);
 }
 
 Deck::~Deck() { this->animationLoop->stop(); }
@@ -106,10 +119,6 @@ void Deck::setProps(std::shared_ptr<Deck::Props> props) {
   this->viewManager->setViews(props->views);
   this->viewManager->setViewState(this->viewState);
   this->animationLoop->setSize({props->width, props->height});
-}
-
-void Deck::setProps(std::shared_ptr<Deck::Props> props, probegl::Error* error) {
-  probegl::executeThrowable([&]() { this->setProps(props); }, error);
 }
 
 void Deck::run(std::function<void(Deck*)> onAfterRender) {

@@ -37,15 +37,27 @@ namespace deckgl {
 class Deck : public Component {
  public:
   class Props;
+  struct RenderingOptions;
+
+#pragma mark - Exception-free API
+
+  static auto make(probegl::Error& error, std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>()) noexcept
+      -> std::shared_ptr<Deck>;
+  void setProps(std::shared_ptr<Deck::Props> props, probegl::Error& error) noexcept;
+
+  void run(
+      probegl::Error& error, std::function<void(Deck*)> onAfterRender = [](Deck*) {}) noexcept;
+  void draw(
+      wgpu::TextureView textureView, probegl::Error& error,
+      std::function<void(Deck*)> onAfterRender = [](Deck*) {}) noexcept;
+
+#pragma mark -
+
+  explicit Deck(std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>());
+  ~Deck();
+
   auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
   void setProps(std::shared_ptr<Deck::Props> props);
-  void setProps(std::shared_ptr<Deck::Props> props, probegl::Error* error);
-
-  struct RenderingOptions;
-  explicit Deck(std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>());
-  static auto make(probegl::Error* error, std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>())
-      -> std::optional<Deck>;
-  ~Deck();
 
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size

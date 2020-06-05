@@ -25,13 +25,24 @@
 #include <optional>
 
 #include "luma.gl/core.h"
+#include "probe.gl/core.h"
 
 namespace lumagl {
 
 struct AnimationLoopFactory {
  public:
+#pragma mark - Exception-free API
+
+  static auto createAnimationLoop(probegl::Error& error,
+                                  const std::shared_ptr<AnimationLoop::Options>& options = nullptr) noexcept
+      -> std::shared_ptr<AnimationLoop> {
+    return probegl::catchError<AnimationLoop>([options]() { return createAnimationLoop(options); }, error);
+  }
+
+#pragma mark -
+
   // TODO(ilija@unfolded.ai): Revisit
-  static auto createAnimationLoop(const std::shared_ptr<AnimationLoop::Options>& options)
+  static auto createAnimationLoop(const std::shared_ptr<AnimationLoop::Options>& options = nullptr)
       -> std::shared_ptr<AnimationLoop> {
     // If no options are passed, try and initialize the only setup which requires no arguments, which is GLFW
     if (!options) {

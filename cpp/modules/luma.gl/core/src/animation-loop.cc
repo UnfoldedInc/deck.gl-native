@@ -41,6 +41,15 @@ AnimationLoop::AnimationLoop(const Options& options) : _size{options.size} {
   }
 }
 
+void AnimationLoop::draw(std::function<void(wgpu::RenderPassEncoder)> onRender, probegl::Error& error) noexcept {
+  probegl::catchError([&]() { this->draw(onRender); }, error);
+}
+
+void AnimationLoop::draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender,
+                         probegl::Error& error) noexcept {
+  probegl::catchError([&]() { this->draw(textureView, onRender); }, error);
+}
+
 void AnimationLoop::draw(wgpu::TextureView textureView, std::function<void(wgpu::RenderPassEncoder)> onRender) {
   utils::ComboRenderPassDescriptor passDescriptor({textureView});
   wgpu::CommandEncoder encoder = this->_device.CreateCommandEncoder();

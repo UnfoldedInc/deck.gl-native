@@ -18,22 +18,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Note: This file was inspired by the Dawn codebase at https://dawn.googlesource.com/dawn/
-// Copyright 2017 The Dawn Authors http://www.apache.org/licenses/LICENSE-2.0
-
 #include "./error.h"  // NOLINT(build/include)
 
 namespace probegl {
 
-void executeThrowable(std::function<void()> expression, Error* error) {
-  error->reset();
+void catchError(std::function<void()> expression, Error& error) noexcept {
+  error.reset();
 
   try {
     expression();
   } catch (const std::exception& ex) {
-    *error = ex.what();
+    error = ex.what();
   } catch (...) {
-    *error = "Operation failed with unknown error";
+    error = "Operation failed with unknown error";
   }
 }
 
