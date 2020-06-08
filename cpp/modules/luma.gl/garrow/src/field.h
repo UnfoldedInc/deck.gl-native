@@ -38,12 +38,7 @@ class Field {
   // NOTE: type is currently a simple wgpu::VertexFormat value. Arrow has a complex DataType implementation that
   // deals with buffer type complexity, which is something that should be put in place once we implement reading
   Field(const std::string& name, wgpu::VertexFormat type, bool nullable = false,
-        const std::shared_ptr<const KeyValueMetadata>& metadata = nullptr)
-      : _name{name}, _type{type}, _nullable{nullable}, _metadata{metadata} {
-    if (nullable) {
-      throw std::runtime_error("Nullable fields currently not supported");
-    }
-  }
+        const std::shared_ptr<const KeyValueMetadata>& metadata = nullptr);
 
   /// \brief Returns the field name.
   auto name() const -> const std::string& { return _name; }

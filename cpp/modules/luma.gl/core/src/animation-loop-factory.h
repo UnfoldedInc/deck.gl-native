@@ -29,45 +29,19 @@
 
 namespace lumagl {
 
+// TODO(ilija@unfolded.ai): Revisit this API
 struct AnimationLoopFactory {
  public:
 #pragma mark - Exception-free API
 
-  static auto createAnimationLoop(probegl::Error& error,
-                                  const std::shared_ptr<AnimationLoop::Options>& options = nullptr) noexcept
-      -> std::shared_ptr<AnimationLoop> {
-    return probegl::catchError<AnimationLoop>([options]() { return createAnimationLoop(options); }, error);
-  }
+  static auto createAnimationLoop(const std::shared_ptr<AnimationLoop::Options>& options,
+                                  probegl::Error& error) noexcept -> std::shared_ptr<AnimationLoop>;
+  static auto createAnimationLoop(probegl::Error& error) noexcept -> std::shared_ptr<AnimationLoop>;
 
 #pragma mark -
 
-  // TODO(ilija@unfolded.ai): Revisit
   static auto createAnimationLoop(const std::shared_ptr<AnimationLoop::Options>& options = nullptr)
-      -> std::shared_ptr<AnimationLoop> {
-    // If no options are passed, try and initialize the only setup which requires no arguments, which is GLFW
-    if (!options) {
-#if defined(LUMAGL_USES_GLFW)
-      GLFWAnimationLoop::Options opts;
-      return std::make_shared<GLFWAnimationLoop>(opts);
-#else
-      return nullptr;
-#endif
-    }
-
-#if defined(LUMAGL_USES_GLFW)
-    if (auto glfwOptions = std::dynamic_pointer_cast<GLFWAnimationLoop::Options>(options)) {
-      return std::make_shared<GLFWAnimationLoop>(*glfwOptions.get());
-    }
-#endif
-
-#if defined(LUMAGL_ENABLE_BACKEND_METAL)
-    if (auto metalOptions = std::dynamic_pointer_cast<MetalAnimationLoop::Options>(options)) {
-      return std::make_shared<MetalAnimationLoop>(*metalOptions.get());
-    }
-#endif
-
-    return std::make_shared<AnimationLoop>(*options.get());
-  }
+      -> std::shared_ptr<AnimationLoop>;
 };
 
 }  // namespace lumagl
