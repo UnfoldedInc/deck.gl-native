@@ -74,8 +74,7 @@ void Deck::draw(wgpu::TextureView textureView, probegl::Error& error,
   probegl::catchError([&]() { this->draw(textureView, onAfterRender); }, error);
 }
 
-Deck::Deck(std::shared_ptr<Deck::Props> props)
-    : Component(props), width{props->width}, height{props->height}, _needsRedraw{"Initial render"} {
+Deck::Deck(std::shared_ptr<Deck::Props> props) : Component(props), _needsRedraw{"Initial render"} {
   this->animationLoop = lumagl::AnimationLoopFactory::createAnimationLoop(props->drawingOptions);
   this->context = std::make_shared<LayerContext>(this, this->animationLoop->device());
   this->layerManager = std::make_shared<LayerManager>(this->context);
@@ -92,6 +91,8 @@ Deck::Deck(std::shared_ptr<Deck::Props> props)
 Deck::~Deck() { this->animationLoop->stop(); }
 
 void Deck::setProps(std::shared_ptr<Deck::Props> props) {
+  this->_setSize({props->width, props->height});
+
   // ViewState tracking
   if (props->initialViewState) {
     if (!props->initialViewState->equals(this->initialViewState)) {
@@ -114,11 +115,8 @@ void Deck::setProps(std::shared_ptr<Deck::Props> props) {
   }
 
   // Update viewManager
-  this->viewManager->setWidth(props->width);
-  this->viewManager->setHeight(props->height);
   this->viewManager->setViews(props->views);
   this->viewManager->setViewState(this->viewState);
-  this->animationLoop->setSize({props->width, props->height});
 }
 
 void Deck::run(std::function<void(Deck*)> onAfterRender) {
@@ -158,6 +156,17 @@ auto Deck::_getViewState() -> std::shared_ptr<ViewState> {
     return this->props()->viewState;
   }
   return this->viewState;
+}
+
+void Deck::_setSize(const lumagl::Size& size) {
+  if (this->_size == size) {
+    return;
+  }
+
+  this->viewManager->setSize(size.width, size.height);
+  this->animationLoop->setSize(size);
+
+  this->_size = size;
 }
 
 void Deck::_redraw(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> onAfterRender, bool force) {
