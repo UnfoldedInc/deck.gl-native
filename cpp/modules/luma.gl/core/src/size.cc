@@ -18,28 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef LUMAGL_CORE_SIZE_H
-#define LUMAGL_CORE_SIZE_H
+#include "./size.h"  // NOLINT(build/include)
 
-namespace lumagl {
+using namespace lumagl;
 
-struct Size {
- public:
-  Size() : width{0}, height{0} {}
-  Size(int width, int height) : width{width}, height{height} {}
+auto operator==(const Size& s1, const Size& s2) -> bool { return s1.width == s2.width && s1.height == s2.height; }
 
-  template <typename T>
-  auto operator*(const T& value) -> Size {
-    return Size{static_cast<int>(this->width * value), static_cast<int>(this->height * value)};
-  }
-
-  int width;
-  int height;
-};
-
-}  // namespace lumagl
-
-auto operator==(const lumagl::Size& s1, const lumagl::Size& s2) -> bool;
-auto operator!=(const lumagl::Size& s1, const lumagl::Size& s2) -> bool;
-
-#endif  // LUMAGL_CORE_SIZE_H
+auto operator!=(const Size& s1, const Size& s2) -> bool { return !(s1 == s2); }

@@ -86,6 +86,7 @@
 		CDAD574224724CD7002736A3 /* metal-binding.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAD574024724CD7002736A3 /* metal-binding.mm */; };
 		CDAD574324724CD7002736A3 /* metal-binding.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD574124724CD7002736A3 /* metal-binding.h */; };
 		CDAD5745247258BA002736A3 /* animation-loop-factory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD5744247258BA002736A3 /* animation-loop-factory.h */; };
+		CDAE9BE0248E00E6002B6253 /* size.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDAE9BDF248E00E6002B6253 /* size.cc */; };
 		CDC5AB592487A06F008D76B9 /* libarrow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDC5AB5724879D2E008D76B9 /* libarrow.a */; };
 		CDC5AB5B2487AD8E008D76B9 /* libdawn_native.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE57860243C70F5000D8EC6 /* libdawn_native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CDC5AB5C2487AD8E008D76B9 /* libdawn_proc.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CDE5786A243C70F6000D8EC6 /* libdawn_proc.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -403,6 +404,7 @@
 		CDAD574124724CD7002736A3 /* metal-binding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "metal-binding.h"; sourceTree = "<group>"; };
 		CDAD5744247258BA002736A3 /* animation-loop-factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "animation-loop-factory.h"; sourceTree = "<group>"; };
 		CDAD574924726745002736A3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		CDAE9BDF248E00E6002B6253 /* size.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = size.cc; sourceTree = "<group>"; };
 		CDC5AB5724879D2E008D76B9 /* libarrow.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarrow.a; path = "cpp/deps/x64-osx/lib/libarrow.a"; sourceTree = "<group>"; };
 		CDC5AB5824879FE5008D76B9 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		CDC5AB5F2487B403008D76B9 /* error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
@@ -1021,6 +1023,7 @@
 			isa = PBXGroup;
 			children = (
 				CD57341124640E6200D22A70 /* size.h */,
+				CDAE9BDF248E00E6002B6253 /* size.cc */,
 				CDE55B4A243C6A10000D8EC6 /* model.h */,
 				CDE55B4B243C6A10000D8EC6 /* model.cc */,
 				CD57340E24640A3300D22A70 /* blit-model.h */,
@@ -1941,6 +1944,7 @@
 				CDE577A7243C6A1F000D8EC6 /* web-mercator-utils-test.cc in Sources */,
 				CD57340F24640A3300D22A70 /* blit-model.cc in Sources */,
 				CDE577FC243C6A1F000D8EC6 /* deck.cc in Sources */,
+				CDAE9BE0248E00E6002B6253 /* size.cc in Sources */,
 				CDE57781243C6A1F000D8EC6 /* webgpu-helpers.cc in Sources */,
 				CD227D5324779BE500B6083B /* solid-polygon-layer.cc in Sources */,
 				CD452A552448565000DD44A5 /* schema.cc in Sources */,

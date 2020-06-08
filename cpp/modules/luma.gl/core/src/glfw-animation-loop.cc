@@ -93,9 +93,11 @@ auto GLFWAnimationLoop::devicePixelRatio() -> float {
 }
 
 void GLFWAnimationLoop::setSize(const Size& size) {
-  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
+  bool sizeChanged = size != this->_size;
   if (sizeChanged) {
-    this->_swapchain = this->_createSwapchain(this->_device);
+    glfwSetWindowSize(this->_window, size.width, size.height);
+    this->_swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment,
+                               size.width, size.height);
   }
 
   super::setSize(size);
@@ -160,10 +162,6 @@ auto GLFWAnimationLoop::_initializeGLFW(const wgpu::BackendType backendType, con
   if (!window) {
     throw std::runtime_error("Failed to create GLFW window");
   }
-  // TODO(ilija@unfolded.ai): Handle window resizing
-  //  glfwSetFramebufferSizeCallback(window, [this](GLFWwindow* window, int width, int height) {
-  //    this->setSize(width, height);
-  //  });
 
   return window;
 }

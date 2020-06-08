@@ -67,10 +67,10 @@ auto MetalAnimationLoop::devicePixelRatio() -> float {
 }
 
 void MetalAnimationLoop::setSize(const Size& size) {
-  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
+  bool sizeChanged = size != this->_size;
   if (sizeChanged) {
-    // TODO(ilija@unfolded.ai): Should we be trying to resize users views/layers?
-    //    this->_swapchain = this->_createSwapchain(this->_device);
+    this->_swapchain.Configure(this->getPreferredSwapChainTextureFormat(), wgpu::TextureUsage::OutputAttachment,
+                               size.width, size.height);
   }
 
   super::setSize(size);

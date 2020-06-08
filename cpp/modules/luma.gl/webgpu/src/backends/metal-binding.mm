@@ -60,8 +60,11 @@ class SwapChainImplMTL {
     // Make sure UI methods are called on the main thread
     // No retain cycle here as there is no reference counting in C++
     executeOnMainThread(^{
-      this->_view.device = mMtlDevice;
-      this->mLayer = (CAMetalLayer*)this->_view.layer;
+      // If swapchain was not configured previously, create a new layer and set it up
+      if (!this->mLayer) {
+        this->_view.device = mMtlDevice;
+        this->mLayer = (CAMetalLayer*)this->_view.layer;
+      }
 
       constexpr uint32_t kFramebufferOnlyTextureUsages = WGPUTextureUsage_OutputAttachment | WGPUTextureUsage_Present;
       bool hasOnlyFramebufferUsages = !(usage & (~kFramebufferOnlyTextureUsages));

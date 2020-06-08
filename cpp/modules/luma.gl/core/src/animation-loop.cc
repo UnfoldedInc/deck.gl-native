@@ -85,7 +85,7 @@ void AnimationLoop::run(std::function<void(wgpu::RenderPassEncoder)> onRender) {
 void AnimationLoop::stop() { this->running = false; }
 
 void AnimationLoop::setSize(const Size& size) {
-  bool sizeChanged = size.width != this->_size.width || size.height != this->_size.height;
+  bool sizeChanged = size != this->_size;
   if (sizeChanged) {
     this->_size = size;
     // TODO(ilija@unfolded.ai): Trigger redraw

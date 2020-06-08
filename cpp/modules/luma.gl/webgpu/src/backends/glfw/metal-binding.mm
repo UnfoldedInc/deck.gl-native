@@ -66,14 +66,18 @@ class SwapChainImplMTL {
     ASSERT(height > 0);
 
     NSView* contentView = [mNsWindow contentView];
-    [contentView setWantsLayer:YES];
-
     // Make sure display scale factor is taken into account
     CGSize drawableSize = CGSizeMake(width * mNsWindow.backingScaleFactor, height * mNsWindow.backingScaleFactor);
 
-    mLayer = [CAMetalLayer layer];
-    [mLayer setDevice:mMtlDevice];
-    [mLayer setPixelFormat:MTLPixelFormatBGRA8Unorm];
+    // If swapchain was not configured previously, create a new layer and set it up
+    if (!mLayer) {
+      [contentView setWantsLayer:YES];
+
+      mLayer = [CAMetalLayer layer];
+      [mLayer setDevice:mMtlDevice];
+      [mLayer setPixelFormat:MTLPixelFormatBGRA8Unorm];
+    }
+
     [mLayer setDrawableSize:drawableSize];
 
     constexpr uint32_t kFramebufferOnlyTextureUsages = WGPUTextureUsage_OutputAttachment | WGPUTextureUsage_Present;
