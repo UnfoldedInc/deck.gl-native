@@ -25,10 +25,10 @@
 
 namespace deckgl {
 
-// Note: The numeric values here are matched by shader code in the
+// NOTE: The numeric values here are matched by shader code in the
 // "project" and "project64" shader modules. Both places need to be updated.
 
-// Describes how positions are interpreted. Can be specified per layer
+/// \brief Describes how positions are interpreted. Can be specified per layer
 enum class COORDINATE_SYSTEM {
   DEFAULT = -1,  // `LNGLAT` if rendering into a geospatial viewport,
                  // `CARTESIAN` otherwise
@@ -52,7 +52,7 @@ inline auto fromJson<COORDINATE_SYSTEM>(const Json::Value& jsonValue) -> COORDIN
   return static_cast<COORDINATE_SYSTEM>(fromJson<int>(jsonValue));
 }
 
-// Describes the common space
+/// \brief Describes the common space.
 enum class PROJECTION_MODE {
   IDENTITY = 0,
   WEB_MERCATOR = 1,

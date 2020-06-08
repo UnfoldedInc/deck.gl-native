@@ -31,6 +31,7 @@
 
 namespace deckgl {
 
+/// \brief Layer subclass that interprets scatterplot data.
 class ScatterplotLayer : public Layer {
  public:
   using super = Layer;
@@ -40,8 +41,6 @@ class ScatterplotLayer : public Layer {
       : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
-  // TODO(ilija@unfolded.ai): These should be protected. Figure out how to test them without polluting with friend
-  // classes
   auto getPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getRadiusData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getFillColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -60,21 +59,38 @@ class ScatterplotLayer : public Layer {
   wgpu::Buffer _layerUniforms;
 };
 
+/// \brief A set of properties that describe a ScatterplotLayer.
 class ScatterplotLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
 
+  /// \brief Determines whether the point should be filled or not.
   bool filled{true};
+
+  /// \brief Determines whether the point should have an outline or not.
   bool stroked{false};
 
+  // TODO(ilija@unfolded.ai): Should be an enum
+  /// \brief Units in which the width of the outline is specified.
   std::string lineWidthUnits{"meters"};
+
+  /// \brief Scale to use for point outline data.
   float lineWidthScale{1.0};
+
+  /// \brief Minimum width of the outline, in pixels.
   float lineWidthMinPixels{0.0};
+
+  /// \brief Maximum width of the line, in pixels.
   float lineWidthMaxPixels{std::numeric_limits<float>::max()};
 
+  /// \brief Scale to use for point radius data.
   float radiusScale{1.0};
-  float radiusMinPixels{0.0};                                // min point radius in pixels
-  float radiusMaxPixels{std::numeric_limits<float>::max()};  // max point radius in pixels
+
+  /// \brief Minimum radius of the point, in pixels.
+  float radiusMinPixels{0.0};
+
+  /// \brief Maximum radius of the point, in pixels.
+  float radiusMaxPixels{std::numeric_limits<float>::max()};
 
   /// Property accessors
   std::function<ArrowMapper::Vector3FloatAccessor> getPosition{

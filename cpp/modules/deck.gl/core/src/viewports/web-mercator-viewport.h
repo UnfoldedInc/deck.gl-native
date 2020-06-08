@@ -28,9 +28,9 @@
 namespace deckgl {
 
 /// \brief View and Projection Matrix calculations for mapbox-js style map view properties
-/// Creates view/projection matrices from mercator params
+/// Creates view/projection matrices from mercator params.
 /// \note The Viewport is immutable in the sense that it only has accessors.
-/// \note A new viewport instance should be created if any parameters have changed.
+/// A new viewport instance should be created if any parameters have changed.
 class WebMercatorViewport : public Viewport {
  public:
   struct Options {

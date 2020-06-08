@@ -24,9 +24,9 @@
 #include <memory>
 #include <string>
 
-#include "../lib/component.h"       // {Component}
-#include "../viewports/viewport.h"  // {Viewport}
-#include "./view-state.h"           // {ViewState}
+#include "../lib/component.h"
+#include "../viewports/viewport.h"
+#include "./view-state.h"
 #include "deck.gl/json.h"
 #include "math.gl/core.h"
 
@@ -34,6 +34,7 @@ namespace deckgl {
 
 class ViewManager;
 
+/// \brief View represents a cutomizable point of view that can be rendered.
 class View : public Component::Props {
   friend class ViewManager;
 
@@ -42,10 +43,10 @@ class View : public Component::Props {
 
   virtual ~View();
 
-  auto getViewStateId() const -> std::string;
-
-  // Build a `Viewport` from a view descriptor
-  auto makeViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState)
+  /// \brief Builds a Viewport from a given viewState.
+  /// \param rect Rectangle that represents the origin and size of the Viewport.
+  /// \return A new Viewport instance, based on given arguments.
+  auto makeViewport(const mathgl::Rectangle<int>& rect, const std::shared_ptr<ViewState>& viewState)
       -> std::shared_ptr<Viewport>;
 
   // width/height of view
@@ -64,23 +65,17 @@ class View : public Component::Props {
   double far{1000};  // Distance of far clipping plane
 
   // Property type machinery
-  static constexpr const char *getTypeName() { return "View"; }
+  static constexpr const char* getTypeName() { return "View"; }
   auto getProperties() const -> const std::shared_ptr<Properties> override;
 
  protected:
   // Create actual viewport
-  virtual auto _getViewport(const mathgl::Rectangle<int> &rect, std::shared_ptr<ViewState> viewState) const
+  virtual auto _getViewport(const mathgl::Rectangle<int>& rect, const std::shared_ptr<ViewState>& viewState) const
       -> std::shared_ptr<Viewport>;
 
  private:
   // Allows view to override (or completely define) viewState
   auto filterViewState(std::shared_ptr<ViewState>) -> std::shared_ptr<ViewState>;
-
-  // Resolve relative viewport dimensions into actual dimensions (y='50%', width=800 => y=400)
-  // auto getDimensions(int width, int height) -> Rect...
-
-  // Parse relative viewport dimension descriptors (e.g {y: '50%', height: '50%'})
-  // _parseDimensions(int x, int y, int width, int height});
 };
 
 }  // namespace deckgl

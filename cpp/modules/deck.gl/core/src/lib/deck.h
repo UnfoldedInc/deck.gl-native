@@ -34,6 +34,8 @@
 
 namespace deckgl {
 
+/// \brief Deck is a class that takes deck.gl layer instances and viewport parameters, and renders those
+/// layers as a transparent overlay.
 class Deck : public Component {
  public:
   class Props;
@@ -55,12 +57,24 @@ class Deck : public Component {
   explicit Deck(std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>());
   ~Deck();
 
+  /// \brief Returns the current properties attached to this Deck instance.
   auto props() { return std::dynamic_pointer_cast<Props>(this->_props); }
+
+  /// \brief Sets a new set of properties, picking up all the differences compared to the current one.
+  /// @param props A new set of properties to use.
   void setProps(std::shared_ptr<Deck::Props> props);
 
+  /// \brief Runs an animation loop that draws this Deck.
+  /// \param onAfterRender Function that'll be called whenever frame has been drawn.
   void run(std::function<void(Deck*)> onAfterRender = [](Deck*) {});
+
+  /// \brief Draws the current Deck state into the given textureView, calling onAfteRender once drawing has finished.
+  /// \param textureView Texture view to draw the current state into.
+  /// \param onAfterRender Function that'll be called whenever frame has been drawn.
   void draw(
       wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender = [](Deck*) {});
+
+  /// \brief Stops the animation loop, if one is currently running.
   void stop();
 
   /// \brief Check if a redraw is needed.
@@ -68,10 +82,15 @@ class Deck : public Component {
   /// \returns Returns an optional string summarizing the redraw reason.
   auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
+  /// \brief Gets a list of views that this Deck is viewed from.
+  /// \returns A list of View instances that this Deck can be viewed from.
   auto getViews() -> std::list<std::shared_ptr<View>> { return this->viewManager->getViews(); }
 
+  /// \brief Gets the current viewport size of this Deck.
+  /// \returns Width and height of the current viewport.
   auto size() -> lumagl::Size { return this->_size; };
 
+  // TODO(ilija@unfolded.ai): These should be get-only?
   std::shared_ptr<lumagl::AnimationLoop> animationLoop;
   std::shared_ptr<ViewManager> viewManager{new ViewManager()};
   std::shared_ptr<LayerContext> context;
@@ -96,13 +115,17 @@ class Deck : public Component {
 
 // Instead of maintaining another structure with options, we reuse the relevant struct from lumagl
 using DrawingOptions = lumagl::AnimationLoop::Options;
+/// \brief A set of properties that represent a single Deck.
 class Deck::Props : public Component::Props {
  public:
   using super = Component::Props;
 
-  int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
+  /// \brief Width of the viewport, in pixels.
+  int width{100};  // Dummy value, ensure something is visible if user forgets to set window size
+  /// \brief Height of the viewport, in pixels.
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
+  /// \brief A set of options that customize the drawing of this Deck.
   std::shared_ptr<DrawingOptions> drawingOptions;
 
   // Layer/View/Controller settings

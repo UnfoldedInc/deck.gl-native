@@ -30,6 +30,7 @@
 
 namespace deckgl {
 
+/// \brief Layer subclass that interprets polygon data.
 class SolidPolygonLayer : public Layer {
  public:
   using super = Layer;
@@ -65,18 +66,26 @@ class SolidPolygonLayer : public Layer {
   std::vector<uint32_t> _tesselatedIndices;
 };
 
+/// \brief A set of properties that describes a SolidPolygonlayer.
 class SolidPolygonLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
 
+  /// \brief Specifies whether the polygon should be filled or not.
   bool filled{true};
+
   // TODO(ilija@unfolded.ai): Extrusion currently not supported
+  /// \brief Specifies whether the polygon should be extruded or not.
   const bool extruded{false};
+
   // TODO(ilija@unfolded.ai): Wireframe currently not supported
+  /// \brief Specifies whether the wireframe of the polygon should be drawn or not.
   const bool wireframe{false};
 
+  /// \brief Scale to use for elevation data.
   float elevationScale{1.0};
 
+  /// Property accessors
   std::function<ArrowMapper::ListVector3FloatAccessor> getPolygon{
       [](const Row& row) { return row.getVector3List<float>("polygon"); }};
   std::function<ArrowMapper::FloatAccessor> getElevation{[](const Row& row) { return 1000.0; }};

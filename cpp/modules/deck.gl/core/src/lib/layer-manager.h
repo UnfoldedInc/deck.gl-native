@@ -32,22 +32,27 @@
 
 namespace deckgl {
 
+/// \brief The LayerManager class manages a set of layers' lifecycle.
 class LayerManager {
  public:
-  std::shared_ptr<LayerContext> context;
-
-  std::list<std::shared_ptr<Layer>> layers;
-
   explicit LayerManager(std::shared_ptr<LayerContext> context);
   virtual ~LayerManager();
 
   /// \brief Check if a redraw is needed.
+  /// \param clearRedrawFlags Whether or not to clear the current redraw flags.
+  /// \return Returns a reason for redraw, if one exists.
   auto needsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
+
   /// \brief Check if a deep update of layers is needed.
+  /// \return Returns a reason for update, if one exists.
   auto needsUpdate() -> std::optional<std::string> { return this->_needsUpdate; };
+
   /// \brief Ensures that layers will be redrawn (during next render).
+  /// \param reason Reason of the redraw.
   void setNeedsRedraw(const std::string& reason);
+
   /// \brief Ensure that layers will be updated deeply (during next render), including sublayer generation.
+  /// \param reason Reason of the redraw.
   void setNeedsUpdate(const std::string& reason);
 
   void setDebug(bool debug) { this->_debug = debug; }
@@ -55,21 +60,39 @@ class LayerManager {
   /* Layer API */
 
   /// \brief For JSON: Supply a new layer prop list.
+  /// \param newLayers New set of properties to manage.
   void setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>>& newLayers);
 
-  void addLayer(std::shared_ptr<Layer>);
-  void removeLayer(std::shared_ptr<Layer>);
+  /// \brief Adds a new layer to this manager.
+  /// \param layer Layer to add.
+  void addLayer(const std::shared_ptr<Layer>& layer);
+
+  /// \brief Removes the given layer from this manager, if it's been added previously.
+  /// \param layer Layer to remove.
+  void removeLayer(const std::shared_ptr<Layer>& layer);
+
+  /// \brief Removes the given layer from this manager, if it's been added previously.
+  /// \param id Identifier of the layer to remove.
   void removeLayer(const std::string& id);
+
+  /// Returns a list of all the layers currently being managed.
+  auto layers() { return this->_layers; }
 
   /// \brief Update layers from last cycle if `setNeedsUpdate()` has been called.
   void updateLayers();
 
-  /// \brief Make a viewport "current" in layer context, updating viewportChanged flags.
+  /// \brief Makes a viewport "current" in layer context, updating viewportChanged flags.
+  /// \param viewport Viewport to activate.
   void activateViewport(const std::shared_ptr<Viewport>& viewport);
+
+  std::shared_ptr<LayerContext> context;
 
  private:
   /// \brief Updates a single layer, cleaning all flags.
   void _updateLayer(const std::shared_ptr<Layer>& layer);
+
+  /// A list of layers currently being managed.
+  std::list<std::shared_ptr<Layer>> _layers;
 
   std::optional<std::string> _needsRedraw;
   std::optional<std::string> _needsUpdate;

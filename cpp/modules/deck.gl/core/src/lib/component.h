@@ -28,6 +28,7 @@
 
 namespace deckgl {
 
+/// \brief A root class for JSON-serialzed components of the API.
 class Component {
  public:
   class Props;

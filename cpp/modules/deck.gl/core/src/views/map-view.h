@@ -23,12 +23,12 @@
 
 #include <memory>
 
-#include "./view.h"  // {View}
-// #include "../viewports/web-mercator-viewport.h" // {WebMercatorViewport}
+#include "./view.h"
 #include "math.gl/core.h"
 
 namespace deckgl {
 
+/// \brief View which uses WebMercatorViewport instance as its viewport.
 class MapView : public View {
  public:
   using super = View;
@@ -38,7 +38,7 @@ class MapView : public View {
   auto getProperties() const -> const std::shared_ptr<Properties> override;
 
  protected:
-  auto _getViewport(const mathgl::Rectangle<int>& rect, std::shared_ptr<ViewState> viewState) const
+  auto _getViewport(const mathgl::Rectangle<int>& rect, const std::shared_ptr<ViewState>& viewState) const
       -> std::shared_ptr<Viewport> override;
 };
 

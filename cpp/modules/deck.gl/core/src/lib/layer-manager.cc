@@ -34,7 +34,7 @@ LayerManager::LayerManager(std::shared_ptr<LayerContext> _context) : context{_co
 
 LayerManager::~LayerManager() {
   // Finalize all layers
-  for (auto layer : this->layers) {
+  for (auto layer : this->_layers) {
     layer->finalize();
   }
 }
@@ -49,7 +49,7 @@ auto LayerManager::needsRedraw(bool clearRedrawFlags) -> std::optional<std::stri
     return redraw;
   }
 
-  for (auto layer : this->layers) {
+  for (auto layer : this->_layers) {
     // Call every layer to clear their flags
     if (auto layerNeedsRedraw = layer->getNeedsRedraw(clearRedrawFlags)) {
       return layerNeedsRedraw;
@@ -74,7 +74,7 @@ void LayerManager::setNeedsUpdate(const std::string &reason) {
 void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Props>> &layerPropsList) {
   // Create a map of old layers
   std::map<std::string, std::shared_ptr<Layer>> oldLayerMap;
-  for (auto oldLayer : this->layers) {
+  for (auto oldLayer : this->_layers) {
     oldLayerMap[oldLayer->props()->id] = oldLayer;
   }
 
@@ -100,9 +100,9 @@ void LayerManager::setLayersFromProps(const std::list<std::shared_ptr<Layer::Pro
   }
 }
 
-void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
+void LayerManager::addLayer(const std::shared_ptr<Layer> &layer) {
   bool idExists = false;
-  for (const auto &currentLayer : this->layers) {
+  for (const auto &currentLayer : this->_layers) {
     if (currentLayer->props()->id == layer->props()->id) {
       idExists = true;
       break;
@@ -114,19 +114,19 @@ void LayerManager::addLayer(std::shared_ptr<Layer> layer) {
 
   layer->initialize(this->context);
 
-  this->layers.push_back(layer);
+  this->_layers.push_back(layer);
 }
 
-void LayerManager::removeLayer(std::shared_ptr<Layer> layer) {
-  this->layers.remove_if([layer](auto layer_) { return layer_ == layer; });
+void LayerManager::removeLayer(const std::shared_ptr<Layer> &layer) {
+  this->_layers.remove_if([layer](auto layer_) { return layer_ == layer; });
 }
 
 void LayerManager::removeLayer(const std::string &id) {
-  this->layers.remove_if([id](auto layer) { return layer->props()->id == id; });
+  this->_layers.remove_if([id](auto layer) { return layer->props()->id == id; });
 }
 
 void LayerManager::updateLayers() {
-  for (auto layer : this->layers) {
+  for (auto layer : this->_layers) {
     // TODO(ib@unfolded.ai): Handle exceptions
     layer->update();
   }
@@ -141,7 +141,7 @@ void LayerManager::activateViewport(const std::shared_ptr<Viewport> &viewport) {
 
     // Update layers states
     // Let screen space layers update their state based on viewport
-    for (const auto &layer : this->layers) {
+    for (const auto &layer : this->_layers) {
       layer->setViewportChangedFlag("Viewport Activated");
       this->_updateLayer(layer);
     }

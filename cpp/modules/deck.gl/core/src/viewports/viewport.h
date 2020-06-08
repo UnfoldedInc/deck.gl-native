@@ -30,6 +30,9 @@
 
 namespace deckgl {
 
+/// \brief Manages coordinate system transformations for deck.gl.
+/// \note The Viewport is immutable in the sense that it only has accessors.
+/// A new viewport instance should be created if any parameters have changed.
 class Viewport {
  public:
   std::string id;
@@ -37,26 +40,17 @@ class Viewport {
   double y;
   double width;
   double height;
-  // Not needed
   double _frustumPlanes;  // TODO(isaac@unfolded.ai): actually an object
-  // NEEDED
   bool isGeospatial;
   double zoom;
-  // NEEDED
   double scale;
-  // NEEDED
   mathgl::DistanceScales distanceScales;
-  // NEEDED
   double focalDistance;
-  // NEEDED
   mathgl::Vector3<double> position;
   mathgl::Vector3<double> meterOffset;
   mathgl::Matrix4<double> modelMatrix;
-  // NEEDED
   double longitude;
-  // NEEDED
   double latitude;
-  // NEEDED
   mathgl::Vector3<double> center;
   mathgl::Matrix4<double> viewMatrixUncentered;
   mathgl::Matrix4<double> viewMatrix;
@@ -72,7 +66,6 @@ class Viewport {
   mathgl::Matrix4<double> projectionMatrix;
   mathgl::Matrix4<double> viewProjectionMatrix;
   mathgl::Matrix4<double> viewMatrixInverse;
-  // NEEDED
   mathgl::Vector3<double> cameraPosition;
   mathgl::Vector3<double> cameraDirection;
   mathgl::Vector3<double> cameraUp;
