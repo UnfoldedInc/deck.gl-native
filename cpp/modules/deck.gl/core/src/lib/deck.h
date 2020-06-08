@@ -95,6 +95,8 @@ class Deck : public Component {
   lumagl::Size _size;
 };
 
+// Instead of maintaining another structure with options, we reuse the relevant struct from lumagl
+using DrawingOptions = lumagl::AnimationLoop::Options;
 class Deck::Props : public Component::Props {
  public:
   using super = Component::Props;
@@ -102,7 +104,7 @@ class Deck::Props : public Component::Props {
   int width{100};   // Dummy value, ensure something is visible if user forgets to set window size
   int height{100};  // Dummy value, ensure something is visible if user forgets to set window size
 
-  std::shared_ptr<lumagl::AnimationLoop::Options> drawingOptions;
+  std::shared_ptr<DrawingOptions> drawingOptions;
 
   // Layer/View/Controller settings
   std::list<std::shared_ptr<Layer::Props>> layers;
