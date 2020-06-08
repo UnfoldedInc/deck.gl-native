@@ -35,6 +35,7 @@
 
 namespace deckgl {
 
+/// \brief Utility structure that holds metadata of a generic list array.
 struct ListArrayMetadata {
  public:
   ListArrayMetadata(int32_t offset, int32_t length, const std::shared_ptr<arrow::Array>& values)
@@ -45,22 +46,62 @@ struct ListArrayMetadata {
   std::shared_ptr<arrow::Array> values;
 };
 
+/// \brief Represents a single row within a given table, which can be queried for easy access to typed data.
 class Row {
  public:
   Row(const std::shared_ptr<arrow::Table>& table, int64_t rowIndex);
 
+  /// \brief Attempts to get an integer value in this row, for a given columnName.
+  /// If the value is of a different type, best effort will be used to convert it to an integer.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Integer value found in this row for the given columnName, or defaultValue if one isn't found.
   auto getInt(const std::string& columnName, int defaultValue = 0) const -> int;
+
+  /// \brief Attempts to get a float value in this row, for a given columnName.
+  /// If the value is of a different type, best effort will be used to convert it to a float.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Float value found in this row for the given columnName, or defaultValue if one isn't found.
   auto getFloat(const std::string& columnName, float defaultValue = 0.0) const -> float;
+
+  /// \brief Attempts to get a double value in this row, for a given columnName.
+  /// If the value is of a different type, best effort will be used to convert it to a double.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Double value found in this row for the given columnName, or defaultValue if one isn't found.
   auto getDouble(const std::string& columnName, double defaultValue = 0.0) const -> double;
+
+  /// \brief Attempts to get a boolean value in this row, for a given columnName.
+  /// If the value is of a different type, best effort will be used to convert it to a boolean.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Boolean value found in this row for the given columnName, or defaultValue if one isn't found.
   auto getBool(const std::string& columnName, bool defaultValue = false) const -> bool;
+
+  /// \brief Attempts to get a string value in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns String value found in this row for the given columnName, or defaultValue if one isn't found.
   auto getString(const std::string& columnName, const std::string& defaultValue = "") const -> std::string;
 
+  /// \brief Attempts to get vector data out of a list array found in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Vector data, potentially padded with zeros if the list was not of a sufficient length,
+  /// or defaultValue if data could not be found.
   template <typename T>
   auto getVector2(const std::string& columnName, const mathgl::Vector2<T>& defaultValue = {}) const
       -> mathgl::Vector2<T> {
     auto data = this->getListData<T>(columnName, {defaultValue.x, defaultValue.y});
     return mathgl::Vector2<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0};
   }
+
+  /// \brief Attempts to get vector data out of a list array found in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Vector data, potentially padded with zeros if the list was not of a sufficient length,
+  /// or defaultValue if data could not be found.
   template <typename T>
   auto getVector3(const std::string& columnName, const mathgl::Vector3<T>& defaultValue = {}) const
       -> mathgl::Vector3<T> {
@@ -68,6 +109,12 @@ class Row {
     return mathgl::Vector3<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
                               data.size() > 2 ? data.at(2) : 0};
   }
+
+  /// \brief Attempts to get vector data out of a list array found in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns Vector data, potentially padded with zeros if the list was not of a sufficient length,
+  /// or defaultValue if data could not be found.
   template <typename T>
   auto getVector4(const std::string& columnName, const mathgl::Vector4<T>& defaultValue = {}) const
       -> mathgl::Vector4<T> {
@@ -75,6 +122,12 @@ class Row {
     return mathgl::Vector4<T>{data.size() > 0 ? data.at(0) : 0, data.size() > 1 ? data.at(1) : 0,
                               data.size() > 2 ? data.at(2) : 0, data.size() > 3 ? data.at(3) : 0};
   }
+
+  /// \brief Attempts to get a set of vector data out of a nested list array found in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns A collection of vector data, potentially padded with zeros if the list was not of a sufficient length,
+  /// or defaultValue if data could not be found.
   template <typename T>
   auto getVector2List(const std::string& columnName, const std::vector<mathgl::Vector2<T>>& defaultValue = {}) const
       -> std::vector<mathgl::Vector2<T>> {
@@ -87,6 +140,12 @@ class Row {
 
     return vectorData;
   }
+
+  /// \brief Attempts to get a set of vector data out of a nested list array found in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns A collection of vector data, potentially padded with zeros if the list was not of a sufficient length,
+  /// or defaultValue if data could not be found.
   template <typename T>
   auto getVector3List(const std::string& columnName, const std::vector<mathgl::Vector3<T>>& defaultValue = {}) const
       -> std::vector<mathgl::Vector3<T>> {
@@ -100,6 +159,12 @@ class Row {
 
     return vectorData;
   }
+
+  /// \brief Attempts to get a set of vector data out of a nested list array found in this row, for a given columnName.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns A collection of vector data, potentially padded with zeros if the list was not of a sufficient length,
+  /// or defaultValue if data could not be found.
   template <typename T>
   auto getVector4List(const std::string& columnName, const std::vector<mathgl::Vector4<T>>& defaultValue = {}) const
       -> std::vector<mathgl::Vector4<T>> {
@@ -113,6 +178,11 @@ class Row {
 
     return vectorData;
   }
+
+  /// \brief Attempts to get a variable sized collection of arbitrary data.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns A collection of requested data type, or defaultValue if data could not be found.
   template <typename T>
   auto getListData(const std::string& columnName, const std::vector<T>& defaultValue = {}) const -> std::vector<T> {
     if (!this->isValid(columnName)) {
@@ -128,6 +198,11 @@ class Row {
 
     return this->_getListData(optionalMetadata.value(), defaultValue);
   }
+
+  /// \brief Attempts to get a nested, variable sized collection of arbitrary data.
+  /// \param columnName Name of the column to get the data for.
+  /// \param defaultValue Default value that'll be returned if data could not be found.
+  /// \returns A collection of requested data type, or defaultValue if data could not be found.
   template <typename T>
   auto getNestedListData(const std::string& columnName, const std::vector<std::vector<T>>& defaultValue = {}) const
       -> std::vector<std::vector<T>> {
@@ -151,6 +226,7 @@ class Row {
   auto isValid(const std::string& columnName) const -> bool;
 
   /// \brief Increments current row index.
+  /// \param increment Amount to increment the current row index by.
   void incrementRowIndex(uint64_t increment = 1);
 
  private:
@@ -249,8 +325,6 @@ class Row {
 
   /// \brief Relative row index in respect to the chunk.
   int64_t _chunkRowIndex;
-
-  //  std::unordered_map<std::string, std::shared_ptr<arrow::Array>> _cache;
 };
 
 }  // namespace deckgl

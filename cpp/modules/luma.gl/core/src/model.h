@@ -47,12 +47,12 @@ struct UniformDescriptor {
   bool isDynamic{false};
 };
 
-/// \brief Holds shaders compiled and linked into a pipeline.
+/// \brief A Model holds all the data necessary to draw an object, e.g.: shaders, uniforms and vertex attributes.
 class Model {
  public:
   class Options;
 
-  /// \brief construct a new Model.
+  /// \brief Construct a new Model.
   Model(wgpu::Device device, const Options&);
 
   void setAttributes(const std::shared_ptr<garrow::Table>& attributes);

@@ -28,6 +28,7 @@
 
 namespace deckgl {
 
+/// \brief Utility struct that encapsulates view metadata.
 class ViewState : public JSONObject {
  public:
   using super = JSONObject;

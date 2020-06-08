@@ -21,19 +21,19 @@
 #ifndef LUMAGL_CORE_H
 #define LUMAGL_CORE_H
 
-#include "./core/src/animation-loop.h"
+#include "./core/src/animation-loop/animation-loop.h"
 #include "./core/src/blit-model.h"
 #include "./core/src/model.h"
 #include "./core/src/size.h"
 
 #if defined(LUMAGL_USES_GLFW)
-#include "./core/src/glfw-animation-loop.h"
+#include "./core/src/animation-loop/glfw-animation-loop.h"
 #endif
 
 #if defined(LUMAGL_ENABLE_BACKEND_METAL)
-#include "./core/src/metal-animation-loop.h"
+#include "./core/src/animation-loop/metal-animation-loop.h"
 #endif
 
-#include "./core/src/animation-loop-factory.h"
+#include "./core/src/animation-loop/animation-loop-factory.h"
 
 #endif  // LUMAGL_CORE_CORE_H

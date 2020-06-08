@@ -33,7 +33,8 @@ auto MapView::getProperties() const -> const std::shared_ptr<Properties> {
   return properties;
 }
 
-auto MapView::_getViewport(const Rectangle<int>& rect, shared_ptr<ViewState> viewState) const -> shared_ptr<Viewport> {
+auto MapView::_getViewport(const Rectangle<int>& rect, const shared_ptr<ViewState>& viewState) const
+    -> shared_ptr<Viewport> {
   WebMercatorViewport::Options opts;
   opts.width = rect.w;
   opts.height = rect.h;

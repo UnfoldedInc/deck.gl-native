@@ -147,9 +147,9 @@ auto Row::_getChunk(const std::string& columnName) const -> std::shared_ptr<arro
 
   // Iterate over column chunks and find the chunk that contains row data
   int64_t offset = 0;
-  for (auto chunk : column->chunks()) {
+  for (const auto& chunk : column->chunks()) {
     if (this->_rowIndex >= offset && this->_rowIndex < offset + chunk->length()) {
-      // TODO(ilija@unfolded.ai): Cache
+      // TODO(ilija@unfolded.ai): Cache chunks once Rows are being reused properly
       return chunk;
     }
 
@@ -183,7 +183,7 @@ auto Row::_getRowChunkData(const std::shared_ptr<arrow::Table>& table, int64_t r
   throw std::logic_error("Invalid chunk lookup");
 }
 
-// TODO(ilija@unfolded.ai): Sacrificing performance and precision for conciseness, revisit
+// Sacrificing performance and precision for conciseness. Revisit if this becomes a bottleneck
 auto Row::_getDouble(const std::shared_ptr<arrow::Array>& chunk) const -> std::optional<double> {
   switch (chunk->type_id()) {
     case arrow::Type::DOUBLE:

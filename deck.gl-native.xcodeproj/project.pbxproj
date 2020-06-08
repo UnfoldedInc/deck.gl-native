@@ -882,6 +882,21 @@
 			path = glfw;
 			sourceTree = "<group>";
 		};
+		CDAE9BED248E5C0B002B6253 /* animation-loop */ = {
+			isa = PBXGroup;
+			children = (
+				CDE55B4D243C6A10000D8EC6 /* animation-loop.h */,
+				CDE55B45243C6A10000D8EC6 /* animation-loop.cc */,
+				CDE55B46243C6A10000D8EC6 /* glfw-animation-loop.h */,
+				CDE55B44243C6A10000D8EC6 /* glfw-animation-loop.cc */,
+				CD64D44F24718F8C009A2A9C /* metal-animation-loop.h */,
+				CD64D44E24718F8C009A2A9C /* metal-animation-loop.mm */,
+				CDAD5744247258BA002736A3 /* animation-loop-factory.h */,
+				CDAE9BEB248E2FAC002B6253 /* animation-loop-factory.cc */,
+			);
+			path = "animation-loop";
+			sourceTree = "<group>";
+		};
 		CDE53EA2243C69FB000D8EC6 /* cpp */ = {
 			isa = PBXGroup;
 			children = (
@@ -1030,14 +1045,7 @@
 				CDE55B4B243C6A10000D8EC6 /* model.cc */,
 				CD57340E24640A3300D22A70 /* blit-model.h */,
 				CD57340D24640A3300D22A70 /* blit-model.cc */,
-				CDE55B4D243C6A10000D8EC6 /* animation-loop.h */,
-				CDE55B45243C6A10000D8EC6 /* animation-loop.cc */,
-				CDE55B46243C6A10000D8EC6 /* glfw-animation-loop.h */,
-				CDE55B44243C6A10000D8EC6 /* glfw-animation-loop.cc */,
-				CD64D44F24718F8C009A2A9C /* metal-animation-loop.h */,
-				CD64D44E24718F8C009A2A9C /* metal-animation-loop.mm */,
-				CDAD5744247258BA002736A3 /* animation-loop-factory.h */,
-				CDAE9BEB248E2FAC002B6253 /* animation-loop-factory.cc */,
+				CDAE9BED248E5C0B002B6253 /* animation-loop */,
 			);
 			path = src;
 			sourceTree = "<group>";

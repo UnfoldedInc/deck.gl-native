@@ -33,24 +33,31 @@
 
 namespace deckgl {
 
+/// \brief The ViewManager class manages a set of views' lifecycle.
 class ViewManager {
  public:
   ViewManager();
   virtual ~ViewManager();
 
   /// \brief Check if a redraw is needed.
+  /// \param clearRedrawFlags Whether or not to clear the current redraw flags.
+  /// \return Returns a reason for redraw, if one exists.
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
   /// \brief Views will be updated deeply (in next animation frame).
-  void setNeedsUpdate(const std::string &reason);
+  /// \param reason Reason of the redraw.
+  void setNeedsUpdate(const std::string& reason);
 
-  /// \brief Get a set of viewports for a given width and height.
+  /// \brief Get all the viewports for views being managed.
   auto getViewports() -> std::list<std::shared_ptr<Viewport>>;
 
+  /// Returns all the views currently being managed.
   auto getViews() -> std::list<std::shared_ptr<View>> { return this->_views; };
 
   /// \brief Resolves a viewId string to a View, if already a View returns it.
-  auto getView(const std::string &viewOrViewId) -> std::shared_ptr<View>;
+  /// \param viewId Identifier of the view to get.
+  /// \return View represented by viewId, if one was found.
+  auto getView(const std::string& viewId) -> std::shared_ptr<View>;
 
   /// \brief Returns the viewState for a specific viewId.
   /// Matches the viewState by:
@@ -58,8 +65,8 @@ class ViewManager {
   ///   2. view.id
   ///   3. root viewState
   /// then applies the view's filter if any
-  auto getViewState(const std::string &viewId) -> std::shared_ptr<ViewState>;
-  auto getViewport(const std::string &viewId) -> std::shared_ptr<Viewport>;
+  auto getViewState(const std::string& viewId) -> std::shared_ptr<ViewState>;
+  auto getViewport(const std::string& viewId) -> std::shared_ptr<Viewport>;
 
   /// \brief Unproject pixel coordinates on screen onto world coordinates, (possibly [lon, lat]) on map.
   /// - [x, y] => [lng, lat]
@@ -85,7 +92,7 @@ class ViewManager {
   void setHeight(int height);
 
   /// \brief Update the view descriptor list (Does not rebuild the `Viewport`s until `getViewports` is called).
-  void setViews(const std::list<std::shared_ptr<View>> &views);
+  void setViews(const std::list<std::shared_ptr<View>>& views);
 
   /// \brief Update the view state.
   void setViewState(std::shared_ptr<ViewState> viewStates);
@@ -99,8 +106,8 @@ class ViewManager {
 
   // Check if viewport array has changed, returns true if any change
   // Note that descriptors can be the same
-  auto _diffViews(const std::list<std::shared_ptr<View>> &newViews,
-                  const std::list<std::shared_ptr<View>> &oldViews) const -> bool;
+  auto _diffViews(const std::list<std::shared_ptr<View>>& newViews,
+                  const std::list<std::shared_ptr<View>>& oldViews) const -> bool;
 
   std::list<std::shared_ptr<View>> _views;
   int _width{100};

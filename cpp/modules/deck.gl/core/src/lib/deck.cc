@@ -28,7 +28,7 @@
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
+// TODO(ib@unfolded.ai): Auto generate from language-independent prop definition schema
 static const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<std::list<std::shared_ptr<Layer::Props>>>>(
         "layers", [](const JSONObject* props) { return dynamic_cast<const Deck::Props*>(props)->layers; },
@@ -200,9 +200,11 @@ void Deck::_drawLayers(wgpu::RenderPassEncoder pass, std::function<void(Deck*)> 
     // Expose the current viewport to layers for project* function
     this->layerManager->activateViewport(viewport);
 
-    for (auto const& layer : this->layerManager->layers) {
-      // TODO(ilija@unfolded.ai): Pass relevant layer properties to getUniformsFromViewport
-      auto viewportUniforms = getUniformsFromViewport(viewport, this->animationLoop->devicePixelRatio());
+    for (auto const& layer : this->layerManager->layers()) {
+      auto layerProps = layer->props();
+      auto viewportUniforms = getUniformsFromViewport(viewport, this->animationLoop->devicePixelRatio(),
+                                                      layerProps->modelMatrix, layerProps->coordinateSystem,
+                                                      layerProps->coordinateOrigin, layerProps->wrapLongitude);
 
       this->_viewportUniformsBuffer.SetSubData(0, sizeof(ViewportUniforms), &viewportUniforms);
       for (auto const& model : layer->models()) {

@@ -48,30 +48,38 @@ class ColorRGBA {
   float r, g, b, a;
 };
 
+/// \brief Base class for layer implementations that can be drawn as overlays.
 class Layer : public Component {
  public:
   class Props;
   class ChangeFlags;
 
+  /// \brief Returns the current properties attached to this Layer instance.
   const auto props() const { return std::dynamic_pointer_cast<const Layer::Props>(this->_props); }
+  /// \brief Updates all the layer props.
+  void setProps(std::shared_ptr<Layer::Props> newProps);
 
   explicit Layer(std::shared_ptr<Layer::Props> props) : Component{std::dynamic_pointer_cast<Component::Props>(props)} {}
 
-  /// \brief Update all props.
-  void setProps(std::shared_ptr<Layer::Props> newProps);
-
+  /// \brief Invalidates the given attributeName, triggering a redraw.
+  /// @param attributeName Attribute name to invalidate.
   void triggerUpdate(const std::string& attributeName);
 
   /// \brief Sets the redraw flag for this layer, will trigger a redraw next animation frame.
+  /// \param reason Reason of the redraw.
   void setNeedsRedraw(const std::string& reason);
 
   /// \brief This layer needs a deep update.
+  /// \param reason Reason of the redraw.
   void setNeedsUpdate(const std::string& reason);
 
   /// \brief Checks state of attributes and model.
+  /// \param clearRedrawFlags Whether or not to clear the current redraw flags.
+  /// \return Returns a reason for redraw, if one exists.
   auto getNeedsRedraw(bool clearRedrawFlags = false) -> std::optional<std::string>;
 
   /// \brief Checks if layer attributes needs updating.
+  /// \return Returns a reason for update, if one exists.
   auto getNeedsUpdate() -> std::optional<std::string>;
 
   /* CHANGE MANAGEMENT */

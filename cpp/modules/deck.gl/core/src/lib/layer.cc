@@ -26,7 +26,7 @@ using namespace mathgl;
 using namespace deckgl;
 
 // Setters and getters for properties
-// TODO(ib@unfolded.ai): auto generate from language-independent prop definition schema
+// TODO(ib@unfolded.ai): Auto generate from language-independent prop definition schema
 static const std::vector<std::shared_ptr<Property>> propTypeDefs = {
     std::make_shared<PropertyT<bool>>(
         "visible", [](const JSONObject* props) { return dynamic_cast<const Layer::Props*>(props)->visible; },
@@ -79,9 +79,9 @@ void Layer::setProps(std::shared_ptr<Layer::Props> newProps) {
   this->setNeedsRedraw("Props updated");
 }
 
-void Layer::triggerUpdate(const std::string& gpuColumnName) {
-  this->_attributeManager->invalidate(gpuColumnName);
-  this->setNeedsUpdate(gpuColumnName);
+void Layer::triggerUpdate(const std::string& attributeName) {
+  this->_attributeManager->invalidate(attributeName);
+  this->setNeedsUpdate(attributeName);
 }
 
 void Layer::setNeedsRedraw(const std::string& reason) { this->needsRedraw = reason; }
@@ -92,6 +92,7 @@ void Layer::setNeedsUpdate(const std::string& reason) {
 }
 
 auto Layer::getNeedsRedraw(bool clearRedrawFlags) -> std::optional<std::string> {
+  // TODO(ilija@unfolded.ai): Implement layer prop diffing
   return "TODO: Layers always need to be redrawn";  // this->_getNeedsRedraw(clearRedrawFlags);
 }
 

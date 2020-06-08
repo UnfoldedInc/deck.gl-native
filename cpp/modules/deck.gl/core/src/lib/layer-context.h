@@ -32,7 +32,7 @@ class Deck;
 class LayerManager;
 class Viewport;
 
-/// \brief LayerContext is data shared between all layers.
+/// \brief LayerContext contains data shared between all layers.
 class LayerContext {
  public:
   // TODO(ilija@unfolded.ai): Do we need to have this circular dependency here?

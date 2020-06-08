@@ -88,7 +88,7 @@ void AnimationLoop::setSize(const Size& size) {
   bool sizeChanged = size != this->_size;
   if (sizeChanged) {
     this->_size = size;
-    // TODO(ilija@unfolded.ai): Trigger redraw
+    // TODO(ilija@unfolded.ai): Trigger redraw?
   }
 }
 

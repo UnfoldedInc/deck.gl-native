@@ -34,6 +34,7 @@
 
 namespace deckgl {
 
+/// \brief Layer subclass that interprets line data.
 class LineLayer : public Layer {
  public:
   using super = Layer;
@@ -42,8 +43,6 @@ class LineLayer : public Layer {
   explicit LineLayer(std::shared_ptr<LineLayer::Props> props) : Layer{std::dynamic_pointer_cast<Layer::Props>(props)} {}
   auto props() { return std::dynamic_pointer_cast<Layer::Props>(this->_props); }
 
-  // TODO(ilija@unfolded.ai): These should be protected. Figure out how to test them without polluting with friend
-  // classes
   auto getSourcePositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getTargetPositionData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
   auto getColorData(const std::shared_ptr<arrow::Table>& table) -> std::shared_ptr<arrow::Array>;
@@ -61,14 +60,22 @@ class LineLayer : public Layer {
   wgpu::Buffer _layerUniforms;
 };
 
+/// \brief A set of properties that describe a LineLayer.
 class LineLayer::Props : public Layer::Props {
  public:
   using super = Layer::Props;
 
   // TODO(ilija@unfolded.ai): Should be an enum
+  /// \brief Units in which the width is specified.
   std::string widthUnits{"pixels"};
+
+  /// \brief Scale to use for line width data.
   float widthScale{1};
+
+  /// \brief Minimum width of the line, in pixels.
   float widthMinPixels{0};
+
+  /// \brief Maximum width of the line, in pixels.
   float widthMaxPixels{std::numeric_limits<float>::max()};
 
   /// Property accessors

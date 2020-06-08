@@ -26,7 +26,7 @@
 #include <functional>
 #include <memory>
 
-#include "./size.h"
+#include "../size.h"
 #include "probe.gl/core.h"
 
 namespace lumagl {

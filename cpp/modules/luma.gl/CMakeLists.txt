@@ -67,18 +67,18 @@ set(GARROW_TESTS_SOURCE_FILE_LIST
 
 set(CORE_HEADER_FILE_LIST
     core.h
-    core/src/animation-loop.h
+    core/src/animation-loop/animation-loop.h
     core/src/model.h
     core/src/blit-model.h
     core/src/size.h
-    core/src/animation-loop-factory.h
+    core/src/animation-loop/animation-loop-factory.h
     )
 set(CORE_SOURCE_FILE_LIST
-    core/src/animation-loop.cc
+    core/src/animation-loop/animation-loop.cc
     core/src/model.cc
     core/src/blit-model.cc
     core/src/size.cc
-    core/src/animation-loop-factory.cc
+    core/src/animation-loop/animation-loop-factory.cc
     )
 set(CORE_TESTS_SOURCE_FILE_LIST
     )
@@ -103,8 +103,8 @@ if (LUMAGL_USES_GLFW)
     list(APPEND WEBGPU_HEADER_FILE_LIST webgpu/src/backends/glfw/backend-binding.h)
     list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/backend-binding.cc)
 
-    list(APPEND CORE_HEADER_FILE_LIST core/src/glfw-animation-loop.h)
-    list(APPEND CORE_SOURCE_FILE_LIST core/src/glfw-animation-loop.cc)
+    list(APPEND CORE_HEADER_FILE_LIST core/src/animation-loop/glfw-animation-loop.h)
+    list(APPEND CORE_SOURCE_FILE_LIST core/src/animation-loop/glfw-animation-loop.cc)
 
     find_library(glfw_LIB glfw PATH ${DECK_DEPS_PATH} NO_DEFAULT_PATH)
     target_link_libraries(luma.gl PUBLIC ${DECK_CONFIG_LIBRARY} ${glfw_LIB})
@@ -143,8 +143,8 @@ if (DECK_ENABLE_METAL)
         list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/glfw/metal-binding.mm)
     endif()
 
-    list(APPEND CORE_HEADER_FILE_LIST core/src/metal-animation-loop.h)
-    list(APPEND CORE_SOURCE_FILE_LIST core/src/metal-animation-loop.mm)
+    list(APPEND CORE_HEADER_FILE_LIST core/src/animation-loop/metal-animation-loop.h)
+    list(APPEND CORE_SOURCE_FILE_LIST core/src/animation-loop/metal-animation-loop.mm)
     list(APPEND WEBGPU_HEADER_FILE_LIST webgpu/src/backends/metal-binding.h)
     list(APPEND WEBGPU_SOURCE_FILE_LIST webgpu/src/backends/metal-binding.mm)
 

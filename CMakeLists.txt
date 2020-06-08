@@ -207,7 +207,7 @@ endif()
 # BUNDLE LIBRARY #
 ##################
 
-# TODO: Should be a shared lib. Generate an empty source file?
+# Currently only used internally to link against for testing purposes
 add_library(deckgl-bundle INTERFACE)
 
 # Define module libs
