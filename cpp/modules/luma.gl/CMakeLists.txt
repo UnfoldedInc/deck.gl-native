@@ -78,6 +78,7 @@ set(CORE_SOURCE_FILE_LIST
     core/src/model.cc
     core/src/blit-model.cc
     core/src/size.cc
+    core/src/animation-loop-factory.cc
     )
 set(CORE_TESTS_SOURCE_FILE_LIST
     )

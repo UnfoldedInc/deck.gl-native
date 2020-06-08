@@ -22,6 +22,14 @@
 
 using namespace lumagl::garrow;
 
+Field::Field(const std::string& name, wgpu::VertexFormat type, bool nullable,
+             const std::shared_ptr<const KeyValueMetadata>& metadata)
+    : _name{name}, _type{type}, _nullable{nullable}, _metadata{metadata} {
+  if (nullable) {
+    throw std::runtime_error("Nullable fields currently not supported");
+  }
+}
+
 auto Field::Equals(const Field& other, bool check_metadata) const -> bool {
   if (this == &other) {
     return true;

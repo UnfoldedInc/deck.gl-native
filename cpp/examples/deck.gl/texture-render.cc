@@ -88,7 +88,7 @@ auto createDeck(const char* argv[], const wgpu::Device& device, const lumagl::Si
   deckProps->drawingOptions = std::make_shared<DrawingOptions>(device, device.CreateQueue());
 
   probegl::Error error;
-  auto deck = Deck::make(error, deckProps);
+  auto deck = Deck::make(deckProps, error);
   noErrorOrTerminate(error);
 
   return deck;
@@ -111,7 +111,7 @@ int main(int argc, const char* argv[]) {
   lumagl::Size windowSize{640, 480};
   auto options = std::make_shared<GLFWAnimationLoop::Options>(windowSize, "Texture Render");
   probegl::Error error;
-  auto animationLoop = AnimationLoopFactory::createAnimationLoop(error, options);
+  auto animationLoop = AnimationLoopFactory::createAnimationLoop(options, error);
   auto device = animationLoop->device();
 
   auto framebufferSize = windowSize * animationLoop->devicePixelRatio();

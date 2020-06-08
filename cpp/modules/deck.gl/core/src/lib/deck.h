@@ -41,15 +41,14 @@ class Deck : public Component {
 
 #pragma mark - Exception-free API
 
-  static auto make(probegl::Error& error, std::shared_ptr<Deck::Props> props = std::make_shared<Deck::Props>()) noexcept
-      -> std::shared_ptr<Deck>;
+  static auto make(std::shared_ptr<Deck::Props> props, probegl::Error& error) noexcept -> std::shared_ptr<Deck>;
+  static auto make(probegl::Error& error) noexcept -> std::shared_ptr<Deck>;
   void setProps(std::shared_ptr<Deck::Props> props, probegl::Error& error) noexcept;
 
-  void run(
-      probegl::Error& error, std::function<void(Deck*)> onAfterRender = [](Deck*) {}) noexcept;
-  void draw(
-      wgpu::TextureView textureView, probegl::Error& error,
-      std::function<void(Deck*)> onAfterRender = [](Deck*) {}) noexcept;
+  void run(std::function<void(Deck*)> onAfterRender, probegl::Error& error) noexcept;
+  void run(probegl::Error& error) noexcept;
+  void draw(wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender, probegl::Error& error) noexcept;
+  void draw(wgpu::TextureView textureView, probegl::Error& error) noexcept;
 
 #pragma mark -
 

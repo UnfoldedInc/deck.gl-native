@@ -57,21 +57,33 @@ auto Deck::Props::getProperties() const -> const std::shared_ptr<Properties> {
   return properties;
 }
 
-auto Deck::make(probegl::Error& error, std::shared_ptr<Deck::Props> props) noexcept -> std::shared_ptr<Deck> {
+auto Deck::make(std::shared_ptr<Deck::Props> props, probegl::Error& error) noexcept -> std::shared_ptr<Deck> {
   return probegl::catchError<Deck>([&]() { return Deck{props}; }, error);
+}
+
+auto Deck::make(probegl::Error& error) noexcept -> std::shared_ptr<Deck> {
+  return probegl::catchError<Deck>([&]() { return Deck{}; }, error);
 }
 
 void Deck::setProps(std::shared_ptr<Deck::Props> props, probegl::Error& error) noexcept {
   probegl::catchError([&]() { this->setProps(props); }, error);
 }
 
-void Deck::run(probegl::Error& error, std::function<void(Deck*)> onAfterRender) noexcept {
+void Deck::run(std::function<void(Deck*)> onAfterRender, probegl::Error& error) noexcept {
   probegl::catchError([&]() { this->run(onAfterRender); }, error);
 }
 
-void Deck::draw(wgpu::TextureView textureView, probegl::Error& error,
-                std::function<void(Deck*)> onAfterRender) noexcept {
+void Deck::run(probegl::Error& error) noexcept {
+  probegl::catchError([&]() { this->run(); }, error);
+}
+
+void Deck::draw(wgpu::TextureView textureView, std::function<void(Deck*)> onAfterRender,
+                probegl::Error& error) noexcept {
   probegl::catchError([&]() { this->draw(textureView, onAfterRender); }, error);
+}
+
+void Deck::draw(wgpu::TextureView textureView, probegl::Error& error) noexcept {
+  probegl::catchError([&]() { this->draw(textureView); }, error);
 }
 
 Deck::Deck(std::shared_ptr<Deck::Props> props) : Component(props), _needsRedraw{"Initial render"} {
