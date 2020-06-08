@@ -85,7 +85,7 @@ auto createDeck(const char* argv[], const wgpu::Device& device, const lumagl::Si
   deckProps->width = size.width;
   deckProps->height = size.height;
 
-  deckProps->drawingOptions = std::make_shared<lumagl::AnimationLoop::Options>(device, device.CreateQueue());
+  deckProps->drawingOptions = std::make_shared<DrawingOptions>(device, device.CreateQueue());
 
   probegl::Error error;
   auto deck = Deck::make(error, deckProps);
