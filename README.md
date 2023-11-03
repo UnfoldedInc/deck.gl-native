@@ -2,6 +2,11 @@
 
 This is an open-source C++ implementation of deck.gl.
 
+> This project is no longer active. It was an experiment to understand what it would take to build a native version of deck.gl. 
+> There are discussions about restarting a deck.gl-native effort (this time probably in Rust instead of C++) to help us integrate more non-JavaScript code, better support mobile platforms, and collaborate better with basemaps like maplibre-gl. 
+> If you have more than a passing interest in this topic you are welcome to join us at https://www.openvisualization.org/#get-involved.
+
+<br />
 <table style="border: 0;" align="center">
   <thead>
     <tr>
@@ -28,7 +33,7 @@ This is an open-source C++ implementation of deck.gl.
   </tbody>
 </table>
 
-> Caveat: this is currently an in-progress effort that is targeting a minimal, proof-of-concept prototype. Even at completion, the initial `deck.gl-native` release is unlikely to meet the requirements of most applications. At this stage, asking for delivery dates and additional features without contributing to implementation or providing additional funding is unlikely to be helpful.
+This project targeted a minimal, proof-of-concept prototype. This initial `deck.gl-native` release is unlikely to meet the requirements of most applications. 
 
 ## Scope
 
